@@ -62,9 +62,9 @@
                             <div class="flex items-center justify-between py-4">
                                 <div>
                                     <h4 class="text-sm font-semibold text-zinc-900">{{ $det->nombre_producto }}</h4>
-                                    <span class="text-xs text-zinc-500 font-medium">Cantidad: {{ $det->cantidad }} x {{ number_format($det->precio, 2, ',', '.') }} €</span>
+                                    <span class="text-xs text-zinc-500 font-medium">Cantidad: {{ $det->cantidad }} x $ {{ number_format($det->precio, 2, '.', ',') }} MXN</span>
                                 </div>
-                                <span class="text-sm font-bold text-zinc-900 font-sans">{{ number_format($itemTotal, 2, ',', '.') }} €</span>
+                                <span class="text-sm font-bold text-zinc-900 font-sans">$ {{ number_format($itemTotal, 2, '.', ',') }}</span>
                             </div>
                         @endforeach
                     </div>
@@ -77,19 +77,19 @@
                 <div class="bg-zinc-50 rounded p-4 space-y-2 text-xs border border-zinc-150">
                     <div class="flex justify-between text-zinc-500">
                         <span>Subtotal de productos</span>
-                        <span class="font-semibold text-zinc-900 font-sans">{{ number_format($subtotalCalculado, 2, ',', '.') }} €</span>
+                        <span class="font-semibold text-zinc-900 font-sans">$ {{ number_format($subtotalCalculado, 2, '.', ',') }}</span>
                     </div>
                     <div class="flex justify-between text-zinc-500">
                         <span>Costo de envío</span>
                         @if($costoEnvio <= 0)
                             <span class="font-bold text-emerald-700 uppercase">Gratis</span>
                         @else
-                            <span class="font-semibold text-zinc-900 font-sans">{{ number_format($costoEnvio, 2, ',', '.') }} €</span>
+                            <span class="font-semibold text-zinc-900 font-sans">$ {{ number_format($costoEnvio, 2, '.', ',') }}</span>
                         @endif
                     </div>
                     <div class="flex justify-between items-center text-sm text-zinc-950 pt-2 border-t border-zinc-200">
                         <span class="font-semibold">Total Pagado</span>
-                        <span class="text-base font-bold font-sans">{{ number_format($pedido->total, 2, ',', '.') }} €</span>
+                        <span class="text-base font-bold font-sans">$ {{ number_format($pedido->total, 2, '.', ',') }}</span>
                     </div>
                 </div>
             </div>

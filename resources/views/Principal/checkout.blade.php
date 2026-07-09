@@ -151,9 +151,19 @@
                                         <div>
                                             <h4 class="text-xs font-semibold text-zinc-900 truncate max-w-[150px]">{{ $item['nombre'] }}</h4>
                                             <span class="text-[10px] text-zinc-400 font-medium">Cant: {{ $item['cantidad'] }}</span>
+                                            @if(!empty($item['con_descuento']) && $item['con_descuento'])
+                                                <span class="block text-[9px] font-bold text-white bg-rose-600 rounded px-1 py-0.5 w-fit mt-0.5">CON DESCUENTO</span>
+                                            @endif
                                         </div>
                                     </div>
-                                    <span class="text-xs font-bold text-zinc-950 font-sans">{{ number_format($item['precio'] * $item['cantidad'], 2, ',', '.') }} €</span>
+                                    <div class="text-right">
+                                        @if(!empty($item['con_descuento']) && $item['con_descuento'])
+                                            <span class="block text-[10px] text-zinc-400 line-through font-sans">$ {{ number_format($item['precio_original'] * $item['cantidad'], 2, '.', ',') }}</span>
+                                            <span class="block text-xs font-bold text-emerald-700 font-sans">$ {{ number_format($item['precio'] * $item['cantidad'], 2, '.', ',') }}</span>
+                                        @else
+                                            <span class="block text-xs font-bold text-zinc-950 font-sans">$ {{ number_format($item['precio'] * $item['cantidad'], 2, '.', ',') }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -162,21 +172,27 @@
                         <div class="space-y-3 py-4 border-t border-b border-zinc-150 text-xs mt-4">
                             <div class="flex justify-between text-zinc-500">
                                 <span>Subtotal</span>
-                                <span class="font-semibold text-zinc-900 font-sans">{{ number_format($subtotal, 2, ',', '.') }} €</span>
+                                <span class="font-semibold text-zinc-900 font-sans">$ {{ number_format($subtotal, 2, '.', ',') }}</span>
                             </div>
+                            @if($descuento > 0)
+                                <div class="flex justify-between text-rose-700 font-medium">
+                                    <span>Descuento (Cupón: {{ $cuponAplicado['codigo'] ?? '' }})</span>
+                                    <span class="font-sans">-$ {{ number_format($descuento, 2, '.', ',') }}</span>
+                                </div>
+                            @endif
                             <div class="flex justify-between text-zinc-500">
                                 <span>Envío</span>
                                 @if($envio == 0)
                                     <span class="font-bold text-emerald-700 uppercase">Gratis</span>
                                 @else
-                                    <span class="font-semibold text-zinc-900 font-sans">{{ number_format($envio, 2, ',', '.') }} €</span>
+                                    <span class="font-semibold text-zinc-900 font-sans">$ {{ number_format($envio, 2, '.', ',') }}</span>
                                 @endif
                             </div>
                         </div>
 
                         <div class="flex justify-between items-center py-6 text-zinc-950">
                             <span class="text-sm font-semibold">Total a pagar</span>
-                            <span class="text-lg font-bold font-sans">{{ number_format($total, 2, ',', '.') }} €</span>
+                            <span class="text-lg font-bold font-sans">$ {{ number_format($total, 2, '.', ',') }}</span>
                         </div>
 
                         <button type="submit" class="w-full bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider py-4 rounded transition-colors shadow">

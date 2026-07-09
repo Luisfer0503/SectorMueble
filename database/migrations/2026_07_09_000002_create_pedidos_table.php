@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('pedidos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('usuario_id')->nullable()->constrained('users')->onDelete('set null');
             $table->string('nombre_cliente');
             $table->string('correo_cliente');
             $table->string('telefono_cliente');
@@ -20,6 +21,8 @@ return new class extends Migration
             $table->string('ciudad');
             $table->string('codigo_postal');
             $table->decimal('total', 10, 2);
+            $table->string('cupon_codigo')->nullable();
+            $table->decimal('descuento', 10, 2)->default(0.00);
             $table->string('estado')->default('pendiente');
             $table->timestamps();
         });

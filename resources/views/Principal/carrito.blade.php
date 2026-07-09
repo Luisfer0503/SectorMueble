@@ -38,7 +38,13 @@
                                             {{ $item['nombre'] }}
                                         </a>
                                     </h3>
-                                    <span class="text-xs text-zinc-500 font-sans block mt-1">{{ number_format($item['precio'], 2, ',', '.') }} € c/u</span>
+                                    @if(!empty($item['con_descuento']) && $item['con_descuento'])
+                                        <span class="text-[10px] text-zinc-400 line-through font-sans block mt-1">$ {{ number_format($item['precio_original'], 2, '.', ',') }} MXN c/u</span>
+                                        <span class="text-xs text-emerald-700 font-bold font-sans">$ {{ number_format($item['precio'], 2, '.', ',') }} MXN c/u</span>
+                                        <span class="inline-block text-[9px] font-bold text-white bg-rose-600 rounded px-1.5 py-0.5 mt-0.5">CON DESCUENTO</span>
+                                    @else
+                                        <span class="text-xs text-zinc-500 font-sans block mt-1">$ {{ number_format($item['precio'], 2, '.', ',') }} MXN c/u</span>
+                                    @endif
                                 </div>
                             </div>
 
@@ -56,7 +62,7 @@
                                 <!-- Precio Total del Item -->
                                 <div class="text-right">
                                     <span class="text-sm font-bold text-zinc-950 block font-sans">
-                                        {{ number_format($item['precio'] * $item['cantidad'], 2, ',', '.') }} €
+                                        $ {{ number_format($item['precio'] * $item['cantidad'], 2, '.', ',') }}
                                     </span>
                                     
                                     <!-- Botón Eliminar -->
@@ -78,7 +84,7 @@
                             <!-- Subtotal -->
                             <div class="flex items-center justify-between text-zinc-600">
                                 <span>Subtotal</span>
-                                <span class="font-semibold text-zinc-950 font-sans">{{ number_format($subtotal, 2, ',', '.') }} €</span>
+                                <span class="font-semibold text-zinc-950 font-sans">$ {{ number_format($subtotal, 2, '.', ',') }}</span>
                             </div>
 
                             <!-- Costo Envío -->
@@ -87,16 +93,24 @@
                                 @if($envio == 0)
                                     <span class="font-bold text-emerald-700 uppercase text-xs">Gratis</span>
                                 @else
-                                    <span class="font-semibold text-zinc-950 font-sans">{{ number_format($envio, 2, ',', '.') }} €</span>
+                                    <span class="font-semibold text-zinc-950 font-sans">$ {{ number_format($envio, 2, '.', ',') }}</span>
                                 @endif
                             </div>
 
+                            <!-- Descuento por Cupón (Si aplica) -->
+                            @if($cuponAplicado)
+                                <div class="flex items-center justify-between text-rose-700 font-medium">
+                                    <span>Descuento (Cupón: {{ $cuponAplicado['codigo'] }})</span>
+                                    <span class="font-sans">-$ {{ number_format($descuento, 2, '.', ',') }}</span>
+                                </div>
+                            @endif
+
                             <!-- Barra de progreso para Envío Gratis -->
-                            @if($subtotal < 400)
+                            @if($subtotal < 8000)
                                 <div class="bg-amber-50 border border-amber-200 rounded p-3 text-xs text-amber-800">
-                                    <p>Añade <strong>{{ number_format(400 - $subtotal, 2, ',', '.') }} €</strong> más para tener <strong>Envío Gratis</strong>.</p>
+                                    <p>Añade <strong>$ {{ number_format(8000 - $subtotal, 2, '.', ',') }}</strong> más para tener <strong>Envío Gratis</strong>.</p>
                                     <div class="w-full bg-amber-200/50 rounded-full h-1.5 mt-2 overflow-hidden">
-                                        <div class="bg-amber-800 h-1.5 rounded-full" style="width: {{ ($subtotal / 400) * 100 }}%"></div>
+                                        <div class="bg-amber-800 h-1.5 rounded-full" style="width: {{ ($subtotal / 8000) * 100 }}%"></div>
                                     </div>
                                 </div>
                             @else
@@ -107,12 +121,33 @@
                                     <span>¡Tu pedido califica para <strong>Envío Gratis</strong>!</span>
                                 </div>
                             @endif
+
+                            <!-- Sección de Código Promocional / Cupón -->
+                            <div class="pt-4 border-t border-zinc-100">
+                                @if(!$cuponAplicado)
+                                    <form action="{{ route('carrito.cupon.aplicar') }}" method="POST" class="flex items-center space-x-2">
+                                        @csrf
+                                        <input type="text" name="codigo" placeholder="CÓDIGO DE CUPÓN" required class="w-full bg-zinc-50 border border-zinc-200 rounded text-xs px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700 font-mono tracking-wider">
+                                        <button type="submit" class="bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold uppercase tracking-wider px-4 py-2 rounded transition-colors">
+                                            Aplicar
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('carrito.cupon.quitar') }}" method="POST" class="flex items-center justify-between text-xs">
+                                        @csrf
+                                        <span class="text-zinc-650 font-medium font-mono text-[11px] bg-zinc-100 px-2.5 py-1 rounded">Cupón: {{ $cuponAplicado['codigo'] }}</span>
+                                        <button type="submit" class="text-rose-600 hover:text-rose-800 font-bold uppercase tracking-wider text-[10px]">
+                                            Quitar
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
                         </div>
 
                         <!-- Total -->
                         <div class="flex items-center justify-between py-6 text-zinc-950">
                             <span class="text-base font-semibold">Total</span>
-                            <span class="text-xl font-bold font-sans">{{ number_format($total, 2, ',', '.') }} €</span>
+                            <span class="text-xl font-bold font-sans">$ {{ number_format($total, 2, '.', ',') }}</span>
                         </div>
 
                         <!-- Checkout Button -->

@@ -42,7 +42,7 @@
                         </svg>
                     </div>
                     <h3 class="mt-4 text-sm font-semibold text-zinc-950">Envío Gratis</h3>
-                    <p class="mt-1 text-xs text-zinc-500">Para compras superiores a 400 €</p>
+                    <p class="mt-1 text-xs text-zinc-500">Para compras superiores a $8,000 MXN</p>
                 </div>
                 <div class="flex flex-col items-center">
                     <div class="p-3 bg-amber-50 rounded-full text-amber-800">
@@ -160,6 +160,9 @@
                             
                             <!-- Badges -->
                             <div class="absolute top-3 left-3 flex flex-col space-y-1">
+                                @if($producto->tieneDescuento())
+                                    <span class="bg-rose-600 text-white text-[10px] font-bold px-2 py-1 uppercase rounded tracking-wider shadow">-{{ $producto->porcentaje_descuento }}% OFERTA</span>
+                                @endif
                                 <span class="bg-amber-800 text-white text-[10px] font-bold px-2 py-1 uppercase rounded tracking-wider shadow">Destacado</span>
                                 @if($producto->stock <= 5)
                                     <span class="bg-rose-600 text-white text-[10px] font-bold px-2 py-1 uppercase rounded tracking-wider shadow">Últimas unidades</span>
@@ -197,9 +200,21 @@
                             
                             <!-- Price and Add to Cart -->
                             <div class="flex items-center justify-between mt-4">
-                                <span class="text-base font-bold text-zinc-950 font-sans">{{ number_format($producto->precio, 2, ',', '.') }} €</span>
+                                <div class="flex flex-col">
+                                    @if($producto->tieneDescuento())
+                                        <span class="text-xs text-zinc-400 line-through font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }}</span>
+                                        <span class="text-base font-bold text-emerald-700 font-sans">$ {{ number_format($producto->precio_descuento, 2, '.', ',') }} MXN</span>
+                                    @else
+                                        <span class="text-base font-bold text-zinc-950 font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }} MXN</span>
+                                    @endif
+                                </div>
                                 
-                                <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST">
+                                <form
+                                    action="{{ route('carrito.agregar', $producto->id) }}"
+                                    method="POST"
+                                    data-nombre="{{ $producto->nombre }}"
+                                    data-img="{{ $producto->imagen_url }}"
+                                    onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
                                     @csrf
                                     <button type="submit" class="p-2 bg-zinc-50 hover:bg-amber-800 text-zinc-700 hover:text-white rounded border border-zinc-200 hover:border-transparent transition-colors duration-300">
                                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -223,7 +238,7 @@
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="serif-title text-3xl sm:text-4xl font-bold text-white leading-tight">Envíos Especiales y Montaje Profesional</h2>
             <p class="mt-4 text-base text-zinc-300 max-w-xl mx-auto">
-                Queremos que amueblar tu casa sea una experiencia placentera. Disfruta de envío gratuito en pedidos mayores a 400 € y la posibilidad de añadir montaje en casa.
+                Queremos que amueblar tu casa sea una experiencia placentera. Disfruta de envío gratuito en pedidos mayores a $8,000 MXN y la posibilidad de añadir montaje en casa.
             </p>
             <div class="mt-8">
                 <a href="{{ route('catalogo') }}" class="inline-block bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider px-8 py-3.5 rounded transition-colors shadow-md">

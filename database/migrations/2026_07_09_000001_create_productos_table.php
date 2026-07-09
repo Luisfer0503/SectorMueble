@@ -22,6 +22,8 @@ return new class extends Migration
             $table->integer('stock');
             $table->decimal('calificacion', 2, 1)->default(5.0);
             $table->boolean('destacado')->default(false);
+            $table->unsignedTinyInteger('porcentaje_descuento')->nullable(); // 0-100
+            $table->decimal('precio_descuento', 10, 2)->nullable();
             $table->timestamps();
         });
     }

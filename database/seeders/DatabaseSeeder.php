@@ -22,6 +22,27 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
+        User::factory()->create([
+            'name' => 'Administrador',
+            'email' => 'admin@sectormueble.com',
+            'password' => bcrypt('admin123'),
+            'is_admin' => true,
+        ]);
+
+        \App\Models\Cupon::create([
+            'codigo' => 'MUEBLE10',
+            'tipo' => 'porcentaje',
+            'valor' => 10.00,
+            'activo' => true,
+        ]);
+
+        \App\Models\Cupon::create([
+            'codigo' => 'BIENVENIDA500',
+            'tipo' => 'fijo',
+            'valor' => 500.00,
+            'activo' => true,
+        ]);
+
         $this->call(ProductoSeeder::class);
     }
 }

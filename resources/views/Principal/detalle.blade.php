@@ -51,7 +51,18 @@
 
                     <!-- Price -->
                     <div class="mt-6">
-                        <span class="text-2xl font-bold text-zinc-950 font-sans">{{ number_format($producto->precio, 2, ',', '.') }} €</span>
+                        @if($producto->tieneDescuento())
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl font-bold text-emerald-700 font-sans">$ {{ number_format($producto->precio_descuento, 2, '.', ',') }} MXN</span>
+                                <span class="text-base text-zinc-400 line-through font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }}</span>
+                                <span class="bg-rose-600 text-white text-xs font-bold px-2.5 py-1 rounded">-{{ $producto->porcentaje_descuento }}%</span>
+                            </div>
+                            <p class="text-xs text-emerald-600 font-semibold mt-1">
+                                Ahorras $ {{ number_format($producto->precio - $producto->precio_descuento, 2, '.', ',') }} MXN
+                            </p>
+                        @else
+                            <span class="text-2xl font-bold text-zinc-950 font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }} MXN</span>
+                        @endif
                         <p class="text-xs text-zinc-400 mt-1">IVA incluido. Envío estimado en 3-5 días laborables.</p>
                     </div>
 
@@ -85,7 +96,13 @@
                 <!-- Add to Cart Form -->
                 <div class="mt-8 border-t border-zinc-200 pt-6">
                     @if($producto->stock > 0)
-                        <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST" class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                        <form
+                            action="{{ route('carrito.agregar', $producto->id) }}"
+                            method="POST"
+                            class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4"
+                            data-nombre="{{ $producto->nombre }}"
+                            data-img="{{ $producto->imagen_url }}"
+                            onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
                             @csrf
                             <!-- Quantity -->
                             <div class="flex items-center border border-zinc-300 rounded overflow-hidden w-fit h-12 bg-white">
@@ -143,6 +160,16 @@
                             <div class="relative w-full h-64 bg-zinc-100 overflow-hidden">
                                 <img src="{{ $rel->imagen_url }}" alt="{{ $rel->nombre }}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500">
                                 
+                                <!-- Badges -->
+                                <div class="absolute top-3 left-3 flex flex-col space-y-1">
+                                    @if($rel->tieneDescuento())
+                                        <span class="bg-rose-600 text-white text-[9px] font-bold px-2 py-0.5 uppercase rounded tracking-wider shadow">-{{ $rel->porcentaje_descuento }}% OFERTA</span>
+                                    @endif
+                                    @if($rel->destacado)
+                                        <span class="bg-amber-800 text-white text-[9px] font-bold px-2 py-0.5 uppercase rounded tracking-wider shadow">Destacado</span>
+                                    @endif
+                                </div>
+
                                 <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                                     <a href="{{ route('productos.detalle', $rel->id) }}" class="bg-white text-zinc-950 text-xs font-semibold px-4 py-2 rounded shadow hover:bg-amber-800 hover:text-white transition-colors duration-300">
                                         Ver Detalles
@@ -160,7 +187,14 @@
                                     </h3>
                                 </div>
                                 <div class="flex items-center justify-between mt-4">
-                                    <span class="text-sm font-bold text-zinc-950 font-sans">{{ number_format($rel->price ?? $rel->precio, 2, ',', '.') }} €</span>
+                                    <div class="flex flex-col">
+                                        @if($rel->tieneDescuento())
+                                            <span class="text-xs text-zinc-400 line-through font-sans">$ {{ number_format($rel->precio, 2, '.', ',') }}</span>
+                                            <span class="text-sm font-bold text-emerald-700 font-sans">$ {{ number_format($rel->precio_descuento, 2, '.', ',') }}</span>
+                                        @else
+                                            <span class="text-sm font-bold text-zinc-950 font-sans">$ {{ number_format($rel->precio, 2, '.', ',') }}</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
