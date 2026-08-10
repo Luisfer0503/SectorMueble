@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-[#FAF9F6]">
+<html lang="es" class="h-full bg-[#FAF3E0]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,20 +8,18 @@
     <title>@yield('titulo', 'Sector Mueble | E-commerce de Muebles de Diseño')</title>
     <meta name="description" content="Encuentra los mejores muebles de diseño escandinavo, industrial y moderno para tu hogar u oficina en Sector Mueble. Envíos a todo el país.">
     
-    <!-- Google Fonts for premium serif headings -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <!-- Styles and Scripts via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', var(--font-sans), sans-serif;
+            font-family: 'Poppins', 'Eras ITC', 'Metropolis', sans-serif;
         }
-        .serif-title {
-            font-family: 'Playfair Display', serif;
+        .serif-title, h1, h2, h3, .font-heading {
+            font-family: 'NT Fabulous', 'Poppins', sans-serif;
+        }
+        .font-subtitle, .subtitle-brand {
+            font-family: 'NT Fabulous Alternative', 'Poppins', sans-serif;
         }
 
         /* ── Animación vuelo al carrito ── */
@@ -58,35 +56,65 @@
 </head>
 <body class="flex flex-col min-h-screen text-zinc-800">
 
+@php
+    $ruletaOpcionesData = \App\Models\RuletaOpcion::where('activo', true)->orderBy('posicion', 'asc')->get();
+    $cuponSesion = session()->get('cupon');
+@endphp
+
+<!-- Banner Sticky de Premio Activo de Ruleta -->
+<div id="ruleta-sticky-banner" class="{{ ($cuponSesion && isset($cuponSesion['expira_en'])) ? '' : 'hidden' }} sticky top-0 z-50 bg-gradient-to-r from-amber-900 via-amber-800 to-amber-950 text-white px-4 py-2.5 shadow-md border-b border-amber-600">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm">
+        <div class="flex items-center space-x-2 font-medium">
+            <span class="animate-bounce text-base">🎁</span>
+            <span><strong>¡Premio de Ruleta Activo!</strong> <span id="ruleta-banner-titulo">{{ $cuponSesion['titulo'] ?? ($cuponSesion['codigo'] ?? 'Descuento Especial') }}</span></span>
+        </div>
+        <div class="flex items-center space-x-3">
+            <div class="bg-black/40 px-3 py-1 rounded-full border border-amber-400/40 flex items-center space-x-1.5 font-mono text-amber-200">
+                <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Expira en:</span>
+                <strong id="ruleta-banner-timer" class="text-white font-bold text-sm">--:--</strong>
+            </div>
+            <a href="{{ route('carrito') }}" class="bg-amber-500 hover:bg-amber-400 text-amber-950 text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-colors shadow">
+                Ir al Carrito
+            </a>
+        </div>
+    </div>
+</div>
+
     <!-- Header / Navbar -->
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-zinc-100">
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-zinc-200 shadow-sm" onmouseleave="closeSubnav()">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
+            <!-- Fila Única: Logos (Izquierda), 3 Categorías (Centro Distribuido), Acciones (Derecha) -->
+            <div class="flex items-center justify-between h-20 sm:h-24 py-2">
+                
+                <!-- Logos (Izquierda) -->
                 <div class="flex-shrink-0">
-                    <a href="{{ route('inicio') }}" class="flex items-center space-x-2">
-                        <span class="serif-title text-2xl font-bold tracking-wider text-zinc-900">SECTOR<span class="text-amber-800">MUEBLE</span></span>
+                    <a href="{{ route('inicio') }}" class="flex items-center space-x-2 group">
+                        <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-9 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+                        <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-11 sm:h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
-                <nav class="hidden md:flex space-x-8">
-                    <a href="{{ route('inicio') }}" class="text-sm font-medium {{ Route::is('inicio') ? 'text-amber-800 border-b-2 border-amber-800 pb-1' : 'text-zinc-600 hover:text-zinc-900' }}">
-                        Inicio
-                    </a>
-                    <a href="{{ route('catalogo') }}" class="text-sm font-medium {{ Route::is('catalogo') || Route::is('productos.detalle') ? 'text-amber-800 border-b-2 border-amber-800 pb-1' : 'text-zinc-600 hover:text-zinc-900' }}">
-                        Catálogo
-                    </a>
-                    <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="text-sm font-medium text-zinc-600 hover:text-zinc-900">Salón</a>
-                    <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="text-sm font-medium text-zinc-600 hover:text-zinc-900">Dormitorio</a>
-                    <a href="{{ route('catalogo', ['categoria' => 'Oficina']) }}" class="text-sm font-medium text-zinc-600 hover:text-zinc-900">Oficina</a>
+                <!-- Pestañas de Navegación Distribuidas en el Centro -->
+                <nav class="hidden md:flex items-center justify-center space-x-12 lg:space-x-16 xl:space-x-24 px-4">
+                    <button onclick="switchSubnav('sala')" onmouseenter="switchSubnav('sala')" id="tab-sala" class="subnav-tab text-zinc-800 hover:text-red-700 border-b-2 border-transparent pb-1 px-2 tracking-wider transition-all cursor-pointer whitespace-nowrap text-xs lg:text-sm font-bold uppercase">
+                        Sala
+                    </button>
+                    <button onclick="switchSubnav('recamara')" onmouseenter="switchSubnav('recamara')" id="tab-recamara" class="subnav-tab text-zinc-800 hover:text-red-700 border-b-2 border-transparent pb-1 px-2 tracking-wider transition-all cursor-pointer whitespace-nowrap text-xs lg:text-sm font-bold uppercase">
+                        Recámara
+                    </button>
+                    <button onclick="switchSubnav('comedor')" onmouseenter="switchSubnav('comedor')" id="tab-comedor" class="subnav-tab text-zinc-800 hover:text-red-700 border-b-2 border-transparent pb-1 px-2 tracking-wide transition-all cursor-pointer whitespace-nowrap text-xs lg:text-sm font-bold uppercase">
+                        Comedor
+                    </button>
                 </nav>
 
-                <!-- Action Buttons -->
-                <div class="flex items-center space-x-4">
+                <!-- Bloque Derecha: Acciones de usuario -->
+                <div class="flex items-center space-x-4 flex-shrink-0">
                     <!-- Buscador rápido en desktop -->
                     <form action="{{ route('catalogo') }}" method="GET" class="hidden lg:block relative">
-                        <input type="text" name="buscar" placeholder="Buscar muebles..." class="w-48 bg-zinc-50 focus:bg-white text-xs px-4 py-2 pr-8 rounded-full border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-transparent transition-all duration-300">
+                        <input type="text" name="buscar" placeholder="Buscar muebles..." class="w-44 bg-zinc-50 focus:bg-white text-xs px-4 py-2 pr-8 rounded-full border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-transparent transition-all duration-300">
                         <button type="submit" class="absolute right-3 top-2.5 text-zinc-400 hover:text-amber-800">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -125,7 +153,112 @@
                 </div>
             </div>
         </div>
+
+        <!-- Row 2: Subnav Panel Desglosado Únicamente para los 3 apartados separadamente -->
+        <div id="mega-subnav-panel" class="hidden bg-[#F8F8F8] border-t border-zinc-200 py-5 transition-all duration-300 shadow-md">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Panel 1: SALA (Lista vertical con viñetas sin titulo superior) -->
+                <div id="panel-sala" class="subnav-content-panel hidden py-2">
+                    <ul class="max-w-xs mx-auto space-y-2.5 text-zinc-800 font-medium text-sm text-left">
+                        <li class="flex items-center space-x-2.5">
+                            <span class="text-zinc-950 font-bold select-none">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-red-700 transition-colors">Sofás y salas modulares</a>
+                        </li>
+                        <li class="flex items-center space-x-2.5">
+                            <span class="text-zinc-950 font-bold select-none">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-red-700 transition-colors">Mesas de centro y laterales</a>
+                        </li>
+                        <li class="flex items-center space-x-2.5">
+                            <span class="text-zinc-950 font-bold select-none">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-red-700 transition-colors">Sillones</a>
+                        </li>
+                        <li class="flex items-center space-x-2.5">
+                            <span class="text-zinc-950 font-bold select-none">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-red-700 transition-colors">Credenzas</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Panel 2: RECÁMARA (Lista vertical con viñetas sin titulo superior) -->
+                <div id="panel-recamara" class="subnav-content-panel hidden py-2">
+                    <ul class="max-w-xs mx-auto space-y-2.5 text-zinc-800 font-medium text-sm text-left">
+                        <li class="flex items-center space-x-2.5">
+                            <span class="text-zinc-950 font-bold select-none">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-red-700 transition-colors">Camas</a>
+                        </li>
+                        <li class="flex items-center space-x-2.5">
+                            <span class="text-zinc-950 font-bold select-none">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-red-700 transition-colors">Burós</a>
+                        </li>
+                        <li class="flex items-center space-x-2.5">
+                            <span class="text-zinc-950 font-bold select-none">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-red-700 transition-colors">Divanes</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Panel 3: COMEDOR (Lista vertical con viñetas sin titulo superior) -->
+                <div id="panel-comedor" class="subnav-content-panel hidden py-2">
+                    <ul class="max-w-xs mx-auto space-y-2.5 text-zinc-800 font-medium text-sm text-left">
+                        <li class="flex items-center space-x-2.5">
+                            <span class="text-zinc-950 font-bold select-none">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="hover:text-red-700 transition-colors">Sillas</a>
+                        </li>
+                        <li class="flex items-center space-x-2.5">
+                            <span class="text-zinc-950 font-bold select-none">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="hover:text-red-700 transition-colors">Mesas</a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
     </header>
+
+    <script>
+    function switchSubnav(category) {
+        const megaPanel = document.getElementById('mega-subnav-panel');
+        if (megaPanel) {
+            megaPanel.classList.remove('hidden');
+        }
+
+        // Ocultar todos los paneles para mostrar unicamente el seleccionado
+        document.querySelectorAll('.subnav-content-panel').forEach(function(panel) {
+            panel.classList.add('hidden');
+        });
+        
+        // Desactivar todos los estilos activos de las pestañas
+        document.querySelectorAll('.subnav-tab').forEach(function(tab) {
+            tab.classList.remove('text-red-700', 'border-red-600', 'font-bold');
+            tab.classList.add('text-zinc-700', 'border-transparent', 'font-semibold');
+        });
+
+        // Activar la pestaña y el panel correspondiente
+        const activeTab = document.getElementById('tab-' + category);
+        const activePanel = document.getElementById('panel-' + category);
+
+        if (activeTab) {
+            activeTab.classList.add('text-red-700', 'border-red-600', 'font-bold');
+            activeTab.classList.remove('text-zinc-700', 'border-transparent', 'font-semibold');
+        }
+
+        if (activePanel) {
+            activePanel.classList.remove('hidden');
+        }
+    }
+
+    function closeSubnav() {
+        const megaPanel = document.getElementById('mega-subnav-panel');
+        if (megaPanel) {
+            megaPanel.classList.add('hidden');
+        }
+        document.querySelectorAll('.subnav-tab').forEach(function(tab) {
+            tab.classList.remove('text-red-700', 'border-red-600', 'font-bold');
+            tab.classList.add('text-zinc-700', 'border-transparent', 'font-semibold');
+        });
+    }
+    </script>
 
     <!-- Flash Alerts -->
     @if(session('success'))
@@ -175,7 +308,10 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <!-- Col 1: Logo & Desc -->
                 <div>
-                    <span class="serif-title text-xl font-bold tracking-wider text-white">SECTOR<span class="text-amber-500">MUEBLE</span></span>
+                    <a href="{{ route('inicio') }}" class="flex items-center space-x-3">
+                        <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-10 w-auto object-contain brightness-0 invert">
+                        <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-12 w-auto object-contain brightness-0 invert">
+                    </a>
                     <p class="mt-4 text-sm text-zinc-400 leading-relaxed">
                         Creamos espacios de vida inspiradores y confortables. Nuestra selección curada de muebles escandinavos y modernos fusiona estética y durabilidad a precios justos.
                     </p>
@@ -290,6 +426,89 @@
                     </svg>
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Botón Flotante para abrir la Ruleta -->
+<button id="ruleta-trigger-btn" onclick="openRuletaModal()" class="fixed bottom-6 left-6 z-40 bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white p-3.5 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center space-x-2 border-2 border-amber-300/50 group">
+    <span class="text-xl animate-bounce">🎡</span>
+    <span class="text-xs font-bold uppercase tracking-wider hidden sm:inline-block pr-1">Ruleta de Premios</span>
+</button>
+
+<!-- Modal de Ruleta de Premios para Nuevos Usuarios -->
+<div id="ruleta-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="opacity: 0; transition: opacity 0.3s ease;">
+    <!-- Backdrop Overlay -->
+    <div class="absolute inset-0 bg-zinc-950/75 backdrop-blur-md" onclick="closeRuletaModal()"></div>
+
+    <!-- Container Card -->
+    <div class="relative bg-zinc-900 border-2 border-amber-500/40 rounded-3xl shadow-2xl max-w-md w-full p-6 text-white text-center overflow-hidden transform scale-95 transition-transform duration-300" id="ruleta-modal-card">
+        <!-- Glow accents -->
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-amber-700/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- Botón cerrar -->
+        <button onclick="closeRuletaModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-full hover:bg-zinc-800 transition-colors z-10">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+        <!-- Header Modal -->
+        <div id="ruleta-step-spin">
+            <div class="mb-4">
+                <span class="inline-block bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest mb-2">
+                    ✨ Exclusivo Nuevos Clientes ✨
+                </span>
+                <h3 class="serif-title text-2xl sm:text-3xl font-bold text-white tracking-wide">
+                    ¡Gira la Ruleta de Bienvenida!
+                </h3>
+                <p class="text-xs text-zinc-300 mt-1">
+                    Obtén un descuento o beneficio especial para tu compra hoy.
+                </p>
+            </div>
+
+            <!-- Canvas contenedor de la rueda -->
+            <div class="relative mx-auto my-6 w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] flex items-center justify-center">
+                <!-- Flecha Indicadora Superior -->
+                <div class="absolute -top-3 z-30 flex flex-col items-center">
+                    <div class="w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[22px] border-t-amber-400 drop-shadow-[0_4px_8px_rgba(245,158,11,0.6)]"></div>
+                </div>
+
+                <!-- Rueda Canvas -->
+                <div id="ruleta-wheel-wrapper" class="w-full h-full rounded-full shadow-[0_0_35px_rgba(217,119,6,0.35)] border-4 border-amber-400/80 overflow-hidden relative" style="transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);">
+                    <canvas id="ruleta-canvas" width="320" height="320" class="w-full h-full"></canvas>
+                </div>
+
+                <!-- Center Spin Button -->
+                <button id="ruleta-spin-btn" onclick="spinRuleta()" class="absolute z-20 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-zinc-950 font-black text-xs sm:text-sm uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(245,158,11,0.8)] border-4 border-zinc-900 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+                    ¡GIRAR!
+                </button>
+            </div>
+        </div>
+
+        <!-- Step Result: Premio Ganado -->
+        <div id="ruleta-step-result" class="hidden py-4 space-y-4">
+            <div class="text-4xl animate-bounce">🎉</div>
+            <h3 class="serif-title text-2xl font-bold text-amber-400">¡FELICIDADES!</h3>
+            <p class="text-sm text-zinc-300">Has ganado este beneficio exclusivo:</p>
+
+            <div class="bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-amber-500/20 border border-amber-400/40 p-4 rounded-2xl">
+                <span id="ruleta-result-titulo" class="serif-title text-2xl font-extrabold text-white block">--</span>
+                <span class="text-xs text-amber-300 font-mono mt-1 block">Código: <span id="ruleta-result-codigo" class="font-bold">--</span></span>
+            </div>
+
+            <p class="text-xs text-zinc-400">
+                Tienes <strong id="ruleta-result-tiempo" class="text-amber-300">15 minutos</strong> para utilizarlo en tu carrito.
+            </p>
+
+            <form id="form-reclamar-ruleta" onsubmit="reclamarRuletaPremio(event)" class="pt-2">
+                @csrf
+                <input type="hidden" id="ruleta-input-posicion" name="posicion" value="1">
+                <button type="submit" id="ruleta-claim-btn" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-bold text-sm uppercase tracking-wider py-3.5 px-6 rounded-xl shadow-lg hover:shadow-amber-500/30 transition-all flex items-center justify-center space-x-2">
+                    <span>🎁 Reclamar y Aplicar al Carrito</span>
+                </button>
+            </form>
         </div>
     </div>
 </div>
@@ -474,6 +693,292 @@ SM.agregarCarrito = function(event, form) {
 };
 
 window.SM = SM;
+})();
+</script>
+
+{{-- ═══════════════ SCRIPT RULETA INTERACTIVA ═══════════════ --}}
+<script>
+window.RULETA_OPCIONES = @json($ruletaOpcionesData);
+window.RULETA_CUPON_SESION = @json($cuponSesion);
+
+(function(){
+    let currentRotation = 0;
+    let isSpinning = false;
+    let winningOption = null;
+
+    // Inicialización al cargar la página
+    document.addEventListener('DOMContentLoaded', function() {
+        initRuletaCanvas();
+        initRuletaTimer();
+        checkNewUserAutoOpen();
+    });
+
+    // Auto-apertura si es nuevo usuario y no ha jugado
+    function checkNewUserAutoOpen() {
+        const played = localStorage.getItem('sm_ruleta_played');
+        if (!played) {
+            // Abrir automáticamente después de 1.5 segundos
+            setTimeout(function() {
+                openRuletaModal();
+            }, 1500);
+        }
+    }
+
+    // Dibujar sectores en el Canvas
+    function initRuletaCanvas() {
+        const canvas = document.getElementById('ruleta-canvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const options = window.RULETA_OPCIONES || [];
+        if (options.length === 0) return;
+
+        const numOptions = options.length;
+        const arc = (2 * Math.PI) / numOptions;
+        const cx = canvas.width / 2;
+        const cy = canvas.height / 2;
+        const radius = canvas.width / 2;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        options.forEach((opt, idx) => {
+            const angle = idx * arc;
+            
+            // Sector background
+            ctx.beginPath();
+            ctx.fillStyle = opt.color_bg || '#B45309';
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, radius, angle, angle + arc);
+            ctx.lineTo(cx, cy);
+            ctx.fill();
+
+            // Sector border line
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = '#F59E0B';
+            ctx.stroke();
+
+            // Texto en el sector
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.rotate(angle + arc / 2);
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 13px Poppins, sans-serif';
+            
+            // Acortar texto si es muy largo
+            let label = opt.titulo || ('Opción ' + opt.posicion);
+            if (label.length > 22) label = label.substring(0, 20) + '..';
+
+            ctx.fillText(label, radius - 20, 5);
+            ctx.restore();
+        });
+    }
+
+    // Sonidos sintetizados usando Web Audio API
+    function playTickSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(600, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(120, ctx.currentTime + 0.05);
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.05);
+        } catch(e){}
+    }
+
+    function playFanfareSound() {
+        try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((freq, i) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.2, ctx.currentTime + i * 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + i * 0.12 + 0.3);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime + i * 0.12);
+                osc.stop(ctx.currentTime + i * 0.12 + 0.35);
+            });
+        } catch(e){}
+    }
+
+    // Abrir Modal
+    window.openRuletaModal = function() {
+        const modal = document.getElementById('ruleta-modal');
+        const card = document.getElementById('ruleta-modal-card');
+        if (!modal || !card) return;
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.style.opacity = '1';
+            card.style.transform = 'scale(1)';
+        }, 10);
+    };
+
+    // Cerrar Modal
+    window.closeRuletaModal = function() {
+        const modal = document.getElementById('ruleta-modal');
+        const card = document.getElementById('ruleta-modal-card');
+        if (!modal || !card) return;
+
+        modal.style.opacity = '0';
+        card.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    };
+
+    // Lógica del Giro
+    window.spinRuleta = function() {
+        if (isSpinning) return;
+        const options = window.RULETA_OPCIONES || [];
+        if (options.length === 0) return;
+
+        isSpinning = true;
+        const spinBtn = document.getElementById('ruleta-spin-btn');
+        if (spinBtn) { spinBtn.disabled = true; spinBtn.style.opacity = '0.6'; }
+
+        // Seleccionar ganador al azar (índice 0, 1 o 2)
+        const numOptions = options.length;
+        const winIdx = Math.floor(Math.random() * numOptions);
+        winningOption = options[winIdx];
+
+        // La aguja apunta a las 12 (270 grados = -90 grados).
+        // Cada sector mide (360 / numOptions) grados.
+        const sliceDeg = 360 / numOptions;
+        // El centro del sector winIdx está en: winIdx * sliceDeg + (sliceDeg / 2)
+        const sectorCenter = winIdx * sliceDeg + (sliceDeg / 2);
+        // Queremos que dicho punto quede apuntando a 270 deg (o -90 deg)
+        // Ángulo de alineación final dentro de [0, 360)
+        const targetDeg = (270 - sectorCenter + 360) % 360;
+
+        // Vueltas completas extra para la animación (5 vueltas = 1800 grados)
+        const extraRotations = 5 * 360;
+        
+        // Calcular nueva rotación acumulada
+        const currentMod = currentRotation % 360;
+        let delta = targetDeg - currentMod;
+        if (delta < 0) delta += 360;
+        
+        currentRotation += extraRotations + delta;
+
+        const wrapper = document.getElementById('ruleta-wheel-wrapper');
+        if (wrapper) {
+            wrapper.style.transform = 'rotate(' + currentRotation + 'deg)';
+        }
+
+        // Ticks durante el giro
+        let ticksCount = 0;
+        const tickInterval = setInterval(() => {
+            ticksCount++;
+            playTickSound();
+            if (ticksCount >= 18) clearInterval(tickInterval);
+        }, 200);
+
+        // Al finalizar la animación (4000 ms)
+        setTimeout(function() {
+            isSpinning = false;
+            playFanfareSound();
+
+            // Mostrar el premio ganado en la tarjeta
+            document.getElementById('ruleta-step-spin').classList.add('hidden');
+            document.getElementById('ruleta-step-result').classList.remove('hidden');
+
+            document.getElementById('ruleta-result-titulo').innerText = winningOption.titulo;
+            document.getElementById('ruleta-result-codigo').innerText = winningOption.codigo_cupon || ('RULETA' + winningOption.posicion);
+            document.getElementById('ruleta-result-tiempo').innerText = winningOption.tiempo_minutos + ' minutos';
+            document.getElementById('ruleta-input-posicion').value = winningOption.posicion;
+
+            // Marcar que el usuario ya giró la ruleta
+            localStorage.setItem('sm_ruleta_played', 'true');
+
+        }, 4100);
+    };
+
+    // Reclamar Premio vía AJAX
+    window.reclamarRuletaPremio = function(e) {
+        e.preventDefault();
+        const form = document.getElementById('form-reclamar-ruleta');
+        const claimBtn = document.getElementById('ruleta-claim-btn');
+        if (claimBtn) { claimBtn.disabled = true; claimBtn.innerText = 'Procesando...'; }
+
+        const formData = new FormData(form);
+
+        fetch('{{ route("ruleta.reclamar") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Actualizar banner sticky
+                document.getElementById('ruleta-banner-titulo').innerText = data.titulo;
+                document.getElementById('ruleta-sticky-banner').classList.remove('hidden');
+                
+                // Iniciar temporizador con el tiempo recibido
+                startCountdownTimer(data.expira_en);
+
+                closeRuletaModal();
+
+                // Redirigir al carrito
+                window.location.href = data.redirect_url;
+            } else {
+                alert(data.message || 'Error al reclamar el premio.');
+                if (claimBtn) { claimBtn.disabled = false; claimBtn.innerText = '🎁 Reclamar y Aplicar al Carrito'; }
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            if (claimBtn) { claimBtn.disabled = false; claimBtn.innerText = '🎁 Reclamar y Aplicar al Carrito'; }
+        });
+    };
+
+    // Temporizador de cuenta regresiva
+    let timerInterval = null;
+
+    function initRuletaTimer() {
+        const cupon = window.RULETA_CUPON_SESION;
+        if (cupon && cupon.expira_en) {
+            startCountdownTimer(cupon.expira_en);
+        }
+    }
+
+    function startCountdownTimer(expireTimestamp) {
+        if (timerInterval) clearInterval(timerInterval);
+
+        function updateTimer() {
+            const now = Math.floor(Date.now() / 1000);
+            const diff = expireTimestamp - now;
+
+            const timerEl = document.getElementById('ruleta-banner-timer');
+
+            if (diff <= 0) {
+                if (timerEl) timerEl.innerText = 'Expirado';
+                clearInterval(timerInterval);
+                return;
+            }
+
+            const minutes = Math.floor(diff / 60);
+            const seconds = diff % 60;
+
+            const formatted = (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            if (timerEl) timerEl.innerText = formatted;
+        }
+
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
+    }
 })();
 </script>
 

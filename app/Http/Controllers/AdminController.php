@@ -6,6 +6,7 @@ use App\Models\Producto;
 use App\Models\Pedido;
 use App\Models\Cupon;
 use App\Models\User;
+use App\Models\RuletaOpcion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -255,5 +256,77 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.pedidos.detalle', $pedido->id)->with('success', 'Estado del pedido actualizado correctamente.');
+    }
+
+    // --- GESTIÓN DE RULETA DE PREMIOS ---
+
+    public function ruletaIndex()
+    {
+        $opciones = RuletaOpcion::orderBy('posicion', 'asc')->get();
+        
+        // Si no existen 3 opciones, asegurar que existan posiciones 1, 2 y 3
+        for ($i = 1; $i <= 3; $i++) {
+            if (!$opciones->contains('posicion', $i)) {
+                RuletaOpcion::create([
+                    'posicion' => $i,
+                    'titulo' => 'Premio Opción ' . $i,
+                    'codigo_cupon' => 'PREMIO' . $i,
+                    'tipo_descuento' => 'porcentaje',
+                    'descuento_valor' => 10,
+                    'tiempo_minutos' => 15,
+                    'color_bg' => $i == 1 ? '#B45309' : ($i == 2 ? '#15803D' : '#1E3A8A'),
+                    'activo' => true,
+                ]);
+            }
+        }
+
+        $opciones = RuletaOpcion::orderBy('posicion', 'asc')->get();
+        return view('Admin.ruleta.index', compact('opciones'));
+    }
+
+    public function ruletaActualizar(Request $request)
+    {
+        $request->validate([
+            'opciones' => 'required|array',
+            'opciones.*.titulo' => 'required|string|max:255',
+            'opciones.*.codigo_cupon' => 'nullable|string|max:50',
+            'opciones.*.tipo_descuento' => 'required|in:porcentaje,fijo,envio_gratis',
+            'opciones.*.descuento_valor' => 'required|numeric|min:0',
+            'opciones.*.tiempo_minutos' => 'required|integer|min:1|max:1440',
+            'opciones.*.color_bg' => 'required|string|max:20',
+        ]);
+
+        foreach ($request->opciones as $posicion => $datos) {
+            $opcion = RuletaOpcion::where('posicion', $posicion)->first();
+            if ($opcion) {
+                $opcion->update([
+                    'titulo' => $datos['titulo'],
+                    'codigo_cupon' => strtoupper($datos['codigo_cupon'] ?? ''),
+                    'tipo_descuento' => $datos['tipo_descuento'],
+                    'descuento_valor' => $datos['descuento_valor'],
+                    'tiempo_minutos' => $datos['tiempo_minutos'],
+                    'color_bg' => $datos['color_bg'],
+                    'activo' => isset($datos['activo']) ? true : false,
+                ]);
+
+                // También asegurar o actualizar el cupón correspondiente en la tabla cupones si tiene código
+                if (!empty($datos['codigo_cupon'])) {
+                    $codigo = strtoupper($datos['codigo_cupon']);
+                    $tipoCupon = $datos['tipo_descuento'] == 'envio_gratis' ? 'fijo' : $datos['tipo_descuento'];
+                    $valorCupon = $datos['tipo_descuento'] == 'envio_gratis' ? 0 : $datos['descuento_valor'];
+
+                    Cupon::updateOrCreate(
+                        ['codigo' => $codigo],
+                        [
+                            'tipo' => $tipoCupon,
+                            'valor' => $valorCupon,
+                            'activo' => true,
+                        ]
+                    );
+                }
+            }
+        }
+
+        return redirect()->route('admin.ruleta')->with('success', 'Las 3 opciones de la Ruleta de Premios han sido actualizadas con éxito.');
     }
 }

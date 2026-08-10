@@ -3,7 +3,142 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+/* Brand Fonts from sector.pdf */
+@font-face {
+    font-family: 'NT Fabulous';
+    src: url('/fonts/NTFabulous.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
 }
+
+@font-face {
+    font-family: 'NT Fabulous Alternative';
+    src: url('/fonts/NTFabulousalternative.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/fonts/Poppins-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/fonts/Poppins-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Poppins';
+    src: url('/fonts/Poppins-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Eras ITC';
+    src: url('/fonts/ErasITC-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Eras ITC';
+    src: url('/fonts/ErasITC-Demi.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Eras ITC';
+    src: url('/fonts/ErasITC-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Metropolis';
+    src: url('/fonts/Metropolis-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@theme {
+    --font-sans: 'Poppins', 'Eras ITC', 'Metropolis', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'NT Fabulous', sans-serif;
+    --font-subtitle: 'NT Fabulous Alternative', sans-serif;
+
+    /* Official Brand Color Palette from sector.pdf */
+    --color-brand-cream: #FAF3E0;
+    --color-brand-sand: #FFF0E0;
+    --color-brand-taupe: #88674B;
+    --color-brand-espresso: #2B241A;
+    --color-brand-deep: #1F0F0B;
+    --color-brand-black: #0B0A0A;
+
+    /* Overrides for Amber and Dark theme tokens to unify entire app palette */
+    --color-amber-500: #9E7B5C;
+    --color-amber-600: #7A5B40;
+    --color-amber-700: #74563C;
+    --color-amber-800: #88674B;
+    --color-amber-850: #5C4331;
+    --color-amber-900: #2B241A;
+
+    --color-zinc-900: #1F0F0B;
+    --color-zinc-950: #0B0A0A;
+}
+
+/* Global Typography & Palette Helpers */
+:root {
+    --bg-brand-cream: #FAF3E0;
+    --color-brand-taupe: #88674B;
+    --color-brand-espresso: #2B241A;
+    --color-brand-deep: #1F0F0B;
+    --color-brand-black: #0B0A0A;
+}
+
+body {
+    font-family: 'Poppins', 'Eras ITC', 'Metropolis', sans-serif;
+    background-color: #FAF3E0;
+    color: #0B0A0A;
+}
+
+h1, h2, h3, h4, h5, h6, .serif-title, .font-heading {
+    font-family: 'NT Fabulous', 'Poppins', sans-serif;
+}
+
+.font-subtitle, .subtitle-brand {
+    font-family: 'NT Fabulous Alternative', 'Poppins', sans-serif;
+}
+
+/* Color Utility Helpers */
+.bg-brand-cream { background-color: #FAF3E0; }
+.bg-brand-sand { background-color: #FFF0E0; }
+.bg-brand-taupe { background-color: #88674B; }
+.bg-brand-espresso { background-color: #2B241A; }
+.bg-brand-deep { background-color: #1F0F0B; }
+.bg-brand-black { background-color: #0B0A0A; }
+
+.text-brand-taupe { color: #88674B; }
+.text-brand-espresso { color: #2B241A; }
+.text-brand-deep { color: #1F0F0B; }
+.text-brand-black { color: #0B0A0A; }
+.text-brand-cream { color: #FAF3E0; }
+
+.border-brand-taupe { border-color: #88674B; }
+.border-brand-espresso { border-color: #2B241A; }
+
+

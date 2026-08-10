@@ -1,25 +1,20 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-zinc-50">
+<html lang="es" class="h-full bg-[#FAF3E0]">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Panel de Administración | Sector Mueble</title>
     
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-
     <!-- Styles and Scripts via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
         body {
-            font-family: 'Plus Jakarta Sans', var(--font-sans), sans-serif;
+            font-family: 'Poppins', 'Eras ITC', 'Metropolis', sans-serif;
         }
-        .serif-title {
-            font-family: 'Playfair Display', serif;
+        .serif-title, h1, h2, h3, .font-heading {
+            font-family: 'NT Fabulous', 'Poppins', sans-serif;
         }
     </style>
 </head>
@@ -29,9 +24,11 @@
     <aside class="w-64 bg-zinc-900 text-white flex flex-col justify-between flex-shrink-0 border-r border-zinc-800 hidden md:flex">
         <div>
             <!-- Header Logo -->
-            <div class="h-20 flex items-center px-6 border-b border-zinc-800 bg-zinc-950">
-                <a href="{{ route('admin.dashboard') }}" class="serif-title text-xl font-bold tracking-wider text-white">
-                    SECTOR<span class="text-amber-500">CONTROL</span>
+            <div class="h-24 flex items-center px-6 border-b border-zinc-800 bg-zinc-950">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3">
+                    <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-10 w-auto object-contain brightness-0 invert">
+                    <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-12 w-auto object-contain brightness-0 invert">
+                    <span class="serif-title text-base font-bold tracking-wider text-white">SECTOR<span class="text-amber-500">CONTROL</span></span>
                 </a>
             </div>
 
@@ -56,6 +53,14 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
                     </svg>
                     Cupones Descuento
+                </a>
+
+                <a href="{{ route('admin.ruleta') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded transition-colors {{ Route::is('admin.ruleta') || Route::is('admin.ruleta.*') ? 'bg-amber-800 text-white' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                    </svg>
+                    Ruleta de Premios
                 </a>
 
                 <a href="{{ route('admin.pedidos') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded transition-colors {{ Route::is('admin.pedidos') || Route::is('admin.pedidos.*') ? 'bg-amber-800 text-white' : 'text-zinc-400 hover:bg-zinc-800 hover:text-white' }}">
@@ -93,8 +98,14 @@
     <!-- Main Content Area -->
     <div class="flex-grow flex flex-col min-w-0 overflow-y-auto">
         <!-- Top navbar in main content -->
-        <header class="h-20 bg-white border-b border-zinc-200 flex items-center justify-between px-6 sm:px-8">
-            <h2 class="text-sm font-bold uppercase tracking-widest text-zinc-500">Panel de Administración</h2>
+        <header class="h-24 bg-white border-b border-zinc-200 flex items-center justify-between px-6 sm:px-8">
+            <div class="flex items-center space-x-3">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 md:hidden">
+                    <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-9 w-auto object-contain">
+                    <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-11 w-auto object-contain">
+                </a>
+                <h2 class="text-sm font-bold uppercase tracking-widest text-zinc-500">Panel de Administración</h2>
+            </div>
             <div class="flex items-center space-x-4">
                 <a href="{{ route('inicio') }}" target="_blank" class="text-xs bg-zinc-100 hover:bg-zinc-200 text-zinc-700 px-3 py-2 rounded font-semibold transition-all">
                     Ver Sitio Web

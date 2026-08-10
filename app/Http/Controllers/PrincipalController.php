@@ -7,6 +7,7 @@ use App\Models\Pedido;
 use App\Models\DetallePedido;
 use App\Models\User;
 use App\Models\Cupon;
+use App\Models\RuletaOpcion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -510,5 +511,59 @@ class PrincipalController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('inicio')->with('success', 'Has cerrado sesión con éxito.');
+    }
+
+    /**
+     * Procesa y aplica el premio obtenido en la Ruleta.
+     */
+    public function reclamarPremioRuleta(Request $request)
+    {
+        $request->validate([
+            'posicion' => 'required|integer|between:1,3',
+        ]);
+
+        $opcion = RuletaOpcion::where('posicion', $request->posicion)->first();
+
+        if (!$opcion || !$opcion->activo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'La opción de la ruleta no se encuentra disponible.',
+            ], 404);
+        }
+
+        $codigo = $opcion->codigo_cupon ?: ('RULETA' . $opcion->posicion);
+        $tipoCupon = $opcion->tipo_descuento == 'envio_gratis' ? 'fijo' : $opcion->tipo_descuento;
+        $valorCupon = $opcion->tipo_descuento == 'envio_gratis' ? 0 : $opcion->descuento_valor;
+
+        // Asegurar cupón en base de datos
+        Cupon::updateOrCreate(
+            ['codigo' => $codigo],
+            [
+                'tipo' => $tipoCupon,
+                'valor' => $valorCupon,
+                'activo' => true,
+            ]
+        );
+
+        // Guardar cupón en sesión con tiempo de expiración
+        $expiraEn = now()->addMinutes($opcion->tiempo_minutos)->timestamp;
+
+        session()->put('cupon', [
+            'codigo' => $codigo,
+            'tipo' => $tipoCupon,
+            'valor' => $valorCupon,
+            'titulo' => $opcion->titulo,
+            'expira_en' => $expiraEn,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => '¡Premio reclamado con éxito!',
+            'titulo' => $opcion->titulo,
+            'codigo' => $codigo,
+            'expira_en' => $expiraEn,
+            'tiempo_minutos' => $opcion->tiempo_minutos,
+            'redirect_url' => route('carrito'),
+        ]);
     }
 }

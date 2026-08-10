@@ -7,7 +7,10 @@
         <div class="bg-white border border-zinc-200 rounded-lg p-8 shadow-md">
             <!-- Header -->
             <div class="text-center mb-8">
-                <span class="serif-title text-2xl font-bold tracking-wider text-zinc-900">SECTOR<span class="text-amber-800">MUEBLE</span></span>
+                <a href="{{ route('inicio') }}" class="inline-flex items-center space-x-4 mb-2">
+                    <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-14 sm:h-16 w-auto object-contain">
+                    <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-18 sm:h-20 w-auto object-contain">
+                </a>
                 <h2 class="text-lg font-bold text-zinc-950 mt-4 uppercase tracking-wider">Iniciar Sesión</h2>
                 <p class="text-xs text-zinc-500 mt-1">Accede para continuar con tu proceso de compra</p>
             </div>

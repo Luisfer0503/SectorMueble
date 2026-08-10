@@ -42,6 +42,10 @@ Route::get('/cerrar-sesion', [PrincipalController::class, 'logout'])->name('logo
 Route::post('/cerrar-sesion', [PrincipalController::class, 'logout'])->name('logout.post');
 
 
+// Ruta para reclamar beneficio de la ruleta
+Route::post('/ruleta/reclamar', [PrincipalController::class, 'reclamarPremioRuleta'])->name('ruleta.reclamar');
+
+
 // --- RUTAS DE ADMINISTRACIÓN (Protegidas por verificación de rol de administrador) ---
 Route::prefix('admin')->middleware('es_admin')->group(function () {
     // Dashboard general
@@ -64,6 +68,10 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::get('/cupones/editar/{id}', [AdminController::class, 'cuponesEditar'])->name('admin.cupones.editar');
     Route::post('/cupones/actualizar/{id}', [AdminController::class, 'cuponesActualizar'])->name('admin.cupones.actualizar');
     Route::get('/cupones/eliminar/{id}', [AdminController::class, 'cuponesEliminar'])->name('admin.cupones.eliminar');
+
+    // Ruleta de Premios para Nuevos Usuarios
+    Route::get('/ruleta', [AdminController::class, 'ruletaIndex'])->name('admin.ruleta');
+    Route::post('/ruleta/guardar', [AdminController::class, 'ruletaActualizar'])->name('admin.ruleta.actualizar');
 
     // Gestión y Seguimiento de Pedidos
     Route::get('/pedidos', [AdminController::class, 'pedidosIndex'])->name('admin.pedidos');
