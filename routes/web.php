@@ -73,6 +73,13 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::get('/ruleta', [AdminController::class, 'ruletaIndex'])->name('admin.ruleta');
     Route::post('/ruleta/guardar', [AdminController::class, 'ruletaActualizar'])->name('admin.ruleta.actualizar');
 
+    // Inventario de Zapatos con Escáner IA de Foto
+    Route::get('/zapatos', [AdminController::class, 'zapatosIndex'])->name('admin.zapatos');
+    Route::post('/zapatos/analizar-foto', [AdminController::class, 'zapatosAnalizarFoto'])->name('admin.zapatos.analizar');
+    Route::post('/zapatos/guardar', [AdminController::class, 'zapatosGuardar'])->name('admin.zapatos.guardar');
+    Route::post('/zapatos/actualizar/{id}', [AdminController::class, 'zapatosActualizar'])->name('admin.zapatos.actualizar');
+    Route::get('/zapatos/eliminar/{id}', [AdminController::class, 'zapatosEliminar'])->name('admin.zapatos.eliminar');
+
     // Gestión y Seguimiento de Pedidos
     Route::get('/pedidos', [AdminController::class, 'pedidosIndex'])->name('admin.pedidos');
     Route::get('/pedidos/detalle/{id}', [AdminController::class, 'pedidosDetalle'])->name('admin.pedidos.detalle');
