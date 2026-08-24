@@ -518,40 +518,62 @@ class AdminController extends Controller
                     $cleanJson = preg_replace('/```(?:json)?\s*|\s*```/', '', trim($jsonText));
                     $decoded = json_decode($cleanJson, true);
 
-                    if (is_array($decoded) && isset($decoded['estilo'])) {
-                        // Formatear número con decimal ej. 21.0
-                        $numStr = trim((string)($decoded['numero'] ?? '21.0'));
-                        if (is_numeric($numStr) && strpos($numStr, '.') === false) {
+                    if (is_array($decoded)) {
+                        $numStr = trim((string)($decoded['numero'] ?? ''));
+                        if (!empty($numStr) && is_numeric($numStr) && strpos($numStr, '.') === false) {
                             $numStr = number_format((float)$numStr, 1, '.', '');
                         }
 
                         return [
-                            'estilo'   => trim((string)($decoded['estilo'] ?? '1124')),
+                            'estilo'   => trim((string)($decoded['estilo'] ?? '')),
                             'numero'   => $numStr,
-                            'color'    => trim((string)($decoded['color'] ?? 'Negro')),
-                            'material' => trim((string)($decoded['material'] ?? 'Charol')),
+                            'color'    => trim((string)($decoded['color'] ?? '')),
+                            'material' => trim((string)($decoded['material'] ?? '')),
                             'fuente'   => 'Gemini Vision AI'
                         ];
                     }
                 }
             } catch (\Throwable $e) {
-                // Fallback en caso de error HTTP
+                // Error al conectar con Gemini
             }
         }
 
-        // Detector por defecto para etiquetas de zapatos (si aún no hay clave API configurada)
-        $estilosPosibles = ['1124', 'M-631', '3502', 'M-405', '1080', 'M-720'];
-        $materialesPosibles = ['Charol', 'Sintético', 'Piel', 'Gamuza', 'Textil'];
-        $coloresPosibles = ['Negro', 'Blanco', 'Café', 'Azul Marino', 'Rosa'];
-        $numerosPosibles = ['21.0', '21.5', '22.0', '22.5', '23.0', '24.0', '25.0'];
-
+        // Sin datos ficiticios: Si no hay clave API o no se leyeron datos, se entregan campos limpios para ingreso o lectura OCR
         return [
-            'estilo'   => $estilosPosibles[array_rand($estilosPosibles)],
-            'numero'   => $numerosPosibles[array_rand($numerosPosibles)],
-            'color'    => $coloresPosibles[array_rand($coloresPosibles)],
-            'material' => $materialesPosibles[array_rand($materialesPosibles)],
-            'fuente'   => 'Detector de Etiquetas de Calzado'
+            'estilo'   => '',
+            'numero'   => '',
+            'color'    => '',
+            'material' => '',
+            'fuente'   => 'Escáner de Calzado'
         ];
+    }
+
+    /**
+     * Guarda la clave API de Gemini en el archivo .env desde el Panel de Administración.
+     */
+    public function zapatosGuardarApiKey(Request $request)
+    {
+        $request->validate([
+            'gemini_api_key' => 'required|string',
+        ]);
+
+        $key = trim($request->gemini_api_key);
+        $envPath = base_path('.env');
+
+        if (file_exists($envPath)) {
+            $envContent = file_get_contents($envPath);
+            if (strpos($envContent, 'GEMINI_API_KEY=') !== false) {
+                $envContent = preg_replace('/GEMINI_API_KEY=.*/', 'GEMINI_API_KEY=' . $key, $envContent);
+            } else {
+                $envContent .= "\nGEMINI_API_KEY=" . $key;
+            }
+            file_put_contents($envPath, $envContent);
+        }
+
+        return response()->json([
+            'success' => true,
+            'mensaje' => '¡Clave API de Inteligencia Artificial guardada con éxito!'
+        ]);
     }
 
     /**

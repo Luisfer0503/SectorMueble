@@ -24,6 +24,13 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
+            <button onclick="abrirModalApiKey()" class="inline-flex items-center justify-center px-3.5 py-3 bg-zinc-800 hover:bg-zinc-900 text-amber-400 font-semibold text-xs md:text-sm rounded-lg shadow-sm transition-all space-x-2 border border-zinc-700" title="Configurar Clave API de Inteligencia Artificial">
+                <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                </svg>
+                <span>Clave API IA</span>
+            </button>
+
             <button onclick="abrirCapturaManual()" class="inline-flex items-center justify-center px-4 py-3 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 font-semibold text-xs md:text-sm rounded-lg border border-zinc-300 shadow-sm transition-all space-x-2">
                 <svg class="w-5 h-5 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -438,6 +445,47 @@
                     <button type="submit" class="px-5 py-2 bg-amber-850 hover:bg-amber-900 text-white text-xs font-bold rounded-lg shadow">Guardar Cambios</button>
                 </div>
             </form>
+    <!-- Modal Configuración Clave API Gemini -->
+    <div id="modalApiKey" class="fixed inset-0 z-50 bg-zinc-950/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl p-6 border border-zinc-200">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-zinc-100">
+                <div class="flex items-center space-x-3">
+                    <span class="p-2 bg-amber-100 text-amber-900 rounded-lg">
+                        <svg class="w-5 h-5 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <h3 class="serif-title text-lg font-bold text-zinc-950">Clave API de Inteligencia Artificial</h3>
+                        <p class="text-xs text-zinc-500">Google Gemini 1.5 Flash Vision (100% Gratuita)</p>
+                    </div>
+                </div>
+                <button type="button" onclick="cerrarModalApiKey()" class="text-zinc-400 hover:text-zinc-600">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="formApiKey" onsubmit="guardarApiKeyGemini(event)">
+                <div class="space-y-3 mb-6">
+                    <p class="text-xs text-zinc-600 leading-relaxed">
+                        Ingresa tu clave API gratuita de Google Gemini para que el escáner analice las fotografías de tus etiquetas con máxima precisión visual.
+                    </p>
+                    <div>
+                        <label class="block text-xs font-bold text-zinc-700 uppercase mb-1">Clave GEMINI_API_KEY</label>
+                        <input type="text" id="inputApiKey" name="gemini_api_key" placeholder="AIzaSy..." required class="w-full px-3 py-2 text-xs font-mono border border-zinc-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+                    <div class="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+                        💡 Puedes obtener tu clave gratuita en segundos en: <a href="https://aistudio.google.com/app/apikey" target="_blank" class="underline font-bold text-amber-900">aistudio.google.com</a>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="cerrarModalApiKey()" class="px-4 py-2 text-xs font-semibold text-zinc-600 bg-zinc-100 hover:bg-zinc-200 rounded-lg">Cancelar</button>
+                    <button type="submit" id="btnGuardarKey" class="px-5 py-2 bg-amber-850 hover:bg-amber-900 text-white text-xs font-bold rounded-lg shadow">Guardar Clave API</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -729,6 +777,52 @@
 
         function cerrarModalEditar() {
             document.getElementById('modalEditar').classList.add('hidden');
+        }
+
+        // Modal de Clave API Gemini
+        function abrirModalApiKey() {
+            document.getElementById('modalApiKey').classList.remove('hidden');
+        }
+
+        function cerrarModalApiKey() {
+            document.getElementById('modalApiKey').classList.add('hidden');
+        }
+
+        function guardarApiKeyGemini(e) {
+            e.preventDefault();
+            const key = document.getElementById('inputApiKey').value;
+            const btn = document.getElementById('btnGuardarKey');
+            btn.disabled = true;
+            btn.innerText = 'Guardando...';
+
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch("{{ route('admin.zapatos.apikey') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ gemini_api_key: key })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerText = 'Guardar Clave API';
+                if (data.success) {
+                    alert('¡Clave de Inteligencia Artificial guardada con éxito! Ahora tus fotografías se analizarán con 100% de precisión visual.');
+                    cerrarModalApiKey();
+                } else {
+                    alert('Error al guardar la clave API.');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerText = 'Guardar Clave API';
+                console.error(err);
+                alert('Error al comunicar con el servidor.');
+            });
         }
     </script>
 @endsection
