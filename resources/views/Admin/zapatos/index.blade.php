@@ -297,8 +297,8 @@
 
                     <div class="sm:col-span-2 space-y-3">
                         <div>
-                            <label class="block text-[11px] font-bold text-zinc-600 uppercase">Estilo</label>
-                            <input type="text" id="confEstilo" name="estilo" required placeholder="ej. Deportivo, Mocasín, Bota..." class="w-full mt-1 px-3 py-1.5 text-xs font-semibold bg-white border border-zinc-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                            <label class="block text-[11px] font-bold text-zinc-600 uppercase">Estilo (ej. Estilo: 4501)</label>
+                            <input type="text" id="confEstilo" name="estilo" required placeholder="ej. Estilo: 4501, Deportivo..." class="w-full mt-1 px-3 py-1.5 text-xs font-semibold bg-white border border-zinc-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
                         </div>
 
                         <div>
