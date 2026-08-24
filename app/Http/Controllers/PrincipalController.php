@@ -451,15 +451,33 @@ class PrincipalController extends Controller
             'password' => 'required',
         ]);
 
+        // Preservar estado del carrito y cupón antes de regenerar la sesión
+        $carritoPrevio = session()->get('carrito', []);
+        $cuponPrevio = session()->get('cupon');
+
         if (auth()->attempt($credenciales, $request->filled('remember'))) {
             $request->session()->regenerate();
-            
+
+            // Sincronizar estado de ruleta jugada
+            if (auth()->user()->ruleta_jugada) {
+                session()->put('ruleta_jugada', true);
+            }
+
+            // Restaurar carrito y cupón en la sesión autenticada
+            if (!empty($carritoPrevio)) {
+                session()->put('carrito', $carritoPrevio);
+            }
+            if (!empty($cuponPrevio)) {
+                session()->put('cupon', $cuponPrevio);
+            }
+
             // Si es administrador, mandarlo al dashboard por defecto
             if (auth()->user()->is_admin) {
                 return redirect()->route('admin.dashboard')->with('success', 'Bienvenido al Panel de Administración.');
             }
 
-            return redirect()->intended(route('checkout'))->with('success', '¡Has iniciado sesión con éxito!');
+            $targetUrl = !empty($carritoPrevio) ? route('carrito') : route('inicio');
+            return redirect()->intended($targetUrl)->with('success', '¡Has iniciado sesión con éxito! Tus productos siguen en tu carrito.');
         }
 
         return back()->withErrors([
@@ -473,7 +491,7 @@ class PrincipalController extends Controller
     public function mostrarRegistro()
     {
         if (auth()->check()) {
-            return redirect()->route('checkout');
+            return redirect()->route('carrito');
         }
         return view('Principal.registro');
     }
@@ -489,6 +507,10 @@ class PrincipalController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+        // Preservar estado del carrito y cupón antes de registrar y regenerar sesión
+        $carritoPrevio = session()->get('carrito', []);
+        $cuponPrevio = session()->get('cupon');
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -496,8 +518,27 @@ class PrincipalController extends Controller
         ]);
 
         auth()->login($user);
+        $request->session()->regenerate();
 
-        return redirect()->route('checkout')->with('success', '¡Tu cuenta ha sido creada e iniciaste sesión con éxito!');
+        // Preservar estado de ruleta jugada y cupón en el usuario registrado
+        if (!empty($cuponPrevio) || session('ruleta_jugada')) {
+            $user->update([
+                'ruleta_jugada' => true,
+                'ruleta_premio' => $cuponPrevio['codigo'] ?? 'COMPLETADO',
+            ]);
+            session()->put('ruleta_jugada', true);
+        }
+
+        // Restaurar carrito y cupón en la nueva sesión del usuario registrado
+        if (!empty($carritoPrevio)) {
+            session()->put('carrito', $carritoPrevio);
+        }
+        if (!empty($cuponPrevio)) {
+            session()->put('cupon', $cuponPrevio);
+        }
+
+        $targetUrl = !empty($carritoPrevio) ? route('carrito') : route('inicio');
+        return redirect()->intended($targetUrl)->with('success', '¡Tu cuenta ha sido creada e iniciaste sesión con éxito! Tus productos están guardados en tu carrito.');
     }
 
     /**
@@ -521,6 +562,14 @@ class PrincipalController extends Controller
         $request->validate([
             'posicion' => 'required|integer|between:1,3',
         ]);
+
+        // Verificar si el usuario o sesión ya giró la ruleta previamente
+        if ((auth()->check() && auth()->user()->ruleta_jugada) || session('ruleta_jugada')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ya has utilizado la ruleta de premios. Límite de 1 premio por usuario/correo.',
+            ], 422);
+        }
 
         $opcion = RuletaOpcion::where('posicion', $request->posicion)->first();
 
@@ -555,6 +604,17 @@ class PrincipalController extends Controller
             'titulo' => $opcion->titulo,
             'expira_en' => $expiraEn,
         ]);
+
+        // Marcar ruleta como jugada en la sesión
+        session()->put('ruleta_jugada', true);
+
+        // Si el usuario está autenticado, registrar el tiro y premio en la base de datos
+        if (auth()->check()) {
+            auth()->user()->update([
+                'ruleta_jugada' => true,
+                'ruleta_premio' => $codigo,
+            ]);
+        }
 
         return response()->json([
             'success' => true,

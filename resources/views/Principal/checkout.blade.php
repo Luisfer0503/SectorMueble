@@ -78,9 +78,20 @@
 
                     <!-- Paso 3: Datos de Pago (Simulación) -->
                     <div class="bg-white border border-zinc-200 rounded p-6 shadow-sm">
-                        <div class="flex items-center space-x-3 mb-6">
+                        <div class="flex items-center space-x-3 mb-4">
                             <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
                             <h2 class="text-base font-bold text-zinc-950 uppercase tracking-wider">Método de Pago</h2>
+                        </div>
+
+                        <!-- Banner Informativo de Pago Simulado / Muestra -->
+                        <div class="mb-6 p-3.5 bg-amber-50 border-l-4 border-amber-600 rounded-r-xl text-xs text-amber-950 flex items-start space-x-2.5">
+                            <svg class="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                            </svg>
+                            <div>
+                                <strong class="block font-bold">Simulación de Pago sin Valor Comercial:</strong>
+                                <span>Este sitio es un proyecto de muestra. No introduzcas datos bancarios o de tarjetas reales. Los precios y el proceso de compra son ficticios.</span>
+                            </div>
                         </div>
 
                         <!-- Tarjeta de Crédito Simulada Visualmente -->
@@ -196,7 +207,7 @@
                         </div>
 
                         <button type="submit" class="w-full bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider py-4 rounded transition-colors shadow">
-                            Confirmar Pedido y Pagar
+                            Confirmar Pedido Simulado
                         </button>
                         
                         <a href="{{ route('carrito') }}" class="w-full block text-center border border-zinc-200 hover:bg-zinc-50 text-zinc-700 text-xs font-bold uppercase tracking-wider py-3 mt-3 rounded transition-colors">

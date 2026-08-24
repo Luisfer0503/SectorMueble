@@ -22,12 +22,60 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
             
-            <!-- Left Column: Image -->
-            <div class="relative bg-zinc-100 rounded overflow-hidden aspect-square shadow-sm max-h-[550px]">
-                <img src="{{ $producto->imagen_url }}" alt="{{ $producto->nombre }}" class="w-full h-full object-cover">
-                @if($producto->destacado)
-                    <span class="absolute top-4 left-4 bg-amber-800 text-white text-[10px] font-bold px-3 py-1 uppercase rounded tracking-wider shadow">Destacado</span>
-                @endif
+            <!-- Left Column: Full Image & Configured Color Options Below -->
+            <div class="flex flex-col space-y-4">
+                <!-- Main Image Box (Full view without cropping) -->
+                <div class="relative bg-zinc-50/90 border border-zinc-200 rounded-2xl overflow-hidden aspect-square shadow-sm max-h-[520px] flex items-center justify-center p-4 group">
+                    <img id="main-product-image" 
+                         src="{{ $producto->imagen_url }}" 
+                         alt="{{ $producto->nombre }}" 
+                         data-original-src="{{ $producto->imagen_url }}"
+                         class="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out">
+                    
+                    <!-- Dynamic Color Tint Overlay -->
+                    <div id="color-overlay" 
+                         class="absolute inset-0 pointer-events-none transition-opacity duration-500 ease-in-out opacity-0 mix-blend-color rounded-2xl">
+                    </div>
+
+                    @if($producto->destacado)
+                        <span class="absolute top-4 left-4 bg-amber-800 text-white text-[10px] font-bold px-3 py-1 uppercase rounded tracking-wider shadow z-10">Destacado</span>
+                    @endif
+                </div>
+
+                <!-- Color Options Selector Configured by Admin -->
+                @php
+                    $colores = $producto->colores_lista;
+                    $primerColor = $colores[0]['nombre'] ?? 'Original / Natural';
+                @endphp
+                <div class="bg-white border border-zinc-200 rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-4 h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
+                            </svg>
+                            <span class="text-xs font-bold uppercase tracking-wider text-zinc-700">Colores y Acabados</span>
+                        </div>
+                        <span id="selected-color-label" class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/60 px-2.5 py-0.5 rounded-full">
+                            {{ $primerColor }}
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                        @foreach($colores as $idx => $c)
+                            <button type="button" 
+                                    id="swatch-btn-{{ $c['key'] }}"
+                                    data-nombre="{{ $c['nombre'] }}"
+                                    data-imagen="{{ $c['imagen'] ?? '' }}"
+                                    data-hex="{{ $c['hex'] }}"
+                                    data-filter="{{ $c['filter'] ?? '' }}"
+                                    onclick="switchProductColor('{{ $c['key'] }}')" 
+                                    class="color-swatch-btn flex flex-col items-center p-3 rounded-xl border-2 {{ $idx === 0 ? 'border-amber-800 bg-amber-50/80 ring-2 ring-amber-800/30' : 'border-zinc-200 bg-white' }} transition-all cursor-pointer hover:shadow-md group">
+                                <span class="w-8 h-8 sm:w-9 sm:h-9 rounded-full shadow border-2 border-white group-hover:scale-110 transition-transform" style="background-color: {{ $c['hex'] }};"></span>
+                                <span class="text-xs font-bold text-zinc-900 mt-2 truncate max-w-full text-center">{{ $c['nombre'] }}</span>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
             </div>
 
             <!-- Right Column: Details Info -->
@@ -64,6 +112,12 @@
                             <span class="text-2xl font-bold text-zinc-950 font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }} MXN</span>
                         @endif
                         <p class="text-xs text-zinc-400 mt-1">IVA incluido. Envío estimado en 3-5 días laborables.</p>
+                        <div class="mt-2.5 inline-flex items-center space-x-1.5 text-xs text-amber-900 bg-amber-50 border border-amber-200/80 px-3 py-1 rounded-lg">
+                            <svg class="w-3.5 h-3.5 text-amber-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span><strong>Precio de muestra:</strong> Sitio con fines exclusivamente de demostración.</span>
+                        </div>
                     </div>
 
                     <!-- Description -->
@@ -104,6 +158,7 @@
                             data-img="{{ $producto->imagen_url }}"
                             onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
                             @csrf
+                            <input type="hidden" name="color" id="input-color-seleccionado" value="Original / Natural">
                             <!-- Quantity -->
                             <div class="flex items-center border border-zinc-300 rounded overflow-hidden w-fit h-12 bg-white">
                                 <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value > 1) qty.value = parseInt(qty.value)-1;" class="px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors">-</button>
@@ -203,4 +258,66 @@
             </div>
         @endif
     </div>
+
+    <script>
+        function switchProductColor(key) {
+            const btn = document.getElementById('swatch-btn-' + key);
+            if (!btn) return;
+
+            const colorNombre = btn.dataset.nombre;
+            const colorImagen = btn.dataset.imagen;
+            const colorHex = btn.dataset.hex;
+            const colorFilter = btn.dataset.filter;
+
+            const mainImg = document.getElementById('main-product-image');
+            const colorOverlay = document.getElementById('color-overlay');
+            const selectedLabel = document.getElementById('selected-color-label');
+            const hiddenColorInput = document.getElementById('input-color-seleccionado');
+
+            if (mainImg) {
+                if (colorImagen && colorImagen.trim() !== '') {
+                    // Si el admin configuró una foto específica para este color (el fondo permanece intacto):
+                    mainImg.style.opacity = '0';
+                    setTimeout(() => {
+                        mainImg.src = colorImagen;
+                        mainImg.style.filter = 'none';
+                        mainImg.style.opacity = '1';
+                    }, 150);
+                    if (colorOverlay) colorOverlay.style.opacity = '0';
+                } else {
+                    // Si no tiene foto separada, restaura la foto original
+                    if (mainImg.dataset.originalSrc) {
+                        mainImg.src = mainImg.dataset.originalSrc;
+                    }
+                    if (colorFilter && colorFilter !== 'none') {
+                        mainImg.style.filter = colorFilter;
+                        if (colorOverlay) colorOverlay.style.opacity = '0';
+                    } else {
+                        mainImg.style.filter = 'none';
+                        if (colorOverlay && colorHex) {
+                            colorOverlay.style.backgroundColor = colorHex;
+                            colorOverlay.style.opacity = '0.35';
+                        }
+                    }
+                }
+            }
+
+            if (selectedLabel) {
+                selectedLabel.textContent = colorNombre;
+            }
+
+            if (hiddenColorInput) {
+                hiddenColorInput.value = colorNombre;
+            }
+
+            // Actualizar apariencia visual de botones de color
+            document.querySelectorAll('.color-swatch-btn').forEach(b => {
+                b.classList.remove('border-amber-800', 'bg-amber-50/80', 'ring-2', 'ring-amber-800/30');
+                b.classList.add('border-zinc-200', 'bg-white');
+            });
+
+            btn.classList.remove('border-zinc-200', 'bg-white');
+            btn.classList.add('border-amber-800', 'bg-amber-50/80', 'ring-2', 'ring-amber-800/30');
+        }
+    </script>
 @endsection

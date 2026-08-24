@@ -56,9 +56,25 @@
 </head>
 <body class="flex flex-col min-h-screen text-zinc-800">
 
+<!-- Banner Superior de Leyenda Informativa / Precios de Muestra (Demostración) -->
+<div class="bg-amber-950 text-amber-100 text-xs py-2 px-4 border-b border-amber-800/40 text-center font-medium shadow-sm z-[60] relative">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+        <span class="inline-flex items-center space-x-1 bg-amber-800/80 text-amber-200 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider">
+            <svg class="w-3 h-3 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>Sitio de Demostración</span>
+        </span>
+        <span class="text-amber-100/90 text-[11px] sm:text-xs">
+            Los precios, productos y promociones mostrados en este sitio web son <strong>exclusivamente de muestra</strong> (fines educativos/demo) y no representan ofertas comerciales ni ventas reales.
+        </span>
+    </div>
+</div>
+
 @php
     $ruletaOpcionesData = \App\Models\RuletaOpcion::where('activo', true)->orderBy('posicion', 'asc')->get();
     $cuponSesion = session()->get('cupon');
+    $haJugadoRuleta = (auth()->check() && auth()->user()->ruleta_jugada) || session('ruleta_jugada') || session()->has('cupon');
 @endphp
 
 <!-- Banner Sticky de Premio Activo de Ruleta -->
@@ -83,140 +99,212 @@
     </div>
 </div>
 
-    <!-- Header / Navbar -->
-    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-zinc-200 shadow-sm" onmouseleave="closeSubnav()">
+    <!-- Header / Navbar con 2 Filas -->
+    <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-amber-900/10 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Fila Única: Logos (Izquierda), 3 Categorías (Centro Distribuido), Acciones (Derecha) -->
-            <div class="flex items-center justify-between h-20 sm:h-24 py-2">
+            
+            <!-- FILA 1: Logos (Izquierda), Buscador (Centro), Acciones (Derecha: Carrito, Login, Registro) -->
+            <div class="flex items-center justify-between h-16 sm:h-20 py-2 border-b border-zinc-150">
                 
-                <!-- Logos (Izquierda) -->
+                <!-- Botón Menú Móvil (Sólo en pantallas pequeñas) -->
+                <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl text-zinc-700 hover:text-amber-800 hover:bg-amber-50 focus:outline-none transition-colors" aria-label="Abrir menú">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+
+                <!-- Logos Principales (Izquierda) -->
                 <div class="flex-shrink-0">
-                    <a href="{{ route('inicio') }}" class="flex items-center space-x-2 group">
-                        <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-9 sm:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
-                        <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-11 sm:h-15 w-auto object-contain transition-transform duration-300 group-hover:scale-105">
+                    <a href="{{ route('inicio') }}" class="flex items-center space-x-2.5 group py-1">
+                        <div class="relative flex items-center justify-center p-1 bg-gradient-to-br from-amber-500/10 to-amber-800/10 rounded-xl border border-amber-800/15 shadow-sm group-hover:shadow-md group-hover:border-amber-800/30 transition-all duration-300">
+                            <img src="{{ asset('logo2.png') }}" alt="Sector Mueble Isotipo" class="h-7 sm:h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
+                        </div>
+                        <img src="{{ asset('logo1.png') }}" alt="Sector Mueble Logotipo" class="h-8 sm:h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
                     </a>
                 </div>
 
-                <!-- Pestañas de Navegación Distribuidas en el Centro -->
-                <nav class="hidden md:flex items-center justify-center space-x-12 lg:space-x-16 xl:space-x-24 px-4">
-                    <button onclick="switchSubnav('sala')" onmouseenter="switchSubnav('sala')" id="tab-sala" class="subnav-tab text-zinc-800 hover:text-red-700 border-b-2 border-transparent pb-1 px-2 tracking-wider transition-all cursor-pointer whitespace-nowrap text-xs lg:text-sm font-bold uppercase">
-                        Sala
+                <!-- Buscador Rápido en Centro (Desktop) -->
+                <form action="{{ route('catalogo') }}" method="GET" class="hidden md:block relative max-w-xs xl:max-w-md w-full mx-4">
+                    <input type="text" name="buscar" placeholder="Buscar muebles de diseño..." class="w-full bg-zinc-50 focus:bg-white text-xs px-4 py-2 pr-9 rounded-full border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-700/50 focus:border-amber-700 transition-all duration-300 shadow-inner">
+                    <button type="submit" class="absolute right-3 top-2 text-zinc-400 hover:text-amber-800 transition-colors">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
                     </button>
-                    <button onclick="switchSubnav('recamara')" onmouseenter="switchSubnav('recamara')" id="tab-recamara" class="subnav-tab text-zinc-800 hover:text-red-700 border-b-2 border-transparent pb-1 px-2 tracking-wider transition-all cursor-pointer whitespace-nowrap text-xs lg:text-sm font-bold uppercase">
-                        Recámara
-                    </button>
-                    <button onclick="switchSubnav('comedor')" onmouseenter="switchSubnav('comedor')" id="tab-comedor" class="subnav-tab text-zinc-800 hover:text-red-700 border-b-2 border-transparent pb-1 px-2 tracking-wide transition-all cursor-pointer whitespace-nowrap text-xs lg:text-sm font-bold uppercase">
-                        Comedor
-                    </button>
-                </nav>
+                </form>
 
-                <!-- Bloque Derecha: Acciones de usuario -->
-                <div class="flex items-center space-x-4 flex-shrink-0">
-                    <!-- Buscador rápido en desktop -->
-                    <form action="{{ route('catalogo') }}" method="GET" class="hidden lg:block relative">
-                        <input type="text" name="buscar" placeholder="Buscar muebles..." class="w-44 bg-zinc-50 focus:bg-white text-xs px-4 py-2 pr-8 rounded-full border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:border-transparent transition-all duration-300">
-                        <button type="submit" class="absolute right-3 top-2.5 text-zinc-400 hover:text-amber-800">
-                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
-                        </button>
-                    </form>
-
-                    <!-- Carrito -->
-                    <a href="{{ route('carrito') }}" id="nav-cart-icon" class="relative p-2 text-zinc-600 hover:text-amber-800 transition-colors duration-300">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Bloque Derecha: Acciones de usuario (Carrito, Iniciar Sesión, Registro) -->
+                <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 z-20">
+                    
+                    <!-- Botón Carrito de Compras -->
+                    <a href="{{ route('carrito') }}" id="nav-cart-icon" class="relative flex items-center space-x-1.5 px-3 py-2 bg-amber-800 hover:bg-amber-700 text-white rounded-xl shadow transition-all duration-300 active:scale-95 flex-shrink-0">
+                        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                         </svg>
+                        <span class="text-xs font-bold whitespace-nowrap hidden sm:inline">Carrito</span>
                         @php
                             $cantidadCarrito = array_sum(array_column(session('carrito', []), 'cantidad'));
                         @endphp
-                        <span id="cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/3 -translate-y-1/3 bg-amber-800 rounded-full">
+                        <span id="cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} ml-1 px-1.5 py-0.5 text-[11px] font-extrabold leading-none text-amber-950 bg-amber-300 rounded-full shadow">
                             {{ $cantidadCarrito }}
                         </span>
                     </a>
 
                     <!-- Usuario Autenticado / Sesión -->
                     @auth
-                        <div class="flex items-center space-x-3 ml-2 border-l border-zinc-200 pl-4">
-                            <span class="text-xs font-medium text-zinc-650">Hola, <span class="text-amber-800 font-bold">{{ auth()->user()->name }}</span></span>
+                        <div class="flex items-center space-x-2 border-l border-zinc-200 pl-2">
+                            <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-amber-800">{{ auth()->user()->name }}</strong></span>
                             @if(auth()->user()->is_admin)
-                                <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-zinc-700 bg-zinc-150 hover:bg-zinc-200 hover:text-zinc-900 px-2 py-1 rounded transition-all uppercase tracking-wider">Panel Admin</a>
+                                <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-lg uppercase tracking-wider">Admin</a>
                             @endif
-                            <a href="{{ route('logout') }}" class="text-xs font-semibold text-zinc-500 hover:text-rose-650 transition-colors uppercase tracking-wider">Salir</a>
+                            <a href="{{ route('logout') }}" class="text-xs font-bold text-rose-600 hover:text-rose-700 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors uppercase tracking-wider">Salir</a>
                         </div>
                     @else
-                        <div class="flex items-center space-x-3 ml-2 border-l border-zinc-200 pl-4">
-                            <a href="{{ route('login') }}" class="text-xs font-semibold text-zinc-600 hover:text-amber-800 transition-colors uppercase tracking-wider">Entrar</a>
-                            <a href="{{ route('registro') }}" class="text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3.5 py-1.5 rounded transition-all shadow-sm">Registro</a>
+                        <div class="flex items-center space-x-1.5 border-l border-zinc-200 pl-2">
+                            <!-- Botón Iniciar Sesión -->
+                            <a href="{{ route('login') }}" class="flex items-center space-x-1.5 text-xs font-bold text-zinc-900 hover:text-amber-900 bg-zinc-100 hover:bg-amber-100/70 px-3 py-2 rounded-xl border border-zinc-300 transition-all shadow-sm whitespace-nowrap">
+                                <svg class="w-4 h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                <span>Iniciar Sesión</span>
+                            </a>
+
+                            <!-- Botón Registro -->
+                            <a href="{{ route('registro') }}" class="inline-flex items-center justify-center text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3.5 py-2 rounded-xl transition-all shadow-sm hover:shadow whitespace-nowrap">
+                                <span>Registro</span>
+                            </a>
                         </div>
                     @endauth
                 </div>
             </div>
-        </div>
 
-        <!-- Row 2: Subnav Panel Desglosado Únicamente para los 3 apartados separadamente -->
-        <div id="mega-subnav-panel" class="hidden bg-[#F8F8F8] border-t border-zinc-200 py-5 transition-all duration-300 shadow-md">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- FILA 2: Barra de Navegación por Categorías (Debajo de los logos) -->
+            <nav class="hidden md:flex items-center space-x-8 py-2.5">
                 
-                <!-- Panel 1: SALA (Lista vertical con viñetas sin titulo superior) -->
-                <div id="panel-sala" class="subnav-content-panel hidden py-2">
-                    <ul class="max-w-xs mx-auto space-y-2.5 text-zinc-800 font-medium text-sm text-left">
-                        <li class="flex items-center space-x-2.5">
-                            <span class="text-zinc-950 font-bold select-none">•</span>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-red-700 transition-colors">Sofás y salas modulares</a>
-                        </li>
-                        <li class="flex items-center space-x-2.5">
-                            <span class="text-zinc-950 font-bold select-none">•</span>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-red-700 transition-colors">Mesas de centro y laterales</a>
-                        </li>
-                        <li class="flex items-center space-x-2.5">
-                            <span class="text-zinc-950 font-bold select-none">•</span>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-red-700 transition-colors">Sillones</a>
-                        </li>
-                        <li class="flex items-center space-x-2.5">
-                            <span class="text-zinc-950 font-bold select-none">•</span>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-red-700 transition-colors">Credenzas</a>
-                        </li>
-                    </ul>
+                <!-- SALA con Submenú Desplegable Estilo Marca -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
+                        <span>Sala</span>
+                        <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Submenú flotante compacto (Estilo tarjeta oscura de marca) -->
+                    <div class="absolute top-full left-0 mt-1.5 w-64 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>Sofás y salas modulares</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>Mesas de centro y laterales</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>Sillones</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>Credenzas</span>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Panel 2: RECÁMARA (Lista vertical con viñetas sin titulo superior) -->
-                <div id="panel-recamara" class="subnav-content-panel hidden py-2">
-                    <ul class="max-w-xs mx-auto space-y-2.5 text-zinc-800 font-medium text-sm text-left">
-                        <li class="flex items-center space-x-2.5">
-                            <span class="text-zinc-950 font-bold select-none">•</span>
-                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-red-700 transition-colors">Camas</a>
-                        </li>
-                        <li class="flex items-center space-x-2.5">
-                            <span class="text-zinc-950 font-bold select-none">•</span>
-                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-red-700 transition-colors">Burós</a>
-                        </li>
-                        <li class="flex items-center space-x-2.5">
-                            <span class="text-zinc-950 font-bold select-none">•</span>
-                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-red-700 transition-colors">Divanes</a>
-                        </li>
-                    </ul>
+                <!-- RECÁMARA con Submenú Desplegable Estilo Marca -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
+                        <span>Recámara</span>
+                        <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <div class="absolute top-full left-0 mt-1.5 w-60 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>Camas</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>Burós</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>Divanes</span>
+                        </a>
+                    </div>
                 </div>
 
-                <!-- Panel 3: COMEDOR (Lista vertical con viñetas sin titulo superior) -->
-                <div id="panel-comedor" class="subnav-content-panel hidden py-2">
-                    <ul class="max-w-xs mx-auto space-y-2.5 text-zinc-800 font-medium text-sm text-left">
-                        <li class="flex items-center space-x-2.5">
-                            <span class="text-zinc-950 font-bold select-none">•</span>
-                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="hover:text-red-700 transition-colors">Sillas</a>
-                        </li>
-                        <li class="flex items-center space-x-2.5">
-                            <span class="text-zinc-950 font-bold select-none">•</span>
-                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="hover:text-red-700 transition-colors">Mesas</a>
-                        </li>
-                    </ul>
+                <!-- COMEDOR con Submenú Desplegable Estilo Marca -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
+                        <span>Comedor</span>
+                        <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    <div class="absolute top-full left-0 mt-1.5 w-56 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                        <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>Sillas</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                            <span class="text-amber-400 font-bold">•</span>
+                            <span>Mesas</span>
+                        </a>
+                    </div>
                 </div>
 
-            </div>
+                <!-- CATÁLOGO COMPLETO -->
+                <a href="{{ route('catalogo') }}" class="text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors">
+                    Catálogo Completo
+                </a>
+            </nav>
         </div>
+
+        <!-- Menú Móvil Desplegable -->
+        <div id="mobile-menu-drawer" class="hidden bg-white border-b border-zinc-200 px-4 pt-3 pb-6 space-y-4">
+            <form action="{{ route('catalogo') }}" method="GET" class="relative">
+                <input type="text" name="buscar" placeholder="Buscar muebles..." class="w-full bg-zinc-50 text-xs px-4 py-2.5 pr-9 rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-700">
+                <button type="submit" class="absolute right-3 top-3 text-zinc-400">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </button>
+            </form>
+
+            <div class="grid grid-cols-2 gap-2 text-center text-xs font-bold uppercase tracking-wider">
+                <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="p-3 bg-amber-50/60 rounded-xl text-amber-900 hover:bg-amber-100">Salón / Sala</a>
+                <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="p-3 bg-amber-50/60 rounded-xl text-amber-900 hover:bg-amber-100">Recámara</a>
+                <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="p-3 bg-amber-50/60 rounded-xl text-amber-900 hover:bg-amber-100">Comedor</a>
+                <a href="{{ route('catalogo') }}" class="p-3 bg-amber-800 rounded-xl text-white">Todo el Catálogo</a>
+            </div>
+
+            @auth
+                <div class="pt-2 border-t border-zinc-100 flex items-center justify-between text-xs">
+                    <span class="font-medium text-zinc-700">Hola, <strong>{{ auth()->user()->name }}</strong></span>
+                    <a href="{{ route('logout') }}" class="text-rose-600 font-bold">Cerrar Sesión</a>
+                </div>
+            @else
+                <div class="pt-2 border-t border-zinc-100 flex items-center space-x-2">
+                    <a href="{{ route('login') }}" class="w-1/2 text-center py-2.5 bg-zinc-900 text-white rounded-xl font-bold text-xs">Iniciar Sesión</a>
+                    <a href="{{ route('registro') }}" class="w-1/2 text-center py-2.5 bg-amber-800 text-white rounded-xl font-bold text-xs">Registro</a>
+                </div>
+            @endauth
+        </div>
+
     </header>
 
     <script>
+    function toggleMobileMenu() {
+        const drawer = document.getElementById('mobile-menu-drawer');
+        if (drawer) {
+            drawer.classList.toggle('hidden');
+        }
+    }
+
     function switchSubnav(category) {
         const megaPanel = document.getElementById('mega-subnav-panel');
         if (megaPanel) {
@@ -308,9 +396,11 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <!-- Col 1: Logo & Desc -->
                 <div>
-                    <a href="{{ route('inicio') }}" class="flex items-center space-x-3">
-                        <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-10 w-auto object-contain brightness-0 invert">
-                        <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-12 w-auto object-contain brightness-0 invert">
+                    <a href="{{ route('inicio') }}" class="flex items-center space-x-2.5 group">
+                        <div class="p-1 bg-white/10 rounded-lg border border-white/10">
+                            <img src="{{ asset('logo2.png') }}" alt="Isotipo Sector Mueble" class="h-7 sm:h-8 w-auto object-contain brightness-0 invert opacity-95 group-hover:scale-105 transition-all">
+                        </div>
+                        <img src="{{ asset('logo1.png') }}" alt="Sector Mueble" class="h-8 sm:h-10 w-auto object-contain brightness-0 invert opacity-95 group-hover:scale-105 transition-all">
                     </a>
                     <p class="mt-4 text-sm text-zinc-400 leading-relaxed">
                         Creamos espacios de vida inspiradores y confortables. Nuestra selección curada de muebles escandinavos y modernos fusiona estética y durabilidad a precios justos.
@@ -351,8 +441,23 @@
                 </div>
             </div>
 
+            <!-- Cuadro de Descargo Legal / Precios de Muestra -->
+            <div class="mt-10 p-4.5 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 text-xs text-zinc-400 leading-relaxed">
+                <div class="flex items-center space-x-2 font-bold text-amber-400 mb-1.5">
+                    <svg class="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                    <span class="uppercase tracking-wider text-[11px]">Aviso de Demostración y Descargo Legal</span>
+                </div>
+                <p class="text-zinc-400">
+                    Este sitio web es una plataforma de prueba desarrollada exclusivamente con fines de demostración, portafolio y exhibición técnica. 
+                    Todos los nombres de productos, fotografías, descripciones, precios, descuentos y procesos de compra son ficticios y de muestra. 
+                    No existe relación mercantil real, no se cobran importes ni se despacha mercancía alguna a través de este portal.
+                </p>
+            </div>
+
             <!-- Bottom Area -->
-            <div class="mt-12 pt-8 border-t border-zinc-800 flex flex-col md:flex-row items-center justify-between text-xs">
+            <div class="mt-8 pt-8 border-t border-zinc-800 flex flex-col md:flex-row items-center justify-between text-xs">
                 <p>&copy; {{ date('Y') }} Sector Mueble S.L. Todos los derechos reservados. Creado con pasión por el diseño.</p>
                 <div class="flex space-x-6 mt-4 md:mt-0">
                     <span class="hover:text-white transition-colors cursor-pointer">Instagram</span>
@@ -430,25 +535,26 @@
     </div>
 </div>
 
-<!-- Botón Flotante para abrir la Ruleta -->
-<button id="ruleta-trigger-btn" onclick="openRuletaModal()" class="fixed bottom-6 left-6 z-40 bg-gradient-to-r from-amber-600 via-amber-700 to-amber-800 text-white p-3.5 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center space-x-2 border-2 border-amber-300/50 group">
+@if(!$haJugadoRuleta)
+<!-- Botón Flotante para abrir la Ruleta con Paleta Oficial -->
+<button id="ruleta-trigger-btn" onclick="openRuletaModal()" class="fixed bottom-6 left-6 z-40 bg-gradient-to-r from-[#88674B] via-[#74563C] to-[#2B241A] text-white p-3.5 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center space-x-2 border.2 border-[#FAF3E0]/40 group">
     <span class="text-xl animate-bounce">🎡</span>
-    <span class="text-xs font-bold uppercase tracking-wider hidden sm:inline-block pr-1">Ruleta de Premios</span>
+    <span class="text-xs font-bold uppercase tracking-wider hidden sm:inline-block pr-1 text-[#FAF3E0]">Ruleta de Bienvenida</span>
 </button>
 
 <!-- Modal de Ruleta de Premios para Nuevos Usuarios -->
 <div id="ruleta-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden" style="opacity: 0; transition: opacity 0.3s ease;">
     <!-- Backdrop Overlay -->
-    <div class="absolute inset-0 bg-zinc-950/75 backdrop-blur-md" onclick="closeRuletaModal()"></div>
+    <div class="absolute inset-0 bg-zinc-950/80 backdrop-blur-md" onclick="closeRuletaModal()"></div>
 
     <!-- Container Card -->
-    <div class="relative bg-zinc-900 border-2 border-amber-500/40 rounded-3xl shadow-2xl max-w-md w-full p-6 text-white text-center overflow-hidden transform scale-95 transition-transform duration-300" id="ruleta-modal-card">
+    <div class="relative bg-[#1F0F0B] border-2 border-[#88674B]/60 rounded-3xl shadow-2xl max-w-md w-full p-6 text-white text-center overflow-hidden transform scale-95 transition-transform duration-300" id="ruleta-modal-card">
         <!-- Glow accents -->
-        <div class="absolute -top-24 -left-24 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-amber-700/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-[#88674B]/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-[#2B241A]/40 rounded-full blur-3xl pointer-events-none"></div>
 
         <!-- Botón cerrar -->
-        <button onclick="closeRuletaModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-full hover:bg-zinc-800 transition-colors z-10">
+        <button onclick="closeRuletaModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors z-10">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -457,14 +563,14 @@
         <!-- Header Modal -->
         <div id="ruleta-step-spin">
             <div class="mb-4">
-                <span class="inline-block bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest mb-2">
+                <span class="inline-block bg-[#88674B]/30 border border-[#88674B]/50 text-[#FAF3E0] text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest mb-2">
                     ✨ Exclusivo Nuevos Clientes ✨
                 </span>
                 <h3 class="serif-title text-2xl sm:text-3xl font-bold text-white tracking-wide">
-                    ¡Gira la Ruleta de Bienvenida!
+                    ¡Gira la Ruleta de Sector Mueble!
                 </h3>
                 <p class="text-xs text-zinc-300 mt-1">
-                    Obtén un descuento o beneficio especial para tu compra hoy.
+                    Obtén un cupón exclusivo para tu primera compra de muebles de diseño.
                 </p>
             </div>
 
@@ -476,12 +582,12 @@
                 </div>
 
                 <!-- Rueda Canvas -->
-                <div id="ruleta-wheel-wrapper" class="w-full h-full rounded-full shadow-[0_0_35px_rgba(217,119,6,0.35)] border-4 border-amber-400/80 overflow-hidden relative" style="transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);">
+                <div id="ruleta-wheel-wrapper" class="w-full h-full rounded-full shadow-[0_0_35px_rgba(136,103,75,0.45)] border-4 border-[#88674B] overflow-hidden relative" style="transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);">
                     <canvas id="ruleta-canvas" width="320" height="320" class="w-full h-full"></canvas>
                 </div>
 
                 <!-- Center Spin Button -->
-                <button id="ruleta-spin-btn" onclick="spinRuleta()" class="absolute z-20 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-zinc-950 font-black text-xs sm:text-sm uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(245,158,11,0.8)] border-4 border-zinc-900 flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
+                <button id="ruleta-spin-btn" onclick="spinRuleta()" class="absolute z-20 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#FAF3E0] via-[#88674B] to-[#2B241A] text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(136,103,75,0.8)] border-4 border-[#1F0F0B] flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
                     ¡GIRAR!
                 </button>
             </div>
@@ -489,29 +595,30 @@
 
         <!-- Step Result: Premio Ganado -->
         <div id="ruleta-step-result" class="hidden py-4 space-y-4">
-            <div class="text-4xl animate-bounce">🎉</div>
-            <h3 class="serif-title text-2xl font-bold text-amber-400">¡FELICIDADES!</h3>
+            <div class="text-4xl animate-bounce">🎁</div>
+            <h3 class="serif-title text-2xl font-bold text-[#FAF3E0]">¡FELICIDADES!</h3>
             <p class="text-sm text-zinc-300">Has ganado este beneficio exclusivo:</p>
 
-            <div class="bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-amber-500/20 border border-amber-400/40 p-4 rounded-2xl">
-                <span id="ruleta-result-titulo" class="serif-title text-2xl font-extrabold text-white block">--</span>
-                <span class="text-xs text-amber-300 font-mono mt-1 block">Código: <span id="ruleta-result-codigo" class="font-bold">--</span></span>
+            <div class="bg-gradient-to-r from-[#88674B]/30 via-[#88674B]/20 to-[#88674B]/30 border border-[#88674B]/60 p-4 rounded-2xl">
+                <span id="ruleta-result-titulo" class="serif-title text-2xl font-extrabold text-[#FAF3E0] block">--</span>
+                <span class="text-xs text-amber-200 font-mono mt-1 block">Código: <span id="ruleta-result-codigo" class="font-bold">--</span></span>
             </div>
 
             <p class="text-xs text-zinc-400">
-                Tienes <strong id="ruleta-result-tiempo" class="text-amber-300">15 minutos</strong> para utilizarlo en tu carrito.
+                Tienes <strong id="ruleta-result-tiempo" class="text-[#FAF3E0]">15 minutos</strong> para utilizarlo en tu carrito.
             </p>
 
             <form id="form-reclamar-ruleta" onsubmit="reclamarRuletaPremio(event)" class="pt-2">
                 @csrf
                 <input type="hidden" id="ruleta-input-posicion" name="posicion" value="1">
-                <button type="submit" id="ruleta-claim-btn" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-bold text-sm uppercase tracking-wider py-3.5 px-6 rounded-xl shadow-lg hover:shadow-amber-500/30 transition-all flex items-center justify-center space-x-2">
+                <button type="submit" id="ruleta-claim-btn" class="w-full bg-gradient-to-r from-[#88674B] to-[#5C4331] hover:from-[#74563C] hover:to-[#2B241A] text-white font-bold text-sm uppercase tracking-wider py-3.5 px-6 rounded-xl shadow-lg hover:shadow-[#88674B]/30 transition-all flex items-center justify-center space-x-2">
                     <span>🎁 Reclamar y Aplicar al Carrito</span>
                 </button>
             </form>
         </div>
     </div>
 </div>
+@endif
 
 {{-- ═══════════════ JAVASCRIPT GLOBAL ═══════════════ --}}
 <script>
@@ -716,15 +823,19 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
     // Auto-apertura si es nuevo usuario y no ha jugado
     function checkNewUserAutoOpen() {
         const played = localStorage.getItem('sm_ruleta_played');
-        if (!played) {
-            // Abrir automáticamente después de 1.5 segundos
-            setTimeout(function() {
-                openRuletaModal();
-            }, 1500);
+        const haJugadoBackend = @json($haJugadoRuleta);
+        if (haJugadoBackend || played === 'true') {
+            const triggerBtn = document.getElementById('ruleta-trigger-btn');
+            if (triggerBtn) triggerBtn.style.display = 'none';
+            return;
         }
+        // Abrir automáticamente después de 1.5 segundos
+        setTimeout(function() {
+            openRuletaModal();
+        }, 1500);
     }
 
-    // Dibujar sectores en el Canvas
+    // Dibujar sectores en el Canvas con la paleta de colores de la marca y alta legibilidad
     function initRuletaCanvas() {
         const canvas = document.getElementById('ruleta-canvas');
         if (!canvas) return;
@@ -738,36 +849,46 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
         const cy = canvas.height / 2;
         const radius = canvas.width / 2;
 
+        // Paleta de colores oficial de Sector Mueble para la ruleta
+        const brandPalette = ['#88674B', '#2B241A', '#9E7B5C'];
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         options.forEach((opt, idx) => {
             const angle = idx * arc;
+            const sliceColor = opt.color_bg || brandPalette[idx % brandPalette.length];
             
             // Sector background
             ctx.beginPath();
-            ctx.fillStyle = opt.color_bg || '#B45309';
+            ctx.fillStyle = sliceColor;
             ctx.moveTo(cx, cy);
             ctx.arc(cx, cy, radius, angle, angle + arc);
             ctx.lineTo(cx, cy);
             ctx.fill();
 
-            // Sector border line
+            // Linea divisoria de los sectores
             ctx.lineWidth = 3;
-            ctx.strokeStyle = '#F59E0B';
+            ctx.strokeStyle = '#FAF3E0';
             ctx.stroke();
 
-            // Texto en el sector
+            // Texto en el sector con delineado de alto contraste para máxima legibilidad
             ctx.save();
             ctx.translate(cx, cy);
             ctx.rotate(angle + arc / 2);
             ctx.textAlign = 'right';
-            ctx.fillStyle = '#FFFFFF';
             ctx.font = 'bold 13px Poppins, sans-serif';
             
             // Acortar texto si es muy largo
             let label = opt.titulo || ('Opción ' + opt.posicion);
             if (label.length > 22) label = label.substring(0, 20) + '..';
 
+            // Stroke oscuro para contraste
+            ctx.strokeStyle = '#0B0A0A';
+            ctx.lineWidth = 3.5;
+            ctx.strokeText(label, radius - 20, 5);
+
+            // Text fill en tono Crema de la marca
+            ctx.fillStyle = '#FAF3E0';
             ctx.fillText(label, radius - 20, 5);
             ctx.restore();
         });
@@ -922,6 +1043,13 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
         .then(res => res.json())
         .then(data => {
             if (data.success) {
+                // Marcar en localStorage que ya jugó
+                localStorage.setItem('sm_ruleta_played', 'true');
+                
+                // Ocultar botón flotante permanentemente
+                const triggerBtn = document.getElementById('ruleta-trigger-btn');
+                if (triggerBtn) triggerBtn.style.display = 'none';
+
                 // Actualizar banner sticky
                 document.getElementById('ruleta-banner-titulo').innerText = data.titulo;
                 document.getElementById('ruleta-sticky-banner').classList.remove('hidden');
