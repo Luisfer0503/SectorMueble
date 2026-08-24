@@ -489,52 +489,55 @@ class AdminController extends Controller
         $geminiKey = env('GEMINI_API_KEY') ?: env('GOOGLE_API_KEY');
 
         if (!empty($geminiKey)) {
-            try {
-                $imageData = base64_encode(file_get_contents($imagePath));
-                $mimeType = mime_content_type($imagePath) ?: 'image/jpeg';
+            $modelos = ['gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-1.5-flash-8b'];
+            $imageData = base64_encode(file_get_contents($imagePath));
+            $mimeType = mime_content_type($imagePath) ?: 'image/jpeg';
 
-                $prompt = "Analiza minuciosamente esta imagen de etiqueta o caja de calzado para extraer con máxima precisión los 4 datos requeridos.\nResponde ÚNICAMENTE con un objeto JSON válido sin bloques markdown ni texto adicional.\nLas llaves obligatorias del JSON son: \"estilo\", \"numero\", \"color\", \"material\".\n\nREGLAS DE EXTRACCIÓN EXACTAS PARA ETIQUETAS DE ZAPATOS:\n1. estilo:\n   - Si aparece \"ESTILO: 1124\" o \"ESTILO:####\", extrae el número/código que sigue inmediatamente a \"ESTILO:\" (ejemplo: \"1124\").\n   - Si aparece un código de modelo como \"M-631\", \"M-631 C-18-21\", \"MOD-502\", extrae esa clave de estilo (ejemplo: \"M-631\").\n   - Si no viene la palabra ESTILO ni código M-, extrae el código o tipo principal del modelo.\n\n2. numero:\n   - Busca la talla o número impreso en tipografía grande con punto decimal (ejemplo: \"21.0\", \"22.5\", \"25.0\", \"18.0\").\n   - Devuelve la cifra exacta formateada con su decimal como string (ejemplo: \"21.0\").\n\n3. material y color:\n   - Las etiquetas suelen contener combinaciones como \"CHAROL NEGRO\", \"SINTETICO NEGRO TR\", \"PIEL CAFE\", \"GAMUZA AZUL\".\n   - material: Identifica la palabra de material (ej. \"CHAROL\" -> \"Charol\", \"SINTETICO\" -> \"Sintético\", \"PIEL\" -> \"Piel\", \"GAMUZA\" -> \"Gamuza\", \"TEXTIL\" -> \"Textil\").\n   - color: Identifica la palabra de color (ej. \"NEGRO\" -> \"Negro\", \"BLANCO\" -> \"Blanco\", \"CAFE\" -> \"Café\", \"AZUL\" -> \"Azul\").\n   - Ejemplo: Para \"CHAROL NEGRO\", material = \"Charol\", color = \"Negro\".\n   - Ejemplo: Para \"SINTETICO NEGRO TR\", material = \"Sintético\", color = \"Negro\".";
+            $prompt = "Analiza minuciosamente esta imagen de etiqueta o caja de calzado para extraer con máxima precisión los 4 datos requeridos.\nResponde ÚNICAMENTE con un objeto JSON válido sin bloques markdown ni texto adicional.\nLas llaves obligatorias del JSON son: \"estilo\", \"numero\", \"color\", \"material\".\n\nREGLAS DE EXTRACCIÓN EXACTAS PARA ETIQUETAS DE ZAPATOS:\n1. estilo:\n   - Si aparece \"ESTILO: 1124\" o \"ESTILO:####\", extrae el número/código que sigue inmediatamente a \"ESTILO:\" (ejemplo: \"1124\").\n   - Si aparece un código de modelo como \"M-631\", \"M-631 C-18-21\", \"MOD-502\", extrae esa clave de estilo (ejemplo: \"M-631\").\n   - Si no viene la palabra ESTILO ni código M-, extrae el código o tipo principal del modelo.\n\n2. numero:\n   - Busca la talla o número impreso en tipografía grande con punto decimal (ejemplo: \"21.0\", \"22.5\", \"25.0\", \"18.0\").\n   - Devuelve la cifra exacta formateada con su decimal como string (ejemplo: \"21.0\").\n\n3. material y color:\n   - Las etiquetas suelen contener combinaciones como \"CHAROL NEGRO\", \"SINTETICO NEGRO TR\", \"PIEL CAFE\", \"GAMUZA AZUL\".\n   - material: Identifica la palabra de material (ej. \"CHAROL\" -> \"Charol\", \"SINTETICO\" -> \"Sintético\", \"PIEL\" -> \"Piel\", \"GAMUZA\" -> \"Gamuza\", \"TEXTIL\" -> \"Textil\").\n   - color: Identifica la palabra de color (ej. \"NEGRO\" -> \"Negro\", \"BLANCO\" -> \"Blanco\", \"CAFE\" -> \"Café\", \"AZUL\" -> \"Azul\").\n   - Ejemplo: Para \"CHAROL NEGRO\", material = \"Charol\", color = \"Negro\".\n   - Ejemplo: Para \"SINTETICO NEGRO TR\", material = \"Sintético\", color = \"Negro\".";
 
-                $response = Http::withHeaders([
-                    'Content-Type' => 'application/json',
-                ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={$geminiKey}", [
-                    'contents' => [
-                        [
-                            'parts' => [
-                                ['text' => $prompt],
+            foreach ($modelos as $modelo) {
+                try {
+                    $response = Http::withOptions(['verify' => false])
+                        ->withHeaders(['Content-Type' => 'application/json'])
+                        ->post("https://generativelanguage.googleapis.com/v1beta/models/{$modelo}:generateContent?key={$geminiKey}", [
+                            'contents' => [
                                 [
-                                    'inline_data' => [
-                                        'mime_type' => $mimeType,
-                                        'data' => $imageData,
+                                    'parts' => [
+                                        ['text' => $prompt],
+                                        [
+                                            'inline_data' => [
+                                                'mime_type' => $mimeType,
+                                                'data' => $imageData,
+                                            ]
+                                        ]
                                     ]
                                 ]
                             ]
-                        ]
-                    ]
-                ]);
+                        ]);
 
-                if ($response->successful()) {
-                    $jsonText = $response->json('candidates.0.content.parts.0.text');
-                    $cleanJson = preg_replace('/```(?:json)?\s*|\s*```/', '', trim($jsonText));
-                    $decoded = json_decode($cleanJson, true);
+                    if ($response->successful()) {
+                        $jsonText = $response->json('candidates.0.content.parts.0.text');
+                        $cleanJson = preg_replace('/```(?:json)?\s*|\s*```/', '', trim($jsonText));
+                        $decoded = json_decode($cleanJson, true);
 
-                    if (is_array($decoded)) {
-                        $numStr = trim((string)($decoded['numero'] ?? ''));
-                        if (!empty($numStr) && is_numeric($numStr) && strpos($numStr, '.') === false) {
-                            $numStr = number_format((float)$numStr, 1, '.', '');
+                        if (is_array($decoded)) {
+                            $numStr = trim((string)($decoded['numero'] ?? ''));
+                            if (!empty($numStr) && is_numeric($numStr) && strpos($numStr, '.') === false) {
+                                $numStr = number_format((float)$numStr, 1, '.', '');
+                            }
+
+                            return [
+                                'estilo'   => trim((string)($decoded['estilo'] ?? '')),
+                                'numero'   => $numStr,
+                                'color'    => trim((string)($decoded['color'] ?? '')),
+                                'material' => trim((string)($decoded['material'] ?? '')),
+                                'fuente'   => 'Gemini Vision AI'
+                            ];
                         }
-
-                        return [
-                            'estilo'   => trim((string)($decoded['estilo'] ?? '')),
-                            'numero'   => $numStr,
-                            'color'    => trim((string)($decoded['color'] ?? '')),
-                            'material' => trim((string)($decoded['material'] ?? '')),
-                            'fuente'   => 'Gemini Vision AI'
-                        ];
                     }
+                } catch (\Throwable $e) {
+                    // Probar siguiente modelo de vision
                 }
-            } catch (\Throwable $e) {
-                // Error al conectar con Gemini
             }
         }
 

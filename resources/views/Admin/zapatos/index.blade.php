@@ -634,22 +634,10 @@
             return res;
         }
 
-        // Envío AJAX al backend para IA + Ejecución OCR local sobre la foto
-        async function enviarImagenParaAnalisis(payload, isFormData = false, imageSrcForOCR = null) {
+        // Envío AJAX al backend para IA Gemini Vision
+        function enviarImagenParaAnalisis(payload, isFormData = false, imageSrcForOCR = null) {
             document.getElementById('loaderIA').classList.remove('hidden');
             document.getElementById('opcionesCaptura').classList.add('hidden');
-
-            let ocrResults = null;
-            if (imageSrcForOCR && typeof Tesseract !== 'undefined') {
-                try {
-                    const result = await Tesseract.recognize(imageSrcForOCR, 'spa+eng');
-                    if (result && result.data && result.data.text) {
-                        ocrResults = extraerDatosOCRDeEtiqueta(result.data.text);
-                    }
-                } catch (e) {
-                    console.warn("OCR local no pudo procesar el texto:", e);
-                }
-            }
 
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             let options = {
@@ -667,21 +655,28 @@
                 options.body = JSON.stringify(payload);
             }
 
+            // Ejecutar análisis directo con Gemini Vision AI (gemini-3.6-flash)
             fetch("{{ route('admin.zapatos.analizar') }}", options)
                 .then(res => res.json())
                 .then(data => {
                     document.getElementById('loaderIA').classList.add('hidden');
                     if (data.success) {
-                        // Si el OCR local leyó datos reales de la foto, sobreescribir los datos en el modal
-                        if (ocrResults) {
-                            if (ocrResults.estilo) data.estilo = ocrResults.estilo;
-                            if (ocrResults.numero) data.numero = ocrResults.numero;
-                            if (ocrResults.color) data.color = ocrResults.color;
-                            if (ocrResults.material) data.material = ocrResults.material;
-                        }
-
                         cerrarModalEscaner();
                         mostrarModalConfirmacion(data);
+
+                        // Si la IA requiere complemento y Tesseract está disponible
+                        if (imageSrcForOCR && typeof Tesseract !== 'undefined' && (!data.estilo || !data.numero)) {
+                            Tesseract.recognize(imageSrcForOCR, 'eng')
+                                .then(result => {
+                                    if (result && result.data && result.data.text) {
+                                        const ocr = extraerDatosOCRDeEtiqueta(result.data.text);
+                                        if (ocr.estilo && !document.getElementById('confEstilo').value) document.getElementById('confEstilo').value = ocr.estilo;
+                                        if (ocr.numero && !document.getElementById('confNumero').value) document.getElementById('confNumero').value = ocr.numero;
+                                        if (ocr.color && !document.getElementById('confColor').value) document.getElementById('confColor').value = ocr.color;
+                                        if (ocr.material && !document.getElementById('confMaterial').value) document.getElementById('confMaterial').value = ocr.material;
+                                    }
+                                }).catch(e => console.warn("OCR fallback:", e));
+                        }
                     } else {
                         alert(data.error || 'Error al analizar la imagen del zapato.');
                         document.getElementById('opcionesCaptura').classList.remove('hidden');
@@ -691,7 +686,7 @@
                     document.getElementById('loaderIA').classList.add('hidden');
                     document.getElementById('opcionesCaptura').classList.remove('hidden');
                     console.error(err);
-                    alert('Ocurrió un error al procesar la foto con IA.');
+                    alert('Ocurrió un error al procesar la foto con Inteligencia Artificial.');
                 });
         }
 
