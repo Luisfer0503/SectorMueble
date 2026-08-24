@@ -100,22 +100,30 @@
                                                class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3.5 py-2.5 pr-20 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white">
                                         <span class="absolute right-3 top-2.5 text-xs font-semibold text-zinc-400">minutos</span>
                                     </div>
-                                </div>
-
-                                <!-- Color de la sección -->
+                                                            <!-- Color de la sección -->
                                 <div>
-                                    <label class="block text-xs font-semibold text-zinc-700 uppercase tracking-wider mb-1">
-                                        Color del Sector en la Ruleta
+                                    <label class="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1">
+                                        Color del Sector (Paleta Marca)
                                     </label>
                                     <div class="flex items-center space-x-3">
                                         <input type="color" 
+                                               id="color_picker_{{ $opcion->posicion }}"
                                                name="opciones[{{ $opcion->posicion }}][color_bg]" 
                                                value="{{ $opcion->color_bg }}" 
+                                               onchange="document.getElementById('color_text_{{ $opcion->posicion }}').value = this.value"
                                                class="h-9 w-12 rounded cursor-pointer border border-zinc-300">
                                         <input type="text" 
+                                               id="color_text_{{ $opcion->posicion }}"
                                                value="{{ $opcion->color_bg }}" 
                                                readonly 
-                                               class="bg-zinc-100 border border-zinc-200 rounded text-xs px-3 py-2 text-zinc-600 font-mono w-28">
+                                               class="bg-zinc-100 border border-zinc-200 rounded text-xs px-3 py-2 text-zinc-600 font-mono w-28 font-bold">
+                                    </div>
+                                    <div class="mt-2 flex items-center space-x-2">
+                                        <span class="text-[10px] text-zinc-400 font-bold uppercase">Paleta:</span>
+                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#88674B')" class="w-6 h-6 rounded-full bg-[#88674B] border border-white shadow hover:scale-110 transition-transform" title="Taupe Maderable"></button>
+                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#FAF3E0')" class="w-6 h-6 rounded-full bg-[#FAF3E0] border border-zinc-300 shadow hover:scale-110 transition-transform" title="Crema Cálido"></button>
+                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#2B241A')" class="w-6 h-6 rounded-full bg-[#2B241A] border border-white shadow hover:scale-110 transition-transform" title="Espresso Profundo"></button>
+                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#C09A75')" class="w-6 h-6 rounded-full bg-[#C09A75] border border-white shadow hover:scale-110 transition-transform" title="Arena Dorado"></button>
                                     </div>
                                 </div>
                             </div>
@@ -140,4 +148,13 @@
             </div>
         </form>
     </div>
+
+    <script>
+    function setRuletaColor(pos, hex) {
+        const picker = document.getElementById('color_picker_' + pos);
+        const input = document.getElementById('color_text_' + pos);
+        if (picker) picker.value = hex;
+        if (input) input.value = hex;
+    }
+    </script>
 @endsection

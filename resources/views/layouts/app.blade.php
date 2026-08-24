@@ -893,7 +893,7 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
         }, 1500);
     }
 
-    // Dibujar sectores en el Canvas con la paleta de colores de la marca y alta legibilidad
+    // Dibujar sectores en el Canvas con la paleta de colores oficial de Sector Mueble y resolución HD (Retina)
     function initRuletaCanvas() {
         const canvas = document.getElementById('ruleta-canvas');
         if (!canvas) return;
@@ -901,55 +901,75 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
         const options = window.RULETA_OPCIONES || [];
         if (options.length === 0) return;
 
+        // Alta Definición (Retina DPI Scaling) para texto 100% nítido en celulares
+        const dpr = window.devicePixelRatio || 1;
+        const displaySize = 320;
+        canvas.width = displaySize * dpr;
+        canvas.height = displaySize * dpr;
+        ctx.scale(dpr, dpr);
+
         const numOptions = options.length;
         const arc = (2 * Math.PI) / numOptions;
-        const cx = canvas.width / 2;
-        const cy = canvas.height / 2;
-        const radius = canvas.width / 2;
+        const cx = displaySize / 2;
+        const cy = displaySize / 2;
+        const radius = displaySize / 2;
 
-        // Paleta de colores oficial de Sector Mueble para la ruleta
-        const brandPalette = ['#88674B', '#2B241A', '#9E7B5C'];
+        // Paleta de colores oficial alternada de Sector Mueble (Taupe, Crema, Espresso, Arena)
+        const brandPalette = [
+            { bg: '#88674B', text: '#FAF3E0', stroke: '#1F0F0B' }, // Taupe maderable -> Texto Crema
+            { bg: '#FAF3E0', text: '#2B241A', stroke: '#FAF3E0' }, // Crema cálido -> Texto Espresso
+            { bg: '#2B241A', text: '#FFF0E0', stroke: '#0B0A0A' }, // Espresso -> Texto Arena
+            { bg: '#C09A75', text: '#1F0F0B', stroke: '#FFF0E0' }  // Arena dorado -> Texto Oscuro
+        ];
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, displaySize, displaySize);
 
         options.forEach((opt, idx) => {
             const angle = idx * arc;
-            const sliceColor = opt.color_bg || brandPalette[idx % brandPalette.length];
+            const style = brandPalette[idx % brandPalette.length];
+            const sliceBg = (opt.color_bg && opt.color_bg !== '#88674B' && opt.color_bg !== '#2B241A') ? opt.color_bg : style.bg;
             
-            // Sector background
+            // 1. Dibujar sector de la rueda
             ctx.beginPath();
-            ctx.fillStyle = sliceColor;
+            ctx.fillStyle = sliceBg;
             ctx.moveTo(cx, cy);
             ctx.arc(cx, cy, radius, angle, angle + arc);
             ctx.lineTo(cx, cy);
             ctx.fill();
 
-            // Linea divisoria de los sectores
+            // 2. Línea divisoria dorada entre sectores
             ctx.lineWidth = 3;
             ctx.strokeStyle = '#FAF3E0';
             ctx.stroke();
 
-            // Texto en el sector con delineado de alto contraste para máxima legibilidad
+            // 3. Renderizar texto con máxima nitidez y contraste adaptativo
             ctx.save();
             ctx.translate(cx, cy);
             ctx.rotate(angle + arc / 2);
             ctx.textAlign = 'right';
-            ctx.font = 'bold 13px Poppins, sans-serif';
-            
-            // Acortar texto si es muy largo
+            ctx.font = 'bold 14px Poppins, -apple-system, sans-serif';
+
             let label = opt.titulo || ('Opción ' + opt.posicion);
-            if (label.length > 22) label = label.substring(0, 20) + '..';
+            if (label.length > 20) label = label.substring(0, 18) + '..';
 
-            // Stroke oscuro para contraste
-            ctx.strokeStyle = '#0B0A0A';
+            // Delineado (stroke) para asegurar contraste perfecto
+            ctx.strokeStyle = style.stroke;
             ctx.lineWidth = 3.5;
-            ctx.strokeText(label, radius - 20, 5);
+            ctx.lineJoin = 'round';
+            ctx.strokeText(label, radius - 22, 4);
 
-            // Text fill en tono Crema de la marca
-            ctx.fillStyle = '#FAF3E0';
-            ctx.fillText(label, radius - 20, 5);
+            // Relleno de texto
+            ctx.fillStyle = style.text;
+            ctx.fillText(label, radius - 22, 4);
             ctx.restore();
         });
+
+        // 4. Anillo exterior decorativo de lujo
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius - 2, 0, 2 * Math.PI);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#88674B';
+        ctx.stroke();
     }
 
     // Sonidos sintetizados usando Web Audio API
