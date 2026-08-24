@@ -22,15 +22,46 @@
         .serif-title, h1, h2, h3, .font-heading {
             font-family: 'Playfair Display', 'Poppins', Georgia, serif;
         }
+
+        /* Reglas infalibles para el Menú Lateral Desplegable */
+        #adminSidebarDrawer {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            bottom: 0 !important;
+            z-index: 50 !important;
+            width: 18rem !important;
+            background-color: #18181b !important;
+            color: #ffffff !important;
+            transform: translateX(-100%) !important;
+            transition: transform 0.3s ease-in-out !important;
+        }
+
+        #adminSidebarDrawer.abierto {
+            transform: translateX(0) !important;
+        }
+
+        #adminSidebarBackdrop {
+            position: fixed !important;
+            inset: 0 !important;
+            z-index: 40 !important;
+            background-color: rgba(9, 9, 11, 0.7) !important;
+            backdrop-filter: blur(4px);
+            display: none !important;
+        }
+
+        #adminSidebarBackdrop.abierto {
+            display: block !important;
+        }
     </style>
 </head>
 <body class="flex flex-col h-full min-h-screen text-zinc-800">
 
     <!-- Backdrop Overlay (Fondo oscuro para el menú) -->
-    <div id="adminSidebarBackdrop" onclick="cerrarSidebar()" class="fixed inset-0 z-40 bg-zinc-950/70 backdrop-blur-sm hidden transition-opacity"></div>
+    <div id="adminSidebarBackdrop" onclick="cerrarSidebar()"></div>
 
-    <!-- Sidebar Drawer Unificado (Siempre oculto por defecto hasta hacer clic en Menú Hamburguesa) -->
-    <aside id="adminSidebarDrawer" class="fixed top-0 left-0 bottom-0 z-50 w-72 bg-zinc-900 text-white flex flex-col justify-between border-r border-zinc-800 transform -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl">
+    <!-- Sidebar Drawer Unificado (Siempre oculto fuera de pantalla por defecto hasta hacer clic en Menú) -->
+    <aside id="adminSidebarDrawer" class="flex flex-col justify-between border-r border-zinc-800 shadow-2xl">
         <div>
             <!-- Header del Menú con Botón Cerrar X -->
             <div class="h-20 flex items-center justify-between px-6 border-b border-zinc-800 bg-zinc-950">
@@ -119,7 +150,7 @@
 
     <!-- Main Layout Container -->
     <div class="flex-grow flex flex-col min-w-0">
-        <!-- Top Navbar con Botón de Menú Hamburguesa Principal (Visible siempre en PC y Celular) -->
+        <!-- Top Navbar con Botón de Menú Hamburguesa Principal -->
         <header class="h-20 bg-white border-b border-zinc-200 flex items-center justify-between px-4 sm:px-8 shadow-sm">
             <div class="flex items-center space-x-4">
                 <!-- Boton Hamburguesa Principal -->
@@ -187,14 +218,14 @@
         </main>
     </div>
 
-    <!-- Script Global del Menú Hamburguesa -->
+    <!-- Script Infalible del Menú Hamburguesa -->
     <script>
         function abrirSidebar() {
             const backdrop = document.getElementById('adminSidebarBackdrop');
             const sidebar = document.getElementById('adminSidebarDrawer');
             if (backdrop && sidebar) {
-                backdrop.classList.remove('hidden');
-                sidebar.classList.remove('-translate-x-full');
+                backdrop.classList.add('abierto');
+                sidebar.classList.add('abierto');
             }
         }
 
@@ -202,8 +233,8 @@
             const backdrop = document.getElementById('adminSidebarBackdrop');
             const sidebar = document.getElementById('adminSidebarDrawer');
             if (backdrop && sidebar) {
-                backdrop.classList.add('hidden');
-                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.remove('abierto');
+                sidebar.classList.remove('abierto');
             }
         }
     </script>
