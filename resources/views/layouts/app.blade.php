@@ -120,12 +120,12 @@
                 </button>
 
                 <!-- Logos Principales (Izquierda) -->
-                <div class="flex-shrink-0">
-                    <a href="{{ route('inicio') }}" class="flex items-center space-x-2.5 group py-1">
-                        <div class="relative flex items-center justify-center p-1 bg-gradient-to-br from-amber-500/10 to-amber-800/10 rounded-xl border border-amber-800/15 shadow-sm group-hover:shadow-md group-hover:border-amber-800/30 transition-all duration-300">
-                            <img src="{{ asset('logo2.png') }}" alt="Sector Mueble Isotipo" class="h-7 sm:h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
+                <div class="flex-shrink flex items-center space-x-1.5 sm:space-x-2.5 min-w-0">
+                    <a href="{{ route('inicio') }}" class="flex items-center space-x-1.5 sm:space-x-2.5 group py-1">
+                        <div class="relative flex items-center justify-center p-1 bg-gradient-to-br from-amber-500/10 to-amber-800/10 rounded-xl border border-amber-800/15 shadow-sm shrink-0">
+                            <img src="{{ asset('logo2.png') }}" alt="Sector Mueble Isotipo" class="h-6 sm:h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
                         </div>
-                        <img src="{{ asset('logo1.png') }}" alt="Sector Mueble Logotipo" class="h-8 sm:h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
+                        <img src="{{ asset('logo1.png') }}" alt="Sector Mueble Logotipo" class="h-7 sm:h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
                     </a>
                 </div>
 
@@ -140,25 +140,25 @@
                 </form>
 
                 <!-- Bloque Derecha: Acciones de usuario (Carrito, Iniciar Sesión, Registro) -->
-                <div class="flex items-center space-x-2 sm:space-x-3 flex-shrink-0 z-20">
+                <div class="flex items-center space-x-1.5 sm:space-x-3 flex-shrink-0 z-20">
                     
                     <!-- Botón Carrito de Compras -->
-                    <a href="{{ route('carrito') }}" id="nav-cart-icon" class="relative flex items-center space-x-1.5 px-3 py-2 bg-amber-800 hover:bg-amber-700 text-white rounded-xl shadow transition-all duration-300 active:scale-95 flex-shrink-0">
-                        <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <a href="{{ route('carrito') }}" id="nav-cart-icon" class="relative flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-amber-800 hover:bg-amber-700 text-white rounded-xl shadow transition-all duration-300 active:scale-95 flex-shrink-0">
+                        <svg class="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                         </svg>
                         <span class="text-xs font-bold whitespace-nowrap hidden sm:inline">Carrito</span>
                         @php
                             $cantidadCarrito = array_sum(array_column(session('carrito', []), 'cantidad'));
                         @endphp
-                        <span id="cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} ml-1 px-1.5 py-0.5 text-[11px] font-extrabold leading-none text-amber-950 bg-amber-300 rounded-full shadow">
+                        <span id="cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} ml-1 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-extrabold leading-none text-amber-950 bg-amber-300 rounded-full shadow">
                             {{ $cantidadCarrito }}
                         </span>
                     </a>
 
                     <!-- Usuario Autenticado / Sesión -->
                     @auth
-                        <div class="flex items-center space-x-2 border-l border-zinc-200 pl-2">
+                        <div class="flex items-center space-x-1.5 border-l border-zinc-200 pl-1.5 sm:pl-2">
                             <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-amber-800">{{ auth()->user()->name }}</strong></span>
                             @if(auth()->user()->is_admin)
                                 <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-lg uppercase tracking-wider">Admin</a>
@@ -166,17 +166,18 @@
                             <a href="{{ route('logout') }}" class="text-xs font-bold text-rose-600 hover:text-rose-700 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors uppercase tracking-wider">Salir</a>
                         </div>
                     @else
-                        <div class="flex items-center space-x-1.5 border-l border-zinc-200 pl-2">
+                        <div class="flex items-center space-x-1 sm:space-x-2 border-l border-zinc-200 pl-1.5 sm:pl-2">
                             <!-- Botón Iniciar Sesión -->
-                            <a href="{{ route('login') }}" class="flex items-center space-x-1.5 text-xs font-bold text-zinc-900 hover:text-amber-900 bg-zinc-100 hover:bg-amber-100/70 px-3 py-2 rounded-xl border border-zinc-300 transition-all shadow-sm whitespace-nowrap">
-                                <svg class="w-4 h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl transition-all shadow-sm whitespace-nowrap">
+                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
-                                <span>Iniciar Sesión</span>
+                                <span class="hidden sm:inline">Iniciar Sesión</span>
+                                <span class="sm:hidden">Entrar</span>
                             </a>
 
                             <!-- Botón Registro -->
-                            <a href="{{ route('registro') }}" class="inline-flex items-center justify-center text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3.5 py-2 rounded-xl transition-all shadow-sm hover:shadow whitespace-nowrap">
+                            <a href="{{ route('registro') }}" class="hidden sm:inline-flex items-center justify-center text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3.5 py-2 rounded-xl transition-all shadow-sm hover:shadow whitespace-nowrap">
                                 <span>Registro</span>
                             </a>
                         </div>
