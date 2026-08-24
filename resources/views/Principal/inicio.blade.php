@@ -12,46 +12,46 @@
             <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent"></div>
         </div>
 
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-28 lg:py-36">
             <div class="max-w-2xl">
                 <!-- Badge Flotante con Glassmorphism -->
-                <div class="inline-flex items-center space-x-2.5 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold uppercase tracking-widest text-amber-400 shadow-lg">
+                <div class="inline-flex items-center space-x-2 px-3 sm:px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-amber-400 shadow-lg">
                     <span>✨ Nueva Colección 2026</span>
                     <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span>
                 </div>
 
                 <!-- Titular de Impacto -->
-                <h1 class="serif-title text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mt-6 leading-[1.1]">
+                <h1 class="serif-title text-3xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mt-4 sm:mt-6 leading-[1.15]">
                     La belleza de la simplicidad <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-500">en tu hogar</span>
                 </h1>
 
                 <!-- Subtítulo Descriptor -->
-                <p class="mt-6 text-base sm:text-lg lg:text-xl text-zinc-300 font-light leading-relaxed">
+                <p class="mt-4 sm:mt-6 text-sm sm:text-lg lg:text-xl text-zinc-300 font-light leading-relaxed">
                     Descubre nuestra colección exclusiva de muebles minimalistas, fabricados con maderas sustentables y diseñados para transformar tus espacios cotidianos en santuarios de armonía.
                 </p>
 
                 <!-- Insignias rápidas -->
-                <div class="mt-6 flex flex-wrap gap-4 text-xs font-semibold text-zinc-300">
-                    <span class="flex items-center space-x-1.5 bg-zinc-900/80 px-3 py-1.5 rounded-lg border border-zinc-800">
+                <div class="mt-4 sm:mt-6 flex flex-wrap gap-2.5 sm:gap-4 text-[11px] sm:text-xs font-semibold text-zinc-300">
+                    <span class="flex items-center space-x-1.5 bg-zinc-900/80 px-2.5 sm:px-3 py-1.5 rounded-lg border border-zinc-800">
                         <span class="text-amber-400">🌱</span> <span>Madera Sustentable</span>
                     </span>
-                    <span class="flex items-center space-x-1.5 bg-zinc-900/80 px-3 py-1.5 rounded-lg border border-zinc-800">
+                    <span class="flex items-center space-x-1.5 bg-zinc-900/80 px-2.5 sm:px-3 py-1.5 rounded-lg border border-zinc-800">
                         <span class="text-amber-400">📦</span> <span>Envío Gratis &gt; $8,000 MXN</span>
                     </span>
-                    <span class="flex items-center space-x-1.5 bg-zinc-900/80 px-3 py-1.5 rounded-lg border border-zinc-800">
+                    <span class="flex items-center space-x-1.5 bg-zinc-900/80 px-2.5 sm:px-3 py-1.5 rounded-lg border border-zinc-800">
                         <span class="text-amber-400">🛡️</span> <span>Garantía de 3 Años</span>
                     </span>
                 </div>
 
                 <!-- Botones de Acción (CTA) -->
-                <div class="mt-10 flex flex-wrap items-center gap-4">
-                    <a href="{{ route('catalogo') }}" class="group relative inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 hover:from-amber-600 hover:to-amber-800 text-white text-sm font-bold px-8 py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5">
+                <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
+                    <a href="{{ route('catalogo') }}" class="group relative inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 hover:from-amber-600 hover:to-amber-800 text-white text-xs sm:text-sm font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5">
                         <span>Explorar Catálogo</span>
                         <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                         </svg>
                     </a>
-                    <a href="#destacados" class="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 text-white text-sm font-bold px-8 py-4 rounded-2xl backdrop-blur-md border border-white/20 transition-all duration-300">
+                    <a href="#destacados" class="inline-flex items-center justify-center bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded-2xl backdrop-blur-md border border-white/20 transition-all duration-300">
                         Muebles Destacados
                     </a>
                 </div>

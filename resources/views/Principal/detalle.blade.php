@@ -153,24 +153,43 @@
                         <form
                             action="{{ route('carrito.agregar', $producto->id) }}"
                             method="POST"
-                            class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-4 sm:space-y-0 sm:space-x-4"
+                            class="flex flex-row items-center space-x-3"
                             data-nombre="{{ $producto->nombre }}"
                             data-img="{{ $producto->imagen_url }}"
                             onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
                             @csrf
                             <input type="hidden" name="color" id="input-color-seleccionado" value="Original / Natural">
                             <!-- Quantity -->
-                            <div class="flex items-center border border-zinc-300 rounded overflow-hidden w-fit h-12 bg-white">
-                                <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value > 1) qty.value = parseInt(qty.value)-1;" class="px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors">-</button>
-                                <input type="number" name="cantidad" id="cantidad" value="1" min="1" max="{{ $producto->stock }}" class="w-12 text-center text-sm font-semibold border-none focus:outline-none focus:ring-0" readonly>
-                                <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value < {{ $producto->stock }}) qty.value = parseInt(qty.value)+1;" class="px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors">+</button>
+                            <div class="flex items-center border border-zinc-300 rounded-xl overflow-hidden h-12 bg-white flex-shrink-0">
+                                <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value > 1) qty.value = parseInt(qty.value)-1;" class="px-3 sm:px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors text-base">-</button>
+                                <input type="number" name="cantidad" id="cantidad" value="1" min="1" max="{{ $producto->stock }}" class="w-10 sm:w-12 text-center text-sm font-semibold border-none focus:outline-none focus:ring-0" readonly>
+                                <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value < {{ $producto->stock }}) qty.value = parseInt(qty.value)+1;" class="px-3 sm:px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors text-base">+</button>
                             </div>
 
                             <!-- Submit Button -->
-                            <button type="submit" class="flex-grow bg-amber-800 hover:bg-amber-700 text-white text-sm font-bold uppercase tracking-wider py-4 px-8 rounded transition-colors shadow">
-                                Añadir al Carrito
+                            <button type="submit" class="flex-grow bg-amber-800 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold uppercase tracking-wider h-12 px-4 sm:px-8 rounded-xl transition-colors shadow flex items-center justify-center space-x-2">
+                                <svg class="w-4 h-4 text-white hidden sm:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                                </svg>
+                                <span>Añadir al Carrito</span>
                             </button>
                         </form>
+
+                        <!-- Sticky Bottom Bar Solo para Móviles -->
+                        <div class="md:hidden fixed bottom-14 left-0 right-0 z-[70] bg-white/95 backdrop-blur-md border-t border-zinc-200 p-3 shadow-2xl flex items-center justify-between gap-3">
+                            <div class="flex flex-col min-w-0">
+                                <span class="text-[11px] font-bold text-zinc-900 truncate">{{ $producto->nombre }}</span>
+                                <span class="text-xs font-bold text-emerald-700 font-sans">
+                                    $ {{ number_format($producto->precio_descuento ?? $producto->precio, 2, '.', ',') }} MXN
+                                </span>
+                            </div>
+                            <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST" data-nombre="{{ $producto->nombre }}" data-img="{{ $producto->imagen_url }}" onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
+                                @csrf
+                                <button type="submit" class="bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl uppercase tracking-wider shadow whitespace-nowrap">
+                                    🛒 Añadir
+                                </button>
+                            </form>
+                        </div>
                     @else
                         <button disabled class="w-full bg-zinc-200 text-zinc-400 text-sm font-bold uppercase tracking-wider py-4 px-8 rounded cursor-not-allowed">
                             Agotado

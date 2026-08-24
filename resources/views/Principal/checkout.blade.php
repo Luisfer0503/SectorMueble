@@ -3,40 +3,40 @@
 @section('titulo', 'Finalizar Compra | Sector Mueble')
 
 @section('contenido')
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <h1 class="serif-title text-3xl font-bold text-zinc-950 mb-8 font-sans">Finalizar Compra</h1>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-16">
+        <h1 class="serif-title text-2xl sm:text-3xl font-bold text-zinc-950 mb-6 sm:mb-8 font-sans">Finalizar Compra</h1>
 
         <form action="{{ route('checkout.procesar') }}" method="POST">
             @csrf
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-12">
                 
                 <!-- Formulario de Envío y Pago (Izquierda - Col 7) -->
-                <div class="lg:col-span-7 space-y-8">
+                <div class="lg:col-span-7 space-y-6 sm:space-y-8">
                     <!-- Paso 1: Datos de Contacto -->
-                    <div class="bg-white border border-zinc-200 rounded p-6 shadow-sm">
-                        <div class="flex items-center space-x-3 mb-6">
+                    <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                        <div class="flex items-center space-x-3 mb-4 sm:mb-6">
                             <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">1</span>
-                            <h2 class="text-base font-bold text-zinc-950 uppercase tracking-wider">Datos de Contacto</h2>
+                            <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Datos de Contacto</h2>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="nombre_cliente" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Nombre Completo</label>
-                                <input type="text" name="nombre_cliente" id="nombre_cliente" required value="{{ old('nombre_cliente') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="nombre_cliente" id="nombre_cliente" required value="{{ old('nombre_cliente') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('nombre_cliente')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div>
                                 <label for="correo_cliente" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Correo Electrónico</label>
-                                <input type="email" name="correo_cliente" id="correo_cliente" required value="{{ old('correo_cliente') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="email" name="correo_cliente" id="correo_cliente" required value="{{ old('correo_cliente') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('correo_cliente')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="telefono_cliente" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Teléfono móvil</label>
-                                <input type="tel" name="telefono_cliente" id="telefono_cliente" required value="{{ old('telefono_cliente') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="tel" name="telefono_cliente" id="telefono_cliente" required value="{{ old('telefono_cliente') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('telefono_cliente')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
@@ -45,30 +45,30 @@
                     </div>
 
                     <!-- Paso 2: Dirección de Envío -->
-                    <div class="bg-white border border-zinc-200 rounded p-6 shadow-sm">
-                        <div class="flex items-center space-x-3 mb-6">
+                    <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                        <div class="flex items-center space-x-3 mb-4 sm:mb-6">
                             <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">2</span>
-                            <h2 class="text-base font-bold text-zinc-950 uppercase tracking-wider">Dirección de Envío</h2>
+                            <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Dirección de Envío</h2>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div class="sm:col-span-3">
                                 <label for="direccion_envio" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Calle, número, piso y puerta</label>
-                                <input type="text" name="direccion_envio" id="direccion_envio" required value="{{ old('direccion_envio') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="direccion_envio" id="direccion_envio" required value="{{ old('direccion_envio') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('direccion_envio')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="ciudad" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Ciudad / Localidad</label>
-                                <input type="text" name="ciudad" id="ciudad" required value="{{ old('ciudad') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="ciudad" id="ciudad" required value="{{ old('ciudad') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('ciudad')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div>
                                 <label for="codigo_postal" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Código Postal</label>
-                                <input type="text" name="codigo_postal" id="codigo_postal" required value="{{ old('codigo_postal') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="codigo_postal" id="codigo_postal" required value="{{ old('codigo_postal') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('codigo_postal')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
@@ -77,10 +77,10 @@
                     </div>
 
                     <!-- Paso 3: Datos de Pago (Simulación) -->
-                    <div class="bg-white border border-zinc-200 rounded p-6 shadow-sm">
+                    <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                         <div class="flex items-center space-x-3 mb-4">
                             <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
-                            <h2 class="text-base font-bold text-zinc-950 uppercase tracking-wider">Método de Pago</h2>
+                            <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Método de Pago</h2>
                         </div>
 
                         <!-- Banner Informativo de Pago Simulado / Muestra -->
@@ -95,28 +95,28 @@
                         </div>
 
                         <!-- Tarjeta de Crédito Simulada Visualmente -->
-                        <div class="bg-gradient-to-br from-zinc-800 to-zinc-950 text-white p-6 rounded-xl shadow-lg max-w-sm mx-auto mb-6 relative overflow-hidden">
+                        <div class="bg-gradient-to-br from-zinc-800 to-zinc-950 text-white p-5 sm:p-6 rounded-2xl shadow-lg max-w-full sm:max-w-sm mx-auto mb-6 relative overflow-hidden">
                             <div class="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-white/5 pointer-events-none"></div>
                             
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-semibold tracking-widest text-zinc-400">SECTOR MUEBLE CARD</span>
-                                <svg class="h-8 w-8 text-white/80" viewBox="0 0 24 24" fill="currentColor">
+                                <span class="text-[10px] sm:text-xs font-semibold tracking-widest text-zinc-400">SECTOR MUEBLE CARD</span>
+                                <svg class="h-7 sm:h-8 w-7 sm:w-8 text-white/80" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/>
                                 </svg>
                             </div>
                             
-                            <div class="mt-8">
-                                <span class="block text-xs font-bold text-zinc-400 uppercase tracking-widest">Número de tarjeta</span>
-                                <span class="text-lg font-mono tracking-widest block mt-1">•••• •••• •••• 4242</span>
+                            <div class="mt-6 sm:mt-8">
+                                <span class="block text-[10px] sm:text-xs font-bold text-zinc-400 uppercase tracking-widest">Número de tarjeta</span>
+                                <span class="text-base sm:text-lg font-mono tracking-widest block mt-1">•••• •••• •••• 4242</span>
                             </div>
 
-                            <div class="mt-8 flex justify-between items-center text-xs">
+                            <div class="mt-6 sm:mt-8 flex justify-between items-center text-xs">
                                 <div>
-                                    <span class="block text-[10px] text-zinc-400 uppercase">Titular</span>
+                                    <span class="block text-[9px] sm:text-[10px] text-zinc-400 uppercase">Titular</span>
                                     <span class="font-semibold tracking-wider block mt-0.5">Juan Pérez</span>
                                 </div>
                                 <div class="text-right">
-                                    <span class="block text-[10px] text-zinc-400 uppercase">Vence</span>
+                                    <span class="block text-[9px] sm:text-[10px] text-zinc-400 uppercase">Vence</span>
                                     <span class="font-semibold tracking-wider block mt-0.5">12 / 29</span>
                                 </div>
                             </div>
@@ -126,20 +126,20 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div class="sm:col-span-3">
                                 <label class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Nombre en la tarjeta</label>
-                                <input type="text" required placeholder="Juan Pérez" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" required placeholder="Juan Pérez" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                             </div>
                             <div class="sm:col-span-2">
                                 <label class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Número de tarjeta</label>
-                                <input type="text" required placeholder="4000 1234 5678 9010" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" required placeholder="4000 1234 5678 9010" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                             </div>
                             <div class="grid grid-cols-2 gap-2 sm:col-span-1">
                                 <div>
                                     <label class="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Exp.</label>
-                                    <input type="text" required placeholder="MM/AA" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-2 py-2.5 text-center focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                    <input type="text" required placeholder="MM/AA" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-2 py-2.5 text-center focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">CVV</label>
-                                    <input type="password" required placeholder="•••" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-2 py-2.5 text-center focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                    <input type="password" required placeholder="•••" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-2 py-2.5 text-center focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 </div>
                             </div>
                         </div>
@@ -148,7 +148,7 @@
 
                 <!-- Resumen de Compra (Derecha - Col 5) -->
                 <div class="lg:col-span-5">
-                    <div class="bg-white border border-zinc-200 rounded p-6 shadow-sm sticky top-24">
+                    <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm sticky top-24">
                         <h2 class="serif-title text-lg font-bold text-zinc-950 pb-4 border-b border-zinc-150">Resumen del Pedido</h2>
                         
                         <!-- Listado de Artículos -->

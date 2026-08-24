@@ -25,48 +25,47 @@
                 <!-- Lista de Artículos (Izquierda) -->
                 <div class="lg:col-span-2 space-y-4">
                     @foreach($carrito as $id => $item)
-                        <div class="bg-white border border-zinc-200 rounded p-4 sm:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between shadow-sm hover:shadow-md transition-shadow">
+                        <div class="bg-white border border-zinc-200 rounded-2xl p-3.5 sm:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between shadow-sm hover:shadow-md transition-shadow gap-4 sm:gap-0">
                             <!-- Producto Info -->
-                            <div class="flex items-center space-x-4">
-                                <div class="w-20 h-20 bg-zinc-100 rounded overflow-hidden flex-shrink-0">
+                            <div class="flex items-center space-x-3 sm:space-x-4">
+                                <div class="w-16 h-16 sm:w-20 sm:h-20 bg-zinc-100 rounded-xl overflow-hidden flex-shrink-0">
                                     <img src="{{ $item['imagen_url'] }}" alt="{{ $item['nombre'] }}" class="w-full h-full object-cover">
                                 </div>
-                                <div>
-                                    <span class="text-[10px] text-zinc-400 font-bold uppercase tracking-wider">{{ $item['categoria'] }}</span>
-                                    <h3 class="text-sm font-semibold text-zinc-950 mt-0.5">
+                                <div class="min-w-0 flex-grow">
+                                    <span class="text-[9px] sm:text-[10px] text-zinc-400 font-bold uppercase tracking-wider block truncate">{{ $item['categoria'] }}</span>
+                                    <h3 class="text-xs sm:text-sm font-semibold text-zinc-950 mt-0.5 leading-snug">
                                         <a href="{{ route('productos.detalle', $id) }}" class="hover:text-amber-800 transition-colors">
                                             {{ $item['nombre'] }}
                                         </a>
                                     </h3>
                                     @if(!empty($item['con_descuento']) && $item['con_descuento'])
-                                        <span class="text-[10px] text-zinc-400 line-through font-sans block mt-1">$ {{ number_format($item['precio_original'], 2, '.', ',') }} MXN c/u</span>
+                                        <span class="text-[9px] sm:text-[10px] text-zinc-400 line-through font-sans block mt-0.5">$ {{ number_format($item['precio_original'], 2, '.', ',') }} MXN c/u</span>
                                         <span class="text-xs text-emerald-700 font-bold font-sans">$ {{ number_format($item['precio'], 2, '.', ',') }} MXN c/u</span>
-                                        <span class="inline-block text-[9px] font-bold text-white bg-rose-600 rounded px-1.5 py-0.5 mt-0.5">CON DESCUENTO</span>
+                                        <span class="inline-block text-[8px] font-bold text-white bg-rose-600 rounded px-1.5 py-0.5 mt-0.5">CON DESCUENTO</span>
                                     @else
-                                        <span class="text-xs text-zinc-500 font-sans block mt-1">$ {{ number_format($item['precio'], 2, '.', ',') }} MXN c/u</span>
+                                        <span class="text-xs text-zinc-500 font-sans block mt-0.5">$ {{ number_format($item['precio'], 2, '.', ',') }} MXN c/u</span>
                                     @endif
                                 </div>
                             </div>
 
                             <!-- Modificar Cantidad & Precio Total -->
-                            <div class="flex items-center justify-between sm:justify-end space-x-8 mt-4 sm:mt-0 pt-4 sm:pt-0 border-t border-zinc-100 sm:border-t-0">
-                                <!-- Form de Cantidad -->
-                                <form action="{{ route('carrito.actualizar', $id) }}" method="POST" class="flex items-center border border-zinc-300 rounded overflow-hidden bg-white">
+                            <div class="flex items-center justify-between sm:justify-end space-x-4 sm:space-x-8 pt-3 sm:pt-0 border-t border-zinc-100 sm:border-t-0">
+                                <!-- Form de Cantidad Móvil Táctil -->
+                                <form action="{{ route('carrito.actualizar', $id) }}" method="POST" class="flex items-center border border-zinc-300 rounded-xl overflow-hidden bg-white">
                                     @csrf
-                                    <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" min="1" max="{{ $item['stock_disponible'] }}" class="w-12 text-center text-xs font-semibold focus:outline-none focus:ring-0 border-none py-1.5" onchange="this.form.submit()">
-                                    <button type="submit" class="bg-zinc-50 border-l border-zinc-300 px-2 py-1.5 hover:bg-zinc-100 text-[10px] font-bold text-zinc-600 transition-colors uppercase">
-                                        Ok
-                                    </button>
+                                    <button type="button" onclick="const input = this.form.querySelector('input[name=cantidad]'); if(parseInt(input.value) > 1){ input.value = parseInt(input.value)-1; this.form.submit(); }" class="px-3 py-1.5 text-zinc-600 font-bold bg-zinc-50 hover:bg-zinc-100 transition-colors text-sm">-</button>
+                                    <input type="number" name="cantidad" value="{{ $item['cantidad'] }}" min="1" max="{{ $item['stock_disponible'] }}" class="w-9 text-center text-xs font-bold border-none focus:outline-none focus:ring-0 py-1" readonly>
+                                    <button type="button" onclick="const input = this.form.querySelector('input[name=cantidad]'); if(parseInt(input.value) < {{ $item['stock_disponible'] }}){ input.value = parseInt(input.value)+1; this.form.submit(); }" class="px-3 py-1.5 text-zinc-600 font-bold bg-zinc-50 hover:bg-zinc-100 transition-colors text-sm">+</button>
                                 </form>
 
                                 <!-- Precio Total del Item -->
                                 <div class="text-right">
-                                    <span class="text-sm font-bold text-zinc-950 block font-sans">
+                                    <span class="text-xs sm:text-sm font-bold text-zinc-950 block font-sans">
                                         $ {{ number_format($item['precio'] * $item['cantidad'], 2, '.', ',') }}
                                     </span>
                                     
                                     <!-- Botón Eliminar -->
-                                    <a href="{{ route('carrito.eliminar', $id) }}" class="text-[10px] text-rose-600 hover:text-rose-800 font-bold uppercase tracking-wider block mt-1 transition-colors">
+                                    <a href="{{ route('carrito.eliminar', $id) }}" class="text-[9px] sm:text-[10px] text-rose-600 hover:text-rose-800 font-bold uppercase tracking-wider block mt-0.5 transition-colors">
                                         Eliminar
                                     </a>
                                 </div>

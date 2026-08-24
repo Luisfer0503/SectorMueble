@@ -386,7 +386,7 @@
     @endif
 
     <!-- Main Content -->
-    <main class="flex-grow">
+    <main class="flex-grow pb-20 md:pb-0">
         @yield('contenido')
     </main>
 
@@ -468,6 +468,55 @@
         </div>
     </footer>
 
+    <!-- Barra de Navegación Flotante Inferior para Celulares (Mobile App-Like Experience) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-[80] bg-white/95 backdrop-blur-lg border-t border-zinc-200/90 shadow-2xl py-2 px-3 flex items-center justify-around">
+        <!-- Inicio -->
+        <a href="{{ route('inicio') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('inicio') ? 'text-amber-800 font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            <span class="text-[10px]">Inicio</span>
+        </a>
+
+        <!-- Catálogo -->
+        <a href="{{ route('catalogo') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('catalogo') ? 'text-amber-800 font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/>
+            </svg>
+            <span class="text-[10px]">Catálogo</span>
+        </a>
+
+        <!-- Carrito -->
+        <a href="{{ route('carrito') }}" class="relative flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('carrito') ? 'text-amber-800 font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+            <div class="relative">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                <span id="mobile-cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} absolute -top-1.5 -right-2.5 bg-amber-600 text-white text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center shadow">
+                    {{ $cantidadCarrito }}
+                </span>
+            </div>
+            <span class="text-[10px]">Carrito</span>
+        </a>
+
+        <!-- Usuario / Perfil -->
+        @auth
+            <a href="{{ route('logout') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold text-rose-600">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+                <span class="text-[10px]">Salir</span>
+            </a>
+        @else
+            <a href="{{ route('login') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('login') ? 'text-amber-800 font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <span class="text-[10px]">Ingresar</span>
+            </a>
+        @endauth
+    </nav>
+
 </body>
 
 {{-- ═══════════════════════════════════════════════════════
@@ -537,7 +586,7 @@
 
 @if(!$haJugadoRuleta)
 <!-- Botón Flotante para abrir la Ruleta con Paleta Oficial -->
-<button id="ruleta-trigger-btn" onclick="openRuletaModal()" class="fixed bottom-6 left-6 z-40 bg-gradient-to-r from-[#88674B] via-[#74563C] to-[#2B241A] text-white p-3.5 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center space-x-2 border.2 border-[#FAF3E0]/40 group">
+<button id="ruleta-trigger-btn" onclick="openRuletaModal()" class="fixed bottom-20 md:bottom-6 left-4 sm:left-6 z-40 bg-gradient-to-r from-[#88674B] via-[#74563C] to-[#2B241A] text-white p-3 sm:p-3.5 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center space-x-2 border.2 border-[#FAF3E0]/40 group">
     <span class="text-xl animate-bounce">🎡</span>
     <span class="text-xs font-bold uppercase tracking-wider hidden sm:inline-block pr-1 text-[#FAF3E0]">Ruleta de Bienvenida</span>
 </button>
@@ -750,15 +799,17 @@ SM.cerrarModal = function() {
 
 /* ── 3. Actualizar badge del carrito ─────────────────── */
 function actualizarBadge(count) {
-    const badge = document.getElementById('cart-badge');
-    if (!badge) return;
-    if (count > 0) {
-        badge.textContent = count;
-        badge.classList.remove('hidden');
-        badge.classList.remove('sm-badge-pop');
-        void badge.offsetWidth; /* reflow para re-trigger */
-        badge.classList.add('sm-badge-pop');
-    }
+    const badges = [document.getElementById('cart-badge'), document.getElementById('mobile-cart-badge')];
+    badges.forEach(badge => {
+        if (!badge) return;
+        if (count > 0) {
+            badge.textContent = count;
+            badge.classList.remove('hidden');
+            badge.classList.remove('sm-badge-pop');
+            void badge.offsetWidth; /* reflow para re-trigger */
+            badge.classList.add('sm-badge-pop');
+        }
+    });
 }
 
 /* ── 4. Función principal interceptora ───────────────── */
