@@ -4,25 +4,36 @@
 
 @section('contenido')
     <!-- Catalog Header -->
-    <div class="bg-zinc-100 border-b border-zinc-200 py-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+    <div class="bg-zinc-100/80 border-b border-zinc-200 py-6 sm:py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
             <div>
-                <h1 class="serif-title text-3xl sm:text-4xl font-bold text-zinc-950">Catálogo de Muebles</h1>
-                <p class="mt-1 text-zinc-500 text-sm">Explora nuestra colección cuidadosamente seleccionada para cada rincón de tu casa.</p>
+                <h1 class="serif-title text-2xl sm:text-4xl font-bold text-zinc-950">Catálogo de Muebles</h1>
+                <p class="mt-1 text-zinc-500 text-xs sm:text-sm">Explora nuestra colección cuidadosamente seleccionada para cada rincón de tu casa.</p>
             </div>
-            <!-- Contador de resultados en header -->
-            <div id="resultado-contador" class="text-sm text-zinc-500 font-medium shrink-0">
-                <span id="num-resultados" class="font-bold text-zinc-900">{{ $productos->total() }}</span> muebles encontrados
+            
+            <div class="flex items-center space-x-3 w-full sm:w-auto justify-between">
+                <!-- Botón Toggle de Filtros en Móvil -->
+                <button type="button" onclick="toggleMobileFilters()" class="lg:hidden flex items-center justify-center space-x-2 bg-zinc-900 hover:bg-amber-800 text-white font-bold text-xs uppercase tracking-wider px-4 py-3 rounded-xl shadow w-full">
+                    <svg class="h-4 w-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"/>
+                    </svg>
+                    <span>Filtrar y Ordenar Muebles</span>
+                </button>
+
+                <!-- Contador de resultados en header -->
+                <div id="resultado-contador" class="text-xs sm:text-sm text-zinc-500 font-medium shrink-0 hidden sm:block">
+                    <span id="num-resultados" class="font-bold text-zinc-900">{{ $productos->total() }}</span> muebles encontrados
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Main Section -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8 items-start">
 
             <!-- ====== SIDEBAR FILTROS ====== -->
-            <aside class="lg:col-span-1 lg:sticky lg:top-24">
+            <aside id="sidebar-filtros-container" class="lg:col-span-1 lg:sticky lg:top-24 hidden lg:block transition-all">
                 <div class="bg-white rounded-2xl border border-zinc-200/80 shadow-lg overflow-hidden">
 
                     <!-- Cabecera -->
@@ -409,6 +420,16 @@
                 }
             });
         }
+
+        window.toggleMobileFilters = function() {
+            const aside = document.getElementById('sidebar-filtros-container');
+            if (aside) {
+                aside.classList.toggle('hidden');
+                if (!aside.classList.contains('hidden')) {
+                    aside.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        };
 
         // Inicializar chips al cargar si vienen filtros de URL
         actualizarChips();
