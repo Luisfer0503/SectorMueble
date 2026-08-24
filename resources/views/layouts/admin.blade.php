@@ -23,35 +23,28 @@
             font-family: 'Playfair Display', 'Poppins', Georgia, serif;
         }
 
-        /* Reglas infalibles para el Menú Lateral Desplegable */
+        /* Estilos base para el Menú Lateral Desplegable */
         #adminSidebarDrawer {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            bottom: 0 !important;
-            z-index: 50 !important;
-            width: 18rem !important;
-            background-color: #18181b !important;
-            color: #ffffff !important;
-            transform: translateX(-100%) !important;
-            transition: transform 0.3s ease-in-out !important;
-        }
-
-        #adminSidebarDrawer.abierto {
-            transform: translateX(0) !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 9999;
+            width: 18rem;
+            background-color: #18181b;
+            color: #ffffff;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         #adminSidebarBackdrop {
-            position: fixed !important;
-            inset: 0 !important;
-            z-index: 40 !important;
-            background-color: rgba(9, 9, 11, 0.7) !important;
+            position: fixed;
+            inset: 0;
+            z-index: 9990;
+            background-color: rgba(9, 9, 11, 0.7);
             backdrop-filter: blur(4px);
-            display: none !important;
-        }
-
-        #adminSidebarBackdrop.abierto {
-            display: block !important;
+            display: none;
         }
     </style>
 </head>
@@ -60,8 +53,8 @@
     <!-- Backdrop Overlay (Fondo oscuro para el menú) -->
     <div id="adminSidebarBackdrop" onclick="cerrarSidebar()"></div>
 
-    <!-- Sidebar Drawer Unificado (Siempre oculto fuera de pantalla por defecto hasta hacer clic en Menú) -->
-    <aside id="adminSidebarDrawer" class="flex flex-col justify-between border-r border-zinc-800 shadow-2xl">
+    <!-- Sidebar Drawer Unificado (Oculto fuera de pantalla por defecto) -->
+    <aside id="adminSidebarDrawer" class="flex flex-col justify-between border-r border-zinc-800">
         <div>
             <!-- Header del Menú con Botón Cerrar X -->
             <div class="h-20 flex items-center justify-between px-6 border-b border-zinc-800 bg-zinc-950">
@@ -154,7 +147,7 @@
         <header class="h-20 bg-white border-b border-zinc-200 flex items-center justify-between px-4 sm:px-8 shadow-sm">
             <div class="flex items-center space-x-4">
                 <!-- Boton Hamburguesa Principal -->
-                <button type="button" onclick="abrirSidebar()" class="px-3 py-2 rounded-lg text-zinc-800 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 flex items-center space-x-2 transition-all shadow-sm group">
+                <button type="button" onclick="abrirSidebar()" class="px-3.5 py-2 rounded-lg text-zinc-800 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 flex items-center space-x-2 transition-all shadow-sm group">
                     <svg class="h-6 w-6 text-amber-800 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
@@ -218,23 +211,27 @@
         </main>
     </div>
 
-    <!-- Script Infalible del Menú Hamburguesa -->
+    <!-- Script Directo JS para Abrir/Cerrar el Menú Desplegable -->
     <script>
         function abrirSidebar() {
             const backdrop = document.getElementById('adminSidebarBackdrop');
             const sidebar = document.getElementById('adminSidebarDrawer');
-            if (backdrop && sidebar) {
-                backdrop.classList.add('abierto');
-                sidebar.classList.add('abierto');
+            if (sidebar) {
+                sidebar.style.setProperty('transform', 'translateX(0)', 'important');
+            }
+            if (backdrop) {
+                backdrop.style.setProperty('display', 'block', 'important');
             }
         }
 
         function cerrarSidebar() {
             const backdrop = document.getElementById('adminSidebarBackdrop');
             const sidebar = document.getElementById('adminSidebarDrawer');
-            if (backdrop && sidebar) {
-                backdrop.classList.remove('abierto');
-                sidebar.classList.remove('abierto');
+            if (sidebar) {
+                sidebar.style.setProperty('transform', 'translateX(-100%)', 'important');
+            }
+            if (backdrop) {
+                backdrop.style.setProperty('display', 'none', 'important');
             }
         }
     </script>
