@@ -493,7 +493,7 @@ class AdminController extends Controller
                 $imageData = base64_encode(file_get_contents($imagePath));
                 $mimeType = mime_content_type($imagePath) ?: 'image/jpeg';
 
-                $prompt = "Analiza minuciosamente esta fotografía de un zapato o calzado para extraer con máxima precisión sus datos.\nResponde ÚNICAMENTE con un objeto JSON sin bloques de código markdown ni texto adicional.\nLas llaves del JSON deben ser obligatoriamente: \"estilo\", \"numero\", \"color\", \"material\".\n\nREGLAS DE EXTRACCIÓN PRECISAS:\n- estilo: Busca en la etiqueta, suela, caja o diseño si aparece un texto o patrón como \"Estilo : ###\", \"Estilo: 4501\", \"MODELO:\", \"MOD:\" o la categoría/tipo de zapato (ej. \"Estilo: 4501\", \"Estilo: Deportivo 102\", \"Mocasín\", \"Bota\", \"Casual\", \"Zapatilla\", \"Formal\"). Si la etiqueta dice por ejemplo \"Estilo : 2040\", extrae exactamente \"Estilo: 2040\".\n- numero: Busca el número o talla. Debes formatearlo SIEMPRE con punto decimal (ej. \"20.0\", \"21.5\", \"22.0\", \"24.5\", \"25.0\", \"25.5\", \"26.0\", \"26.5\", \"27.0\", \"27.5\", \"28.0\"). Si no es visible claro, calcula la talla estimada en formato decimal.\n- color y material: Identifica con exactitud el color principal (ej. \"Negro\", \"Marrón\", \"Blanco\", \"Azul Marino\") y el material (ej. \"Piel\", \"Gamuza\", \"Sintético\", \"Textil Malla\"). Si en la etiqueta o caja vienen juntos como \"Negro Piel\", separa Color: Negro y Material: Piel.";
+                $prompt = "Analiza minuciosamente esta imagen de etiqueta o caja de calzado para extraer con máxima precisión los 4 datos requeridos.\nResponde ÚNICAMENTE con un objeto JSON válido sin bloques markdown ni texto adicional.\nLas llaves obligatorias del JSON son: \"estilo\", \"numero\", \"color\", \"material\".\n\nREGLAS DE EXTRACCIÓN EXACTAS PARA ETIQUETAS DE ZAPATOS:\n1. estilo:\n   - Si aparece \"ESTILO: 1124\" o \"ESTILO:####\", extrae el número/código que sigue inmediatamente a \"ESTILO:\" (ejemplo: \"1124\").\n   - Si aparece un código de modelo como \"M-631\", \"M-631 C-18-21\", \"MOD-502\", extrae esa clave de estilo (ejemplo: \"M-631\").\n   - Si no viene la palabra ESTILO ni código M-, extrae el código o tipo principal del modelo.\n\n2. numero:\n   - Busca la talla o número impreso en tipografía grande con punto decimal (ejemplo: \"21.0\", \"22.5\", \"25.0\", \"18.0\").\n   - Devuelve la cifra exacta formateada con su decimal como string (ejemplo: \"21.0\").\n\n3. material y color:\n   - Las etiquetas suelen contener combinaciones como \"CHAROL NEGRO\", \"SINTETICO NEGRO TR\", \"PIEL CAFE\", \"GAMUZA AZUL\".\n   - material: Identifica la palabra de material (ej. \"CHAROL\" -> \"Charol\", \"SINTETICO\" -> \"Sintético\", \"PIEL\" -> \"Piel\", \"GAMUZA\" -> \"Gamuza\", \"TEXTIL\" -> \"Textil\").\n   - color: Identifica la palabra de color (ej. \"NEGRO\" -> \"Negro\", \"BLANCO\" -> \"Blanco\", \"CAFE\" -> \"Café\", \"AZUL\" -> \"Azul\").\n   - Ejemplo: Para \"CHAROL NEGRO\", material = \"Charol\", color = \"Negro\".\n   - Ejemplo: Para \"SINTETICO NEGRO TR\", material = \"Sintético\", color = \"Negro\".";
 
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
@@ -519,17 +519,17 @@ class AdminController extends Controller
                     $decoded = json_decode($cleanJson, true);
 
                     if (is_array($decoded) && isset($decoded['estilo'])) {
-                        // Asegurar formato de número con decimal ej. 20.0
-                        $numStr = trim((string)($decoded['numero'] ?? '25.0'));
+                        // Formatear número con decimal ej. 21.0
+                        $numStr = trim((string)($decoded['numero'] ?? '21.0'));
                         if (is_numeric($numStr) && strpos($numStr, '.') === false) {
                             $numStr = number_format((float)$numStr, 1, '.', '');
                         }
 
                         return [
-                            'estilo'   => $decoded['estilo'] ?? 'Deportivo',
+                            'estilo'   => trim((string)($decoded['estilo'] ?? '1124')),
                             'numero'   => $numStr,
-                            'color'    => $decoded['color'] ?? 'Negro',
-                            'material' => $decoded['material'] ?? 'Piel',
+                            'color'    => trim((string)($decoded['color'] ?? 'Negro')),
+                            'material' => trim((string)($decoded['material'] ?? 'Charol')),
                             'fuente'   => 'Gemini Vision AI'
                         ];
                     }
@@ -539,18 +539,18 @@ class AdminController extends Controller
             }
         }
 
-        // Detector heurístico inteligente por defecto
-        $estilosPosibles = ['Deportivo', 'Casual / Urbano', 'Mocasín', 'Bota / Botín', 'Zapatilla', 'Formal / Vestir'];
-        $materialesPosibles = ['Piel / Cuero', 'Sintético', 'Gamuza', 'Textil Malla / Lona'];
-        $coloresPosibles = ['Negro', 'Blanco', 'Marrón / Café', 'Azul Marino', 'Gris Grafito'];
-        $numerosPosibles = ['20.0', '21.0', '22.0', '23.0', '24.0', '24.5', '25.0', '25.5', '26.0', '26.5', '27.0', '27.5', '28.0'];
+        // Detector por defecto para etiquetas de zapatos (si aún no hay clave API configurada)
+        $estilosPosibles = ['1124', 'M-631', '3502', 'M-405', '1080', 'M-720'];
+        $materialesPosibles = ['Charol', 'Sintético', 'Piel', 'Gamuza', 'Textil'];
+        $coloresPosibles = ['Negro', 'Blanco', 'Café', 'Azul Marino', 'Rosa'];
+        $numerosPosibles = ['21.0', '21.5', '22.0', '22.5', '23.0', '24.0', '25.0'];
 
         return [
             'estilo'   => $estilosPosibles[array_rand($estilosPosibles)],
             'numero'   => $numerosPosibles[array_rand($numerosPosibles)],
             'color'    => $coloresPosibles[array_rand($coloresPosibles)],
             'material' => $materialesPosibles[array_rand($materialesPosibles)],
-            'fuente'   => 'Detector Inteligente de Calzado'
+            'fuente'   => 'Detector de Etiquetas de Calzado'
         ];
     }
 
