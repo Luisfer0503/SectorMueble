@@ -3,6 +3,8 @@
 @section('contenido')
     <!-- Meta CSRF para peticiones AJAX -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <!-- Engine Tesseract OCR para lectura local inmediata de etiquetas de fotos -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
     <!-- Header Section -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -482,6 +484,8 @@
             document.getElementById('opcionesCaptura').classList.remove('hidden');
         }
 
+        let ultimaImagenCapturada = null;
+
         function capturarDeCamara() {
             const video = document.getElementById('webcamVideo');
             const canvas = document.getElementById('webcamCanvas');
@@ -492,8 +496,9 @@
             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             const base64Image = canvas.toDataURL('image/jpeg', 0.85);
+            ultimaImagenCapturada = base64Image;
             detenerCamara();
-            enviarImagenParaAnalisis({ imagen_base64: base64Image });
+            enviarImagenParaAnalisis({ imagen_base64: base64Image }, false, base64Image);
         }
 
         function subirArchivoSeleccionado(event) {
@@ -502,13 +507,101 @@
 
             const formData = new FormData();
             formData.append('imagen_archivo', file);
-            enviarImagenParaAnalisis(formData, true);
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                ultimaImagenCapturada = e.target.result;
+                enviarImagenParaAnalisis(formData, true, e.target.result);
+            };
+            reader.readAsDataURL(file);
         }
 
-        // Envío AJAX al backend para IA
-        function enviarImagenParaAnalisis(payload, isFormData = false) {
+        function extraerDatosOCRDeEtiqueta(texto) {
+            console.log("Texto completo reconocido por OCR:", texto);
+            const res = {};
+
+            // 1. Estilo: Busca "ESTILO: 1124" o "M-631" o "MOD: 405"
+            const mEstilo = texto.match(/ESTILO\s*[:\.-]?\s*([A-Za-z0-9\-]+)/i);
+            const mM = texto.match(/\b(M-\d+[A-Za-z0-9\-]*)\b/i);
+            const mMod = texto.match(/MOD(?:ELO)?\s*[:\.-]?\s*([A-Za-z0-9\-]+)/i);
+
+            if (mEstilo && mEstilo[1]) {
+                res.estilo = mEstilo[1].trim().toUpperCase();
+            } else if (mM && mM[1]) {
+                res.estilo = mM[1].trim().toUpperCase();
+            } else if (mMod && mMod[1]) {
+                res.estilo = mMod[1].trim().toUpperCase();
+            }
+
+            // 2. Número / Talla (ej. 21.0, 22.5, 25.0)
+            const mDecimal = texto.match(/\b(\d{2}\.[05])\b/);
+            const mCualquierDec = texto.match(/\b(\d{2}\.\d)\b/);
+            if (mDecimal) {
+                res.numero = mDecimal[1];
+            } else if (mCualquierDec) {
+                res.numero = mCualquierDec[1];
+            }
+
+            // 3. Material
+            const listaMateriales = [
+                { key: 'CHAROL', val: 'Charol' },
+                { key: 'SINTETICO', val: 'Sintético' },
+                { key: 'SINTÉTICO', val: 'Sintético' },
+                { key: 'PIEL', val: 'Piel' },
+                { key: 'CUERO', val: 'Cuero' },
+                { key: 'GAMUZA', val: 'Gamuza' },
+                { key: 'TEXTIL', val: 'Textil' },
+                { key: 'MALLA', val: 'Malla' },
+                { key: 'LONA', val: 'Lona' }
+            ];
+            for (const mat of listaMateriales) {
+                if (new RegExp('\\b' + mat.key + '\\b', 'i').test(texto)) {
+                    res.material = mat.val;
+                    break;
+                }
+            }
+
+            // 4. Color
+            const listaColores = [
+                { key: 'NEGRO', val: 'Negro' },
+                { key: 'BLANCO', val: 'Blanco' },
+                { key: 'CAFE', val: 'Café' },
+                { key: 'CAFÉ', val: 'Café' },
+                { key: 'MARRON', val: 'Marrón' },
+                { key: 'MARRÓN', val: 'Marrón' },
+                { key: 'AZUL', val: 'Azul' },
+                { key: 'ROSA', val: 'Rosa' },
+                { key: 'VINO', val: 'Vino' },
+                { key: 'ROJO', val: 'Rojo' },
+                { key: 'MIEL', val: 'Miel' },
+                { key: 'GRIS', val: 'Gris' }
+            ];
+            for (const col of listaColores) {
+                if (new RegExp('\\b' + col.key + '\\b', 'i').test(texto)) {
+                    res.color = col.val;
+                    break;
+                }
+            }
+
+            return res;
+        }
+
+        // Envío AJAX al backend para IA + Ejecución OCR local sobre la foto
+        async function enviarImagenParaAnalisis(payload, isFormData = false, imageSrcForOCR = null) {
             document.getElementById('loaderIA').classList.remove('hidden');
             document.getElementById('opcionesCaptura').classList.add('hidden');
+
+            let ocrResults = null;
+            if (imageSrcForOCR && typeof Tesseract !== 'undefined') {
+                try {
+                    const result = await Tesseract.recognize(imageSrcForOCR, 'spa+eng');
+                    if (result && result.data && result.data.text) {
+                        ocrResults = extraerDatosOCRDeEtiqueta(result.data.text);
+                    }
+                } catch (e) {
+                    console.warn("OCR local no pudo procesar el texto:", e);
+                }
+            }
 
             const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             let options = {
@@ -531,6 +624,14 @@
                 .then(data => {
                     document.getElementById('loaderIA').classList.add('hidden');
                     if (data.success) {
+                        // Si el OCR local leyó datos reales de la foto, sobreescribir los datos en el modal
+                        if (ocrResults) {
+                            if (ocrResults.estilo) data.estilo = ocrResults.estilo;
+                            if (ocrResults.numero) data.numero = ocrResults.numero;
+                            if (ocrResults.color) data.color = ocrResults.color;
+                            if (ocrResults.material) data.material = ocrResults.material;
+                        }
+
                         cerrarModalEscaner();
                         mostrarModalConfirmacion(data);
                     } else {
