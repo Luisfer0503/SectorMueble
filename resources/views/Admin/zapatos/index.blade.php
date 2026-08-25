@@ -27,8 +27,8 @@
 
             <!-- Botones Principales Destacados (Súper fácil de ver y pulsar) -->
             <div class="flex flex-wrap items-center gap-3">
-                <!-- Botón Principal Héroe: Tomar Foto -->
-                <button onclick="abrirModalEscaner()" class="flex-1 sm:flex-initial inline-flex items-center justify-center px-6 py-3.5 bg-slate-900 hover:bg-black text-white font-bold text-xs md:text-sm rounded-xl shadow-md hover:shadow-lg transition-all space-x-2.5 group cursor-pointer">
+                <!-- Botón Principal Héroe: Tomar Foto (Tema Café Permanente) -->
+                <button onclick="abrirModalEscaner()" class="flex-1 sm:flex-initial inline-flex items-center justify-center px-6 py-3.5 bg-amber-950 hover:bg-amber-900 text-amber-100 font-extrabold text-xs md:text-sm rounded-xl shadow-md hover:shadow-lg border border-amber-800 transition-all space-x-2.5 group cursor-pointer">
                     <svg class="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v6m3-3H9"/>
@@ -229,7 +229,7 @@
             </button>
 
             <div class="text-center mb-6">
-                <div class="w-14 h-14 bg-slate-900 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-md">
+                <div class="w-14 h-14 bg-amber-950 text-amber-400 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-md border border-amber-800">
                     <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                     </svg>
@@ -245,13 +245,13 @@
                     <canvas id="webcamCanvas" class="hidden"></canvas>
                 </div>
                 <div class="flex items-center justify-center gap-3 mt-4">
-                    <button type="button" onclick="capturarDeCamara()" class="px-6 py-3 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl shadow flex items-center space-x-2">
+                    <button type="button" onclick="capturarDeCamara()" class="px-6 py-3.5 bg-amber-950 hover:bg-amber-900 text-amber-100 border border-amber-800 text-xs font-bold rounded-xl shadow flex items-center space-x-2">
                         <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                         </svg>
                         <span>Capturar Foto Ahora</span>
                     </button>
-                    <button type="button" onclick="detenerCamara()" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl">
+                    <button type="button" onclick="detenerCamara()" class="px-4 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl">
                         Cancelar Cámara
                     </button>
                 </div>
@@ -259,7 +259,7 @@
 
             <!-- Opción 2: Botones de Selección -->
             <div id="opcionesCaptura" class="space-y-3">
-                <button type="button" onclick="iniciarCamara()" class="w-full py-4 px-4 bg-slate-900 hover:bg-black text-white font-bold text-xs rounded-xl shadow flex items-center justify-center space-x-2.5 transition-all">
+                <button type="button" onclick="iniciarCamara()" class="w-full py-4 px-4 bg-amber-950 hover:bg-amber-900 text-amber-100 font-extrabold text-xs rounded-xl shadow-md border border-amber-800 flex items-center justify-center space-x-2.5 transition-all cursor-pointer">
                     <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
@@ -398,11 +398,10 @@
 
                     <div>
                         <label class="block text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-1.5">
-                            Precio 1 ($) <span class="text-rose-600">*</span>
+                            Precio 1 ($ MXN) <span class="text-rose-600">*</span>
                         </label>
-                        <div class="flex items-center border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-600 bg-white shadow-sm transition-all">
-                            <span class="px-4 py-2.5 bg-emerald-100 text-emerald-950 font-black text-base border-r border-slate-200 select-none flex items-center justify-center min-w-[44px] shadow-inner">$</span>
-                            <input type="number" id="confPrecio" name="precio" step="0.01" min="0" placeholder="250.00" required class="w-full px-3.5 py-2.5 text-base font-black text-slate-900 bg-transparent outline-none tracking-tight">
+                        <div class="mt-1">
+                            <input type="number" id="confPrecio" name="precio" step="0.01" min="0" placeholder="250.00" required class="w-full px-4 py-2.5 text-base font-black text-slate-900 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-900 outline-none shadow-sm">
                         </div>
                     </div>
                 </div>
@@ -471,11 +470,8 @@
                             <input type="number" id="editCantidad" name="cantidad" min="0" required class="w-full mt-1 px-3 py-2 text-sm font-extrabold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-900 uppercase">Precio 1 ($)</label>
-                            <div class="flex items-center mt-1 border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-emerald-600 bg-white shadow-sm transition-all">
-                                <span class="px-3 py-2 bg-emerald-100 text-emerald-950 font-black text-sm border-r border-slate-200 select-none flex items-center justify-center min-w-[36px]">$</span>
-                                <input type="number" id="editPrecio" name="precio" step="0.01" min="0" required class="w-full px-3 py-2 text-sm font-extrabold text-slate-900 bg-transparent outline-none">
-                            </div>
+                            <label class="block text-xs font-extrabold text-slate-900 uppercase">Precio 1 ($ MXN)</label>
+                            <input type="number" id="editPrecio" name="precio" step="0.01" min="0" required class="w-full mt-1 px-3.5 py-2 text-sm font-extrabold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-900 outline-none">
                         </div>
                     </div>
                 </div>

@@ -61,7 +61,6 @@
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3">
                     <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-8 w-auto object-contain brightness-0 invert">
                     <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-10 w-auto object-contain brightness-0 invert">
-                    <span class="serif-title text-sm font-bold tracking-wider text-white">SECTOR<span class="text-amber-500">CONTROL</span></span>
                 </a>
                 <button type="button" onclick="cerrarSidebar()" class="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-colors" title="Cerrar menú">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -158,7 +157,6 @@
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3">
                     <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-8 w-auto object-contain brightness-0 invert">
                     <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-10 w-auto object-contain brightness-0 invert">
-                    <span class="serif-title text-base font-bold tracking-wider text-white hidden sm:inline-block">SECTOR<span class="text-amber-500">CONTROL</span></span>
                 </a>
             </div>
 
