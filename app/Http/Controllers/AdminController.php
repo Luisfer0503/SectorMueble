@@ -645,18 +645,13 @@ class AdminController extends Controller
     {
         try {
             $estilo   = trim((string) $request->input('estilo', 'GENERICO'));
-            $numero   = trim((string) $request->input('numero', '25.0'));
             $color    = trim((string) $request->input('color', 'NEGRO'));
             $material = trim((string) $request->input('material', 'SINTETICO'));
             $bordado  = trim((string) $request->input('bordado', ''));
 
             if (empty($estilo)) $estilo = 'ESTILO-1';
-            if (empty($numero)) $numero = '25.0';
             if (empty($color)) $color = 'NEGRO';
             if (empty($material)) $material = 'SINTETICO';
-            
-            $cantRaw = $request->input('cantidad');
-            $cantidad = (is_numeric($cantRaw) && (int)$cantRaw > 0) ? (int)$cantRaw : 1;
 
             $precioRaw = $request->input('precio');
             $precio = (is_numeric($precioRaw) && (float)$precioRaw >= 0) ? (float)$precioRaw : 0.00;
@@ -666,60 +661,83 @@ class AdminController extends Controller
                 $imagenPath = 'storage/zapatos/default.png';
             }
 
-            // Generar la Clave Alterna para verificar si este zapato ya existe en la base de datos
-            $claveBuscada = Zapato::generarClaveAlterna($estilo, $material, $color, $bordado, $numero);
+            // Recopilar la lista de tallas enviadas (puede ser 1 o N tallas)
+            $tallasProcesar = [];
 
-            $zapatoExistente = Zapato::all()->first(function ($z) use ($claveBuscada) {
-                return $z->clave_alterna === $claveBuscada;
-            });
-
-            if ($zapatoExistente) {
-                // Ya existe un zapato con la misma clave: actualizar stock en lugar de duplicar
-                $nuevoStock = $zapatoExistente->cantidad + $cantidad;
-                
-                $zapatoExistente->update([
-                    'cantidad' => $nuevoStock,
-                    'precio'   => $precio > 0 ? $precio : $zapatoExistente->precio,
-                ]);
-
-                $mensajeDetalle = "¡Se encontró el mismo zapato anterior! (Clave Alterna: {$claveBuscada}). Se sumaron {$cantidad} pares al registro existente (Nuevo Stock: {$nuevoStock} pares).";
-
-                if ($request->wantsJson() || $request->ajax()) {
-                    return response()->json([
-                        'success'   => true,
-                        'duplicado' => true,
-                        'mensaje'   => $mensajeDetalle,
-                        'zapato'    => $zapatoExistente
-                    ]);
+            if ($request->has('tallas') && is_array($request->input('tallas'))) {
+                foreach ($request->input('tallas') as $t) {
+                    $numStr = trim((string)($t['numero'] ?? ''));
+                    $cantVal = (isset($t['cantidad']) && is_numeric($t['cantidad']) && (int)$t['cantidad'] > 0) ? (int)$t['cantidad'] : 1;
+                    if (!empty($numStr)) {
+                        $tallasProcesar[] = [
+                            'numero'   => $numStr,
+                            'cantidad' => $cantVal
+                        ];
+                    }
                 }
-
-                return redirect()->route('admin.zapatos')->with('success', $mensajeDetalle);
             }
 
-            // Crear nuevo registro si no existía previamente
-            $zapato = Zapato::create([
-                'estilo'      => $estilo,
-                'numero'      => $numero,
-                'color'       => $color,
-                'material'    => $material,
-                'bordado'     => $bordado,
-                'cantidad'    => $cantidad,
-                'precio'      => $precio,
-                'imagen_url'  => $imagenPath,
-                'detalles_ia' => $request->input('detalles_ia', null),
-            ]);
+            // Si no vino como array tallas[], procesar el campo numero y cantidad individuales
+            if (empty($tallasProcesar)) {
+                $numSingle = trim((string) $request->input('numero', '25.0'));
+                if (empty($numSingle)) $numSingle = '25.0';
+                $cantSingle = (is_numeric($request->input('cantidad')) && (int)$request->input('cantidad') > 0) ? (int)$request->input('cantidad') : 1;
+                $tallasProcesar[] = [
+                    'numero'   => $numSingle,
+                    'cantidad' => $cantSingle
+                ];
+            }
 
-            $mensajeExito = "¡Zapato guardado con éxito! (Clave Alterna: {$zapato->clave_alterna}).";
+            $registrosProcesados = [];
+            $totalGuardados = 0;
+
+            foreach ($tallasProcesar as $tItem) {
+                $numero = $tItem['numero'];
+                $cantidad = $tItem['cantidad'];
+
+                // Generar la Clave Alterna para esta talla específica
+                $claveBuscada = Zapato::generarClaveAlterna($estilo, $material, $color, $bordado, $numero);
+
+                $zapatoExistente = Zapato::all()->first(function ($z) use ($claveBuscada) {
+                    return $z->clave_alterna === $claveBuscada;
+                });
+
+                if ($zapatoExistente) {
+                    $nuevoStock = $zapatoExistente->cantidad + $cantidad;
+                    $zapatoExistente->update([
+                        'cantidad' => $nuevoStock,
+                        'precio'   => $precio > 0 ? $precio : $zapatoExistente->precio,
+                    ]);
+                    $registrosProcesados[] = "Talla {$numero} (+{$cantidad} pares | Stock: {$nuevoStock})";
+                } else {
+                    $zapatoNuevo = Zapato::create([
+                        'estilo'      => $estilo,
+                        'numero'      => $numero,
+                        'color'       => $color,
+                        'material'    => $material,
+                        'bordado'     => $bordado,
+                        'cantidad'    => $cantidad,
+                        'precio'      => $precio,
+                        'imagen_url'  => $imagenPath,
+                        'detalles_ia' => $request->input('detalles_ia', null),
+                    ]);
+                    $registrosProcesados[] = "Talla {$numero} (Clave: {$zapatoNuevo->clave_alterna})";
+                }
+                $totalGuardados++;
+            }
+
+            $mensajeFinal = "¡Se registraron {$totalGuardados} talla(s) en el inventario con éxito!\n- " . implode("\n- ", $registrosProcesados);
 
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success' => true,
-                    'mensaje' => $mensajeExito,
-                    'zapato'  => $zapato
+                    'mensaje' => $mensajeFinal,
+                    'total'   => $totalGuardados
                 ]);
             }
 
-            return redirect()->route('admin.zapatos')->with('success', $mensajeExito);
+            return redirect()->route('admin.zapatos')->with('success', $mensajeFinal);
+
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error("Error guardando zapato: " . $e->getMessage());
 
@@ -729,8 +747,7 @@ class AdminController extends Controller
                     'error'   => 'Error al guardar zapato: ' . $e->getMessage()
                 ], 500);
             }
-
-            return redirect()->route('admin.zapatos')->with('error', 'Ocurrió un error al guardar: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al guardar zapato: ' . $e->getMessage());
         }
     }
 

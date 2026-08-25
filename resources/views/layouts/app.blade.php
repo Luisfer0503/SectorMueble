@@ -645,7 +645,7 @@
             </div>
 
             <!-- Canvas contenedor de la rueda -->
-            <div class="relative mx-auto my-6 w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] flex items-center justify-center">
+            <div class="relative mx-auto my-3 w-[270px] h-[270px] sm:w-[300px] sm:h-[300px] flex items-center justify-center">
                 <!-- Flecha Indicadora Superior -->
                 <div class="absolute -top-3 z-30 flex flex-col items-center">
                     <div class="w-0 h-0 border-l-[14px] border-l-transparent border-r-[14px] border-r-transparent border-t-[22px] border-t-amber-400 drop-shadow-[0_4px_8px_rgba(245,158,11,0.6)]"></div>
@@ -656,9 +656,17 @@
                     <canvas id="ruleta-canvas" width="320" height="320" class="w-full h-full"></canvas>
                 </div>
 
-                <!-- Center Spin Button -->
-                <button id="ruleta-spin-btn" onclick="spinRuleta()" class="absolute z-20 w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#FAF3E0] via-[#88674B] to-[#2B241A] text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(136,103,75,0.8)] border-4 border-[#1F0F0B] flex items-center justify-center hover:scale-105 active:scale-95 transition-all">
-                    ¡GIRAR!
+                <!-- Centro Elegante de la Rueda (Eje Dorado Maderable) -->
+                <div class="absolute z-20 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#FAF3E0] via-[#C09A75] to-[#88674B] rounded-full shadow-lg border-2 border-[#1F0F0B] flex items-center justify-center pointer-events-none">
+                    <div class="w-4 h-4 rounded-full bg-[#1F0F0B] border border-amber-300/40 flex items-center justify-center text-[10px] text-amber-300">✨</div>
+                </div>
+            </div>
+
+            <!-- Botón de Girar posicionado claramente ABAJO de la Ruleta -->
+            <div class="mt-4 pt-1">
+                <button id="ruleta-spin-btn" onclick="spinRuleta()" class="w-full bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 hover:from-amber-600 hover:to-amber-700 text-white font-black text-sm sm:text-base uppercase tracking-wider py-3.5 px-6 rounded-2xl shadow-xl hover:shadow-amber-900/50 transition-all flex items-center justify-center space-x-2 border border-amber-400/30 active:scale-95 group">
+                    <span class="text-lg group-hover:rotate-12 transition-transform">🎰</span>
+                    <span>¡GIRAR RULETA AHORA!</span>
                 </button>
             </div>
         </div>
@@ -928,20 +936,29 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
         const cy = displaySize / 2;
         const radius = displaySize / 2;
 
-        // Paleta de colores oficial alternada de Sector Mueble (Taupe, Crema, Espresso, Arena)
-        const brandPalette = [
-            { bg: '#88674B', text: '#FAF3E0', stroke: '#1F0F0B' }, // Taupe maderable -> Texto Crema
-            { bg: '#FAF3E0', text: '#2B241A', stroke: '#FAF3E0' }, // Crema cálido -> Texto Espresso
-            { bg: '#2B241A', text: '#FFF0E0', stroke: '#0B0A0A' }, // Espresso -> Texto Arena
-            { bg: '#C09A75', text: '#1F0F0B', stroke: '#FFF0E0' }  // Arena dorado -> Texto Oscuro
-        ];
+        // Función para calcular brillo y asegurar contraste perfecto de lectura
+        function getLuminance(hex) {
+            if (!hex) return 100;
+            let c = hex.replace('#', '');
+            if (c.length === 3) c = c.split('').map(x => x + x).join('');
+            const r = parseInt(c.substring(0, 2), 16) || 0;
+            const g = parseInt(c.substring(2, 4), 16) || 0;
+            const b = parseInt(c.substring(4, 6), 16) || 0;
+            return (r * 299 + g * 587 + b * 114) / 1000;
+        }
 
         ctx.clearRect(0, 0, displaySize, displaySize);
 
         options.forEach((opt, idx) => {
             const angle = idx * arc;
-            const style = brandPalette[idx % brandPalette.length];
-            const sliceBg = (opt.color_bg && opt.color_bg !== '#88674B' && opt.color_bg !== '#2B241A') ? opt.color_bg : style.bg;
+            const sliceBg = opt.color_bg || '#88674B';
+            
+            const lum = getLuminance(sliceBg);
+            const isLightBg = lum > 160;
+
+            // Selección de colores de texto con legibilidad óptima sobre fondo claro u oscuro
+            const textColor = isLightBg ? '#1F0F0B' : '#FAF3E0';
+            const strokeColor = isLightBg ? '#FFFFFF' : '#120907';
             
             // 1. Dibujar sector de la rueda
             ctx.beginPath();
@@ -951,38 +968,49 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
             ctx.lineTo(cx, cy);
             ctx.fill();
 
-            // 2. Línea divisoria dorada entre sectores
+            // 2. Línea divisoria crema/dorada brillante entre sectores
             ctx.lineWidth = 3;
             ctx.strokeStyle = '#FAF3E0';
             ctx.stroke();
 
-            // 3. Renderizar texto con máxima nitidez y contraste adaptativo
+            // 3. Renderizar texto con máxima nitidez, contraste adaptativo y tamaño ajustado
             ctx.save();
             ctx.translate(cx, cy);
             ctx.rotate(angle + arc / 2);
             ctx.textAlign = 'right';
-            ctx.font = 'bold 14px Poppins, -apple-system, sans-serif';
 
             let label = opt.titulo || ('Opción ' + opt.posicion);
-            if (label.length > 20) label = label.substring(0, 18) + '..';
+            
+            // Ajustar tamaño de fuente dinámicamente si el texto es largo
+            let fontSize = 13;
+            if (label.length > 22) fontSize = 11.5;
+            if (label.length > 30) fontSize = 10;
 
-            // Delineado (stroke) para asegurar contraste perfecto
-            ctx.strokeStyle = style.stroke;
+            ctx.font = `bold ${fontSize}px 'Poppins', system-ui, -apple-system, sans-serif`;
+
+            // Delineado (stroke) robusto para máxima nitidez de los bordes
+            ctx.strokeStyle = strokeColor;
             ctx.lineWidth = 3.5;
             ctx.lineJoin = 'round';
-            ctx.strokeText(label, radius - 22, 4);
+            ctx.strokeText(label, radius - 18, 4);
 
-            // Relleno de texto
-            ctx.fillStyle = style.text;
-            ctx.fillText(label, radius - 22, 4);
+            // Relleno de texto principal
+            ctx.fillStyle = textColor;
+            ctx.fillText(label, radius - 18, 4);
             ctx.restore();
         });
 
-        // 4. Anillo exterior decorativo de lujo
+        // 4. Anillos exteriores de madera warm y borde dorado
         ctx.beginPath();
         ctx.arc(cx, cy, radius - 2, 0, 2 * Math.PI);
-        ctx.lineWidth = 4;
+        ctx.lineWidth = 6;
         ctx.strokeStyle = '#88674B';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius - 4, 0, 2 * Math.PI);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = '#FAF3E0';
         ctx.stroke();
     }
 

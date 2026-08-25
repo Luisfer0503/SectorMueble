@@ -190,8 +190,12 @@
                                         @endif
                                     </td>
                                     <td class="py-4 px-5 text-center">
-                                        <div class="flex items-center justify-center space-x-2">
-                                            <button onclick="abrirModalEditar({{ json_encode($zapato) }})" class="p-2 text-slate-700 hover:text-amber-900 bg-slate-100 hover:bg-amber-100 rounded-xl border border-slate-200 transition-colors" title="Editar zapato">
+                                        <div class="flex items-center justify-center space-x-1.5">
+                                            <button onclick="abrirModalAgregarTalla({{ json_encode($zapato) }})" class="px-2.5 py-1.5 text-amber-950 hover:text-white bg-amber-200/90 hover:bg-amber-800 rounded-xl border border-amber-400/60 transition-all font-black text-xs flex items-center space-x-1 shadow-sm cursor-pointer" title="Agregar nuevo número / talla (+ Talla) para este modelo">
+                                                <span class="text-sm font-black">+</span>
+                                                <span class="hidden sm:inline text-[10px] uppercase font-extrabold">Talla</span>
+                                            </button>
+                                            <button onclick="abrirModalEditar({{ json_encode($zapato) }})" class="p-2 text-slate-700 hover:text-amber-900 bg-slate-100 hover:bg-amber-100 rounded-xl border border-slate-200 transition-colors cursor-pointer" title="Editar zapato">
                                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                 </svg>
@@ -323,88 +327,73 @@
             <form id="formGuardarZapato" onsubmit="guardarZapatoInventario(event)">
                 <input type="hidden" id="confImagenPath" name="imagen_path">
 
-                <!-- Preview de Foto + Atributos IA -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                <!-- Preview de Foto + Atributos Modelo -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                     <div class="sm:col-span-1">
                         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Foto Capturada</span>
-                        <img id="confImagenPreview" src="" alt="Vista Previa" class="w-full h-32 object-cover rounded-xl border border-slate-200 shadow-sm bg-white">
+                        <img id="confImagenPreview" src="" alt="Vista Previa" class="w-full h-36 object-cover rounded-xl border border-slate-200 shadow-sm bg-white">
                     </div>
 
                     <div class="sm:col-span-2 space-y-3">
                         <div>
-                            <label class="block text-[11px] font-extrabold text-slate-700 uppercase">Estilo (ej. 1214, M-631)</label>
-                            <input type="text" id="confEstilo" name="estilo" required placeholder="ej. 1214, M-631..." class="w-full mt-1 px-3.5 py-2 text-xs font-bold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none">
+                            <label class="block text-[11px] font-extrabold text-slate-700 uppercase mb-1">Estilo (ej. 1214, M-631) <span class="text-rose-600">*</span></label>
+                            <input type="text" id="confEstilo" name="estilo" required placeholder="ej. 1214, M-631..." class="w-full px-3.5 py-2 text-xs font-extrabold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none text-slate-900">
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-extrabold text-slate-700 uppercase mb-1">Color <span class="text-rose-600">*</span></label>
+                                <input type="text" id="confColor" name="color" required placeholder="ej. Negro" class="w-full px-2.5 py-1.5 text-xs font-bold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none text-slate-900">
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-extrabold text-slate-700 uppercase mb-1">Material <span class="text-rose-600">*</span></label>
+                                <input type="text" id="confMaterial" name="material" required placeholder="ej. Piel" class="w-full px-2.5 py-1.5 text-xs font-bold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none text-slate-900">
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-extrabold text-slate-700 uppercase mb-1">Bordado</label>
+                                <input type="text" id="confBordado" name="bordado" placeholder="Opcional" class="w-full px-2.5 py-1.5 text-xs font-bold bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-900 outline-none text-slate-900">
+                            </div>
                         </div>
 
                         <div>
-                            <label class="block text-[11px] font-extrabold text-slate-700 uppercase">Número / Talla (ej. 22.0, 25.5)</label>
-                            <input type="text" id="confNumero" name="numero" list="listaTallasDecimales" required placeholder="ej. 22.0, 25.5, 27.0" class="w-full mt-1 px-3.5 py-2 text-xs font-bold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none">
-                            <datalist id="listaTallasDecimales">
-                                <option value="20.0"></option>
-                                <option value="20.5"></option>
-                                <option value="21.0"></option>
-                                <option value="21.5"></option>
-                                <option value="22.0"></option>
-                                <option value="22.5"></option>
-                                <option value="23.0"></option>
-                                <option value="23.5"></option>
-                                <option value="24.0"></option>
-                                <option value="24.5"></option>
-                                <option value="25.0"></option>
-                                <option value="25.5"></option>
-                                <option value="26.0"></option>
-                                <option value="26.5"></option>
-                                <option value="27.0"></option>
-                                <option value="27.5"></option>
-                                <option value="28.0"></option>
-                                <option value="28.5"></option>
-                                <option value="29.0"></option>
-                                <option value="29.5"></option>
-                                <option value="30.0"></option>
-                            </datalist>
+                            <label class="block text-[11px] font-extrabold text-slate-900 uppercase mb-1">Precio 1 ($ MXN) <span class="text-rose-600">*</span></label>
+                            <input type="number" id="confPrecio" name="precio" step="0.01" min="0" placeholder="250.00" required class="w-full px-3.5 py-2 text-sm font-black text-slate-900 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-900 outline-none shadow-sm">
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
-                    <div>
-                        <label class="block text-[11px] font-extrabold text-slate-700 uppercase">Color</label>
-                        <input type="text" id="confColor" name="color" required placeholder="ej. Negro, Blanco" class="w-full mt-1 px-3 py-2 text-xs font-semibold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none">
+                <!-- Sección: Captura de Tallas y Existencias (Corrida de Calzado) -->
+                <div class="p-4 bg-amber-50/70 border border-amber-200/90 rounded-2xl mb-5 space-y-3">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 border-b border-amber-200/80">
+                        <div>
+                            <h4 class="text-xs font-extrabold text-amber-950 uppercase tracking-wider">Tallas y Existencias a Registrar</h4>
+                            <p class="text-[10px] text-amber-800 font-medium">Agrega múltiples tallas para crear toda la corrida en un solo clic.</p>
+                        </div>
+                        <button type="button" onclick="agregarRenglonTallaExtraConf()" class="px-3.5 py-1.5 bg-amber-950 hover:bg-amber-900 text-amber-200 hover:text-white text-xs font-black rounded-xl border border-amber-800 transition-all flex items-center space-x-1.5 shadow cursor-pointer shrink-0" title="Agregar otra talla a la corrida">
+                            <span class="text-sm font-black">+</span>
+                            <span>Agregar otra talla</span>
+                        </button>
                     </div>
 
-                    <div>
-                        <label class="block text-[11px] font-extrabold text-slate-700 uppercase">Material</label>
-                        <input type="text" id="confMaterial" name="material" required placeholder="ej. Sintético, Piel" class="w-full mt-1 px-3 py-2 text-xs font-semibold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-[11px] font-extrabold text-slate-700 uppercase">Bordado (Opcional)</label>
-                        <input type="text" id="confBordado" name="bordado" placeholder="ej. Flor, Estrella..." class="w-full mt-1 px-3 py-2 text-xs font-semibold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none">
-                    </div>
-                </div>
-                <p class="text-[10px] text-slate-400 mb-6 italic">* La Clave Alterna se genera automáticamente: M(Estilo)(Material)(Color)[Bordado]T(Talla).</p>
-
-                <!-- Campos de Cantidad y Precio -->
-                <div class="p-5 bg-slate-50/80 border border-slate-200 rounded-2xl mb-6 grid grid-cols-1 sm:grid-cols-2 gap-5 shadow-inner">
-                    <div>
-                        <label class="block text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-1.5">
-                            Cantidad (Stock / EXIST.) <span class="text-rose-600">*</span>
-                        </label>
-                        <div class="relative flex items-center border border-slate-300 rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-slate-900 bg-white shadow-sm">
-                            <input type="number" id="confCantidad" name="cantidad" min="1" value="1" required class="w-full pl-3.5 pr-14 py-2.5 text-base font-black bg-transparent outline-none text-slate-900">
-                            <span class="absolute right-3 text-xs text-slate-500 font-extrabold uppercase pointer-events-none">pares</span>
+                    <!-- Talla #1 (Principal) -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 bg-white p-3 rounded-xl border border-amber-300 shadow-sm">
+                        <div class="flex items-center space-x-2 flex-1">
+                            <span class="text-xs font-black text-amber-950 uppercase font-mono px-1 shrink-0">Talla #1:</span>
+                            <input type="text" id="confNumero" name="tallas[0][numero]" autocomplete="off" required placeholder="Escribe la talla (ej. 22.0, 22.5, 23+)" class="w-full px-3 py-2 text-xs font-extrabold bg-slate-50 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-slate-900 text-slate-900">
+                        </div>
+                        <div class="flex items-center space-x-2 shrink-0">
+                            <span class="text-xs font-extrabold text-slate-700 uppercase">Existencia (Pares):</span>
+                            <input type="number" id="confCantidad" name="tallas[0][cantidad]" min="1" value="1" required class="w-20 px-3 py-2 text-xs font-black bg-slate-50 border border-slate-300 rounded-lg outline-none text-center text-slate-900">
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-extrabold text-slate-900 uppercase tracking-wider mb-1.5">
-                            Precio 1 ($ MXN) <span class="text-rose-600">*</span>
-                        </label>
-                        <div class="mt-1">
-                            <input type="number" id="confPrecio" name="precio" step="0.01" min="0" placeholder="250.00" required class="w-full px-4 py-2.5 text-base font-black text-slate-900 bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-900 outline-none shadow-sm">
-                        </div>
-                    </div>
+                    <!-- Contenedor dinámico de Tallas Extras agregadas con + -->
+                    <div id="listaTallasExtraConf" class="space-y-2.5"></div>
                 </div>
+
+                <p class="text-[10px] text-slate-400 mb-5 italic">* Cada talla registrada creará automáticamente su propio registro y Clave Alterna: M(Estilo)(Material)(Color)[Bordado]T(Talla).</p>
 
                 <div class="flex flex-col sm:flex-row items-center justify-end gap-3 pt-2">
                     <button type="button" onclick="cerrarModalConfirmacion()" class="w-full sm:w-auto px-5 py-3 text-xs font-bold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors">
@@ -445,7 +434,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase">Número / Talla (ej. 22.0)</label>
-                            <input type="text" id="editNumero" name="numero" list="listaTallasDecimales" required class="w-full mt-1 px-3.5 py-2 text-xs font-bold border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none">
+                            <input type="text" id="editNumero" name="numero" autocomplete="off" required class="w-full mt-1 px-3.5 py-2 text-xs font-bold border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none text-slate-900">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 uppercase">Color</label>
@@ -479,6 +468,102 @@
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="cerrarModalEditar()" class="px-5 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl">Cancelar</button>
                     <button type="submit" class="px-6 py-2.5 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl shadow">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- MODAL DUPLICAR / AGREGAR NUEVA TALLA (+)   -->
+    <!-- ========================================== -->
+    <div id="modalAgregarTalla" class="fixed inset-0 z-50 hidden bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative border border-slate-200">
+            <button onclick="cerrarModalAgregarTalla()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-700 p-1.5 rounded-full hover:bg-slate-100 transition-colors">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            <div class="flex items-center space-x-3.5 mb-5">
+                <div class="w-12 h-12 bg-amber-950 text-amber-300 rounded-2xl flex items-center justify-center font-black text-2xl border border-amber-800 shadow-md">
+                    +
+                </div>
+                <div>
+                    <h3 class="serif-title text-xl font-extrabold text-slate-900">Agregar Nueva Talla (+ Talla)</h3>
+                    <p class="text-xs text-slate-500">Conserva estilo, color, material y precio; solo cambia el número y genera nueva Clave Alterna.</p>
+                </div>
+            </div>
+
+            <form id="formAgregarTalla" onsubmit="guardarNuevaTallaZapato(event)">
+                <input type="hidden" id="tallaImagenPath" name="imagen_path">
+                <input type="hidden" id="tallaEstilo" name="estilo">
+                <input type="hidden" id="tallaColor" name="color">
+                <input type="hidden" id="tallaMaterial" name="material">
+                <input type="hidden" id="tallaBordado" name="bordado">
+
+                <!-- Resumen informativo del modelo base -->
+                <div class="p-4 bg-amber-50/70 border border-amber-200/80 rounded-2xl mb-5 text-xs space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500 font-medium">Estilo del Modelo:</span>
+                        <strong id="summaryEstilo" class="text-slate-900 font-extrabold">--</strong>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500 font-medium">Material / Color:</span>
+                        <strong id="summaryMaterialColor" class="text-slate-900 font-bold">--</strong>
+                    </div>
+                    <div class="flex items-center justify-between pt-1 border-t border-amber-200/60">
+                        <span class="text-slate-500 font-medium">Talla Base Anterior:</span>
+                        <span id="summaryTallaOriginal" class="bg-amber-200/80 text-amber-950 px-2.5 py-0.5 rounded-md font-mono font-black text-xs">--</span>
+                    </div>
+                </div>
+
+                <!-- Campo Número / Talla + Botones de Incremento (+ 0.5, + 1.0, + '+') -->
+                <div class="space-y-4 mb-5">
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-900 uppercase mb-1">
+                            Nuevo Número / Talla <span class="text-rose-600">*</span>
+                        </label>
+                        <input type="text" id="tallaNumeroInput" name="numero" autocomplete="off" required oninput="actualizarPreviewClaveAlterna()" placeholder="Escribe la talla aquí (ej. 22.5)" class="w-full px-3.5 py-2.5 text-base font-extrabold bg-white border-2 border-amber-500 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none text-slate-900">
+
+                        <!-- Atajos de incremento rápido (+) -->
+                        <div class="flex items-center space-x-2 mt-2">
+                            <span class="text-[11px] font-bold text-slate-400 uppercase">Atajos (+):</span>
+                            <button type="button" onclick="sumarATalla(0.5)" class="px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-950 text-xs font-black rounded-lg border border-amber-300 transition-colors shadow-sm cursor-pointer">
+                                + 0.5
+                            </button>
+                            <button type="button" onclick="sumarATalla(1.0)" class="px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-950 text-xs font-black rounded-lg border border-amber-300 transition-colors shadow-sm cursor-pointer">
+                                + 1.0
+                            </button>
+                            <button type="button" onclick="agregarMasATalla()" class="px-3 py-1 bg-amber-100 hover:bg-amber-200 text-amber-950 text-xs font-black rounded-lg border border-amber-300 transition-colors shadow-sm cursor-pointer">
+                                + '+'
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Visualizador en tiempo real de la Nueva Clave Alterna -->
+                    <div class="p-4 bg-slate-900 text-white rounded-2xl shadow-inner space-y-1 border border-slate-800">
+                        <span class="text-slate-400 font-extrabold uppercase block text-[10px] tracking-wider">Nueva Clave Alterna que se creará:</span>
+                        <span id="previewNuevaClave" class="font-mono font-black text-amber-300 text-sm tracking-wide block">--</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-900 uppercase mb-1">Cantidad (Stock)</label>
+                            <input type="number" id="tallaCantidad" name="cantidad" min="1" value="1" required class="w-full px-3.5 py-2 text-sm font-bold bg-white border border-slate-300 rounded-xl outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-900 uppercase mb-1">Precio 1 ($ MXN)</label>
+                            <input type="number" id="tallaPrecio" name="precio" step="0.01" min="0" required class="w-full px-3.5 py-2 text-sm font-bold bg-white border border-slate-300 rounded-xl outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" onclick="cerrarModalAgregarTalla()" class="px-5 py-2.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl">Cancelar</button>
+                    <button type="submit" id="btnGuardarTalla" class="px-6 py-3 bg-amber-950 hover:bg-amber-900 text-amber-100 text-xs md:text-sm font-extrabold rounded-xl shadow-lg border border-amber-800 flex items-center space-x-2 cursor-pointer transition-all">
+                        <span class="text-amber-400 font-extrabold text-base">+</span>
+                        <span>Crear Registro con Nueva Talla</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -752,6 +837,52 @@
             });
         }
 
+        let contadorTallasExtraConf = 1;
+
+        function agregarRenglonTallaExtraConf() {
+            const container = document.getElementById('listaTallasExtraConf');
+            if (!container) return;
+
+            // Sugerir la siguiente talla (+ 0.5) basada en el último input
+            let ultimaTalla = '22.0';
+            const inputs = container.querySelectorAll('input[type="text"]');
+            if (inputs.length > 0) {
+                ultimaTalla = inputs[inputs.length - 1].value;
+            } else {
+                const confNum = document.getElementById('confNumero');
+                if (confNum && confNum.value) ultimaTalla = confNum.value;
+            }
+
+            let numVal = parseFloat(ultimaTalla);
+            let sugerida = isNaN(numVal) ? (ultimaTalla + '+') : (numVal + 0.5).toFixed(1);
+
+            const rowIdx = contadorTallasExtraConf;
+            const div = document.createElement('div');
+            div.id = 'rowTallaExtraConf_' + rowIdx;
+            div.className = 'flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 bg-white p-3 rounded-xl border border-amber-300 shadow-sm animate-fade-in';
+            div.innerHTML = `
+                <div class="flex items-center space-x-2 flex-1">
+                    <span class="text-xs font-black text-amber-950 uppercase font-mono px-1 shrink-0">Talla #${rowIdx + 1}:</span>
+                    <input type="text" name="tallas[${rowIdx}][numero]" value="${sugerida}" autocomplete="off" required placeholder="Escribe la talla (ej. 22.5, 23+)" class="w-full px-3 py-2 text-xs font-extrabold bg-slate-50 border border-slate-300 rounded-lg outline-none focus:ring-2 focus:ring-slate-900 text-slate-900">
+                </div>
+                <div class="flex items-center space-x-2 shrink-0">
+                    <span class="text-xs font-extrabold text-slate-700 uppercase">Existencia (Pares):</span>
+                    <input type="number" name="tallas[${rowIdx}][cantidad]" value="1" min="1" required class="w-20 px-3 py-2 text-xs font-black bg-slate-50 border border-slate-300 rounded-lg outline-none text-center text-slate-900">
+                    <button type="button" onclick="eliminarRenglonTallaExtraConf(${rowIdx})" class="p-1.5 text-rose-600 hover:text-rose-800 hover:bg-rose-100 rounded-lg transition-colors shrink-0 cursor-pointer" title="Eliminar esta talla">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(div);
+            contadorTallasExtraConf++;
+        }
+
+        function eliminarRenglonTallaExtraConf(id) {
+            const row = document.getElementById('rowTallaExtraConf_' + id);
+            if (row) row.remove();
+        }
+
         function mostrarModalConfirmacion(data) {
             document.getElementById('confImagenPreview').src = data.imagen_url;
             document.getElementById('confImagenPath').value = data.imagen_path;
@@ -762,6 +893,11 @@
             document.getElementById('confBordado').value = data.bordado || '';
             document.getElementById('confCantidad').value = 1;
             document.getElementById('confPrecio').value = '';
+
+            // Limpiar tallas extras dinámicas agregadas con +
+            const extraContainer = document.getElementById('listaTallasExtraConf');
+            if (extraContainer) extraContainer.innerHTML = '';
+            contadorTallasExtraConf = 1;
 
             document.getElementById('modalConfirmacion').classList.remove('hidden');
         }
@@ -840,6 +976,141 @@
 
         function cerrarModalApiKey() {
             document.getElementById('modalApiKey').classList.add('hidden');
+        }
+
+        // ==========================================
+        // FUNCIONES DE AGREGAR NUEVA TALLA (+)
+        // ==========================================
+        let zapatoBaseActual = null;
+
+        function abrirModalAgregarTalla(zapato) {
+            zapatoBaseActual = zapato;
+            document.getElementById('tallaImagenPath').value = zapato.imagen_url;
+            document.getElementById('tallaEstilo').value = zapato.estilo;
+            document.getElementById('tallaColor').value = zapato.color;
+            document.getElementById('tallaMaterial').value = zapato.material;
+            document.getElementById('tallaBordado').value = zapato.bordado || '';
+            document.getElementById('tallaPrecio').value = zapato.precio;
+            document.getElementById('tallaCantidad').value = 1;
+
+            document.getElementById('summaryEstilo').innerText = zapato.estilo;
+            document.getElementById('summaryMaterialColor').innerText = zapato.material + ' / ' + zapato.color;
+            document.getElementById('summaryTallaOriginal').innerText = 'Talla ' + zapato.numero;
+
+            // Sugerir la siguiente talla (+ 0.5)
+            let numBase = parseFloat(zapato.numero);
+            let sugerida = isNaN(numBase) ? (zapato.numero + '+') : (numBase + 0.5).toFixed(1);
+            document.getElementById('tallaNumeroInput').value = sugerida;
+
+            actualizarPreviewClaveAlterna();
+            document.getElementById('modalAgregarTalla').classList.remove('hidden');
+        }
+
+        function cerrarModalAgregarTalla() {
+            document.getElementById('modalAgregarTalla').classList.add('hidden');
+        }
+
+        function sumarATallaConf(inc) {
+            const input = document.getElementById('confNumero');
+            let val = parseFloat(input.value);
+            if (isNaN(val)) val = 20.0;
+            input.value = (val + inc).toFixed(1);
+        }
+
+        function agregarMasATallaConf() {
+            const input = document.getElementById('confNumero');
+            if (!input.value.endsWith('+')) {
+                input.value = input.value + '+';
+            }
+        }
+
+        function sumarATalla(inc) {
+            const input = document.getElementById('tallaNumeroInput');
+            let val = parseFloat(input.value);
+            if (isNaN(val)) val = 20.0;
+            input.value = (val + inc).toFixed(1);
+            actualizarPreviewClaveAlterna();
+        }
+
+        function agregarMasATalla() {
+            const input = document.getElementById('tallaNumeroInput');
+            if (!input.value.endsWith('+')) {
+                input.value = input.value + '+';
+            }
+            actualizarPreviewClaveAlterna();
+        }
+
+        function actualizarPreviewClaveAlterna() {
+            if (!zapatoBaseActual) return;
+            const num = document.getElementById('tallaNumeroInput').value;
+            const clave = calcularClaveAlternaJS(
+                zapatoBaseActual.estilo,
+                zapatoBaseActual.material,
+                zapatoBaseActual.color,
+                zapatoBaseActual.bordado,
+                num
+            );
+            document.getElementById('previewNuevaClave').innerText = clave;
+        }
+
+        function calcularClaveAlternaJS(estilo, material, color, bordado, numero) {
+            const cleanStr = (s) => (s || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+            const cleanEstilo = cleanStr(estilo);
+            const cleanMaterial = cleanStr(material);
+            const cleanColor = cleanStr(color);
+            const cleanBordado = cleanStr(bordado);
+
+            let tallaStr = (numero || '').trim();
+            if (!tallaStr.toLowerCase().startsWith('t')) {
+                tallaStr = 'T' + tallaStr;
+            } else {
+                tallaStr = tallaStr.toUpperCase();
+            }
+
+            return `M${cleanEstilo}${cleanMaterial}${cleanColor}${cleanBordado}${tallaStr}`;
+        }
+
+        function guardarNuevaTallaZapato(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnGuardarTalla');
+            btn.disabled = true;
+            btn.innerHTML = '<span>Guardando nueva talla...</span>';
+
+            const form = document.getElementById('formAgregarTalla');
+            const formData = new FormData(form);
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch("{{ route('admin.zapatos.guardar') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(err => { throw new Error(err.error || err.message || 'Error al procesar'); });
+                }
+                return res.json();
+            })
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="text-amber-400 font-extrabold text-base">+</span><span>Crear Registro con Nueva Talla</span>';
+                if (data.success) {
+                    cerrarModalAgregarTalla();
+                    if (data.mensaje) alert(data.mensaje);
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Error al guardar la nueva talla.');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = '<span class="text-amber-400 font-extrabold text-base">+</span><span>Crear Registro con Nueva Talla</span>';
+                console.error("Error guardando talla:", err);
+                alert("No se pudo guardar la nueva talla: " + err.message);
+            });
         }
 
         function guardarApiKeyGemini(e) {

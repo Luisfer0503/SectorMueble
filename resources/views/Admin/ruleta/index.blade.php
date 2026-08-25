@@ -3,11 +3,11 @@
 @section('contenido')
     <div class="px-6 sm:px-8 py-8 max-w-7xl mx-auto space-y-8">
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-zinc-200 pb-5">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-stone-200 pb-5">
             <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-amber-700">Configuración de Marketing</span>
-                <h1 class="serif-title text-3xl font-bold text-zinc-950 mt-1">Ruleta de Premios para Nuevos Usuarios</h1>
-                <p class="text-zinc-500 text-sm mt-1">Personaliza las 3 opciones de la ruleta de bienvenida, sus descuentos y el tiempo límite para canjearlas.</p>
+                <span class="text-xs font-bold uppercase tracking-wider text-amber-800">Configuración de Marketing</span>
+                <h1 class="serif-title text-3xl font-bold text-stone-950 mt-1">Ruleta de Premios para Nuevos Usuarios</h1>
+                <p class="text-stone-600 text-sm mt-1">Personaliza las 3 opciones de la ruleta de bienvenida, sus descuentos y la paleta de colores cálidos de la marca.</p>
             </div>
         </div>
 
@@ -17,17 +17,21 @@
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 @foreach($opciones as $opcion)
-                    <div class="bg-white border border-zinc-200 rounded-xl shadow-sm overflow-hidden flex flex-col justify-between">
+                    <div class="bg-white border border-stone-200 rounded-2xl shadow-sm overflow-hidden flex flex-col justify-between">
                         <div>
-                            <!-- Header de la tarjeta con color distintivo -->
-                            <div class="px-6 py-4 flex items-center justify-between text-white" style="background-color: {{ $opcion->color_bg }};">
-                                <div class="flex items-center space-x-2">
-                                    <span class="bg-white/20 text-white font-extrabold text-xs px-2.5 py-1 rounded-full uppercase tracking-wider">
+                            <!-- Header de la tarjeta con contraste garantizado -->
+                            <div class="px-6 py-4 flex items-center justify-between bg-stone-950 text-white border-b border-stone-800">
+                                <div class="flex items-center space-x-3">
+                                    <span class="font-mono font-bold text-xs px-2.5 py-1 rounded-full border border-amber-500/40 bg-amber-500/20 text-amber-300">
                                         Opción #{{ $opcion->posicion }}
                                     </span>
+                                    <div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full border border-stone-700 bg-stone-900 text-[11px] font-medium text-stone-200">
+                                        <span class="w-3 h-3 rounded-full border border-white/40 shadow-sm" style="background-color: {{ $opcion->color_bg }};"></span>
+                                        <span>Color Rueda</span>
+                                    </div>
                                 </div>
-                                <label class="inline-flex items-center space-x-2 text-xs font-semibold cursor-pointer">
-                                    <input type="checkbox" name="opciones[{{ $opcion->posicion }}][activo]" value="1" {{ $opcion->activo ? 'checked' : '' }} class="rounded text-amber-600 focus:ring-amber-500">
+                                <label class="inline-flex items-center space-x-2 text-xs font-semibold cursor-pointer text-amber-200 hover:text-amber-100">
+                                    <input type="checkbox" name="opciones[{{ $opcion->posicion }}][activo]" value="1" {{ $opcion->activo ? 'checked' : '' }} class="rounded text-amber-600 focus:ring-amber-500 bg-stone-900 border-stone-700">
                                     <span>Activa</span>
                                 </label>
                             </div>
@@ -35,36 +39,36 @@
                             <div class="p-6 space-y-5">
                                 <!-- Título del Premio -->
                                 <div>
-                                    <label class="block text-xs font-semibold text-zinc-700 uppercase tracking-wider mb-1">
-                                        Título del Premio <span class="text-rose-500">*</span>
+                                    <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                                        Título del Premio <span class="text-rose-600">*</span>
                                     </label>
                                     <input type="text" 
                                            name="opciones[{{ $opcion->posicion }}][titulo]" 
                                            value="{{ old('opciones.'.$opcion->posicion.'.titulo', $opcion->titulo) }}" 
                                            required 
                                            placeholder="Ej. 15% OFF en tu primera compra" 
-                                           class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white">
+                                           class="w-full bg-stone-50 border border-stone-200 rounded-xl text-sm px-3.5 py-2.5 text-stone-900 font-medium focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white transition-all">
                                 </div>
 
                                 <!-- Código de Cupón -->
                                 <div>
-                                    <label class="block text-xs font-semibold text-zinc-700 uppercase tracking-wider mb-1">
+                                    <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
                                         Código del Cupón Asignado
                                     </label>
                                     <input type="text" 
                                            name="opciones[{{ $opcion->posicion }}][codigo_cupon]" 
                                            value="{{ old('opciones.'.$opcion->posicion.'.codigo_cupon', $opcion->codigo_cupon) }}" 
                                            placeholder="Ej. RULETA15" 
-                                           class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3.5 py-2.5 font-mono uppercase focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white">
+                                           class="w-full bg-stone-50 border border-stone-200 rounded-xl text-sm px-3.5 py-2.5 font-mono uppercase text-stone-900 font-bold focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white transition-all">
                                 </div>
 
                                 <!-- Tipo de Descuento -->
                                 <div>
-                                    <label class="block text-xs font-semibold text-zinc-700 uppercase tracking-wider mb-1">
-                                        Tipo de Beneficio <span class="text-rose-500">*</span>
+                                    <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                                        Tipo de Beneficio <span class="text-rose-600">*</span>
                                     </label>
                                     <select name="opciones[{{ $opcion->posicion }}][tipo_descuento]" 
-                                            class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white">
+                                            class="w-full bg-stone-50 border border-stone-200 rounded-xl text-sm px-3.5 py-2.5 text-stone-900 font-medium focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white transition-all">
                                         <option value="porcentaje" {{ $opcion->tipo_descuento == 'porcentaje' ? 'selected' : '' }}>Porcentaje (%)</option>
                                         <option value="fijo" {{ $opcion->tipo_descuento == 'fijo' ? 'selected' : '' }}>Monto Fijo ($ MXN)</option>
                                         <option value="envio_gratis" {{ $opcion->tipo_descuento == 'envio_gratis' ? 'selected' : '' }}>Envío Gratis ($0.00)</option>
@@ -73,8 +77,8 @@
 
                                 <!-- Valor de Descuento -->
                                 <div>
-                                    <label class="block text-xs font-semibold text-zinc-700 uppercase tracking-wider mb-1">
-                                        Valor del Descuento / Premio <span class="text-rose-500">*</span>
+                                    <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                                        Valor del Descuento / Premio <span class="text-rose-600">*</span>
                                     </label>
                                     <input type="number" 
                                            step="0.01" 
@@ -82,13 +86,13 @@
                                            name="opciones[{{ $opcion->posicion }}][descuento_valor]" 
                                            value="{{ old('opciones.'.$opcion->posicion.'.descuento_valor', $opcion->descuento_valor) }}" 
                                            required 
-                                           class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white">
+                                           class="w-full bg-stone-50 border border-stone-200 rounded-xl text-sm px-3.5 py-2.5 text-stone-900 font-medium focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white transition-all">
                                 </div>
 
                                 <!-- Tiempo Límite en Minutos -->
                                 <div>
-                                    <label class="block text-xs font-semibold text-zinc-700 uppercase tracking-wider mb-1">
-                                        Tiempo Límite para Reclamar (Minutos) <span class="text-rose-500">*</span>
+                                    <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
+                                        Tiempo Límite para Reclamar (Minutos) <span class="text-rose-600">*</span>
                                     </label>
                                     <div class="relative">
                                         <input type="number" 
@@ -97,12 +101,14 @@
                                                name="opciones[{{ $opcion->posicion }}][tiempo_minutos]" 
                                                value="{{ old('opciones.'.$opcion->posicion.'.tiempo_minutos', $opcion->tiempo_minutos) }}" 
                                                required 
-                                               class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3.5 py-2.5 pr-20 focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white">
-                                        <span class="absolute right-3 top-2.5 text-xs font-semibold text-zinc-400">minutos</span>
+                                               class="w-full bg-stone-50 border border-stone-200 rounded-xl text-sm px-3.5 py-2.5 pr-20 text-stone-900 font-medium focus:outline-none focus:ring-2 focus:ring-amber-700 focus:bg-white transition-all">
+                                        <span class="absolute right-3 top-2.5 text-xs font-bold text-stone-400">minutos</span>
                                     </div>
-                                                            <!-- Color de la sección -->
+                                </div>
+
+                                <!-- Color de la sección (Paleta Cálida) -->
                                 <div>
-                                    <label class="block text-xs font-bold text-zinc-700 uppercase tracking-wider mb-1">
+                                    <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
                                         Color del Sector (Paleta Marca)
                                     </label>
                                     <div class="flex items-center space-x-3">
@@ -111,27 +117,33 @@
                                                name="opciones[{{ $opcion->posicion }}][color_bg]" 
                                                value="{{ $opcion->color_bg }}" 
                                                onchange="document.getElementById('color_text_{{ $opcion->posicion }}').value = this.value"
-                                               class="h-9 w-12 rounded cursor-pointer border border-zinc-300">
+                                               class="h-10 w-14 rounded-lg cursor-pointer border border-stone-300 p-0.5">
                                         <input type="text" 
                                                id="color_text_{{ $opcion->posicion }}"
                                                value="{{ $opcion->color_bg }}" 
                                                readonly 
-                                               class="bg-zinc-100 border border-zinc-200 rounded text-xs px-3 py-2 text-zinc-600 font-mono w-28 font-bold">
+                                               class="bg-stone-100 border border-stone-200 rounded-lg text-xs px-3 py-2 text-stone-700 font-mono w-28 font-bold text-center">
                                     </div>
-                                    <div class="mt-2 flex items-center space-x-2">
-                                        <span class="text-[10px] text-zinc-400 font-bold uppercase">Paleta:</span>
-                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#88674B')" class="w-6 h-6 rounded-full bg-[#88674B] border border-white shadow hover:scale-110 transition-transform" title="Taupe Maderable"></button>
-                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#FAF3E0')" class="w-6 h-6 rounded-full bg-[#FAF3E0] border border-zinc-300 shadow hover:scale-110 transition-transform" title="Crema Cálido"></button>
-                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#2B241A')" class="w-6 h-6 rounded-full bg-[#2B241A] border border-white shadow hover:scale-110 transition-transform" title="Espresso Profundo"></button>
+                                    <div class="mt-2.5 flex items-center space-x-2 flex-wrap gap-y-1.5">
+                                        <span class="text-[10px] text-stone-400 font-bold uppercase w-full sm:w-auto">Paleta Cálida:</span>
+                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#88674B')" class="w-6 h-6 rounded-full bg-[#88674B] border border-white shadow hover:scale-110 transition-transform" title="Nogal Maderable"></button>
                                         <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#C09A75')" class="w-6 h-6 rounded-full bg-[#C09A75] border border-white shadow hover:scale-110 transition-transform" title="Arena Dorado"></button>
+                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#2B241A')" class="w-6 h-6 rounded-full bg-[#2B241A] border border-white shadow hover:scale-110 transition-transform" title="Espresso Profundo"></button>
+                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#92400E')" class="w-6 h-6 rounded-full bg-[#92400E] border border-white shadow hover:scale-110 transition-transform" title="Ámbar Cálido"></button>
+                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#451A03')" class="w-6 h-6 rounded-full bg-[#451A03] border border-white shadow hover:scale-110 transition-transform" title="Caoba Oscuro"></button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Footer preview -->
-                        <div class="px-6 py-3 bg-zinc-50 border-t border-zinc-100 text-xs text-zinc-500">
-                            Vista previa: <strong class="text-zinc-800">{{ $opcion->titulo }}</strong> ({{ $opcion->tiempo_minutos }} min)
+                        <div class="px-6 py-3.5 bg-stone-900 border-t border-stone-800 text-xs text-stone-300 flex items-center justify-between">
+                            <span class="font-medium">Vista previa:</span>
+                            <div class="flex items-center space-x-2 font-semibold">
+                                <span class="w-3 h-3 rounded-full border border-white/30" style="background-color: {{ $opcion->color_bg }};"></span>
+                                <strong class="text-amber-200">{{ $opcion->titulo }}</strong>
+                                <span class="text-stone-400">({{ $opcion->tiempo_minutos }} min)</span>
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -139,7 +151,7 @@
 
             <!-- Botón Guardar -->
             <div class="flex justify-end pt-4">
-                <button type="submit" class="bg-amber-800 hover:bg-amber-700 text-white font-semibold text-sm px-8 py-3.5 rounded shadow hover:shadow-md transition-all duration-300 flex items-center space-x-2">
+                <button type="submit" class="bg-amber-800 hover:bg-amber-700 text-white font-bold text-sm px-8 py-3.5 rounded-xl shadow-lg hover:shadow-amber-900/30 transition-all duration-300 flex items-center space-x-2">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                     </svg>
