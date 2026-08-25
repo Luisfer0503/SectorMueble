@@ -590,13 +590,37 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            const formData = new FormData();
-            formData.append('imagen_archivo', file);
-
             const reader = new FileReader();
             reader.onload = function(e) {
-                ultimaImagenCapturada = e.target.result;
-                enviarImagenParaAnalisis(formData, true, e.target.result);
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    const MAX_SIZE = 1200;
+                    if (width > height) {
+                        if (width > MAX_SIZE) {
+                            height *= MAX_SIZE / width;
+                            width = MAX_SIZE;
+                        }
+                    } else {
+                        if (height > MAX_SIZE) {
+                            width *= MAX_SIZE / height;
+                            height = MAX_SIZE;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const resizedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+                    ultimaImagenCapturada = resizedBase64;
+                    enviarImagenParaAnalisis({ imagen_base64: resizedBase64 }, false, resizedBase64);
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
