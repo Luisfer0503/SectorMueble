@@ -491,17 +491,21 @@ class AdminController extends Controller
             ?: base64_decode('QVEuQWI4Uk42THd4aXlSMUx1QWY5NmFhQjRFU21NbXFrSXZEM1JDR3U5NnhLTmJHN2FiQWc=');
 
         if (!empty($geminiKey)) {
-            $modelos = ['gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-1.5-flash-8b'];
             $imageData = base64_encode(file_get_contents($imagePath));
             $mimeType = mime_content_type($imagePath) ?: 'image/jpeg';
 
-            $prompt = "Analiza minuciosamente esta imagen de calzado (ya sea una etiqueta de caja o una foto directa del zapato).\nResponde ÚNICAMENTE con un objeto JSON válido sin bloques markdown ni texto adicional.\nLas llaves obligatorias del JSON son: \"estilo\", \"numero\", \"color\", \"material\", \"bordado\".\n\nREGLAS DE EXTRACCIÓN:\n1. Si la foto contiene una ETIQUETA:\n   - estilo: Extrae el texto tras \"ESTILO:\" (ej. \"1124\") o código de modelo (ej. \"M-631\").\n   - numero: Extrae la talla decimal impresa (ej. \"21.0\", \"25.0\").\n   - color y material: Extrae los términos de la etiqueta (ej. \"CHAROL NEGRO\").\n\n2. Si la foto es del ZAPATO DIRECTO (sin etiqueta visible):\n   - estilo: Infiere el modelo o tipo (ej. \"M-DEPORTIVO\", \"M-CASUAL\", \"M-ESCOLAR\", \"M-BOTA\").\n   - numero: Asigna \"25.0\" como talla estándar.\n   - color: Infiere el color predominante visible del zapato (ej. \"Negro\", \"Blanco\", \"Café\").\n   - material: Infiere el material visible (ej. \"Sintético\", \"Piel\", \"Charol\", \"Gamuza\", \"Textil\").\n   - bordado: Infiere si el zapato tiene bordados visibles; si no, deja \"\".";
+            $prompt = "Analiza minuciosamente esta imagen de ETIQUETA O CAJA DE CALZADO para extraer con 100% de precisión exacta los datos impresos en la etiqueta real.\nResponde ÚNICAMENTE con un objeto JSON válido sin bloques markdown ni texto adicional.\nLas llaves obligatorias del JSON son: \"estilo\", \"numero\", \"color\", \"material\", \"bordado\".\n\nREGLAS DE EXTRACCIÓN LÁSER:\n1. estilo:\n   - Si la etiqueta contiene \"ESTILO: 1124\" o \"ESTILO: ####\", extrae únicamente el número/código que sigue a ESTILO: (ejemplo: \"1124\").\n   - Si dice \"M-631\" o \"M-####\", extrae el código del modelo (ejemplo: \"M-631\").\n   - Extrae el código exactamente como viene escrito.\n\n2. numero:\n   - Busca la talla o número impreso en tipografía decimal (ejemplo: \"21.0\", \"22.5\", \"25.0\", \"18.0\").\n   - Devuelve la cifra exacta con su punto decimal como string (ejemplo: \"21.0\").\n\n3. material y color:\n   - Identifica el material exacto (ejemplo: \"CHAROL\" -> \"Charol\", \"SINTETICO\" -> \"Sintético\", \"PIEL\" -> \"Piel\", \"GAMUZA\" -> \"Gamuza\", \"TEXTIL\" -> \"Textil\").\n   - Identifica el color exacto (ejemplo: \"NEGRO\" -> \"Negro\", \"BLANCO\" -> \"Blanco\", \"CAFE\" -> \"Café\", \"AZUL\" -> \"Azul\", \"ROJO\" -> \"Rojo\", \"CEREZA\" -> \"Cereza\").\n   - Ejemplo: Para \"CHAROL NEGRO\", material = \"Charol\", color = \"Negro\".\n   - Ejemplo: Para \"SINTETICO NEGRO TR\", material = \"Sintético\", color = \"Negro\".\n\n4. bordado:\n   - Si se menciona un bordado expreso (ej. \"FLOR\", \"ESTRELLA\"), colócalo; de lo contrario deja \"\".\n\n¡NO INVENTES NÚMEROS NI TEXTOS FALSOS! SI UN DATO NO ESTÁ IMPRESO EN LA ETIQUETA, DEJA SU VALOR EN BLANCO \"\".";
 
-            foreach ($modelos as $modelo) {
+            // Bucle con reintento si se alcanza la cuota de peticiones por minuto (HTTP 429)
+            $intentos = 0;
+            $maxIntentos = 3;
+
+            while ($intentos < $maxIntentos) {
+                $intentos++;
                 try {
                     $response = Http::withOptions(['verify' => false])
                         ->withHeaders(['Content-Type' => 'application/json'])
-                        ->post("https://generativelanguage.googleapis.com/v1beta/models/{$modelo}:generateContent?key={$geminiKey}", [
+                        ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={$geminiKey}", [
                             'contents' => [
                                 [
                                     'parts' => [
@@ -534,30 +538,34 @@ class AdminController extends Controller
                                 }
 
                                 return [
-                                    'estilo'   => !empty($estiloVal) ? $estiloVal : 'M-CASUAL',
-                                    'numero'   => !empty($numStr) ? $numStr : '25.0',
-                                    'color'    => !empty($colorVal) ? $colorVal : 'Negro',
-                                    'material' => !empty($materialVal) ? $materialVal : 'Sintético',
+                                    'estilo'   => $estiloVal,
+                                    'numero'   => $numStr,
+                                    'color'    => $colorVal,
+                                    'material' => $materialVal,
                                     'bordado'  => $bordadoVal,
                                     'fuente'   => 'Gemini Vision AI'
                                 ];
                             }
                         }
+                    } elseif ($response->status() === 429) {
+                        \Illuminate\Support\Facades\Log::warning("Gemini 3.6-flash rate limit 429 en intento {$intentos}. Reintentando...");
+                        usleep(1000000); // Esperar 1 segundo antes de reintentar
+                        continue;
                     } else {
-                        \Illuminate\Support\Facades\Log::warning("Gemini model {$modelo} retornó status {$response->status()}: " . $response->body());
+                        \Illuminate\Support\Facades\Log::warning("Gemini Vision AI retornó status {$response->status()}: " . $response->body());
                     }
                 } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::error("Excepcion llamando a Gemini {$modelo}: " . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::error("Excepcion llamando a Gemini Vision AI: " . $e->getMessage());
                 }
             }
         }
 
-        // Si la llamada falla o no hay conexión, entregar valores para no dejar el modal en blanco
+        // Sin datos ficiticios: Se entregan campos limpios para ingreso exacto sin informacion inventada
         return [
-            'estilo'   => 'ESTILO-1',
-            'numero'   => '25.0',
-            'color'    => 'Negro',
-            'material' => 'Sintético',
+            'estilo'   => '',
+            'numero'   => '',
+            'color'    => '',
+            'material' => '',
             'bordado'  => '',
             'fuente'   => 'Escáner de Calzado'
         ];
