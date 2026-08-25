@@ -144,6 +144,7 @@
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-slate-900 text-slate-100 text-[11px] font-bold uppercase tracking-wider border-b border-slate-800">
+                                <th class="py-4 px-4 text-center w-12">NO.</th>
                                 <th class="py-4 px-5">CLAVE ALTERNA</th>
                                 <th class="py-4 px-5">DESCRIPCION</th>
                                 <th class="py-4 px-5 text-right">PRECIO 1</th>
@@ -154,6 +155,9 @@
                         <tbody class="divide-y divide-slate-200 text-xs bg-white">
                             @foreach($zapatos as $zapato)
                                 <tr class="hover:bg-amber-50/40 transition-colors">
+                                    <td class="py-4 px-4 text-center font-mono font-extrabold text-slate-400 text-xs">
+                                        {{ $loop->iteration + ($zapatos->currentPage() - 1) * $zapatos->perPage() }}
+                                    </td>
                                     <td class="py-4 px-5">
                                         <div class="flex items-center space-x-3">
                                             <img src="{{ $zapato->imagen_url }}" alt="{{ $zapato->estilo }}" class="w-12 h-12 object-cover rounded-xl border border-slate-200 shadow-sm bg-slate-100 flex-shrink-0">
@@ -767,6 +771,9 @@
                 btn.innerHTML = '<span>Guardar en Inventario</span>';
                 if (data.success) {
                     cerrarModalConfirmacion();
+                    if (data.duplicado) {
+                        alert(data.mensaje);
+                    }
                     window.location.reload();
                 } else {
                     alert(data.error || 'Error al guardar en inventario.');

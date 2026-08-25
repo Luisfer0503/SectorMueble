@@ -620,6 +620,7 @@ class AdminController extends Controller
 
     /**
      * Guarda el registro de zapato escaneado en el inventario con cantidad, precio y bordado.
+     * Valida si la Clave Alterna ya existe para sumar la cantidad al registro previo y evitar duplicados.
      */
     public function zapatosGuardar(Request $request)
     {
@@ -639,6 +640,44 @@ class AdminController extends Controller
             $imagenPath = 'storage/zapatos/default.png';
         }
 
+        // Generar la Clave Alterna para verificar si este zapato ya existe en la base de datos
+        $claveBuscada = Zapato::generarClaveAlterna(
+            $request->estilo,
+            $request->material,
+            $request->color,
+            $request->bordado,
+            $request->numero
+        );
+
+        $zapatoExistente = Zapato::all()->first(function ($z) use ($claveBuscada) {
+            return $z->clave_alterna === $claveBuscada;
+        });
+
+        if ($zapatoExistente) {
+            // Ya existe un zapato con la misma clave: actualizar stock en lugar de duplicar
+            $cantASumar = (int) $request->cantidad;
+            $nuevoStock = $zapatoExistente->cantidad + $cantASumar;
+            
+            $zapatoExistente->update([
+                'cantidad' => $nuevoStock,
+                'precio'   => (float) $request->precio > 0 ? (float) $request->precio : $zapatoExistente->precio,
+            ]);
+
+            $mensajeDetalle = "¡Se encontró el mismo zapato anterior! (Clave Alterna: {$claveBuscada}). Se sumaron {$cantASumar} pares al registro existente (Nuevo Stock: {$nuevoStock} pares).";
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success'   => true,
+                    'duplicado' => true,
+                    'mensaje'   => $mensajeDetalle,
+                    'zapato'    => $zapatoExistente
+                ]);
+            }
+
+            return redirect()->route('admin.zapatos')->with('success', $mensajeDetalle);
+        }
+
+        // Crear nuevo registro si no existía previamente
         $zapato = Zapato::create([
             'estilo'      => $request->estilo,
             'numero'      => $request->numero,
@@ -651,15 +690,17 @@ class AdminController extends Controller
             'detalles_ia' => $request->input('detalles_ia', null),
         ]);
 
+        $mensajeExito = "¡Zapato guardado con éxito! (Clave Alterna: {$zapato->clave_alterna}).";
+
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
-                'mensaje' => '¡Zapato guardado correctamente en el inventario!',
+                'mensaje' => $mensajeExito,
                 'zapato'  => $zapato
             ]);
         }
 
-        return redirect()->route('admin.zapatos')->with('success', "¡Zapato estilo '{$zapato->estilo}' guardado con éxito en el inventario!");
+        return redirect()->route('admin.zapatos')->with('success', $mensajeExito);
     }
 
     /**

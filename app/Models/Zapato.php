@@ -35,12 +35,20 @@ class Zapato extends Model
      */
     public function getClaveAlternaAttribute(): string
     {
-        $cleanEstilo = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $this->estilo ?? ''));
-        $cleanMaterial = strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], ['A','E','I','O','U','A','E','I','O','U','N','N'], preg_replace('/[^A-Za-z0-9]/', '', $this->material ?? '')));
-        $cleanColor = strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], ['A','E','I','O','U','A','E','I','O','U','N','N'], preg_replace('/[^A-Za-z0-9]/', '', $this->color ?? '')));
-        $cleanBordado = !empty($this->bordado) ? strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], ['A','E','I','O','U','A','E','I','O','U','N','N'], preg_replace('/[^A-Za-z0-9]/', '', $this->bordado))) : '';
+        return self::generarClaveAlterna($this->estilo, $this->material, $this->color, $this->bordado, $this->numero);
+    }
+
+    /**
+     * Genera la Clave Alterna a partir de los valores recibidos.
+     */
+    public static function generarClaveAlterna($estilo, $material, $color, $bordado, $numero): string
+    {
+        $cleanEstilo = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $estilo ?? ''));
+        $cleanMaterial = strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], ['A','E','I','O','U','A','E','I','O','U','N','N'], preg_replace('/[^A-Za-z0-9]/', '', $material ?? '')));
+        $cleanColor = strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], ['A','E','I','O','U','A','E','I','O','U','N','N'], preg_replace('/[^A-Za-z0-9]/', '', $color ?? '')));
+        $cleanBordado = !empty($bordado) ? strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], ['A','E','I','O','U','A','E','I','O','U','N','N'], preg_replace('/[^A-Za-z0-9]/', '', $bordado))) : '';
         
-        $tallaStr = trim((string)($this->numero ?? ''));
+        $tallaStr = trim((string)($numero ?? ''));
         if (!str_starts_with(strtolower($tallaStr), 't')) {
             $tallaStr = 'T' . $tallaStr;
         } else {
