@@ -144,26 +144,42 @@
     <!-- Main Layout Container -->
     <div class="flex-grow flex flex-col min-w-0">
         <!-- Top Navbar con Botón de Menú Hamburguesa Principal -->
-        <header class="h-20 bg-white border-b border-zinc-200 flex items-center justify-between px-4 sm:px-8 shadow-sm">
+        <header class="h-20 bg-zinc-950 text-white border-b border-zinc-800 flex items-center justify-between px-4 sm:px-8 shadow-lg">
             <div class="flex items-center space-x-4">
                 <!-- Boton Hamburguesa Principal -->
-                <button type="button" onclick="abrirSidebar()" class="px-3.5 py-2 rounded-lg text-zinc-800 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 border border-amber-200 flex items-center space-x-2 transition-all shadow-sm group">
-                    <svg class="h-6 w-6 text-amber-800 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button type="button" onclick="abrirSidebar()" class="px-3.5 py-2 rounded-lg text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 flex items-center space-x-2.5 transition-all shadow-sm group">
+                    <svg class="h-5 w-5 text-amber-500 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
-                    <span class="text-xs font-bold uppercase tracking-wider text-amber-950">Menú</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-zinc-200">Menú</span>
                 </button>
 
+                <!-- Logos & Titulo -->
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3">
-                    <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-8 w-auto object-contain">
-                    <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-10 w-auto object-contain">
-                    <span class="serif-title text-base font-bold text-zinc-950 hidden sm:inline-block">SECTOR<span class="text-amber-600">ADMIN</span></span>
+                    <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-8 w-auto object-contain brightness-0 invert">
+                    <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-10 w-auto object-contain brightness-0 invert">
+                    <span class="serif-title text-base font-bold tracking-wider text-white hidden sm:inline-block">SECTOR<span class="text-amber-500">CONTROL</span></span>
                 </a>
             </div>
 
-            <div class="flex items-center space-x-4">
-                <a href="{{ route('inicio') }}" target="_blank" class="text-xs bg-zinc-100 hover:bg-zinc-200 text-zinc-700 px-3.5 py-2 rounded-lg font-semibold transition-all">
-                    Ver Sitio Web
+            <!-- Acciones a la Derecha (Usuario, Ver Sitio Web, Cerrar Sesion) -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <div class="hidden md:flex items-center space-x-2.5 text-xs text-zinc-400 bg-zinc-900/90 px-3.5 py-1.5 rounded-full border border-zinc-800">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="font-medium text-zinc-300">{{ auth()->user()->name }}</span>
+                </div>
+
+                <a href="{{ route('inicio') }}" target="_blank" class="inline-flex items-center space-x-2 text-xs bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold px-3.5 py-2 rounded-lg transition-all shadow-sm">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                    <span class="hidden sm:inline">Ver Sitio Web</span>
+                </a>
+
+                <a href="{{ route('logout') }}" class="p-2 text-zinc-400 hover:text-rose-400 hover:bg-zinc-900 rounded-lg transition-colors" title="Cerrar Sesión">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
                 </a>
             </div>
         </header>
