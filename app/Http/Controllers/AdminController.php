@@ -690,6 +690,7 @@ class AdminController extends Controller
 
             $registrosProcesados = [];
             $totalGuardados = 0;
+            $huboDuplicados = false;
 
             foreach ($tallasProcesar as $tItem) {
                 $numero = $tItem['numero'];
@@ -698,17 +699,19 @@ class AdminController extends Controller
                 // Generar la Clave Alterna para esta talla específica
                 $claveBuscada = Zapato::generarClaveAlterna($estilo, $material, $color, $bordado, $numero);
 
+                // Buscar si existe un registro con la misma Clave Alterna (sin importar mayúsculas/minúsculas o espacios)
                 $zapatoExistente = Zapato::all()->first(function ($z) use ($claveBuscada) {
-                    return $z->clave_alterna === $claveBuscada;
+                    return strtoupper(trim($z->clave_alterna)) === strtoupper(trim($claveBuscada));
                 });
 
                 if ($zapatoExistente) {
+                    $huboDuplicados = true;
                     $nuevoStock = $zapatoExistente->cantidad + $cantidad;
                     $zapatoExistente->update([
                         'cantidad' => $nuevoStock,
                         'precio'   => $precio > 0 ? $precio : $zapatoExistente->precio,
                     ]);
-                    $registrosProcesados[] = "Talla {$numero} (+{$cantidad} pares | Stock: {$nuevoStock})";
+                    $registrosProcesados[] = "⚠️ Talla {$numero} (Clave {$claveBuscada} YA EXISTÍA): Se sumaron +{$cantidad} pares al registro previo (Nuevo Stock Total: {$nuevoStock} pares).";
                 } else {
                     $zapatoNuevo = Zapato::create([
                         'estilo'      => $estilo,
@@ -721,18 +724,23 @@ class AdminController extends Controller
                         'imagen_url'  => $imagenPath,
                         'detalles_ia' => $request->input('detalles_ia', null),
                     ]);
-                    $registrosProcesados[] = "Talla {$numero} (Clave: {$zapatoNuevo->clave_alterna})";
+                    $registrosProcesados[] = "✅ Talla {$numero} (Clave Nueva: {$zapatoNuevo->clave_alterna}): Registro nuevo creado con {$cantidad} pares.";
                 }
                 $totalGuardados++;
             }
 
-            $mensajeFinal = "¡Se registraron {$totalGuardados} talla(s) en el inventario con éxito!\n- " . implode("\n- ", $registrosProcesados);
+            if ($huboDuplicados) {
+                $mensajeFinal = "⚠️ ATENCIÓN: ¡Se detectó Clave Alterna ya existente en el inventario!\n\nPara evitar registros duplicados, los pares se sumaron al stock actual del producto:\n• " . implode("\n• ", $registrosProcesados);
+            } else {
+                $mensajeFinal = "✅ ¡Se registraron {$totalGuardados} talla(s) correctamente en el inventario!\n• " . implode("\n• ", $registrosProcesados);
+            }
 
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
-                    'success' => true,
-                    'mensaje' => $mensajeFinal,
-                    'total'   => $totalGuardados
+                    'success'        => true,
+                    'duplicado'      => $huboDuplicados,
+                    'mensaje'        => $mensajeFinal,
+                    'total'          => $totalGuardados
                 ]);
             }
 
@@ -753,6 +761,7 @@ class AdminController extends Controller
 
     /**
      * Actualiza un zapato existente en el inventario.
+     * Valida que no se duplique la Clave Alterna con otro registro existente.
      */
     public function zapatosActualizar(Request $request, $id)
     {
@@ -771,6 +780,27 @@ class AdminController extends Controller
             $precioRaw = $request->input('precio');
             $precio   = (is_numeric($precioRaw) && (float)$precioRaw >= 0) ? (float)$precioRaw : $zapato->precio;
 
+            // Verificar si con los nuevos datos se genera una Clave Alterna que ya pertenece a OTRO zapato
+            $nuevaClave = Zapato::generarClaveAlterna($estilo, $material, $color, $bordado, $numero);
+
+            $otroExistente = Zapato::all()->first(function ($z) use ($nuevaClave, $zapato) {
+                return $z->id !== $zapato->id && strtoupper(trim($z->clave_alterna)) === strtoupper(trim($nuevaClave));
+            });
+
+            if ($otroExistente) {
+                // Fusionar la existencia con el zapato que ya tenía esa Clave Alterna y eliminar este registro duplicado
+                $nuevoStock = $otroExistente->cantidad + $cantidad;
+                $otroExistente->update([
+                    'cantidad' => $nuevoStock,
+                    'precio'   => $precio > 0 ? $precio : $otroExistente->precio,
+                ]);
+
+                $zapato->delete();
+
+                $msgDup = "⚠️ ¡Clave Alterna ya existente! (Clave: {$nuevaClave}). Se fusionaron los datos con el registro existente #{$otroExistente->id} y se actualizaron los pares (Nuevo Stock Total: {$nuevoStock} pares).";
+                return redirect()->route('admin.zapatos')->with('success', $msgDup);
+            }
+
             $zapato->update([
                 'estilo'   => $estilo,
                 'numero'   => $numero,
@@ -781,7 +811,7 @@ class AdminController extends Controller
                 'precio'   => $precio,
             ]);
 
-            return redirect()->route('admin.zapatos')->with('success', "Zapato #{$zapato->id} actualizado correctamente.");
+            return redirect()->route('admin.zapatos')->with('success', "✅ Zapato #{$zapato->id} actualizado correctamente (Clave Alterna: {$nuevaClave}).");
         } catch (\Throwable $e) {
             return redirect()->route('admin.zapatos')->with('error', "Error al actualizar: " . $e->getMessage());
         }
