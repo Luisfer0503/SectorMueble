@@ -765,13 +765,20 @@
                 },
                 body: formData
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(err => {
+                        throw new Error(err.error || err.message || 'Error al procesar la solicitud');
+                    });
+                }
+                return res.json();
+            })
             .then(data => {
                 btn.disabled = false;
                 btn.innerHTML = '<span>Guardar en Inventario</span>';
                 if (data.success) {
                     cerrarModalConfirmacion();
-                    if (data.duplicado) {
+                    if (data.mensaje) {
                         alert(data.mensaje);
                     }
                     window.location.reload();
@@ -782,8 +789,8 @@
             .catch(err => {
                 btn.disabled = false;
                 btn.innerHTML = '<span>Guardar en Inventario</span>';
-                console.error(err);
-                alert('Error al guardar el zapato en la base de datos.');
+                console.error("Error guardando zapato:", err);
+                alert("No se pudo guardar: " + err.message);
             });
         }
 
