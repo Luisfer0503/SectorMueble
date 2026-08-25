@@ -24,9 +24,9 @@ Route::get('/carrito/eliminar/{id}', [PrincipalController::class, 'eliminarDelCa
 Route::post('/carrito/aplicar-cupon', [PrincipalController::class, 'aplicarCupon'])->name('carrito.cupon.aplicar');
 Route::post('/carrito/quitar-cupon', [PrincipalController::class, 'quitarCupon'])->name('carrito.cupon.quitar');
 
-// Rutas de Checkout y Procesamiento de Pedido (Protegidas por Autenticación)
-Route::get('/finalizar-compra', [PrincipalController::class, 'finalizarCompra'])->name('checkout')->middleware('auth');
-Route::post('/finalizar-compra', [PrincipalController::class, 'procesarCompra'])->name('checkout.procesar')->middleware('auth');
+// Rutas de Checkout y Procesamiento de Pedido (Protegidas por Autenticación y Verificación de Correo)
+Route::get('/finalizar-compra', [PrincipalController::class, 'finalizarCompra'])->name('checkout')->middleware(['auth', 'verified']);
+Route::post('/finalizar-compra', [PrincipalController::class, 'procesarCompra'])->name('checkout.procesar')->middleware(['auth', 'verified']);
 
 // Página de éxito del Pedido
 Route::get('/pedido-confirmado/{id}', [PrincipalController::class, 'pedidoConfirmado'])->name('pedido.confirmado');
@@ -37,6 +37,11 @@ Route::post('/iniciar-sesion', [PrincipalController::class, 'login'])->name('log
 
 Route::get('/registro', [PrincipalController::class, 'mostrarRegistro'])->name('registro');
 Route::post('/registro', [PrincipalController::class, 'registro'])->name('registro.procesar');
+
+// Rutas de Verificación de Correo Electrónico
+Route::get('/email/verificar', [PrincipalController::class, 'mostrarAvisoVerificacion'])->middleware('auth')->name('verification.notice');
+Route::get('/email/verificar/{id}/{hash}', [PrincipalController::class, 'verificarCorreo'])->middleware(['auth', 'signed'])->name('verification.verify');
+Route::post('/email/reenviar-verificacion', [PrincipalController::class, 'reenviarVerificacion'])->middleware(['auth', 'throttle:6,1'])->name('verification.resend');
 
 Route::get('/cerrar-sesion', [PrincipalController::class, 'logout'])->name('logout');
 Route::post('/cerrar-sesion', [PrincipalController::class, 'logout'])->name('logout.post');

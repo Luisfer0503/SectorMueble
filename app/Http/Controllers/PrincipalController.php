@@ -9,6 +9,9 @@ use App\Models\User;
 use App\Models\Cupon;
 use App\Models\RuletaOpcion;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -517,6 +520,9 @@ class PrincipalController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // Disparar evento de registro y notificación de correo de confirmación de Sector Mueble
+        event(new Registered($user));
+
         auth()->login($user);
         $request->session()->regenerate();
 
@@ -537,8 +543,56 @@ class PrincipalController extends Controller
             session()->put('cupon', $cuponPrevio);
         }
 
+        return redirect()->route('verification.notice')->with('success', '¡Tu cuenta ha sido creada con éxito! Te hemos enviado un correo de confirmación a tu e-mail.');
+    }
+
+    /**
+     * Muestra la vista de aviso de verificación de correo electrónico.
+     */
+    public function mostrarAvisoVerificacion(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            $carritoPrevio = session()->get('carrito', []);
+            $targetUrl = !empty($carritoPrevio) ? route('carrito') : route('inicio');
+            return redirect()->intended($targetUrl);
+        }
+
+        return view('Principal.verificar_email');
+    }
+
+    /**
+     * Procesa la verificación de correo mediante la URL firmada.
+     */
+    public function verificarCorreo(EmailVerificationRequest $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            $carritoPrevio = session()->get('carrito', []);
+            $targetUrl = !empty($carritoPrevio) ? route('carrito') : route('inicio');
+            return redirect()->intended($targetUrl)->with('success', 'Tu correo electrónico ya se encuentra verificado.');
+        }
+
+        if ($request->user()->markEmailAsVerified()) {
+            event(new Verified($request->user()));
+        }
+
+        $carritoPrevio = session()->get('carrito', []);
         $targetUrl = !empty($carritoPrevio) ? route('carrito') : route('inicio');
-        return redirect()->intended($targetUrl)->with('success', '¡Tu cuenta ha sido creada e iniciaste sesión con éxito! Tus productos están guardados en tu carrito.');
+
+        return redirect()->intended($targetUrl)->with('success', '¡Excelente! Tu correo electrónico ha sido verificado correctamente.');
+    }
+
+    /**
+     * Reenvía el correo de verificación al usuario.
+     */
+    public function reenviarVerificacion(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect()->intended(route('inicio'));
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('status', 'verification-link-sent');
     }
 
     /**
