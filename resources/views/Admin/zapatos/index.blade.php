@@ -24,6 +24,13 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ route('admin.zapatos.excel') }}" class="inline-flex items-center justify-center px-4 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs md:text-sm rounded-lg shadow-sm hover:shadow transition-all space-x-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span>Descargar Excel</span>
+            </a>
+
             <button onclick="abrirModalApiKey()" class="inline-flex items-center justify-center px-3.5 py-3 bg-zinc-800 hover:bg-zinc-900 text-amber-400 font-semibold text-xs md:text-sm rounded-lg shadow-sm transition-all space-x-2 border border-zinc-700" title="Configurar Clave API de Inteligencia Artificial">
                 <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
@@ -125,53 +132,59 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-zinc-50 border-b border-zinc-200 text-[11px] font-bold text-zinc-500 uppercase tracking-wider">
-                            <th class="py-3 px-4">Calzado</th>
-                            <th class="py-3 px-4">Estilo</th>
-                            <th class="py-3 px-4">Número / Talla</th>
-                            <th class="py-3 px-4">Color</th>
-                            <th class="py-3 px-4">Material</th>
-                            <th class="py-3 px-4 text-center">Stock (Cantidad)</th>
-                            <th class="py-3 px-4 text-right">Precio Unitario</th>
-                            <th class="py-3 px-4 text-right">Subtotal Lote</th>
-                            <th class="py-3 px-4 text-center">Acciones</th>
+                        <tr class="bg-zinc-900 text-white text-[11px] font-bold uppercase tracking-wider border-b border-zinc-800">
+                            <th class="py-3.5 px-4">CLAVE ALTERNA</th>
+                            <th class="py-3.5 px-4">DESCRIPCION</th>
+                            <th class="py-3.5 px-4 text-right">PRECIO 1</th>
+                            <th class="py-3.5 px-4 text-center">EXIST.</th>
+                            <th class="py-3.5 px-4 text-center">ACCIONES</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-150 text-xs">
+                    <tbody class="divide-y divide-zinc-150 text-xs bg-white">
                         @foreach($zapatos as $zapato)
-                            <tr class="hover:bg-amber-50/40 transition-colors">
-                                <td class="py-3 px-4">
+                            <tr class="hover:bg-amber-50/50 transition-colors">
+                                <td class="py-3.5 px-4">
                                     <div class="flex items-center space-x-3">
-                                        <img src="{{ $zapato->imagen_url }}" alt="{{ $zapato->estilo }}" class="w-12 h-12 object-cover rounded-lg border border-zinc-200 shadow-sm bg-zinc-100 flex-shrink-0">
-                                        <div>
-                                            <span class="font-bold text-zinc-900 block">Zapato #{{ $zapato->id }}</span>
-                                            <span class="text-[10px] text-zinc-400 block">{{ $zapato->created_at->format('d/m/Y H:i') }}</span>
-                                        </div>
+                                        <img src="{{ $zapato->imagen_url }}" alt="{{ $zapato->estilo }}" class="w-10 h-10 object-cover rounded-lg border border-zinc-200 shadow-sm bg-zinc-100 flex-shrink-0">
+                                        <span class="font-mono font-bold text-amber-950 bg-amber-100/80 px-2.5 py-1 rounded-md border border-amber-300 inline-block shadow-sm">
+                                            {{ $zapato->clave_alterna }}
+                                        </span>
                                     </div>
                                 </td>
-                                <td class="py-3 px-4 font-semibold text-zinc-900">{{ $zapato->estilo }}</td>
-                                <td class="py-3 px-4 font-mono font-bold text-amber-900 bg-amber-50/60 px-2 py-1 rounded inline-block my-3">Talla: {{ $zapato->numero }}</td>
-                                <td class="py-3 px-4 text-zinc-700">{{ $zapato->color }}</td>
-                                <td class="py-3 px-4 text-zinc-700">{{ $zapato->material }}</td>
-                                <td class="py-3 px-4 text-center">
+                                <td class="py-3.5 px-4">
+                                    <span class="font-bold text-zinc-900 uppercase block">{{ $zapato->descripcion_completa }}</span>
+                                    <div class="flex items-center space-x-2 text-[10px] text-zinc-400 mt-0.5">
+                                        <span>Estilo: {{ $zapato->estilo }}</span>
+                                        <span>•</span>
+                                        <span>Mat: {{ $zapato->material }}</span>
+                                        <span>•</span>
+                                        <span>Col: {{ $zapato->color }}</span>
+                                        @if($zapato->bordado)
+                                            <span>•</span>
+                                            <span class="text-amber-800 font-semibold">Bordado: {{ $zapato->bordado }}</span>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td class="py-3.5 px-4 text-right font-bold text-zinc-950 font-sans text-sm">
+                                    $ {{ number_format($zapato->precio, 2, '.', ',') }}
+                                </td>
+                                <td class="py-3.5 px-4 text-center">
                                     @if($zapato->cantidad > 5)
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800">{{ $zapato->cantidad }} pares</span>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-850 border border-emerald-200">{{ $zapato->cantidad }}</span>
                                     @elseif($zapato->cantidad > 0)
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">{{ $zapato->cantidad }} pares</span>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-200">{{ $zapato->cantidad }}</span>
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800">Agotado</span>
+                                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-200">0</span>
                                     @endif
                                 </td>
-                                <td class="py-3 px-4 text-right font-bold text-zinc-900 font-sans">$ {{ number_format($zapato->precio, 2, '.', ',') }}</td>
-                                <td class="py-3 px-4 text-right font-bold text-amber-900 font-sans">$ {{ number_format($zapato->valorTotal(), 2, '.', ',') }}</td>
-                                <td class="py-3 px-4 text-center">
-                                    <div class="flex items-center justify-center space-x-2">
-                                        <button onclick="abrirModalEditar({{ json_encode($zapato) }})" class="p-1.5 text-zinc-500 hover:text-amber-850 hover:bg-zinc-100 rounded transition-colors" title="Editar datos o stock">
+                                <td class="py-3.5 px-4 text-center">
+                                    <div class="flex items-center justify-center space-x-1.5">
+                                        <button onclick="abrirModalEditar({{ json_encode($zapato) }})" class="p-1.5 text-zinc-600 hover:text-amber-900 hover:bg-amber-100 rounded-lg transition-colors" title="Editar zapato">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                             </svg>
                                         </button>
-                                        <a href="{{ route('admin.zapatos.eliminar', $zapato->id) }}" onclick="return confirm('¿Estás seguro de eliminar este zapato del inventario?')" class="p-1.5 text-zinc-500 hover:text-rose-600 hover:bg-zinc-100 rounded transition-colors" title="Eliminar zapato">
+                                        <a href="{{ route('admin.zapatos.eliminar', $zapato->id) }}" onclick="return confirm('¿Estás seguro de eliminar este zapato del inventario?')" class="p-1.5 text-zinc-500 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Eliminar zapato">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                             </svg>
@@ -340,18 +353,23 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-2">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-2">
                     <div>
                         <label class="block text-[11px] font-bold text-zinc-600 uppercase">Color</label>
                         <input type="text" id="confColor" name="color" required placeholder="ej. Negro, Blanco, Café" class="w-full mt-1 px-3 py-2 text-xs font-semibold bg-white border border-zinc-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-bold text-zinc-600 uppercase">Material (Seguido del Color)</label>
-                        <input type="text" id="confMaterial" name="material" required placeholder="ej. Piel, Gamuza, Sintético" class="w-full mt-1 px-3 py-2 text-xs font-semibold bg-white border border-zinc-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                        <label class="block text-[11px] font-bold text-zinc-600 uppercase">Material</label>
+                        <input type="text" id="confMaterial" name="material" required placeholder="ej. Sintético, Piel, Charol" class="w-full mt-1 px-3 py-2 text-xs font-semibold bg-white border border-zinc-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-zinc-600 uppercase">Bordado (Opcional)</label>
+                        <input type="text" id="confBordado" name="bordado" placeholder="ej. Flor, Mariposa..." class="w-full mt-1 px-3 py-2 text-xs font-semibold bg-white border border-zinc-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
                     </div>
                 </div>
-                <p class="text-[10px] text-zinc-400 mb-6 italic">* Nota: Si en la foto la etiqueta dice p. ej. "Negro Piel", el sistema separa automáticamente Color: Negro y Material: Piel.</p>
+                <p class="text-[10px] text-zinc-400 mb-6 italic">* Nota: El bordado es opcional. Se incluirá automáticamente en la Clave Alterna después del color (ej: M1214SINTETICONEGROFLORT22.0).</p>
 
                 <!-- Campos de Cantidad y Precio (Destacados) -->
                 <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -423,9 +441,15 @@
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-zinc-700 uppercase">Material</label>
-                        <input type="text" id="editMaterial" name="material" required class="w-full mt-1 px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-700 uppercase">Material</label>
+                            <input type="text" id="editMaterial" name="material" required class="w-full mt-1 px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-zinc-700 uppercase">Bordado (Opcional)</label>
+                            <input type="text" id="editBordado" name="bordado" placeholder="ej. Flor, Mariposa..." class="w-full mt-1 px-3 py-2 text-xs border border-zinc-300 rounded-lg focus:ring-2 focus:ring-amber-500 outline-none">
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3 p-3 bg-zinc-50 border border-zinc-200 rounded-lg">
@@ -698,7 +722,8 @@
                 estilo: '',
                 numero: '25.0',
                 color: '',
-                material: ''
+                material: '',
+                bordado: ''
             });
         }
 
@@ -710,6 +735,7 @@
             document.getElementById('confNumero').value = data.numero || '';
             document.getElementById('confColor').value = data.color || '';
             document.getElementById('confMaterial').value = data.material || '';
+            document.getElementById('confBordado').value = data.bordado || '';
             document.getElementById('confCantidad').value = 1;
             document.getElementById('confPrecio').value = '';
 
@@ -764,6 +790,7 @@
             document.getElementById('editNumero').value = zapato.numero;
             document.getElementById('editColor').value = zapato.color;
             document.getElementById('editMaterial').value = zapato.material;
+            document.getElementById('editBordado').value = zapato.bordado || '';
             document.getElementById('editCantidad').value = zapato.cantidad;
             document.getElementById('editPrecio').value = zapato.precio;
 

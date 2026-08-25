@@ -75,6 +75,7 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
 
     // Inventario de Zapatos con Escáner IA de Foto
     Route::get('/zapatos', [AdminController::class, 'zapatosIndex'])->name('admin.zapatos');
+    Route::get('/zapatos/exportar-excel', [AdminController::class, 'zapatosExportarExcel'])->name('admin.zapatos.excel');
     Route::post('/zapatos/analizar-foto', [AdminController::class, 'zapatosAnalizarFoto'])->name('admin.zapatos.analizar');
     Route::post('/zapatos/guardar', [AdminController::class, 'zapatosGuardar'])->name('admin.zapatos.guardar');
     Route::post('/zapatos/guardar-apikey', [AdminController::class, 'zapatosGuardarApiKey'])->name('admin.zapatos.apikey');

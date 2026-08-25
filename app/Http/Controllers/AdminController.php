@@ -580,7 +580,46 @@ class AdminController extends Controller
     }
 
     /**
-     * Guarda el registro de zapato escaneado en el inventario con cantidad y precio.
+     * Exporta el inventario completo de zapatos a un archivo Excel (.csv) con las columnas exactas requeridas.
+     */
+    public function zapatosExportarExcel()
+    {
+        $zapatos = Zapato::latest()->get();
+        $fileName = 'Inventario_Zapatos_' . date('Y-m-d_H-i') . '.csv';
+
+        $headers = [
+            "Content-Type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=\"$fileName\"",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use ($zapatos) {
+            $file = fopen('php://output', 'w');
+            // Incluir BOM UTF-8 para que Excel lo abra con formato nativo y caracteres correctos
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Encabezados exactos según los 4 requeridos
+            fputcsv($file, ['CLAVE ALTERNA', 'DESCRIPCION', 'PRECIO 1', 'EXIST.']);
+
+            foreach ($zapatos as $z) {
+                fputcsv($file, [
+                    $z->clave_alterna,
+                    $z->descripcion_completa,
+                    number_format((float)$z->precio, 2, '.', ''),
+                    $z->cantidad,
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Guarda el registro de zapato escaneado en el inventario con cantidad, precio y bordado.
      */
     public function zapatosGuardar(Request $request)
     {
@@ -589,6 +628,7 @@ class AdminController extends Controller
             'numero'      => 'required|string|max:50',
             'color'       => 'required|string|max:255',
             'material'    => 'required|string|max:255',
+            'bordado'     => 'nullable|string|max:255',
             'cantidad'    => 'required|integer|min:1',
             'precio'      => 'required|numeric|min:0',
             'imagen_path' => 'nullable|string',
@@ -604,6 +644,7 @@ class AdminController extends Controller
             'numero'      => $request->numero,
             'color'       => $request->color,
             'material'    => $request->material,
+            'bordado'     => $request->bordado,
             'cantidad'    => (int) $request->cantidad,
             'precio'      => (float) $request->precio,
             'imagen_url'  => $imagenPath,
@@ -633,6 +674,7 @@ class AdminController extends Controller
             'numero'   => 'required|string|max:50',
             'color'    => 'required|string|max:255',
             'material' => 'required|string|max:255',
+            'bordado'  => 'nullable|string|max:255',
             'cantidad' => 'required|integer|min:0',
             'precio'   => 'required|numeric|min:0',
         ]);
@@ -642,6 +684,7 @@ class AdminController extends Controller
             'numero'   => $request->numero,
             'color'    => $request->color,
             'material' => $request->material,
+            'bordado'  => $request->bordado,
             'cantidad' => $request->cantidad,
             'precio'   => $request->precio,
         ]);
