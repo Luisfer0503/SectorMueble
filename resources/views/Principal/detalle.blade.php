@@ -22,56 +22,63 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
             
-            <!-- Left Column: Full Image & Configured Color Options Below -->
+            <!-- Left Column: Full Image & Configured Material Options Below -->
             <div class="flex flex-col space-y-4">
                 <!-- Main Image Box (Full view without cropping) -->
-                <div class="relative bg-zinc-50/90 border border-zinc-200 rounded-2xl overflow-hidden aspect-square shadow-sm max-h-[520px] flex items-center justify-center p-4 group">
+                <div class="relative bg-zinc-50/90 border border-zinc-200 rounded-2xl overflow-hidden aspect-square shadow-sm max-h-[520px] flex items-center justify-center p-4 group cursor-pointer">
+                    <!-- Foto 1 (Principal) -->
                     <img id="main-product-image" 
                          src="{{ $producto->imagen_url }}" 
                          alt="{{ $producto->nombre }}" 
                          data-original-src="{{ $producto->imagen_url }}"
                          class="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out">
-                    
-                    <!-- Dynamic Color Tint Overlay -->
-                    <div id="color-overlay" 
-                         class="absolute inset-0 pointer-events-none transition-opacity duration-500 ease-in-out opacity-0 mix-blend-color rounded-2xl">
-                    </div>
+
+                    <!-- Foto 2 (Secundaria en Hover) -->
+                    @if($producto->imagen_secundaria_url)
+                        <img id="secondary-product-image"
+                             src="{{ $producto->imagen_secundaria_url }}"
+                             alt="{{ $producto->nombre }} (Secundaria)"
+                             class="absolute inset-0 w-full h-full object-contain p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out bg-zinc-50/90 pointer-events-none">
+                    @endif
 
                     @if($producto->destacado)
                         <span class="absolute top-4 left-4 bg-amber-800 text-white text-[10px] font-bold px-3 py-1 uppercase rounded tracking-wider shadow z-10">Destacado</span>
                     @endif
                 </div>
 
-                <!-- Color Options Selector Configured by Admin -->
+                <!-- Material Options Selector Configured by Admin -->
                 @php
-                    $colores = $producto->colores_lista;
-                    $primerColor = $colores[0]['nombre'] ?? 'Original / Natural';
+                    $acabados = $producto->acabados_lista;
+                    $primerAcabado = $acabados[0]['nombre'] ?? 'Original / Natural';
                 @endphp
                 <div class="bg-white border border-zinc-200 rounded-2xl p-4 shadow-sm">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center space-x-2">
-                            <svg class="w-4 h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/>
-                            </svg>
-                            <span class="text-xs font-bold uppercase tracking-wider text-zinc-700">Colores y Acabados</span>
+                            <span class="text-sm">🪵</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-zinc-700">Acabados y Materiales</span>
                         </div>
                         <span id="selected-color-label" class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/60 px-2.5 py-0.5 rounded-full">
-                            {{ $primerColor }}
+                            {{ $primerAcabado }}
                         </span>
                     </div>
 
                     <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                        @foreach($colores as $idx => $c)
+                        @foreach($acabados as $idx => $c)
                             <button type="button" 
                                     id="swatch-btn-{{ $c['key'] }}"
                                     data-nombre="{{ $c['nombre'] }}"
-                                    data-imagen="{{ $c['imagen'] ?? '' }}"
-                                    data-hex="{{ $c['hex'] }}"
-                                    data-filter="{{ $c['filter'] ?? '' }}"
-                                    onclick="switchProductColor('{{ $c['key'] }}')" 
-                                    class="color-swatch-btn flex flex-col items-center p-3 rounded-xl border-2 {{ $idx === 0 ? 'border-amber-800 bg-amber-50/80 ring-2 ring-amber-800/30' : 'border-zinc-200 bg-white' }} transition-all cursor-pointer hover:shadow-md group">
-                                <span class="w-8 h-8 sm:w-9 sm:h-9 rounded-full shadow border-2 border-white group-hover:scale-110 transition-transform" style="background-color: {{ $c['hex'] }};"></span>
-                                <span class="text-xs font-bold text-zinc-900 mt-2 truncate max-w-full text-center">{{ $c['nombre'] }}</span>
+                                    data-mueble-imagen="{{ $c['mueble_imagen'] }}"
+                                    onclick="switchProductAcabado('{{ $c['key'] }}')" 
+                                    class="color-swatch-btn flex flex-col items-center p-2.5 rounded-xl border-2 {{ $idx === 0 ? 'border-amber-800 bg-amber-50/80 ring-2 ring-amber-800/30' : 'border-zinc-200 bg-white' }} transition-all cursor-pointer hover:shadow-md group">
+                                
+                                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg shadow-sm border border-zinc-200 overflow-hidden bg-zinc-100 group-hover:scale-105 transition-transform flex items-center justify-center">
+                                    @if(!empty($c['material_imagen']))
+                                        <img src="{{ $c['material_imagen'] }}" alt="{{ $c['nombre'] }}" class="w-full h-full object-cover">
+                                    @else
+                                        <span class="text-xs font-bold text-amber-850">🪵</span>
+                                    @endif
+                                </div>
+                                <span class="text-[11px] font-bold text-zinc-900 mt-1.5 truncate max-w-full text-center leading-tight">{{ $c['nombre'] }}</span>
                             </button>
                         @endforeach
                     </div>
@@ -279,57 +286,38 @@
     </div>
 
     <script>
-        function switchProductColor(key) {
+        function switchProductAcabado(key) {
             const btn = document.getElementById('swatch-btn-' + key);
             if (!btn) return;
 
-            const colorNombre = btn.dataset.nombre;
-            const colorImagen = btn.dataset.imagen;
-            const colorHex = btn.dataset.hex;
-            const colorFilter = btn.dataset.filter;
+            const acabadoNombre = btn.dataset.nombre;
+            const muebleImagen = btn.dataset.muebleImagen;
 
             const mainImg = document.getElementById('main-product-image');
-            const colorOverlay = document.getElementById('color-overlay');
             const selectedLabel = document.getElementById('selected-color-label');
             const hiddenColorInput = document.getElementById('input-color-seleccionado');
 
             if (mainImg) {
-                if (colorImagen && colorImagen.trim() !== '') {
-                    // Si el admin configuró una foto específica para este color (el fondo permanece intacto):
-                    mainImg.style.opacity = '0';
-                    setTimeout(() => {
-                        mainImg.src = colorImagen;
-                        mainImg.style.filter = 'none';
-                        mainImg.style.opacity = '1';
-                    }, 150);
-                    if (colorOverlay) colorOverlay.style.opacity = '0';
-                } else {
-                    // Si no tiene foto separada, restaura la foto original
-                    if (mainImg.dataset.originalSrc) {
-                        mainImg.src = mainImg.dataset.originalSrc;
-                    }
-                    if (colorFilter && colorFilter !== 'none') {
-                        mainImg.style.filter = colorFilter;
-                        if (colorOverlay) colorOverlay.style.opacity = '0';
-                    } else {
-                        mainImg.style.filter = 'none';
-                        if (colorOverlay && colorHex) {
-                            colorOverlay.style.backgroundColor = colorHex;
-                            colorOverlay.style.opacity = '0.35';
-                        }
-                    }
-                }
+                const targetSrc = (muebleImagen && muebleImagen.trim() !== '') 
+                    ? muebleImagen 
+                    : mainImg.dataset.originalSrc;
+
+                mainImg.style.opacity = '0';
+                setTimeout(() => {
+                    mainImg.src = targetSrc;
+                    mainImg.style.opacity = '1';
+                }, 150);
             }
 
             if (selectedLabel) {
-                selectedLabel.textContent = colorNombre;
+                selectedLabel.textContent = acabadoNombre;
             }
 
             if (hiddenColorInput) {
-                hiddenColorInput.value = colorNombre;
+                hiddenColorInput.value = acabadoNombre;
             }
 
-            // Actualizar apariencia visual de botones de color
+            // Actualizar apariencia visual de botones de acabado
             document.querySelectorAll('.color-swatch-btn').forEach(b => {
                 b.classList.remove('border-amber-800', 'bg-amber-50/80', 'ring-2', 'ring-amber-800/30');
                 b.classList.add('border-zinc-200', 'bg-white');
@@ -337,6 +325,11 @@
 
             btn.classList.remove('border-zinc-200', 'bg-white');
             btn.classList.add('border-amber-800', 'bg-amber-50/80', 'ring-2', 'ring-amber-800/30');
+        }
+
+        // Retrocompatibilidad
+        function switchProductColor(key) {
+            switchProductAcabado(key);
         }
     </script>
 @endsection

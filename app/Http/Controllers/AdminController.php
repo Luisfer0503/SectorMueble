@@ -61,21 +61,31 @@ class AdminController extends Controller
             'descripcion' => 'required|string',
             'precio' => 'required|numeric|min:0',
             'imagen_archivo' => 'required|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
+            'imagen_secundaria_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'categoria' => 'required|string',
             'stock' => 'required|integer|min:0',
             'calificacion' => 'required|numeric|between:1,5',
         ]);
 
-        $file = $request->file('imagen_archivo');
         $folder = public_path('storage/productos');
         if (!file_exists($folder)) {
             mkdir($folder, 0755, true);
         }
-        $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+
+        $file = $request->file('imagen_archivo');
+        $filename = time() . '_p1_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
         $file->move($folder, $filename);
         $imagenUrl = 'storage/productos/' . $filename;
 
-        $coloresData = $this->procesarColoresRequest($request);
+        $imagenSecundariaUrl = null;
+        if ($request->hasFile('imagen_secundaria_archivo') && $request->file('imagen_secundaria_archivo')->isValid()) {
+            $file2 = $request->file('imagen_secundaria_archivo');
+            $filename2 = time() . '_p2_' . Str::slug(pathinfo($file2->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file2->getClientOriginalExtension();
+            $file2->move($folder, $filename2);
+            $imagenSecundariaUrl = 'storage/productos/' . $filename2;
+        }
+
+        $acabadosData = $this->procesarColoresRequest($request);
 
         Producto::create([
             'nombre' => $request->nombre,
@@ -83,11 +93,12 @@ class AdminController extends Controller
             'descripcion' => $request->descripcion,
             'precio' => $request->precio,
             'imagen_url' => $imagenUrl,
+            'imagen_secundaria_url' => $imagenSecundariaUrl,
             'categoria' => $request->categoria,
             'stock' => $request->stock,
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
-            'colores' => !empty($coloresData) ? $coloresData : null,
+            'colores' => !empty($acabadosData) ? $acabadosData : null,
         ]);
 
         return redirect()->route('admin.productos')->with('success', 'Mueble agregado con éxito al catálogo.');
@@ -108,26 +119,34 @@ class AdminController extends Controller
             'descripcion' => 'required|string',
             'precio' => 'required|numeric|min:0',
             'imagen_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
+            'imagen_secundaria_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'categoria' => 'required|string',
             'stock' => 'required|integer|min:0',
             'calificacion' => 'required|numeric|between:1,5',
         ]);
 
-        $imagenUrl = $producto->getRawOriginal('imagen_url');
+        $folder = public_path('storage/productos');
+        if (!file_exists($folder)) {
+            mkdir($folder, 0755, true);
+        }
 
-        // Si se subió un nuevo archivo desde la computadora
+        $imagenUrl = $producto->getRawOriginal('imagen_url');
         if ($request->hasFile('imagen_archivo') && $request->file('imagen_archivo')->isValid()) {
             $file = $request->file('imagen_archivo');
-            $folder = public_path('storage/productos');
-            if (!file_exists($folder)) {
-                mkdir($folder, 0755, true);
-            }
-            $filename = time() . '_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+            $filename = time() . '_p1_' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
             $file->move($folder, $filename);
             $imagenUrl = 'storage/productos/' . $filename;
         }
 
-        $coloresData = $this->procesarColoresRequest($request);
+        $imagenSecundariaUrl = $producto->getRawOriginal('imagen_secundaria_url');
+        if ($request->hasFile('imagen_secundaria_archivo') && $request->file('imagen_secundaria_archivo')->isValid()) {
+            $file2 = $request->file('imagen_secundaria_archivo');
+            $filename2 = time() . '_p2_' . Str::slug(pathinfo($file2->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file2->getClientOriginalExtension();
+            $file2->move($folder, $filename2);
+            $imagenSecundariaUrl = 'storage/productos/' . $filename2;
+        }
+
+        $acabadosData = $this->procesarColoresRequest($request);
 
         $producto->update([
             'nombre' => $request->nombre,
@@ -135,51 +154,69 @@ class AdminController extends Controller
             'descripcion' => $request->descripcion,
             'precio' => $request->precio,
             'imagen_url' => $imagenUrl,
+            'imagen_secundaria_url' => $imagenSecundariaUrl,
             'categoria' => $request->categoria,
             'stock' => $request->stock,
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
-            'colores' => !empty($coloresData) ? $coloresData : null,
+            'colores' => !empty($acabadosData) ? $acabadosData : null,
         ]);
 
         return redirect()->route('admin.productos')->with('success', 'Mueble actualizado correctamente.');
     }
 
     /**
-     * Procesa los campos de colores enviados desde el formulario de admin.
+     * Procesa los campos de acabados y materiales enviados desde el formulario de admin.
      */
     private function procesarColoresRequest(Request $request): array
     {
-        $colores = [];
-        if ($request->has('colores_nombres')) {
-            $nombres = $request->input('colores_nombres', []);
-            $hexs = $request->input('colores_hex', []);
-            $existentes = $request->input('colores_imagenes_existentes', []);
+        $acabados = [];
+        $folder = public_path('storage/productos');
+        if (!file_exists($folder)) {
+            mkdir($folder, 0755, true);
+        }
+
+        // Si se reciben nuevos acabados estructurados (material + nombre + foto mueble)
+        if ($request->has('acabados_nombres') || $request->has('colores_nombres')) {
+            $nombres = $request->input('acabados_nombres', $request->input('colores_nombres', []));
+            $matExistentes = $request->input('acabados_materiales_existentes', []);
+            $muebleExistentes = $request->input('acabados_muebles_existentes', $request->input('colores_imagenes_existentes', []));
 
             foreach ($nombres as $i => $nombre) {
                 if (trim($nombre) === '') continue;
-                $hex = $hexs[$i] ?? '#888888';
-                $imagenPath = $existentes[$i] ?? null;
 
-                if ($request->hasFile("colores_imagenes.{$i}") && $request->file("colores_imagenes.{$i}")->isValid()) {
-                    $cFile = $request->file("colores_imagenes.{$i}");
-                    $folder = public_path('storage/productos');
-                    if (!file_exists($folder)) {
-                        mkdir($folder, 0755, true);
-                    }
-                    $cFilename = time() . '_col_' . $i . '_' . Str::slug(pathinfo($cFile->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $cFile->getClientOriginalExtension();
-                    $cFile->move($folder, $cFilename);
-                    $imagenPath = 'storage/productos/' . $cFilename;
+                $materialPath = $matExistentes[$i] ?? null;
+                $mueblePath = $muebleExistentes[$i] ?? null;
+
+                // Subida de imagen de muestra de material
+                if ($request->hasFile("acabados_materiales.{$i}") && $request->file("acabados_materiales.{$i}")->isValid()) {
+                    $matFile = $request->file("acabados_materiales.{$i}");
+                    $matFilename = time() . '_mat_' . $i . '_' . Str::slug(pathinfo($matFile->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $matFile->getClientOriginalExtension();
+                    $matFile->move($folder, $matFilename);
+                    $materialPath = 'storage/productos/' . $matFilename;
                 }
 
-                $colores[] = [
+                // Subida de foto del mueble con este material
+                if ($request->hasFile("acabados_muebles.{$i}") && $request->file("acabados_muebles.{$i}")->isValid()) {
+                    $muebleFile = $request->file("acabados_muebles.{$i}");
+                    $muebleFilename = time() . '_acabmueble_' . $i . '_' . Str::slug(pathinfo($muebleFile->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $muebleFile->getClientOriginalExtension();
+                    $muebleFile->move($folder, $muebleFilename);
+                    $mueblePath = 'storage/productos/' . $muebleFilename;
+                } elseif ($request->hasFile("colores_imagenes.{$i}") && $request->file("colores_imagenes.{$i}")->isValid()) {
+                    $muebleFile = $request->file("colores_imagenes.{$i}");
+                    $muebleFilename = time() . '_col_' . $i . '_' . Str::slug(pathinfo($muebleFile->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $muebleFile->getClientOriginalExtension();
+                    $muebleFile->move($folder, $muebleFilename);
+                    $mueblePath = 'storage/productos/' . $muebleFilename;
+                }
+
+                $acabados[] = [
                     'nombre' => trim($nombre),
-                    'hex' => $hex,
-                    'imagen' => $imagenPath,
+                    'material_imagen' => $materialPath,
+                    'mueble_imagen' => $mueblePath,
                 ];
             }
         }
-        return $colores;
+        return $acabados;
     }
 
     public function productosEliminar($id)

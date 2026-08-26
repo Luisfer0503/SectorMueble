@@ -73,17 +73,43 @@
                     @enderror
                 </div>
 
-                <!-- Seleccionar/Cambiar Imagen desde el Equipo -->
-                <div class="sm:col-span-2 space-y-2">
-                    <label class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Imagen del Mueble</label>
+                <!-- Cambiar/Actualizar Imágenes (Foto 1 Principal & Foto 2 Secundaria) -->
+                <div class="sm:col-span-2 space-y-4">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-800">
+                        📸 Fotografías del Mueble (Foto 1 Principal y Foto 2 Secundaria)
+                    </label>
 
-                    <div class="border-2 border-dashed border-zinc-200 hover:border-amber-700 rounded-lg p-6 bg-zinc-50 transition-colors text-center cursor-pointer relative" onclick="document.getElementById('imagen_archivo').click()">
-                        <input type="file" name="imagen_archivo" id="imagen_archivo" accept="image/*" class="hidden" onchange="previewImage(this)">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Foto 1 (Principal) -->
+                        <div class="border-2 border-dashed border-zinc-200 hover:border-amber-700 rounded-xl p-4 bg-zinc-50 transition-colors text-center cursor-pointer relative" onclick="document.getElementById('imagen_archivo').click()">
+                            <span class="block text-xs font-extrabold uppercase tracking-wider text-amber-900 mb-2">Foto 1 (Principal)</span>
+                            <input type="file" name="imagen_archivo" id="imagen_archivo" accept="image/*" class="hidden" onchange="previewMainImage(this, 'preview_p1')">
+                            
+                            <div class="flex flex-col items-center">
+                                <img id="preview_p1" src="{{ $producto->imagen_url }}" alt="{{ $producto->nombre }}" class="max-h-40 rounded border border-zinc-200 shadow-sm object-cover mb-2">
+                                <span class="text-[11px] text-amber-850 font-semibold hover:underline">Clic para cambiar Foto 1 (Principal)</span>
+                            </div>
+                        </div>
 
-                        <!-- Previsualización activa (Imagen actual o nueva elegida) -->
-                        <div id="image-preview-container" class="flex flex-col items-center">
-                            <img id="image-preview" src="{{ $producto->imagen_url }}" alt="{{ $producto->nombre }}" class="max-h-56 rounded border border-zinc-200 shadow-sm object-cover mb-2">
-                            <span class="text-xs text-amber-850 font-semibold hover:underline">Haz clic aquí para seleccionar una nueva imagen desde tu equipo</span>
+                        <!-- Foto 2 (Secundaria) -->
+                        <div class="border-2 border-dashed border-zinc-200 hover:border-amber-700 rounded-xl p-4 bg-zinc-50 transition-colors text-center cursor-pointer relative" onclick="document.getElementById('imagen_secundaria_archivo').click()">
+                            <span class="block text-xs font-extrabold uppercase tracking-wider text-amber-900 mb-2">Foto 2 (Secundaria - Hover)</span>
+                            <input type="file" name="imagen_secundaria_archivo" id="imagen_secundaria_archivo" accept="image/*" class="hidden" onchange="previewMainImage(this, 'preview_p2')">
+                            
+                            <div class="flex flex-col items-center">
+                                @if($producto->imagen_secundaria_url)
+                                    <img id="preview_p2" src="{{ $producto->imagen_secundaria_url }}" alt="{{ $producto->nombre }}" class="max-h-40 rounded border border-zinc-200 shadow-sm object-cover mb-2">
+                                @else
+                                    <img id="preview_p2" src="#" alt="Sin Foto 2" class="hidden max-h-40 rounded border border-zinc-200 shadow-sm object-cover mb-2">
+                                    <div id="holder_p2" class="space-y-2 py-4">
+                                        <svg class="mx-auto h-8 w-8 text-amber-800/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <div class="text-xs font-bold text-zinc-700">Subir Foto 2 (Secundaria)</div>
+                                    </div>
+                                @endif
+                                <span class="text-[11px] text-amber-850 font-semibold hover:underline">Clic para seleccionar / cambiar Foto 2</span>
+                            </div>
                         </div>
                     </div>
 
@@ -107,54 +133,65 @@
                     <label for="destacado" class="ml-2 text-xs text-zinc-700 font-medium cursor-pointer">Destacar este mueble en la página principal</label>
                 </div>
 
-                <!-- Gestión de Colores y Variantes del Mueble -->
+                <!-- Gestión de Acabados y Materiales del Mueble -->
                 <div class="sm:col-span-2 border-t border-zinc-200 pt-6">
                     <div class="flex items-center justify-between mb-3">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-zinc-800">
-                                🎨 Acabados y Colores del Mueble
+                                🪵 Acabados y Materiales del Mueble
                             </label>
                             <p class="text-xs text-zinc-500 mt-0.5">
-                                Elige 3 o más colores disponibles. Puedes asignar el nombre del color, el código HEX y subir opcionalmente la foto del mueble en ese color.
+                                Sube la imagen de la muestra del material, escribe el nombre del material y a un lado sube la foto del mueble con ese material.
                             </p>
                         </div>
-                        <button type="button" onclick="agregarColorRow()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold px-3 py-1.5 rounded transition-colors flex items-center space-x-1 cursor-pointer">
-                            <span>+ Agregar otro color</span>
+                        <button type="button" onclick="agregarAcabadoRow()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold px-3 py-1.5 rounded transition-colors flex items-center space-x-1 cursor-pointer">
+                            <span>+ Agregar acabado</span>
                         </button>
                     </div>
 
-                    <div id="colores-container" class="space-y-3">
+                    <div id="acabados-container" class="space-y-3">
                         @php
-                            $coloresExistentes = $producto->colores_lista;
+                            $acabadosExistentes = $producto->acabados_lista;
                         @endphp
-                        @foreach($coloresExistentes as $idx => $col)
-                            <div class="color-row flex flex-col sm:flex-row items-center gap-3 p-3 bg-zinc-50 border border-zinc-200 rounded-lg">
-                                <input type="hidden" name="colores_imagenes_existentes[]" value="{{ $col['imagen'] ?? '' }}">
-                                
-                                <!-- Color Picker HEX -->
-                                <div class="flex items-center space-x-2">
-                                    <input type="color" name="colores_hex[]" value="{{ $col['hex'] ?? '#d4a373' }}" class="h-9 w-12 p-0.5 border border-zinc-300 rounded cursor-pointer" title="Selecciona tono HEX">
+                        @foreach($acabadosExistentes as $idx => $acab)
+                            <div class="acabado-row flex flex-col md:flex-row items-center gap-3 p-3.5 bg-zinc-50 border border-zinc-200 rounded-xl">
+                                <input type="hidden" name="acabados_materiales_existentes[]" value="{{ $acab['material_imagen'] ?? '' }}">
+                                <input type="hidden" name="acabados_muebles_existentes[]" value="{{ $acab['mueble_imagen'] ?? '' }}">
+
+                                <!-- 1. Muestra del Material -->
+                                <div class="w-full md:w-1/3">
+                                    <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">1. Muestra del Material</label>
+                                    <div class="flex items-center space-x-2">
+                                        @if(!empty($acab['material_imagen']))
+                                            <img src="{{ $acab['material_imagen'] }}" class="h-8 w-8 object-cover rounded border border-zinc-300 flex-shrink-0">
+                                        @endif
+                                        <input type="file" name="acabados_materiales[{{ $idx }}]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                                    </div>
                                 </div>
 
-                                <!-- Nombre del color -->
-                                <div class="flex-grow w-full sm:w-auto">
-                                    <input type="text" name="colores_nombres[]" required value="{{ $col['nombre'] }}" placeholder="Nombre del color (ej: Nogal Oscuro)" class="w-full bg-white border border-zinc-200 rounded text-xs px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <!-- 2. Nombre del Material -->
+                                <div class="w-full md:w-1/3">
+                                    <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">2. Nombre del Material</label>
+                                    <input type="text" name="acabados_nombres[]" required value="{{ $acab['nombre'] }}" placeholder="Ej: Nogal Oscuro" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 </div>
 
-                                <!-- Foto del mueble en este color (Opcional) -->
-                                <div class="w-full sm:w-auto flex items-center space-x-2">
-                                    @if(!empty($col['imagen']))
-                                        <img src="{{ $col['imagen'] }}" class="h-9 w-9 object-cover rounded border border-zinc-300">
-                                    @endif
-                                    <input type="file" name="colores_imagenes[{{ $idx }}]" accept="image/*" class="text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-800 hover:file:bg-amber-100">
+                                <!-- 3. Foto del Mueble con este Material -->
+                                <div class="w-full md:w-1/3 flex items-end gap-2">
+                                    <div class="flex-grow">
+                                        <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">3. Foto Mueble con Material</label>
+                                        <div class="flex items-center space-x-2">
+                                            @if(!empty($acab['mueble_imagen']))
+                                                <img src="{{ $acab['mueble_imagen'] }}" class="h-8 w-8 object-cover rounded border border-zinc-300 flex-shrink-0">
+                                            @endif
+                                            <input type="file" name="acabados_muebles[{{ $idx }}]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="eliminarAcabadoRow(this)" class="text-rose-600 hover:text-rose-800 p-2 cursor-pointer mb-0.5" title="Eliminar acabado">
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
                                 </div>
-
-                                <!-- Botón eliminar color -->
-                                <button type="button" onclick="eliminarColorRow(this)" class="text-rose-600 hover:text-rose-800 p-1 cursor-pointer">
-                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                    </svg>
-                                </button>
                             </div>
                         @endforeach
                     </div>
@@ -174,50 +211,59 @@
     </div>
 
     <script>
-        function previewImage(input) {
-            const preview = document.getElementById('image-preview');
+        function previewMainImage(input, previewId) {
+            const preview = document.getElementById(previewId);
+            const holder = document.getElementById('holder_' + previewId.split('_')[1]);
 
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    if (holder) holder.classList.add('hidden');
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        let colorIndexCount = {{ count($coloresExistentes) }};
-        function agregarColorRow() {
-            const container = document.getElementById('colores-container');
+        let acabadoIndexCount = {{ count($acabadosExistentes) }};
+        function agregarAcabadoRow() {
+            const container = document.getElementById('acabados-container');
             const row = document.createElement('div');
-            row.className = 'color-row flex flex-col sm:flex-row items-center gap-3 p-3 bg-zinc-50 border border-zinc-200 rounded-lg';
+            row.className = 'acabado-row flex flex-col md:flex-row items-center gap-3 p-3.5 bg-zinc-50 border border-zinc-200 rounded-xl';
             row.innerHTML = `
-                <input type="hidden" name="colores_imagenes_existentes[]" value="">
-                <div class="flex items-center space-x-2">
-                    <input type="color" name="colores_hex[]" value="#374151" class="h-9 w-12 p-0.5 border border-zinc-300 rounded cursor-pointer" title="Selecciona tono HEX">
+                <input type="hidden" name="acabados_materiales_existentes[]" value="">
+                <input type="hidden" name="acabados_muebles_existentes[]" value="">
+                <div class="w-full md:w-1/3">
+                    <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">1. Muestra del Material</label>
+                    <input type="file" name="acabados_materiales[${acabadoIndexCount}]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
                 </div>
-                <div class="flex-grow w-full sm:w-auto">
-                    <input type="text" name="colores_nombres[]" required placeholder="Nombre del color (ej: Verde Olivo, Azul Marino...)" class="w-full bg-white border border-zinc-200 rounded text-xs px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                <div class="w-full md:w-1/3">
+                    <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">2. Nombre del Material</label>
+                    <input type="text" name="acabados_nombres[]" required placeholder="Ej: Nogal Oscuro, Mármol..." class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
                 </div>
-                <div class="w-full sm:w-auto flex items-center space-x-2">
-                    <input type="file" name="colores_imagenes[${colorIndexCount}]" accept="image/*" class="text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-amber-50 file:text-amber-800 hover:file:bg-amber-100">
+                <div class="w-full md:w-1/3 flex items-end gap-2">
+                    <div class="flex-grow">
+                        <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">3. Foto Mueble con Material</label>
+                        <input type="file" name="acabados_muebles[${acabadoIndexCount}]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                    </div>
+                    <button type="button" onclick="eliminarAcabadoRow(this)" class="text-rose-600 hover:text-rose-800 p-2 cursor-pointer mb-0.5" title="Eliminar acabado">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
                 </div>
-                <button type="button" onclick="eliminarColorRow(this)" class="text-rose-600 hover:text-rose-800 p-1 cursor-pointer">
-                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                </button>
             `;
             container.appendChild(row);
-            colorIndexCount++;
+            acabadoIndexCount++;
         }
 
-        function eliminarColorRow(btn) {
-            const rows = document.querySelectorAll('.color-row');
+        function eliminarAcabadoRow(btn) {
+            const rows = document.querySelectorAll('.acabado-row');
             if (rows.length > 1) {
-                btn.closest('.color-row').remove();
+                btn.closest('.acabado-row').remove();
             } else {
-                alert('Debes mantener al menos 1 color disponible para el mueble.');
+                alert('Debes mantener al menos 1 acabado para el mueble.');
             }
         }
     </script>

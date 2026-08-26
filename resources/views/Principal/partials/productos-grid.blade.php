@@ -27,12 +27,23 @@
 
                     {{-- Imagen --}}
                     <div class="relative w-full h-44 sm:h-64 bg-zinc-100 overflow-hidden">
+                        {{-- Foto 1 (Principal) --}}
                         <img
                             src="{{ $producto->imagen_url }}"
                             alt="{{ $producto->nombre }}"
                             loading="lazy"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         >
+
+                        {{-- Foto 2 (Secundaria en Hover) --}}
+                        @if($producto->imagen_secundaria_url)
+                            <img
+                                src="{{ $producto->imagen_secundaria_url }}"
+                                alt="{{ $producto->nombre }} (Secundaria)"
+                                loading="lazy"
+                                class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                            >
+                        @endif
 
                         {{-- Badges --}}
                         <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col space-y-1">

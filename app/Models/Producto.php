@@ -17,6 +17,7 @@ class Producto extends Model
         'descripcion',
         'precio',
         'imagen_url',
+        'imagen_secundaria_url',
         'categoria',
         'stock',
         'calificacion',
@@ -56,7 +57,7 @@ class Producto extends Model
     }
 
     /**
-     * Accessor para formatear siempre correctamente la URL de la imagen del producto.
+     * Accessor para formatear siempre correctamente la URL de la imagen principal del producto.
      */
     public function getImagenUrlAttribute($value): string
     {
@@ -72,49 +73,59 @@ class Producto extends Model
     }
 
     /**
-     * Retorna la lista estructurada de colores para el producto (configurada por Admin o fallback por defecto).
+     * Accessor para la URL de la imagen secundaria del producto.
      */
-    public function getColoresListaAttribute(): array
+    public function getImagenSecundariaUrlAttribute($value): ?string
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+
+        return asset(ltrim($value, '/'));
+    }
+
+    /**
+     * Retorna la lista estructurada de acabados (material e imagen de mueble por acabado).
+     */
+    public function getAcabadosListaAttribute(): array
     {
         $raw = $this->colores;
         if (!empty($raw) && is_array($raw)) {
             $formatted = [];
             foreach ($raw as $index => $item) {
-                $img = !empty($item['imagen']) ? asset(ltrim($item['imagen'], '/')) : null;
+                $matImg = !empty($item['material_imagen']) ? asset(ltrim($item['material_imagen'], '/')) : (!empty($item['hex']) ? null : null);
+                $muebleImg = !empty($item['mueble_imagen']) ? asset(ltrim($item['mueble_imagen'], '/')) : (!empty($item['imagen']) ? asset(ltrim($item['imagen'], '/')) : $this->imagen_url);
+
                 $formatted[] = [
-                    'key' => 'color_' . $index,
-                    'nombre' => $item['nombre'] ?? ('Color ' . ($index + 1)),
-                    'hex' => $item['hex'] ?? '#888888',
-                    'imagen' => $img,
-                    'filter' => $item['filter'] ?? null,
+                    'key' => 'acabado_' . $index,
+                    'nombre' => $item['nombre'] ?? ('Acabado ' . ($index + 1)),
+                    'material_imagen' => $matImg,
+                    'mueble_imagen' => $muebleImg,
                 ];
             }
             return $formatted;
         }
 
-        // Colores por defecto si aún no se han configurado específicamente
+        // Acabados por defecto si aún no se han configurado
         return [
             [
-                'key' => 'color_0',
-                'nombre' => 'Original / Natural',
-                'hex' => '#D4A373',
-                'imagen' => $this->imagen_url,
-                'filter' => 'none',
-            ],
-            [
-                'key' => 'color_1',
-                'nombre' => 'Nogal Oscuro',
-                'hex' => '#4A2810',
-                'imagen' => null,
-                'filter' => 'sepia(0.35) hue-rotate(-20deg) brightness(0.82) contrast(1.15)',
-            ],
-            [
-                'key' => 'color_2',
-                'nombre' => 'Gris Grafito',
-                'hex' => '#374151',
-                'imagen' => null,
-                'filter' => 'grayscale(0.88) brightness(0.88) contrast(1.15)',
+                'key' => 'acabado_0',
+                'nombre' => 'Madera Natural',
+                'material_imagen' => null,
+                'mueble_imagen' => $this->imagen_url,
             ],
         ];
+    }
+
+    /**
+     * Alias de retrocompatibilidad.
+     */
+    public function getColoresListaAttribute(): array
+    {
+        return $this->getAcabadosListaAttribute();
     }
 }

@@ -221,7 +221,13 @@
                         
                         <!-- Img Container con Aspecto Proporcional -->
                         <div class="relative w-full h-72 sm:h-80 rounded-2xl bg-zinc-100 overflow-hidden">
+                            <!-- Foto 1 (Principal) -->
                             <img src="{{ $producto->imagen_url }}" alt="{{ $producto->nombre }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out">
+                            
+                            <!-- Foto 2 (Secundaria en Hover) -->
+                            @if($producto->imagen_secundaria_url)
+                                <img src="{{ $producto->imagen_secundaria_url }}" alt="{{ $producto->nombre }} (Secundaria)" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700 ease-out">
+                            @endif
                             
                             <!-- Insignias / Badges -->
                             <div class="absolute top-3 left-3 flex flex-col space-y-1.5 z-10">
