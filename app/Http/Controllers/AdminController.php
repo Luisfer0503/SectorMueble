@@ -438,10 +438,27 @@ class AdminController extends Controller
     // --- INVENTARIO DE ZAPATOS CON ESCÁNER IA DE FOTO ---
 
     /**
+     * Verifica que el usuario autenticado tenga ID entre 2 y 6 para acceder al inventario de zapatos.
+     */
+    private function verificarAccesoZapatos()
+    {
+        $id = auth()->id();
+        if (!$id || $id < 2 || $id > 6) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['error' => 'No tienes autorización para acceder a esta función.'], 403);
+            }
+            return redirect()->route('admin.dashboard')->with('error', 'El Inventario de Zapatos solo está disponible para usuarios autorizados (ID 2 a 6).');
+        }
+        return null;
+    }
+
+    /**
      * Muestra la lista de zapatos escaneados en el inventario.
      */
     public function zapatosIndex(Request $request)
     {
+        if ($res = $this->verificarAccesoZapatos()) return $res;
+
         $query = Zapato::query();
 
         if ($request->filled('search')) {
@@ -472,6 +489,7 @@ class AdminController extends Controller
      */
     public function zapatosAnalizarFoto(Request $request)
     {
+        if ($res = $this->verificarAccesoZapatos()) return $res;
         $request->validate([
             'imagen_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
             'imagen_base64' => 'nullable|string',
@@ -612,6 +630,7 @@ class AdminController extends Controller
      */
     public function zapatosGuardarApiKey(Request $request)
     {
+        if ($res = $this->verificarAccesoZapatos()) return $res;
         $request->validate([
             'gemini_api_key' => 'required|string',
         ]);
@@ -640,6 +659,7 @@ class AdminController extends Controller
      */
     public function zapatosExportarExcel()
     {
+        if ($res = $this->verificarAccesoZapatos()) return $res;
         $zapatos = Zapato::latest()->get();
         $fileName = 'Inventario_Zapatos_' . date('Y-m-d_H-i') . '.csv';
 
@@ -680,6 +700,7 @@ class AdminController extends Controller
      */
     public function zapatosGuardar(Request $request)
     {
+        if ($res = $this->verificarAccesoZapatos()) return $res;
         try {
             $estilo   = trim((string) $request->input('estilo', 'GENERICO'));
             $color    = trim((string) $request->input('color', 'NEGRO'));
@@ -802,6 +823,7 @@ class AdminController extends Controller
      */
     public function zapatosActualizar(Request $request, $id)
     {
+        if ($res = $this->verificarAccesoZapatos()) return $res;
         try {
             $zapato = Zapato::findOrFail($id);
 
@@ -859,6 +881,7 @@ class AdminController extends Controller
      */
     public function zapatosEliminar($id)
     {
+        if ($res = $this->verificarAccesoZapatos()) return $res;
         $zapato = Zapato::findOrFail($id);
         
         // Borrar imagen si existe en storage
