@@ -21,11 +21,11 @@
             <div class="bg-zinc-950 text-white p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between">
                 <div>
                     <span class="text-xs font-semibold tracking-wider text-amber-500 uppercase">Recibo de Pedido</span>
-                    <h2 class="text-lg font-mono tracking-widest mt-1">Nº #{{ str_pad($pedido->id, 6, '0', STR_PAD_LEFT) }}</h2>
+                    <h2 class="text-lg font-mono tracking-widest mt-1">Nº #{{ str_pad($pedido->id ?? 1, 6, '0', STR_PAD_LEFT) }}</h2>
                 </div>
                 <div class="mt-4 sm:mt-0 text-left sm:text-right">
                     <span class="block text-xs text-zinc-400">Fecha de compra</span>
-                    <span class="block text-sm font-semibold mt-0.5">{{ $pedido->created_at->format('d/m/Y H:i') }}</span>
+                    <span class="block text-sm font-semibold mt-0.5">{{ \Carbon\Carbon::parse($pedido->created_at ?? now())->format('d/m/Y H:i') }}</span>
                 </div>
             </div>
 
@@ -34,15 +34,15 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm pb-8 border-b border-zinc-150">
                     <div>
                         <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Comprador</h3>
-                        <p class="font-semibold text-zinc-900">{{ $pedido->nombre_cliente }}</p>
-                        <p class="text-zinc-500 text-xs mt-1">{{ $pedido->correo_cliente }}</p>
-                        <p class="text-zinc-500 text-xs">{{ $pedido->telefono_cliente }}</p>
+                        <p class="font-semibold text-zinc-900">{{ $pedido->nombre_cliente ?? 'Cliente' }}</p>
+                        <p class="text-zinc-500 text-xs mt-1">{{ $pedido->correo_cliente ?? '' }}</p>
+                        <p class="text-zinc-500 text-xs">{{ $pedido->telefono_cliente ?? '' }}</p>
                     </div>
                     <div>
                         <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Dirección de Entrega</h3>
-                        <p class="font-semibold text-zinc-900">{{ $pedido->direccion_envio }}</p>
-                        <p class="text-zinc-500 text-xs mt-1">{{ $pedido->codigo_postal }}, {{ $pedido->ciudad }}</p>
-                        <p class="text-zinc-500 text-xs">Estado de entrega: <span class="font-bold text-amber-800 uppercase">{{ $pedido->estado }}</span></p>
+                        <p class="font-semibold text-zinc-900">{{ $pedido->direccion_envio ?? 'Dirección no registrada' }}</p>
+                        <p class="text-zinc-500 text-xs mt-1">{{ $pedido->codigo_postal ?? '' }}, {{ $pedido->ciudad ?? '' }}</p>
+                        <p class="text-zinc-500 text-xs">Estado de entrega: <span class="font-bold text-amber-800 uppercase">{{ $pedido->estado ?? 'completado' }}</span></p>
                     </div>
                 </div>
 
@@ -53,26 +53,31 @@
                     <div class="divide-y divide-zinc-100">
                         @php
                             $subtotalCalculado = 0;
+                            $detallesLista = $pedido->detalles ?? [];
                         @endphp
-                        @foreach($pedido->detalles as $det)
+                        @forelse($detallesLista as $det)
                             @php
-                                $itemTotal = $det->precio * $det->cantidad;
+                                $itemTotal = ($det->precio ?? 0) * ($det->cantidad ?? 1);
                                 $subtotalCalculado += $itemTotal;
                             @endphp
                             <div class="flex items-center justify-between py-4">
                                 <div>
-                                    <h4 class="text-sm font-semibold text-zinc-900">{{ $det->nombre_producto }}</h4>
-                                    <span class="text-xs text-zinc-500 font-medium">Cantidad: {{ $det->cantidad }} x $ {{ number_format($det->precio, 2, '.', ',') }} MXN</span>
+                                    <h4 class="text-sm font-semibold text-zinc-900">{{ $det->nombre_producto ?? 'Producto' }}</h4>
+                                    <span class="text-xs text-zinc-500 font-medium">Cantidad: {{ $det->cantidad ?? 1 }} x $ {{ number_format($det->precio ?? 0, 2, '.', ',') }} MXN</span>
                                 </div>
                                 <span class="text-sm font-bold text-zinc-900 font-sans">$ {{ number_format($itemTotal, 2, '.', ',') }}</span>
                             </div>
-                        @endforeach
+                        @empty
+                            <div class="py-4 text-xs text-zinc-500 italic">
+                                Tu pedido fue recibido y procesado con éxito.
+                            </div>
+                        @endforelse
                     </div>
                 </div>
 
                 <!-- Resumen de Costes -->
                 @php
-                    $costoEnvio = $pedido->total - $subtotalCalculado;
+                    $costoEnvio = max(0, ($pedido->total ?? 0) - $subtotalCalculado);
                 @endphp
                 <div class="bg-zinc-50 rounded p-4 space-y-2 text-xs border border-zinc-150">
                     <div class="flex justify-between text-zinc-500">
@@ -89,7 +94,7 @@
                     </div>
                     <div class="flex justify-between items-center text-sm text-zinc-950 pt-2 border-t border-zinc-200">
                         <span class="font-semibold">Total Pagado</span>
-                        <span class="text-base font-bold font-sans">$ {{ number_format($pedido->total, 2, '.', ',') }}</span>
+                        <span class="text-base font-bold font-sans">$ {{ number_format($pedido->total ?? 0, 2, '.', ',') }}</span>
                     </div>
                 </div>
             </div>
