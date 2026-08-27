@@ -593,7 +593,16 @@ class PrincipalController extends Controller
      */
     public function pedidoConfirmado($id)
     {
-        $pedido = Pedido::with('detalles')->findOrFail($id);
+        $pedido = Pedido::with('detalles')->find($id);
+
+        // Si el ID específico no existe, buscar el último pedido del usuario en la base de datos
+        if (!$pedido && auth()->check()) {
+            $pedido = Pedido::with('detalles')->where('user_id', auth()->id())->latest()->first();
+        }
+
+        if (!$pedido) {
+            return redirect()->route('inicio')->with('info', 'No se encontró el pedido solicitado.');
+        }
 
         return view('Principal.confirmado', compact('pedido'));
     }
