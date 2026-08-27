@@ -58,6 +58,46 @@
                     @enderror
                 </div>
 
+                <!-- Código Postal -->
+                <div>
+                    <label for="reg_codigo_postal" class="block text-xs font-bold text-zinc-600 uppercase tracking-wider mb-1">
+                        Código Postal <span class="text-zinc-400 text-[10px] font-normal normal-case">(para envíos)</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <input type="text" 
+                               name="codigo_postal" 
+                               id="reg_codigo_postal" 
+                               maxlength="5" 
+                               inputmode="numeric" 
+                               pattern="[0-9]{5}" 
+                               value="{{ old('codigo_postal', session('codigo_postal', '')) }}" 
+                               placeholder="Ej. 72760" 
+                               class="w-full bg-zinc-50/80 focus:bg-white text-base sm:text-sm pl-11 pr-4 py-3 rounded-2xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-700/40 focus:border-amber-700 transition-all shadow-inner">
+                    </div>
+                    @error('codigo_postal')
+                        <span class="text-xs text-rose-600 font-semibold mt-1 block">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const inputCP = document.getElementById('reg_codigo_postal');
+                        if (inputCP && !inputCP.value) {
+                            const cpLocal = localStorage.getItem('sm_codigo_postal');
+                            if (cpLocal) {
+                                inputCP.value = cpLocal;
+                            }
+                        }
+                    });
+                </script>
+
+
                 <!-- Password -->
                 <div>
                     <label for="password" class="block text-xs font-bold text-zinc-600 uppercase tracking-wider mb-1">Contraseña</label>

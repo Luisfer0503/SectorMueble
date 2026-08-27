@@ -50,6 +50,10 @@ Route::post('/cerrar-sesion', [PrincipalController::class, 'logout'])->name('log
 // Ruta para reclamar beneficio de la ruleta
 Route::post('/ruleta/reclamar', [PrincipalController::class, 'reclamarPremioRuleta'])->name('ruleta.reclamar');
 
+// Ruta para verificación de Cobertura de Código Postal (CP)
+Route::post('/verificar-cobertura-cp', [PrincipalController::class, 'verificarCodigoPostal'])->name('cp.verificar');
+
+
 
 // --- RUTAS DE ADMINISTRACIÓN (Protegidas por verificación de rol de administrador) ---
 Route::prefix('admin')->middleware('es_admin')->group(function () {

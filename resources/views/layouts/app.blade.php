@@ -62,6 +62,8 @@
 </head>
 <body class="flex flex-col min-h-screen text-zinc-800">
 
+@include('Principal.partials.modal-cp')
+
 <!-- Banner Superior de Leyenda Informativa / Precios de Muestra (Demostración) -->
 <div class="bg-amber-950 text-amber-100 text-xs py-2 px-4 border-b border-amber-800/40 text-center font-medium shadow-sm z-[60] relative">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
@@ -119,6 +121,26 @@
     </div>
 </div>
 
+<!-- Banner Sticky de Notificación de Productos Esperando en Carrito -->
+@if(session()->has('notificacion_carrito_abandonado') || (auth()->check() && !empty(auth()->user()->carrito_guardado) && session()->has('carrito') && count(session('carrito', [])) > 0 && !request()->routeIs('carrito') && !request()->routeIs('checkout')))
+<div id="carrito-guardado-banner" class="sticky top-0 z-[48] bg-gradient-to-r from-amber-950 via-amber-900 to-amber-950 text-white px-4 py-2.5 shadow-md border-b border-amber-600/60">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm">
+        <div class="flex items-center space-x-2 font-medium">
+            <span class="animate-bounce text-base">🛒</span>
+            <span><strong>¡Tus productos te están esperando!</strong> Dejamos guardados los muebles que tenías en tu carrito para que puedas completar tu compra.</span>
+        </div>
+        <div class="flex items-center space-x-3">
+            <a href="{{ route('carrito') }}" class="bg-amber-400 hover:bg-amber-300 text-amber-950 text-xs font-extrabold px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-colors shadow">
+                Ver mi Carrito ({{ array_sum(array_column(session('carrito', []), 'cantidad')) }})
+            </a>
+            <button type="button" onclick="document.getElementById('carrito-guardado-banner').remove()" class="text-amber-300 hover:text-white text-xs font-bold px-1.5 py-0.5" title="Cerrar aviso">
+                ✕
+            </button>
+        </div>
+    </div>
+</div>
+@endif
+
     <!-- Header / Navbar con 2 Filas -->
     <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-amber-900/10 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -153,11 +175,11 @@
                     </button>
                 </form>
 
-                <!-- Bloque Derecha: Acciones de usuario (Carrito, Iniciar Sesión, Registro) -->
-                <div class="flex items-center space-x-1.5 sm:space-x-3 flex-shrink-0 z-20">
+                <!-- Bloque Derecha: Acciones de usuario (Carrito, Iniciar Sesión, Registro y CP debajo) -->
+                <div class="flex items-center space-x-2 sm:space-x-4 flex-shrink-0 z-20">
                     
                     <!-- Botón Carrito de Compras -->
-                    <a href="{{ route('carrito') }}" id="nav-cart-icon" class="relative flex items-center space-x-1 px-2.5 sm:px-3 py-1.5 sm:py-2 bg-amber-800 hover:bg-amber-700 text-white rounded-xl shadow transition-all duration-300 active:scale-95 flex-shrink-0">
+                    <a href="{{ route('carrito') }}" id="nav-cart-icon" class="relative flex items-center space-x-1 px-2.5 sm:px-3 py-2 bg-amber-800 hover:bg-amber-700 text-white rounded-xl shadow transition-all duration-300 active:scale-95 flex-shrink-0">
                         <svg class="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                         </svg>
@@ -170,30 +192,66 @@
                         </span>
                     </a>
 
-                    <!-- Usuario Autenticado / Sesión -->
+                    <!-- Usuario Autenticado / Sesión con CP Debajo -->
                     @auth
-                        <div class="flex items-center space-x-1.5 border-l border-zinc-200 pl-1.5 sm:pl-2">
-                            <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-amber-800">{{ auth()->user()->name }}</strong></span>
-                            @if(auth()->user()->is_admin)
-                                <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-lg uppercase tracking-wider">Admin</a>
-                            @endif
-                            <a href="{{ route('logout') }}" class="text-xs font-bold text-rose-600 hover:text-rose-700 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors uppercase tracking-wider">Salir</a>
+                        <div class="flex flex-col items-end border-l border-zinc-200 pl-2 sm:pl-3">
+                            <div class="flex items-center space-x-1.5">
+                                <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-amber-800">{{ auth()->user()->name }}</strong></span>
+                                @if(auth()->user()->is_admin)
+                                    <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-1.5 py-0.5 rounded uppercase tracking-wider">Admin</a>
+                                @endif
+                                <a href="{{ route('logout') }}" class="text-[11px] font-bold text-rose-600 hover:text-rose-700 px-1.5 py-0.5 rounded hover:bg-rose-50 transition-colors uppercase tracking-wider">Salir</a>
+                            </div>
+                            
+                            <!-- Indicador y Botón de CP debajo del nombre del usuario -->
+                            <button type="button" onclick="abrirModalCP()" class="mt-0.5 inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-900 hover:text-amber-700 hover:underline cursor-pointer group" title="Consultar o cambiar tu Código Postal">
+                                <svg class="w-3.5 h-3.5 text-amber-700 shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <span class="cp-header-text-span font-bold text-amber-950">
+                                    @if(session('codigo_postal'))
+                                        CP: <strong>{{ session('codigo_postal') }}</strong>
+                                    @else
+                                        Ingresa tu CP
+                                    @endif
+                                </span>
+                                <span class="text-[10px] text-amber-700 underline font-normal">(Cambiar)</span>
+                            </button>
                         </div>
                     @else
-                        <div class="flex items-center space-x-1 sm:space-x-2 border-l border-zinc-200 pl-1.5 sm:pl-2">
-                            <!-- Botón Iniciar Sesión -->
-                            <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl transition-all shadow-sm whitespace-nowrap">
-                                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                                <span class="hidden sm:inline">Iniciar Sesión</span>
-                                <span class="sm:hidden">Entrar</span>
-                            </a>
+                        <div class="flex flex-col items-end border-l border-zinc-200 pl-2 sm:pl-3 space-y-0.5">
+                            <div class="flex items-center space-x-1 sm:space-x-2">
+                                <!-- Botón Iniciar Sesión -->
+                                <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2.5 sm:px-3 py-1 rounded-xl transition-all shadow-sm whitespace-nowrap">
+                                    <svg class="w-3.5 h-3.5 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                    <span class="hidden sm:inline">Iniciar Sesión</span>
+                                    <span class="sm:hidden">Entrar</span>
+                                </a>
 
-                            <!-- Botón Registro -->
-                            <a href="{{ route('registro') }}" class="hidden sm:inline-flex items-center justify-center text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3.5 py-2 rounded-xl transition-all shadow-sm hover:shadow whitespace-nowrap">
-                                <span>Registro</span>
-                            </a>
+                                <!-- Botón Registro -->
+                                <a href="{{ route('registro') }}" class="hidden sm:inline-flex items-center justify-center text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3 py-1 rounded-xl transition-all shadow-sm hover:shadow whitespace-nowrap">
+                                    <span>Registro</span>
+                                </a>
+                            </div>
+
+                            <!-- Indicador y Botón de CP debajo de Iniciar Sesión -->
+                            <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-900 hover:text-amber-700 hover:underline cursor-pointer group" title="Consultar o cambiar tu Código Postal">
+                                <svg class="w-3.5 h-3.5 text-amber-700 shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                <span class="cp-header-text-span font-bold text-amber-950">
+                                    @if(session('codigo_postal'))
+                                        CP: <strong>{{ session('codigo_postal') }}</strong>
+                                    @else
+                                        Ingresa tu CP
+                                    @endif
+                                </span>
+                                <span class="text-[10px] text-amber-700 underline font-normal">(Cambiar)</span>
+                            </button>
                         </div>
                     @endauth
                 </div>
@@ -302,6 +360,15 @@
                 <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="p-3 bg-amber-50/60 rounded-xl text-amber-900 hover:bg-amber-100">Comedor</a>
                 <a href="{{ route('catalogo') }}" class="p-3 bg-amber-800 rounded-xl text-white">Todo el Catálogo</a>
             </div>
+
+            <!-- Botón CP Móvil -->
+            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-amber-100/70 text-amber-950 rounded-xl border border-amber-300/80 font-bold text-xs">
+                <svg class="w-4 h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span class="cp-header-text-span">Consultar / Cambiar Código Postal</span>
+            </button>
 
             @auth
                 <div class="pt-2 border-t border-zinc-100 flex items-center justify-between text-xs">
@@ -1231,3 +1298,5 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
 </script>
 
 </html>
+
+

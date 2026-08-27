@@ -8,6 +8,7 @@ use App\Models\DetallePedido;
 use App\Models\User;
 use App\Models\Cupon;
 use App\Models\RuletaOpcion;
+use App\Models\CatalogoCodigoPostal;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Auth\Events\Registered;
@@ -199,6 +200,7 @@ class PrincipalController extends Controller
         }
 
         session()->put('carrito', $carrito);
+        $this->sincronizarCarritoUsuario();
 
         // Si es petición AJAX → devolver JSON con el nuevo conteo
         if ($request->ajax()) {
@@ -234,6 +236,7 @@ class PrincipalController extends Controller
         if (isset($carrito[$id])) {
             $carrito[$id]['cantidad'] = $cantidad;
             session()->put('carrito', $carrito);
+            $this->sincronizarCarritoUsuario();
             return redirect()->route('carrito')->with('success', 'Carrito actualizado correctamente.');
         }
 
@@ -250,6 +253,7 @@ class PrincipalController extends Controller
         if (isset($carrito[$id])) {
             unset($carrito[$id]);
             session()->put('carrito', $carrito);
+            $this->sincronizarCarritoUsuario();
             return redirect()->route('carrito')->with('success', 'Mueble eliminado del carrito.');
         }
 
@@ -370,11 +374,12 @@ class PrincipalController extends Controller
                 $producto->decrement('stock', $item['cantidad']);
             }
 
-            DB::commit();
-
-            // Vaciar carrito y cupón
+            // Vaciar carrito y cupón en sesión y base de datos
             session()->forget('carrito');
             session()->forget('cupon');
+            if (auth()->check()) {
+                auth()->user()->update(['carrito_guardado' => null]);
+            }
 
             return redirect()->route('pedido.confirmado', $pedido->id)->with('success', '¡Tu compra ha sido procesada con éxito!');
 
@@ -460,27 +465,44 @@ class PrincipalController extends Controller
 
         if (auth()->attempt($credenciales, $request->filled('remember'))) {
             $request->session()->regenerate();
+            $user = auth()->user();
 
             // Sincronizar estado de ruleta jugada
-            if (auth()->user()->ruleta_jugada) {
+            if ($user->ruleta_jugada) {
                 session()->put('ruleta_jugada', true);
             }
 
-            // Restaurar carrito y cupón en la sesión autenticada
-            if (!empty($carritoPrevio)) {
-                session()->put('carrito', $carritoPrevio);
+            // Sincronizar Código Postal de usuario y sesión
+            if ($user->codigo_postal) {
+                session(['codigo_postal' => $user->codigo_postal]);
+            } elseif (session('codigo_postal')) {
+                $user->update(['codigo_postal' => session('codigo_postal')]);
             }
+
+            // Restaurar y fusionar el carrito guardado en la base de datos del usuario
+            $carritoBaseDatos = !empty($user->carrito_guardado) ? json_decode($user->carrito_guardado, true) : [];
+            $carritoActual = !empty($carritoPrevio) ? $carritoPrevio : [];
+            $carritoFusionado = array_replace($carritoBaseDatos, $carritoActual);
+
+            if (!empty($carritoFusionado)) {
+                session()->put('carrito', $carritoFusionado);
+                $user->update(['carrito_guardado' => json_encode($carritoFusionado)]);
+                
+                // Activar aviso de productos esperando
+                session()->flash('notificacion_carrito_abandonado', '¡Tus productos te están esperando! Tienes ' . array_sum(array_column($carritoFusionado, 'cantidad')) . ' mueble(s) guardados en tu carrito.');
+            }
+
             if (!empty($cuponPrevio)) {
                 session()->put('cupon', $cuponPrevio);
             }
 
             // Si es administrador, mandarlo al dashboard por defecto
-            if (auth()->user()->is_admin) {
+            if ($user->is_admin) {
                 return redirect()->route('admin.dashboard')->with('success', 'Bienvenido al Panel de Administración.');
             }
 
-            $targetUrl = !empty($carritoPrevio) ? route('carrito') : route('inicio');
-            return redirect()->intended($targetUrl)->with('success', '¡Has iniciado sesión con éxito! Tus productos siguen en tu carrito.');
+            $targetUrl = !empty($carritoFusionado) ? route('carrito') : route('inicio');
+            return redirect()->intended($targetUrl)->with('success', '¡Bienvenido de nuevo, ' . $user->name . '! Tus productos guardados te están esperando en tu carrito.');
         }
 
         return back()->withErrors([
@@ -507,6 +529,7 @@ class PrincipalController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'codigo_postal' => 'nullable|string|size:5',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -514,9 +537,14 @@ class PrincipalController extends Controller
         $carritoPrevio = session()->get('carrito', []);
         $cuponPrevio = session()->get('cupon');
 
+        // Determinar código postal desde el formulario o sesión previa
+        $cpRegistrado = $request->input('codigo_postal') ?: session('codigo_postal');
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'codigo_postal' => $cpRegistrado,
+            'carrito_guardado' => !empty($carritoPrevio) ? json_encode($carritoPrevio) : null,
             'password' => Hash::make($request->password),
         ]);
 
@@ -525,6 +553,10 @@ class PrincipalController extends Controller
 
         auth()->login($user);
         $request->session()->regenerate();
+
+        if ($cpRegistrado) {
+            session(['codigo_postal' => $cpRegistrado]);
+        }
 
         // Preservar estado de ruleta jugada y cupón en el usuario registrado
         if (!empty($cuponPrevio) || session('ruleta_jugada')) {
@@ -538,6 +570,10 @@ class PrincipalController extends Controller
         // Restaurar carrito y cupón en la nueva sesión del usuario registrado
         if (!empty($carritoPrevio)) {
             session()->put('carrito', $carritoPrevio);
+            session()->flash('notificacion_carrito_abandonado', '¡Tus productos te están esperando en tu carrito!');
+        }
+        if (!empty($cuponPrevio)) {
+            session()->put('cupon', $cuponPrevio);
         }
         if (!empty($cuponPrevio)) {
             session()->put('cupon', $cuponPrevio);
@@ -596,16 +632,38 @@ class PrincipalController extends Controller
     }
 
     /**
-     * Cierra la sesión del usuario.
+     * Cierra la sesión del usuario guardando previamente los productos de su carrito.
      */
     public function logout(Request $request)
     {
+        if (auth()->check()) {
+            $carritoActual = session()->get('carrito', []);
+            if (!empty($carritoActual)) {
+                auth()->user()->update([
+                    'carrito_guardado' => json_encode($carritoActual),
+                ]);
+            }
+        }
+
         auth()->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('inicio')->with('success', 'Has cerrado sesión con éxito.');
+        return redirect()->route('inicio')->with('success', 'Has cerrado sesión con éxito. Tus productos siguen guardados en tu cuenta.');
+    }
+
+    /**
+     * Sincroniza el carrito actual de la sesión con la base de datos del usuario autenticado.
+     */
+    private function sincronizarCarritoUsuario()
+    {
+        if (auth()->check()) {
+            $carrito = session()->get('carrito', []);
+            auth()->user()->update([
+                'carrito_guardado' => !empty($carrito) ? json_encode($carrito) : null,
+            ]);
+        }
     }
 
     /**
@@ -680,4 +738,67 @@ class PrincipalController extends Controller
             'redirect_url' => route('carrito'),
         ]);
     }
+
+    /**
+     * Verifica la cobertura de envío para un código postal en catalogo_codigos_postales.
+     */
+    public function verificarCodigoPostal(Request $request)
+    {
+        $request->validate([
+            'codigo_postal' => 'required|string|size:5|regex:/^[0-9]{5}$/',
+        ], [
+            'codigo_postal.required' => 'Ingresa un código postal válido.',
+            'codigo_postal.size' => 'El código postal debe contener exactamente 5 dígitos.',
+            'codigo_postal.regex' => 'El código postal solo debe contener números.',
+        ]);
+
+        $cp = trim($request->input('codigo_postal'));
+
+        $coberturas = CatalogoCodigoPostal::where('codigo_postal', $cp)
+            ->where('activo', true)
+            ->get();
+
+        $tieneCobertura = $coberturas->count() > 0;
+
+        if ($tieneCobertura) {
+            $primerLugar = $coberturas->first();
+            $municipios = $coberturas->pluck('municipio')->unique()->implode(', ');
+            $estados = $coberturas->pluck('estado')->unique()->implode(', ');
+            $zonas = $coberturas->pluck('zona_cobertura')->implode(' | ');
+
+            $coberturaInfo = [
+                'codigo_postal' => $cp,
+                'tiene_cobertura' => true,
+                'municipio' => $primerLugar->municipio,
+                'municipios' => $municipios,
+                'estado' => $primerLugar->estado,
+                'estados' => $estados,
+                'zona_cobertura' => $zonas,
+                'mensaje' => "¡Excelente! Sí contamos con cobertura de envío en {$primerLugar->municipio}, {$primerLugar->estado}.",
+            ];
+
+            session(['codigo_postal' => $cp, 'cobertura_info' => $coberturaInfo]);
+
+            return response()->json([
+                'success' => true,
+                'tiene_cobertura' => true,
+                'data' => $coberturaInfo,
+            ]);
+        }
+
+        $coberturaInfo = [
+            'codigo_postal' => $cp,
+            'tiene_cobertura' => false,
+            'mensaje' => "Por el momento no contamos con cobertura de envío directo al CP {$cp}. ¡Estamos trabajando para llegar muy pronto a tu localidad!",
+        ];
+
+        session(['codigo_postal' => $cp, 'cobertura_info' => $coberturaInfo]);
+
+        return response()->json([
+            'success' => true,
+            'tiene_cobertura' => false,
+            'data' => $coberturaInfo,
+        ]);
+    }
 }
+

@@ -6,6 +6,23 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 class="serif-title text-3xl font-bold text-zinc-950 mb-8">Tu Carrito de Compras</h1>
 
+        @if(auth()->check() && !empty(auth()->user()->carrito_guardado) && !empty($carrito))
+            <!-- Alerta Informativa de Carrito Guardado y Recuperado -->
+            <div class="mb-6 p-4 bg-gradient-to-r from-amber-50 to-amber-100/70 border border-amber-300/80 rounded-2xl shadow-sm flex items-start space-x-3 text-amber-950">
+                <div class="p-2 bg-amber-800 text-amber-100 rounded-xl shrink-0 mt-0.5 shadow-sm">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-sm font-extrabold text-amber-950">¡Tus productos te están esperando!</h3>
+                    <p class="text-xs text-amber-900 mt-0.5 leading-relaxed">
+                        Guardamos automáticamente en tu cuenta los muebles que agregaste a tu carrito para que no pierdas tu selección.
+                    </p>
+                </div>
+            </div>
+        @endif
+
         @if(empty($carrito))
             <!-- Carrito Vacío -->
             <div class="text-center py-20 bg-white border border-zinc-200 rounded p-8 max-w-lg mx-auto">

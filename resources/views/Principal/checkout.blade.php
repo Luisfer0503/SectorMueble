@@ -22,14 +22,14 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="nombre_cliente" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Nombre Completo</label>
-                                <input type="text" name="nombre_cliente" id="nombre_cliente" required value="{{ old('nombre_cliente') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="nombre_cliente" id="nombre_cliente" required value="{{ old('nombre_cliente', auth()->user()->name ?? '') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('nombre_cliente')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div>
                                 <label for="correo_cliente" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Correo Electrónico</label>
-                                <input type="email" name="correo_cliente" id="correo_cliente" required value="{{ old('correo_cliente') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="email" name="correo_cliente" id="correo_cliente" required value="{{ old('correo_cliente', auth()->user()->email ?? '') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('correo_cliente')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
@@ -61,14 +61,14 @@
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="ciudad" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Ciudad / Localidad</label>
-                                <input type="text" name="ciudad" id="ciudad" required value="{{ old('ciudad') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="ciudad" id="ciudad" required value="{{ old('ciudad', session('cobertura_info.municipio', '')) }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('ciudad')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div>
                                 <label for="codigo_postal" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Código Postal</label>
-                                <input type="text" name="codigo_postal" id="codigo_postal" required value="{{ old('codigo_postal') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="codigo_postal" id="codigo_postal" required value="{{ old('codigo_postal', auth()->user()->codigo_postal ?? session('codigo_postal', '')) }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('codigo_postal')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
