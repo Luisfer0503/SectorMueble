@@ -252,16 +252,16 @@
 
                 if (resData.success && resData.checkout_url) {
                     window.location.href = resData.checkout_url;
-                } else if (resData.success && resData.modo_demo) {
-                    form.submit();
                 } else {
-                    alert(resData.message || 'Ocurrió un error al preparar la sesión de pago.');
+                    alert(resData.message || 'Ocurrió un error al preparar la sesión de pago de Stripe.');
                     if (btn) btn.disabled = false;
-                    if (btnTexto) btnTexto.innerText = 'Reintentar Pago';
+                    if (btnTexto) btnTexto.innerText = 'Reintentar Pago con Stripe';
                 }
             } catch (err) {
                 console.error(err);
-                form.submit();
+                alert("Error al conectar con la pasarela de pagos: " + (err.message || 'Inténtalo de nuevo.'));
+                if (btn) btn.disabled = false;
+                if (btnTexto) btnTexto.innerText = 'Reintentar Pago con Stripe';
             }
         }
     </script>

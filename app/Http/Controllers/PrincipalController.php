@@ -424,13 +424,11 @@ class PrincipalController extends Controller
 
         $stripeSecret = config('services.stripe.secret');
 
-        // Si las llaves de Stripe están en modo prueba por defecto o no válidas, procesar compra limpia
-        if (empty($stripeSecret) || str_contains($stripeSecret, 'DemoTestKey')) {
+        if (empty($stripeSecret)) {
             return response()->json([
-                'success' => true,
-                'modo_demo' => true,
-                'redirect_url' => route('checkout.procesar'),
-            ]);
+                'success' => false,
+                'message' => 'La clave STRIPE_SECRET no está configurada en el archivo .env del servidor.'
+            ], 422);
         }
 
         try {
