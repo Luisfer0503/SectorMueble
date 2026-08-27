@@ -535,7 +535,7 @@ class PrincipalController extends Controller
             $total = max(0, $subtotal - $descuento) + $envio;
 
             $pedido = Pedido::create([
-                'user_id'          => auth()->id(),
+                'usuario_id'       => auth()->id(),
                 'nombre_cliente'   => $datosEnvio['nombre_cliente'] ?? auth()->user()->name,
                 'correo_cliente'   => $datosEnvio['correo_cliente'] ?? auth()->user()->email,
                 'telefono_cliente' => $datosEnvio['telefono_cliente'] ?? '0000000000',
@@ -600,7 +600,7 @@ class PrincipalController extends Controller
 
         // Si el ID específico no existe, buscar el último pedido del usuario en la base de datos
         if (!$pedido && auth()->check()) {
-            $pedido = Pedido::with('detalles')->where('user_id', auth()->id())->latest()->first();
+            $pedido = Pedido::with('detalles')->where('usuario_id', auth()->id())->latest()->first();
         }
 
         // Si aún no se encuentra, obtener el último pedido registrado en la tienda
