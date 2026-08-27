@@ -28,6 +28,11 @@ Route::post('/carrito/quitar-cupon', [PrincipalController::class, 'quitarCupon']
 Route::get('/finalizar-compra', [PrincipalController::class, 'finalizarCompra'])->name('checkout')->middleware(['auth', 'verified']);
 Route::post('/finalizar-compra', [PrincipalController::class, 'procesarCompra'])->name('checkout.procesar')->middleware(['auth', 'verified']);
 
+// Rutas de Pago Seguro Stripe (Sandbox / Producción)
+Route::post('/checkout/crear-sesion-pago', [PrincipalController::class, 'crearSesionPagoStripe'])->name('checkout.stripe.session')->middleware(['auth', 'verified']);
+Route::get('/checkout/pago-exito', [PrincipalController::class, 'confirmarPagoStripe'])->name('checkout.stripe.exito')->middleware(['auth', 'verified']);
+Route::get('/checkout/pago-cancelado', [PrincipalController::class, 'cancelarPagoStripe'])->name('checkout.stripe.cancelado')->middleware(['auth', 'verified']);
+
 // Página de éxito del Pedido
 Route::get('/pedido-confirmado/{id}', [PrincipalController::class, 'pedidoConfirmado'])->name('pedido.confirmado');
 

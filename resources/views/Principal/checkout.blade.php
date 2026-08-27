@@ -76,73 +76,51 @@
                         </div>
                     </div>
 
-                    <!-- Paso 3: Datos de Pago (Simulación) -->
+                    <!-- Paso 3: Datos de Pago (Stripe / Pasarela Segura) -->
                     <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
-                        <div class="flex items-center space-x-3 mb-4">
-                            <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
-                            <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Método de Pago</h2>
-                        </div>
-
-                        <!-- Banner Informativo de Pago Simulado / Muestra -->
-                        <div class="mb-6 p-3.5 bg-amber-50 border-l-4 border-amber-600 rounded-r-xl text-xs text-amber-950 flex items-start space-x-2.5">
-                            <svg class="w-5 h-5 text-amber-700 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                            </svg>
-                            <div>
-                                <strong class="block font-bold">Simulación de Pago sin Valor Comercial:</strong>
-                                <span>Este sitio es un proyecto de muestra. No introduzcas datos bancarios o de tarjetas reales. Los precios y el proceso de compra son ficticios.</span>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
+                                <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Método de Pago Seguro</h2>
                             </div>
-                        </div>
-
-                        <!-- Tarjeta de Crédito Simulada Visualmente -->
-                        <div class="bg-gradient-to-br from-zinc-800 to-zinc-950 text-white p-5 sm:p-6 rounded-2xl shadow-lg max-w-full sm:max-w-sm mx-auto mb-6 relative overflow-hidden">
-                            <div class="absolute -right-10 -bottom-10 h-40 w-40 rounded-full bg-white/5 pointer-events-none"></div>
-                            
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] sm:text-xs font-semibold tracking-widest text-zinc-400">SECTOR MUEBLE CARD</span>
-                                <svg class="h-7 sm:h-8 w-7 sm:w-8 text-white/80" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/>
+                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
+                                <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                                 </svg>
-                            </div>
-                            
-                            <div class="mt-6 sm:mt-8">
-                                <span class="block text-[10px] sm:text-xs font-bold text-zinc-400 uppercase tracking-widest">Número de tarjeta</span>
-                                <span class="text-base sm:text-lg font-mono tracking-widest block mt-1">•••• •••• •••• 4242</span>
+                                <span>Encriptación SSL 256-bit</span>
+                            </span>
+                        </div>
+
+                        <!-- Selector de Tarjeta / Stripe -->
+                        <div class="mb-6 p-4 bg-gradient-to-r from-amber-50/80 via-white to-amber-50/40 border border-amber-200/90 rounded-2xl">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="p-2.5 bg-amber-900 text-white rounded-xl shadow-sm">
+                                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-sm font-extrabold text-amber-950">Tarjeta de Crédito / Débito (Stripe)</h3>
+                                        <p class="text-xs text-zinc-600 mt-0.5">Procesamiento seguro directo en Stripe Sandbox o Producción</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-1.5 opacity-80">
+                                    <span class="text-[10px] font-bold bg-zinc-100 text-zinc-700 px-2 py-1 rounded">VISA</span>
+                                    <span class="text-[10px] font-bold bg-zinc-100 text-zinc-700 px-2 py-1 rounded">MC</span>
+                                    <span class="text-[10px] font-bold bg-zinc-100 text-zinc-700 px-2 py-1 rounded">AMEX</span>
+                                </div>
                             </div>
 
-                            <div class="mt-6 sm:mt-8 flex justify-between items-center text-xs">
+                            <!-- Guía de Tarjeta de Prueba -->
+                            <div class="mt-4 pt-3 border-t border-amber-200/60 text-xs text-amber-900 flex items-start space-x-2">
+                                <span class="text-base leading-none">💡</span>
                                 <div>
-                                    <span class="block text-[9px] sm:text-[10px] text-zinc-400 uppercase">Titular</span>
-                                    <span class="font-semibold tracking-wider block mt-0.5">Juan Pérez</span>
-                                </div>
-                                <div class="text-right">
-                                    <span class="block text-[9px] sm:text-[10px] text-zinc-400 uppercase">Vence</span>
-                                    <span class="font-semibold tracking-wider block mt-0.5">12 / 29</span>
+                                    <strong>Modo de Prueba (Sandbox):</strong> Para probar compras de muestra en este ambiente, puedes usar la tarjeta de prueba Stripe: <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono font-bold text-amber-950">4242 4242 4242 4242</code> con cualquier fecha futura (ej. <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono">12/28</code>) y CVC <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono">123</code>.
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Campos de Entrada -->
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div class="sm:col-span-3">
-                                <label class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Nombre en la tarjeta</label>
-                                <input type="text" required placeholder="Juan Pérez" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Número de tarjeta</label>
-                                <input type="text" required placeholder="4000 1234 5678 9010" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
-                            </div>
-                            <div class="grid grid-cols-2 gap-2 sm:col-span-1">
-                                <div>
-                                    <label class="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">Exp.</label>
-                                    <input type="text" required placeholder="MM/AA" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-2 py-2.5 text-center focus:outline-none focus:ring-1 focus:ring-amber-700">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-1">CVV</label>
-                                    <input type="password" required placeholder="•••" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-2 py-2.5 text-center focus:outline-none focus:ring-1 focus:ring-amber-700">
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -160,21 +138,11 @@
                                             <img src="{{ $item['imagen_url'] }}" alt="{{ $item['nombre'] }}" class="w-full h-full object-cover">
                                         </div>
                                         <div>
-                                            <h4 class="text-xs font-semibold text-zinc-900 truncate max-w-[150px]">{{ $item['nombre'] }}</h4>
-                                            <span class="text-[10px] text-zinc-400 font-medium">Cant: {{ $item['cantidad'] }}</span>
-                                            @if(!empty($item['con_descuento']) && $item['con_descuento'])
-                                                <span class="block text-[9px] font-bold text-white bg-rose-600 rounded px-1 py-0.5 w-fit mt-0.5">CON DESCUENTO</span>
-                                            @endif
+                                            <h3 class="text-xs font-bold text-zinc-900 line-clamp-1">{{ $item['nombre'] }}</h3>
+                                            <span class="text-[11px] text-zinc-500">Cant: {{ $item['cantidad'] }}</span>
                                         </div>
                                     </div>
-                                    <div class="text-right">
-                                        @if(!empty($item['con_descuento']) && $item['con_descuento'])
-                                            <span class="block text-[10px] text-zinc-400 line-through font-sans">$ {{ number_format($item['precio_original'] * $item['cantidad'], 2, '.', ',') }}</span>
-                                            <span class="block text-xs font-bold text-emerald-700 font-sans">$ {{ number_format($item['precio'] * $item['cantidad'], 2, '.', ',') }}</span>
-                                        @else
-                                            <span class="block text-xs font-bold text-zinc-950 font-sans">$ {{ number_format($item['precio'] * $item['cantidad'], 2, '.', ',') }}</span>
-                                        @endif
-                                    </div>
+                                    <span class="text-xs font-bold text-zinc-900 font-sans">$ {{ number_format($item['precio'] * $item['cantidad'], 2, '.', ',') }}</span>
                                 </div>
                             @endforeach
                         </div>
@@ -206,11 +174,17 @@
                             <span class="text-lg font-bold font-sans">$ {{ number_format($total, 2, '.', ',') }}</span>
                         </div>
 
-                        <button type="submit" class="w-full bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider py-4 rounded transition-colors shadow">
-                            Confirmar Pedido Simulado
+                        <button type="button" 
+                                id="btn-procesar-stripe"
+                                onclick="iniciarPagoStripe()"
+                                class="w-full bg-gradient-to-r from-amber-800 to-amber-900 hover:from-amber-700 hover:to-amber-800 text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                            </svg>
+                            <span id="btn-stripe-texto">Pagar $ {{ number_format($total, 2, '.', ',') }} MXN</span>
                         </button>
                         
-                        <a href="{{ route('carrito') }}" class="w-full block text-center border border-zinc-200 hover:bg-zinc-50 text-zinc-700 text-xs font-bold uppercase tracking-wider py-3 mt-3 rounded transition-colors">
+                        <a href="{{ route('carrito') }}" class="w-full block text-center border border-zinc-200 hover:bg-zinc-50 text-zinc-700 text-xs font-bold uppercase tracking-wider py-3 mt-3 rounded-xl transition-colors">
                             Volver al Carrito
                         </a>
                     </div>
@@ -219,4 +193,55 @@
             </div>
         </form>
     </div>
+
+    <script>
+        async function iniciarPagoStripe() {
+            const form = document.getElementById('checkout-form');
+            const btn = document.getElementById('btn-procesar-stripe');
+            const btnTexto = document.getElementById('btn-stripe-texto');
+
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            btn.disabled = true;
+            btn.classList.add('opacity-75');
+            btnTexto.innerText = 'Conectando con pasarela segura...';
+
+            try {
+                const formData = new FormData(form);
+                const data = {};
+                formData.forEach((value, key) => data[key] = value);
+
+                const response = await fetch("{{ route('checkout.stripe.session') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const resData = await response.json();
+
+                if (resData.success) {
+                    if (resData.checkout_url) {
+                        window.location.href = resData.checkout_url;
+                    } else if (resData.modo_demo) {
+                        form.submit();
+                    }
+                } else {
+                    alert(resData.message || 'Ocurrió un error al preparar la sesión de pago.');
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75');
+                    btnTexto.innerText = 'Reintentar Pago';
+                }
+            } catch (err) {
+                console.error(err);
+                form.submit();
+            }
+        }
+    </script>
 @endsection

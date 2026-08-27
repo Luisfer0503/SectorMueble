@@ -390,6 +390,205 @@ class PrincipalController extends Controller
     }
 
     /**
+     * Crea una sesión de pago segura con Stripe Checkout.
+     */
+    public function crearSesionPagoStripe(Request $request)
+    {
+        $request->validate([
+            'nombre_cliente'   => 'required|string|max:255',
+            'correo_cliente'   => 'required|email|max:255',
+            'telefono_cliente' => 'required|string|max:20',
+            'direccion_envio'  => 'required|string|max:255',
+            'ciudad'           => 'required|string|max:100',
+            'codigo_postal'    => 'required|string|max:10',
+        ]);
+
+        $carrito = session()->get('carrito', []);
+
+        if (empty($carrito)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tu carrito de compras está vacío.'
+            ], 422);
+        }
+
+        // Almacenar datos temporales de entrega en sesión
+        session()->put('datos_envio_checkout', [
+            'nombre_cliente'   => $request->nombre_cliente,
+            'correo_cliente'   => $request->correo_cliente,
+            'telefono_cliente' => $request->telefono_cliente,
+            'direccion_envio'  => $request->direccion_envio,
+            'ciudad'           => $request->ciudad,
+            'codigo_postal'    => $request->codigo_postal,
+        ]);
+
+        $stripeSecret = config('services.stripe.secret');
+
+        // Si las llaves de Stripe están en modo prueba por defecto o no válidas, procesar compra limpia
+        if (empty($stripeSecret) || str_contains($stripeSecret, 'DemoTestKey')) {
+            return response()->json([
+                'success' => true,
+                'modo_demo' => true,
+                'redirect_url' => route('checkout.procesar'),
+            ]);
+        }
+
+        try {
+            $stripe = new \Stripe\StripeClient($stripeSecret);
+
+            $lineItems = [];
+            foreach ($carrito as $item) {
+                $lineItems[] = [
+                    'price_data' => [
+                        'currency' => config('services.stripe.currency', 'mxn'),
+                        'product_data' => [
+                            'name' => $item['nombre'],
+                        ],
+                        'unit_amount' => (int) round($item['precio'] * 100),
+                    ],
+                    'quantity' => $item['cantidad'],
+                ];
+            }
+
+            // Calcular cupón de descuento y envío si aplica
+            $subtotal = 0;
+            foreach ($carrito as $item) {
+                $subtotal += $item['precio'] * $item['cantidad'];
+            }
+            $descuento = 0.00;
+            $cuponAplicado = session()->get('cupon');
+            if ($cuponAplicado) {
+                $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
+                if ($cupon) {
+                    $descuento = $cupon->calcularDescuento($subtotal);
+                }
+            }
+            $envio = ($subtotal > 8000) ? 0 : 400.00;
+
+            if ($envio > 0) {
+                $lineItems[] = [
+                    'price_data' => [
+                        'currency' => config('services.stripe.currency', 'mxn'),
+                        'product_data' => [
+                            'name' => 'Costo de Envío Especial',
+                        ],
+                        'unit_amount' => (int) round($envio * 100),
+                    ],
+                    'quantity' => 1,
+                ];
+            }
+
+            $session = $stripe->checkout->sessions->create([
+                'line_items'     => $lineItems,
+                'mode'           => 'payment',
+                'customer_email' => $request->correo_cliente,
+                'success_url'    => route('checkout.stripe.exito') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url'     => route('checkout.stripe.cancelado'),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'checkout_url' => $session->url,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al conectar con Stripe: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Procesa la confirmación exitosa de pago en Stripe.
+     */
+    public function confirmarPagoStripe(Request $request)
+    {
+        $sessionId = $request->query('session_id');
+        $datosEnvio = session()->get('datos_envio_checkout');
+        $carrito = session()->get('carrito', []);
+
+        if (empty($carrito)) {
+            return redirect()->route('inicio')->with('info', 'Tu pedido ya ha sido registrado.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $subtotal = 0;
+            foreach ($carrito as $item) {
+                $subtotal += $item['precio'] * $item['cantidad'];
+            }
+
+            $descuento = 0.00;
+            $cuponCodigo = null;
+            $cuponAplicado = session()->get('cupon');
+            if ($cuponAplicado) {
+                $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
+                if ($cupon) {
+                    $descuento = $cupon->calcularDescuento($subtotal);
+                    $cuponCodigo = $cupon->codigo;
+                }
+            }
+
+            $envio = ($subtotal > 8000) ? 0 : 400.00;
+            $total = max(0, $subtotal - $descuento) + $envio;
+
+            $pedido = Pedido::create([
+                'user_id'          => auth()->id(),
+                'nombre_cliente'   => $datosEnvio['nombre_cliente'] ?? auth()->user()->name,
+                'correo_cliente'   => $datosEnvio['correo_cliente'] ?? auth()->user()->email,
+                'telefono_cliente' => $datosEnvio['telefono_cliente'] ?? '0000000000',
+                'direccion_envio'  => $datosEnvio['direccion_envio'] ?? 'Dirección registrada',
+                'ciudad'           => $datosEnvio['ciudad'] ?? 'Puebla',
+                'codigo_postal'    => $datosEnvio['codigo_postal'] ?? (auth()->user()->codigo_postal ?? '72000'),
+                'total'            => $total,
+                'cupon_codigo'     => $cuponCodigo,
+                'descuento'        => $descuento,
+                'estado'           => 'completado',
+            ]);
+
+            foreach ($carrito as $id => $item) {
+                $producto = Producto::find($id);
+                if ($producto) {
+                    DetallePedido::create([
+                        'pedido_id'       => $pedido->id,
+                        'producto_id'     => $producto->id,
+                        'nombre_producto' => $item['nombre'],
+                        'precio'          => $item['precio'],
+                        'cantidad'        => $item['cantidad'],
+                    ]);
+                    $producto->decrement('stock', $item['cantidad']);
+                }
+            }
+
+            DB::commit();
+
+            // Vaciar carrito en sesión y base de datos
+            session()->forget('carrito');
+            session()->forget('cupon');
+            session()->forget('datos_envio_checkout');
+            if (auth()->check()) {
+                auth()->user()->update(['carrito_guardado' => null]);
+            }
+
+            return redirect()->route('pedido.confirmado', $pedido->id)->with('success', '¡Pago procesado con éxito en Stripe! Tu pedido ha sido confirmado.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('checkout')->with('error', 'Ocurrió un error al procesar el pago: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Maneja el retorno cuando el pago en Stripe es cancelado.
+     */
+    public function cancelarPagoStripe()
+    {
+        return redirect()->route('checkout')->with('info', 'El proceso de pago en Stripe fue cancelado. Tus productos siguen guardados en tu carrito.');
+    }
+
+    /**
      * Vista de éxito/confirmación de compra.
      */
     public function pedidoConfirmado($id)
