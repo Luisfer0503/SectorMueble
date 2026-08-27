@@ -35,6 +35,7 @@ Route::get('/checkout/pago-cancelado', [PrincipalController::class, 'cancelarPag
 
 // Página de éxito del Pedido
 Route::get('/pedido-confirmado/{id?}', [PrincipalController::class, 'pedidoConfirmado'])->name('pedido.confirmado');
+Route::get('/pedido-confirmado', [PrincipalController::class, 'pedidoConfirmado']);
 
 // Rutas de Autenticación
 Route::get('/iniciar-sesion', [PrincipalController::class, 'mostrarLogin'])->name('login');
