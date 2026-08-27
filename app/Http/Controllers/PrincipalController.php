@@ -591,17 +591,25 @@ class PrincipalController extends Controller
     /**
      * Vista de éxito/confirmación de compra.
      */
-    public function pedidoConfirmado($id)
+    public function pedidoConfirmado($id = null)
     {
-        $pedido = Pedido::with('detalles')->find($id);
+        $pedido = null;
+        if ($id && is_numeric($id)) {
+            $pedido = Pedido::with('detalles')->find($id);
+        }
 
         // Si el ID específico no existe, buscar el último pedido del usuario en la base de datos
         if (!$pedido && auth()->check()) {
             $pedido = Pedido::with('detalles')->where('user_id', auth()->id())->latest()->first();
         }
 
+        // Si aún no se encuentra, obtener el último pedido registrado en la tienda
         if (!$pedido) {
-            return redirect()->route('inicio')->with('info', 'No se encontró el pedido solicitado.');
+            $pedido = Pedido::with('detalles')->latest()->first();
+        }
+
+        if (!$pedido) {
+            return redirect()->route('inicio')->with('info', 'No hay pedidos registrados en la tienda.');
         }
 
         return view('Principal.confirmado', compact('pedido'));

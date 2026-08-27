@@ -34,7 +34,7 @@ Route::get('/checkout/pago-exito', [PrincipalController::class, 'confirmarPagoSt
 Route::get('/checkout/pago-cancelado', [PrincipalController::class, 'cancelarPagoStripe'])->name('checkout.stripe.cancelado')->middleware(['auth', 'verified']);
 
 // Página de éxito del Pedido
-Route::get('/pedido-confirmado/{id}', [PrincipalController::class, 'pedidoConfirmado'])->name('pedido.confirmado');
+Route::get('/pedido-confirmado/{id?}', [PrincipalController::class, 'pedidoConfirmado'])->name('pedido.confirmado');
 
 // Rutas de Autenticación
 Route::get('/iniciar-sesion', [PrincipalController::class, 'mostrarLogin'])->name('login');
