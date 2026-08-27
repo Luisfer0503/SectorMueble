@@ -112,11 +112,26 @@
                                 </div>
                             </div>
 
-                            <!-- Guía de Tarjeta de Prueba -->
-                            <div class="mt-4 pt-3 border-t border-amber-200/60 text-xs text-amber-900 flex items-start space-x-2">
-                                <span class="text-base leading-none">💡</span>
-                                <div>
-                                    <strong>Modo de Prueba (Sandbox):</strong> Para probar compras de muestra en este ambiente, puedes usar la tarjeta de prueba Stripe: <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono font-bold text-amber-950">4242 4242 4242 4242</code> con cualquier fecha futura (ej. <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono">12/28</code>) y CVC <code class="bg-amber-100 px-1.5 py-0.5 rounded font-mono">123</code>.
+                            <!-- Explicación Clara del Proceso de Pago en Stripe -->
+                            <div class="mt-4 pt-3 border-t border-amber-200/60 text-xs text-amber-900 space-y-2">
+                                <div class="flex items-start space-x-2">
+                                    <span class="text-base leading-none">🔐</span>
+                                    <div>
+                                        <strong class="text-amber-950 block">¿Cómo ingresar tu tarjeta?</strong>
+                                        <p class="mt-0.5 text-zinc-600 leading-relaxed">
+                                            Al hacer clic en el botón <strong>"Pagar $ {{ number_format($total, 2, '.', ',') }} MXN"</strong>, serás redirigido en 1 segundo a la pasarela bancaria cifrada de <strong>Stripe Checkout</strong> donde podrás ingresar tu tarjeta de forma 100% protegida.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start space-x-2 bg-amber-100/70 p-2.5 rounded-xl border border-amber-200">
+                                    <span class="text-base leading-none">💡</span>
+                                    <div>
+                                        <strong class="text-amber-950">Tarjeta de prueba para este ambiente:</strong>
+                                        <p class="text-[11px] text-amber-900 mt-0.5">
+                                            Usa la tarjeta <code class="bg-white px-1.5 py-0.5 rounded font-mono font-bold text-amber-950 border border-amber-300">4242 4242 4242 4242</code> con cualquier fecha futura (ej. <code class="bg-white px-1 py-0.5 rounded font-mono">12/28</code>) y CVC <code class="bg-white px-1 py-0.5 rounded font-mono">123</code>.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
