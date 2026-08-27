@@ -866,12 +866,14 @@ class PrincipalController extends Controller
     public function logout(Request $request)
     {
         if (auth()->check()) {
-            $carritoActual = session()->get('carrito', []);
-            if (!empty($carritoActual)) {
-                auth()->user()->update([
-                    'carrito_guardado' => json_encode($carritoActual),
-                ]);
-            }
+            try {
+                $carritoActual = session()->get('carrito', []);
+                if (!empty($carritoActual)) {
+                    auth()->user()->update([
+                        'carrito_guardado' => json_encode($carritoActual),
+                    ]);
+                }
+            } catch (\Throwable $e) {}
         }
 
         auth()->logout();
@@ -888,10 +890,12 @@ class PrincipalController extends Controller
     private function sincronizarCarritoUsuario()
     {
         if (auth()->check()) {
-            $carrito = session()->get('carrito', []);
-            auth()->user()->update([
-                'carrito_guardado' => !empty($carrito) ? json_encode($carrito) : null,
-            ]);
+            try {
+                $carrito = session()->get('carrito', []);
+                auth()->user()->update([
+                    'carrito_guardado' => !empty($carrito) ? json_encode($carrito) : null,
+                ]);
+            } catch (\Throwable $e) {}
         }
     }
 
