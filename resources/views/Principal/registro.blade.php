@@ -14,9 +14,9 @@
             <div class="text-center mb-6 relative z-10">
                 <a href="{{ route('inicio') }}" class="inline-flex items-center justify-center space-x-2.5 mb-4 group">
                     <div class="p-1.5 bg-gradient-to-br from-amber-500/10 to-amber-800/10 rounded-2xl border border-amber-800/15 shadow-sm group-hover:scale-105 transition-all">
-                        <img src="{{ asset('logo2.png') }}" alt="Isotipo Sector Mueble" class="h-8 sm:h-10 w-auto object-contain">
+                        <img src="{{ asset('logo2.png') }}" alt="Isotipo Sector Mueble" class="h-8 sm:h-10 w-auto object-contain" style="max-height: 40px; max-width: 120px;">
                     </div>
-                    <img src="{{ asset('logo1.png') }}" alt="Sector Mueble Logotipo" class="h-9 sm:h-11 w-auto object-contain">
+                    <img src="{{ asset('logo1.png') }}" alt="Sector Mueble Logotipo" class="h-9 sm:h-11 w-auto object-contain" style="max-height: 48px; max-width: 220px;">
                 </a>
                 <h1 class="serif-title text-2xl sm:text-3xl font-bold text-zinc-950 tracking-wide">Crear Cuenta</h1>
                 <p class="text-xs sm:text-sm text-zinc-500 mt-1">Únete a Sector Mueble y disfruta de beneficios exclusivos</p>

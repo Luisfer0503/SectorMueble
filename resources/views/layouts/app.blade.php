@@ -16,10 +16,42 @@
     <!-- Google Model Viewer para renders 3D interactivos -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 
-    <!-- Styles and Scripts via Vite -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Styles and Scripts via Vite con Fallback Garantizado para Producción -->
+    @php
+        $cssBuildFile = null;
+        $jsBuildFile = null;
+        $manifestPath = public_path('build/manifest.json');
+        if (file_exists($manifestPath)) {
+            $manifest = json_decode(@file_get_contents($manifestPath), true);
+            $cssBuildFile = $manifest['resources/css/app.css']['file'] ?? null;
+            $jsBuildFile = $manifest['resources/js/app.js']['file'] ?? null;
+        }
+    @endphp
+
+    @if($cssBuildFile && !file_exists(public_path('hot')))
+        <link rel="stylesheet" href="{{ asset('build/' . $cssBuildFile) }}">
+        @if($jsBuildFile)
+            <script type="module" src="{{ asset('build/' . $jsBuildFile) }}"></script>
+        @endif
+    @else
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
+
+    <!-- Tailwind CDN Fallback para seguridad total de estilos en el servidor de producción -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        /* Reglas defensivas globales para evitar desbordamiento de imágenes o SVGs */
+        img, svg {
+            max-width: 100%;
+            height: auto;
+        }
+        img.brand-logo-img {
+            max-height: 48px !important;
+            width: auto !important;
+            object-fit: contain !important;
+        }
+
         body {
             font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: #0B0A0A;
@@ -162,9 +194,9 @@
                 <div class="flex-shrink flex items-center space-x-1.5 sm:space-x-2.5 min-w-0">
                     <a href="{{ route('inicio') }}" class="flex items-center space-x-1.5 sm:space-x-2.5 group py-1">
                         <div class="relative flex items-center justify-center p-1 bg-gradient-to-br from-amber-500/10 to-amber-800/10 rounded-xl border border-amber-800/15 shadow-sm shrink-0">
-                            <img src="{{ asset('logo2.png') }}" alt="Sector Mueble Isotipo" class="h-6 sm:h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
+                            <img src="{{ asset('logo2.png') }}" alt="Sector Mueble Isotipo" class="h-6 sm:h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm brand-logo-img" style="max-height: 40px; max-width: 120px;">
                         </div>
-                        <img src="{{ asset('logo1.png') }}" alt="Sector Mueble Logotipo" class="h-7 sm:h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm">
+                        <img src="{{ asset('logo1.png') }}" alt="Sector Mueble Logotipo" class="h-7 sm:h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm brand-logo-img" style="max-height: 48px; max-width: 220px;">
                     </a>
                 </div>
 
