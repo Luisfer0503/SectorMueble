@@ -18,6 +18,7 @@ class Producto extends Model
         'precio',
         'imagen_url',
         'imagen_secundaria_url',
+        'modelo_3d_url',
         'categoria',
         'stock',
         'calificacion',

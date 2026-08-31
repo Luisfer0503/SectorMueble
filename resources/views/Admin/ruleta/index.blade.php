@@ -106,7 +106,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Color de la sección (Paleta Cálida) -->
+                                <!-- Color de la sección (Paleta Clara y Cálida) -->
                                 <div>
                                     <label class="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1">
                                         Color del Sector (Paleta Marca)
@@ -124,13 +124,23 @@
                                                readonly 
                                                class="bg-stone-100 border border-stone-200 rounded-lg text-xs px-3 py-2 text-stone-700 font-mono w-28 font-bold text-center">
                                     </div>
-                                    <div class="mt-2.5 flex items-center space-x-2 flex-wrap gap-y-1.5">
-                                        <span class="text-[10px] text-stone-400 font-bold uppercase w-full sm:w-auto">Paleta Cálida:</span>
-                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#88674B')" class="w-6 h-6 rounded-full bg-[#88674B] border border-white shadow hover:scale-110 transition-transform" title="Nogal Maderable"></button>
-                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#C09A75')" class="w-6 h-6 rounded-full bg-[#C09A75] border border-white shadow hover:scale-110 transition-transform" title="Arena Dorado"></button>
-                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#2B241A')" class="w-6 h-6 rounded-full bg-[#2B241A] border border-white shadow hover:scale-110 transition-transform" title="Espresso Profundo"></button>
-                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#92400E')" class="w-6 h-6 rounded-full bg-[#92400E] border border-white shadow hover:scale-110 transition-transform" title="Ámbar Cálido"></button>
-                                        <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#451A03')" class="w-6 h-6 rounded-full bg-[#451A03] border border-white shadow hover:scale-110 transition-transform" title="Caoba Oscuro"></button>
+                                    
+                                    <!-- Paleta de Colores Claros de Alta Legibilidad -->
+                                    <div class="mt-3 space-y-1.5">
+                                        <div class="flex items-center space-x-2 flex-wrap gap-y-1.5">
+                                            <span class="text-[10px] text-amber-800 font-bold uppercase w-full sm:w-auto">✨ Colores Claros (Recomendados):</span>
+                                            <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#FFF5EA')" class="w-6 h-6 rounded-full bg-[#FFF5EA] border border-stone-300 shadow hover:scale-110 transition-transform" title="Crema Cálido"></button>
+                                            <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#FDE8CD')" class="w-6 h-6 rounded-full bg-[#FDE8CD] border border-stone-300 shadow hover:scale-110 transition-transform" title="Arena Marfil"></button>
+                                            <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#F4F1EA')" class="w-6 h-6 rounded-full bg-[#F4F1EA] border border-stone-300 shadow hover:scale-110 transition-transform" title="Beige Lino"></button>
+                                            <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#FDEAE6')" class="w-6 h-6 rounded-full bg-[#FDEAE6] border border-stone-300 shadow hover:scale-110 transition-transform" title="Rosa Suave"></button>
+                                            <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#FFFFFF')" class="w-6 h-6 rounded-full bg-[#FFFFFF] border border-stone-300 shadow hover:scale-110 transition-transform" title="Blanco Nieve"></button>
+                                        </div>
+                                        <div class="flex items-center space-x-2 flex-wrap gap-y-1.5 pt-1">
+                                            <span class="text-[10px] text-stone-400 font-bold uppercase w-full sm:w-auto">Acentuados:</span>
+                                            <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#C09A75')" class="w-6 h-6 rounded-full bg-[#C09A75] border border-stone-300 shadow hover:scale-110 transition-transform" title="Dorado Cálido"></button>
+                                            <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#88674B')" class="w-6 h-6 rounded-full bg-[#88674B] border border-stone-300 shadow hover:scale-110 transition-transform" title="Nogal Maderable"></button>
+                                            <button type="button" onclick="setRuletaColor({{ $opcion->posicion }}, '#2B241A')" class="w-6 h-6 rounded-full bg-[#2B241A] border border-stone-300 shadow hover:scale-110 transition-transform" title="Espresso Oscuro"></button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="h-full bg-[#FAF3E0]">
+<html lang="es" class="h-full bg-white">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +12,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+    <!-- Google Model Viewer para renders 3D interactivos -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
 
     <!-- Styles and Scripts via Vite -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -192,155 +195,153 @@
                         </span>
                     </a>
 
-                    <!-- Usuario Autenticado / Sesión con CP Debajo -->
+                    <!-- Usuario Autenticado / Sesión -->
                     @auth
-                        <div class="flex flex-col items-end border-l border-zinc-200 pl-2 sm:pl-3">
-                            <div class="flex items-center space-x-1.5">
-                                <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-amber-800">{{ auth()->user()->name }}</strong></span>
-                                @if(auth()->user()->is_admin)
-                                    <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-1.5 py-0.5 rounded uppercase tracking-wider">Admin</a>
-                                @endif
-                                <a href="{{ route('logout') }}" class="text-[11px] font-bold text-rose-600 hover:text-rose-700 px-1.5 py-0.5 rounded hover:bg-rose-50 transition-colors uppercase tracking-wider">Salir</a>
-                            </div>
-                            
-                            <!-- Indicador y Botón de CP debajo del nombre del usuario -->
-                            <button type="button" onclick="abrirModalCP()" class="mt-0.5 inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-900 hover:text-amber-700 hover:underline cursor-pointer group" title="Consultar o cambiar tu Código Postal">
-                                <svg class="w-3.5 h-3.5 text-amber-700 shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                </svg>
-                                <span class="cp-header-text-span font-bold text-amber-950">
-                                    @if(session('codigo_postal'))
-                                        CP: <strong>{{ session('codigo_postal') }}</strong>
-                                    @else
-                                        Ingresa tu CP
-                                    @endif
-                                </span>
-                                <span class="text-[10px] text-amber-700 underline font-normal">(Cambiar)</span>
-                            </button>
+                        <div class="flex items-center space-x-2 border-l border-zinc-200 pl-2 sm:pl-3">
+                            <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-amber-800">{{ auth()->user()->name }}</strong></span>
+                            @if(auth()->user()->is_admin)
+                                <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-lg uppercase tracking-wider">Admin</a>
+                            @endif
+                            <a href="{{ route('logout') }}" class="text-[11px] font-bold text-rose-600 hover:text-rose-700 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors uppercase tracking-wider">Salir</a>
                         </div>
                     @else
-                        <div class="flex flex-col items-end border-l border-zinc-200 pl-2 sm:pl-3 space-y-0.5">
-                            <div class="flex items-center space-x-1 sm:space-x-2">
-                                <!-- Botón Iniciar Sesión -->
-                                <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2.5 sm:px-3 py-1 rounded-xl transition-all shadow-sm whitespace-nowrap">
-                                    <svg class="w-3.5 h-3.5 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                    </svg>
-                                    <span class="hidden sm:inline">Iniciar Sesión</span>
-                                    <span class="sm:hidden">Entrar</span>
-                                </a>
-
-                                <!-- Botón Registro -->
-                                <a href="{{ route('registro') }}" class="hidden sm:inline-flex items-center justify-center text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3 py-1 rounded-xl transition-all shadow-sm hover:shadow whitespace-nowrap">
-                                    <span>Registro</span>
-                                </a>
-                            </div>
-
-                            <!-- Indicador y Botón de CP debajo de Iniciar Sesión -->
-                            <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1 text-[11px] font-semibold text-amber-900 hover:text-amber-700 hover:underline cursor-pointer group" title="Consultar o cambiar tu Código Postal">
-                                <svg class="w-3.5 h-3.5 text-amber-700 shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <div class="flex items-center space-x-1.5 sm:space-x-2 border-l border-zinc-200 pl-2 sm:pl-3">
+                            <!-- Botón Iniciar Sesión -->
+                            <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2.5 sm:px-3.5 py-1.5 rounded-xl transition-all shadow-xs whitespace-nowrap">
+                                <svg class="w-3.5 h-3.5 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
-                                <span class="cp-header-text-span font-bold text-amber-950">
-                                    @if(session('codigo_postal'))
-                                        CP: <strong>{{ session('codigo_postal') }}</strong>
-                                    @else
-                                        Ingresa tu CP
-                                    @endif
-                                </span>
-                                <span class="text-[10px] text-amber-700 underline font-normal">(Cambiar)</span>
-                            </button>
+                                <span class="hidden sm:inline">Iniciar Sesión</span>
+                                <span class="sm:hidden">Entrar</span>
+                            </a>
+
+                            <!-- Botón Registro -->
+                            <a href="{{ route('registro') }}" class="hidden sm:inline-flex items-center justify-center text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3.5 py-1.5 rounded-xl transition-all shadow-xs hover:shadow whitespace-nowrap">
+                                <span>Registro</span>
+                            </a>
                         </div>
                     @endauth
+
+                    <!-- Botón CP Compacto para pantallas móviles pequeños (Celular) -->
+                    <button type="button" onclick="abrirModalCP()" class="md:hidden flex items-center space-x-1 text-[11px] font-bold text-amber-900 bg-amber-100/80 border border-amber-300/80 px-2 py-1 rounded-lg shadow-2xs">
+                        <svg class="w-3 h-3 text-amber-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        </svg>
+                        <span class="cp-header-text-span font-bold text-amber-950">
+                            @if(session('codigo_postal'))
+                                {{ session('codigo_postal') }}
+                            @else
+                                CP
+                            @endif
+                        </span>
+                    </button>
                 </div>
             </div>
 
-            <!-- FILA 2: Barra de Navegación por Categorías (Debajo de los logos) -->
-            <nav class="hidden md:flex items-center space-x-8 py-2.5">
+            <!-- FILA 2: Barra de Navegación por Categorías + CP (A la misma altura que las categorías y debajo de Iniciar Sesión) -->
+            <div class="hidden md:flex items-center justify-between border-t border-zinc-100/80 py-2 mt-1">
                 
-                <!-- SALA con Submenú Desplegable Estilo Marca -->
-                <div class="relative group">
-                    <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
-                        <span>Sala</span>
-                        <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
-                    
-                    <!-- Submenú flotante compacto (Estilo tarjeta oscura de marca) -->
-                    <div class="absolute top-full left-0 mt-1.5 w-64 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                            <span class="text-amber-400 font-bold">•</span>
-                            <span>Sofás y salas modulares</span>
-                        </a>
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                            <span class="text-amber-400 font-bold">•</span>
-                            <span>Mesas de centro y laterales</span>
-                        </a>
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                            <span class="text-amber-400 font-bold">•</span>
-                            <span>Sillones</span>
-                        </a>
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                            <span class="text-amber-400 font-bold">•</span>
-                            <span>Credenzas</span>
-                        </a>
+                <!-- Categorías (Izquierda) -->
+                <nav class="flex items-center space-x-8">
+                    <!-- SALA con Submenú Desplegable Estilo Marca -->
+                    <div class="relative group">
+                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
+                            <span>Sala</span>
+                            <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        
+                        <!-- Submenú flotante compacto -->
+                        <div class="absolute top-full left-0 mt-1.5 w-64 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                                <span class="text-amber-400 font-bold">•</span>
+                                <span>Sofás y salas modulares</span>
+                            </a>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                                <span class="text-amber-400 font-bold">•</span>
+                                <span>Mesas de centro y laterales</span>
+                            </a>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                                <span class="text-amber-400 font-bold">•</span>
+                                <span>Sillones</span>
+                            </a>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                                <span class="text-amber-400 font-bold">•</span>
+                                <span>Credenzas</span>
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-                <!-- RECÁMARA con Submenú Desplegable Estilo Marca -->
-                <div class="relative group">
-                    <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
-                        <span>Recámara</span>
-                        <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
+                    <!-- RECÁMARA con Submenú Desplegable Estilo Marca -->
+                    <div class="relative group">
+                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
+                            <span>Recámara</span>
+                            <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
 
-                    <div class="absolute top-full left-0 mt-1.5 w-60 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
-                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                            <span class="text-amber-400 font-bold">•</span>
-                            <span>Camas</span>
-                        </a>
-                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                            <span class="text-amber-400 font-bold">•</span>
-                            <span>Burós</span>
-                        </a>
-                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                            <span class="text-amber-400 font-bold">•</span>
-                            <span>Divanes</span>
-                        </a>
+                        <div class="absolute top-full left-0 mt-1.5 w-60 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                                <span class="text-amber-400 font-bold">•</span>
+                                <span>Camas</span>
+                            </a>
+                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                                <span class="text-amber-400 font-bold">•</span>
+                                <span>Burós</span>
+                            </a>
+                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                                <span class="text-amber-400 font-bold">•</span>
+                                <span>Divanes</span>
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-                <!-- COMEDOR con Submenú Desplegable Estilo Marca -->
-                <div class="relative group">
-                    <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
-                        <span>Comedor</span>
-                        <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </button>
+                    <!-- COMEDOR con Submenú Desplegable Estilo Marca -->
+                    <div class="relative group">
+                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
+                            <span>Comedor</span>
+                            <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
 
-                    <div class="absolute top-full left-0 mt-1.5 w-56 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
-                        <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                            <span class="text-amber-400 font-bold">•</span>
-                            <span>Sillas</span>
-                        </a>
-                        <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                            <span class="text-amber-400 font-bold">•</span>
-                            <span>Mesas</span>
-                        </a>
+                        <div class="absolute top-full left-0 mt-1.5 w-56 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                                <span class="text-amber-400 font-bold">•</span>
+                                <span>Sillas</span>
+                            </a>
+                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
+                                <span class="text-amber-400 font-bold">•</span>
+                                <span>Mesas</span>
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-                <!-- CATÁLOGO COMPLETO -->
-                <a href="{{ route('catalogo') }}" class="text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors">
-                    Catálogo Completo
-                </a>
-            </nav>
+                    <!-- CATÁLOGO COMPLETO -->
+                    <a href="{{ route('catalogo') }}" class="text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors">
+                        Catálogo Completo
+                    </a>
+                </nav>
+
+                <!-- Botón de Código Postal (CP) a la misma altura que Categorías y justo DEBAJO de Iniciar Sesión -->
+                <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1.5 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/90 px-3 py-1 rounded-xl transition-all shadow-2xs group cursor-pointer" title="Consultar o cambiar tu Código Postal">
+                    <svg class="w-3.5 h-3.5 text-amber-800 shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span class="cp-header-text-span font-bold text-amber-950">
+                        @if(session('codigo_postal'))
+                            CP: <strong>{{ session('codigo_postal') }}</strong>
+                        @else
+                            Ingresa tu CP
+                        @endif
+                    </span>
+                    <span class="text-[10px] text-amber-700 underline font-normal">(Cambiar)</span>
+                </button>
+
+            </div>
         </div>
 
         <!-- Menú Móvil Desplegable -->
@@ -1005,7 +1006,7 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
 
         // Función para calcular brillo y asegurar contraste perfecto de lectura
         function getLuminance(hex) {
-            if (!hex) return 100;
+            if (!hex) return 200;
             let c = hex.replace('#', '');
             if (c.length === 3) c = c.split('').map(x => x + x).join('');
             const r = parseInt(c.substring(0, 2), 16) || 0;
@@ -1014,18 +1015,51 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
             return (r * 299 + g * 587 + b * 114) / 1000;
         }
 
+        // Dividir títulos largos inteligentemente en 2 líneas para máxima legibilidad
+        function splitTitleIntoTwoLines(text) {
+            if (!text) return { line1: '', line2: '' };
+            text = text.trim();
+            
+            if (text.length <= 14) {
+                return { line1: text, line2: '' };
+            }
+
+            const words = text.split(/\s+/);
+            if (words.length <= 1) {
+                return { line1: text, line2: '' };
+            }
+
+            let mid = Math.ceil(words.length / 2);
+
+            // Regla especial para "15% OFF en tu primera compra" o "$500 Descuento Especial"
+            if (words.length >= 3) {
+                const w1Upper = words[1]?.toUpperCase() || '';
+                const w0 = words[0];
+                if (w1Upper === 'OFF' || w1Upper === 'GRATIS' || w1Upper === 'DESCUENTO') {
+                    mid = 2;
+                } else if (w0.includes('%') || w0.includes('$')) {
+                    mid = 1;
+                }
+            }
+
+            const line1 = words.slice(0, mid).join(' ');
+            const line2 = words.slice(mid).join(' ');
+            return { line1, line2 };
+        }
+
         ctx.clearRect(0, 0, displaySize, displaySize);
 
         options.forEach((opt, idx) => {
             const angle = idx * arc;
-            const sliceBg = opt.color_bg || '#88674B';
+            const sliceBg = opt.color_bg || '#FFF5EA';
             
             const lum = getLuminance(sliceBg);
-            const isLightBg = lum > 160;
+            const isLightBg = lum > 140; // Cualquier fondo claro tendrá texto oscuro nítido
 
             // Selección de colores de texto con legibilidad óptima sobre fondo claro u oscuro
-            const textColor = isLightBg ? '#1F0F0B' : '#FAF3E0';
-            const strokeColor = isLightBg ? '#FFFFFF' : '#120907';
+            const textColor = isLightBg ? '#1C120C' : '#FFFFFF';
+            const subTextColor = isLightBg ? '#5C4331' : '#F5EBE6';
+            const strokeColor = isLightBg ? '#FFFFFF' : '#0B0604';
             
             // 1. Dibujar sector de la rueda
             ctx.beginPath();
@@ -1036,34 +1070,58 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
             ctx.fill();
 
             // 2. Línea divisoria crema/dorada brillante entre sectores
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = '#FAF3E0';
+            ctx.lineWidth = 2.5;
+            ctx.strokeStyle = '#88674B';
             ctx.stroke();
 
-            // 3. Renderizar texto con máxima nitidez, contraste adaptativo y tamaño ajustado
+            // 3. Renderizar texto en 2 líneas si es necesario para máxima legibilidad
             ctx.save();
             ctx.translate(cx, cy);
             ctx.rotate(angle + arc / 2);
             ctx.textAlign = 'right';
 
-            let label = opt.titulo || ('Opción ' + opt.posicion);
-            
-            // Ajustar tamaño de fuente dinámicamente si el texto es largo
-            let fontSize = 13;
-            if (label.length > 22) fontSize = 11.5;
-            if (label.length > 30) fontSize = 10;
+            const rawLabel = opt.titulo || ('Opción ' + opt.posicion);
+            const { line1, line2 } = splitTitleIntoTwoLines(rawLabel);
 
-            ctx.font = `bold ${fontSize}px 'Poppins', system-ui, -apple-system, sans-serif`;
+            if (line2) {
+                // Línea 1 (Destacado principal: "15% OFF", "Envío Gratis", etc.)
+                let fontSize1 = 13.5;
+                if (line1.length > 18) fontSize1 = 11.5;
+                ctx.font = `bold ${fontSize1}px 'Poppins', system-ui, -apple-system, sans-serif`;
 
-            // Delineado (stroke) robusto para máxima nitidez de los bordes
-            ctx.strokeStyle = strokeColor;
-            ctx.lineWidth = 3.5;
-            ctx.lineJoin = 'round';
-            ctx.strokeText(label, radius - 18, 4);
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 3;
+                ctx.lineJoin = 'round';
+                ctx.strokeText(line1, radius - 18, -4);
 
-            // Relleno de texto principal
-            ctx.fillStyle = textColor;
-            ctx.fillText(label, radius - 18, 4);
+                ctx.fillStyle = textColor;
+                ctx.fillText(line1, radius - 18, -4);
+
+                // Línea 2 (Subtexto: "en tu primera compra", "en tu pedido", etc.)
+                let fontSize2 = 10.5;
+                if (line2.length > 22) fontSize2 = 9.5;
+                ctx.font = `600 ${fontSize2}px 'Poppins', system-ui, -apple-system, sans-serif`;
+
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 2.5;
+                ctx.strokeText(line2, radius - 18, 12);
+
+                ctx.fillStyle = subTextColor;
+                ctx.fillText(line2, radius - 18, 12);
+            } else {
+                // Línea única
+                let fontSize = 13;
+                if (line1.length > 22) fontSize = 11;
+                ctx.font = `bold ${fontSize}px 'Poppins', system-ui, -apple-system, sans-serif`;
+
+                ctx.strokeStyle = strokeColor;
+                ctx.lineWidth = 3;
+                ctx.strokeText(line1, radius - 18, 4);
+
+                ctx.fillStyle = textColor;
+                ctx.fillText(line1, radius - 18, 4);
+            }
+
             ctx.restore();
         });
 
@@ -1077,7 +1135,7 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
         ctx.beginPath();
         ctx.arc(cx, cy, radius - 4, 0, 2 * Math.PI);
         ctx.lineWidth = 1.5;
-        ctx.strokeStyle = '#FAF3E0';
+        ctx.strokeStyle = '#FFFFFF';
         ctx.stroke();
     }
 

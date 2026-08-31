@@ -10,8 +10,8 @@
     --font-subtitle: 'Playfair Display', 'Poppins', Georgia, serif;
 
     /* Official Brand Color Palette from sector.pdf */
-    --color-brand-cream: #FAF3E0;
-    --color-brand-sand: #FFF0E0;
+    --color-brand-cream: #ffffff;
+    --color-brand-sand: #ffffff;
     --color-brand-taupe: #88674B;
     --color-brand-espresso: #2B241A;
     --color-brand-deep: #1F0F0B;
@@ -31,7 +31,7 @@
 
 /* Global Typography & Palette Helpers */
 :root {
-    --bg-brand-cream: #FAF3E0;
+    --bg-brand-cream: #ffffff;
     --color-brand-taupe: #88674B;
     --color-brand-espresso: #2B241A;
     --color-brand-deep: #1F0F0B;
@@ -40,7 +40,7 @@
 
 body {
     font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #FAF3E0;
+    background-color: #ffffff;
     color: #0B0A0A;
 }
 
@@ -53,8 +53,8 @@ h1, h2, h3, h4, h5, h6, .serif-title, .font-heading {
 }
 
 /* Color Utility Helpers */
-.bg-brand-cream { background-color: #FAF3E0; }
-.bg-brand-sand { background-color: #FFF0E0; }
+.bg-brand-cream { background-color: #ffffff; }
+.bg-brand-sand { background-color: #ffffff; }
 .bg-brand-taupe { background-color: #88674B; }
 .bg-brand-espresso { background-color: #2B241A; }
 .bg-brand-deep { background-color: #1F0F0B; }
@@ -112,7 +112,7 @@ h1, h2, h3, h4, h5, h6, .serif-title, .font-heading {
     height: 8px;
 }
 ::-webkit-scrollbar-track {
-    background: #FAF3E0;
+    background: #ffffff;
 }
 ::-webkit-scrollbar-thumb {
     background: #88674B;

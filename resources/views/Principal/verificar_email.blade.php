@@ -3,7 +3,7 @@
 @section('titulo', 'Verifica tu Correo Electrónico | Sector Mueble')
 
 @section('contenido')
-<div class="min-h-[70vh] bg-gradient-to-b from-[#FAF3E0] to-amber-50/50 py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+<div class="min-h-[70vh] bg-white py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
     <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-amber-900/10 text-center">
         
         <!-- Icono animado de correo enviado -->
