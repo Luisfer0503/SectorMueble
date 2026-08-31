@@ -11,10 +11,42 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
-    <!-- Styles and Scripts via Vite -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Styles and Scripts via Vite con Fallback Garantizado para Producción -->
+    @php
+        $cssBuildFile = null;
+        $jsBuildFile = null;
+        $manifestPath = public_path('build/manifest.json');
+        if (file_exists($manifestPath)) {
+            $manifest = json_decode(@file_get_contents($manifestPath), true);
+            $cssBuildFile = $manifest['resources/css/app.css']['file'] ?? null;
+            $jsBuildFile = $manifest['resources/js/app.js']['file'] ?? null;
+        }
+    @endphp
+
+    @if($cssBuildFile && !file_exists(public_path('hot')))
+        <link rel="stylesheet" href="{{ asset('build/' . $cssBuildFile) }}">
+        @if($jsBuildFile)
+            <script type="module" src="{{ asset('build/' . $jsBuildFile) }}"></script>
+        @endif
+    @else
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @endif
+
+    <!-- Tailwind CDN Fallback para seguridad total de estilos en el servidor de producción -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        /* Reglas defensivas globales para evitar desbordamiento de imágenes o SVGs */
+        img, svg {
+            max-width: 100%;
+            height: auto;
+        }
+        img.brand-logo-img {
+            max-height: 40px !important;
+            width: auto !important;
+            object-fit: contain !important;
+        }
+
         body {
             font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: #0B0A0A;
@@ -59,8 +91,8 @@
             <!-- Header del Menú con Botón Cerrar X -->
             <div class="h-20 flex items-center justify-between px-6 border-b border-zinc-800 bg-zinc-950">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3">
-                    <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-8 w-auto object-contain brightness-0 invert">
-                    <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-10 w-auto object-contain brightness-0 invert">
+                    <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-8 w-auto object-contain brightness-0 invert brand-logo-img" style="max-height: 32px; width: auto;">
+                    <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-10 w-auto object-contain brightness-0 invert brand-logo-img" style="max-height: 40px; width: auto;">
                 </a>
                 <button type="button" onclick="cerrarSidebar()" class="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 transition-colors" title="Cerrar menú">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -157,8 +189,8 @@
 
                 <!-- Logos & Titulo -->
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3">
-                    <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-8 w-auto object-contain brightness-0 invert">
-                    <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-10 w-auto object-contain brightness-0 invert">
+                    <img src="{{ asset('logo2.png') }}" alt="Logo 2" class="h-8 w-auto object-contain brightness-0 invert brand-logo-img" style="max-height: 32px; width: auto;">
+                    <img src="{{ asset('logo1.png') }}" alt="Logo 1" class="h-10 w-auto object-contain brightness-0 invert brand-logo-img" style="max-height: 40px; width: auto;">
                 </a>
             </div>
 
