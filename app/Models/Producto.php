@@ -58,6 +58,26 @@ class Producto extends Model
     }
 
     /**
+     * Accessor para limpiar automáticamente menciones a Casa Tapier o Samar de la descripción.
+     */
+    public function getDescripcionAttribute($value): string
+    {
+        if (empty($value)) {
+            return '';
+        }
+
+        $clean = preg_replace('/\.?\s*Proveedor\s*:\s*(CASA TAPIER|SAMAR MUEBLES|SAMAR|CASA TAPIER\.)/i', '', $value);
+        $clean = preg_replace('/CASA\s+TAPIER/i', '', $clean);
+        $clean = preg_replace('/SAMAR\s+MUEBLES/i', '', $clean);
+        $clean = preg_replace('/\bSAMAR\b/i', '', $clean);
+        $clean = preg_replace('/\s+/', ' ', $clean);
+        $clean = preg_replace('/\s+([,\.])/', '$1', $clean);
+        $clean = preg_replace('/([,\.])\s*([,\.])+/', '$1', $clean);
+
+        return trim($clean);
+    }
+
+    /**
      * Accessor para formatear siempre correctamente la URL de la imagen principal del producto.
      */
     public function getImagenUrlAttribute($value): string

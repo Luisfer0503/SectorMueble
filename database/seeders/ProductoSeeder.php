@@ -19,7 +19,7 @@ class ProductoSeeder extends Seeder
         $productos = [
             [
                 'nombre' => 'Kattia - Tapizada',
-                'descripcion' => 'Silla Dimensiones: Ancho: 55.0 cm, Alto: 90.0 cm, Profundidad: 60.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Otter, SAMAR Dylan Latte, SAMAR Napoli Oxford, SAMAR Napoli Sand. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Silla Dimensiones: Ancho: 55.0 cm, Alto: 90.0 cm, Profundidad: 60.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Otter,  Dylan Latte,  Napoli Oxford,  Napoli Sand.',
                 'precio' => 3400.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row16.png',
                 'categoria' => 'Sillas y Bancos',
@@ -31,7 +31,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Serrano - De Madera',
-                'descripcion' => 'Silla Dimensiones: Ancho: 60.0 cm, Alto: 70.0 cm, Profundidad: 50.0 cm. Materiales / Acabados disponibles: Tabatex Roma Steel, Tabatex Liquid Wood, Tabatex Dylan Cream, Tabatex Dylan Evony, SAMAR Napoli Olivo. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Silla Dimensiones: Ancho: 60.0 cm, Alto: 70.0 cm, Profundidad: 50.0 cm. Materiales / Acabados disponibles: Tabatex Roma Steel, Tabatex Liquid Wood, Tabatex Dylan Cream, Tabatex Dylan Evony,  Napoli Olivo.',
                 'precio' => 3650.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row17.png',
                 'categoria' => 'Sillas y Bancos',
@@ -43,7 +43,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Monna - De Madera',
-                'descripcion' => 'Silla Dimensiones: Ancho: 58.0 cm, Alto: 70.0 cm, Profundidad: 50.0 cm. Materiales / Acabados disponibles: Tabatex Roma Oyster, Tabatex Dylan Chocolate, SAMAR Flip Flop Silver, SAMAR Dylan Latte, SAMAR Napoli Oxford. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Silla Dimensiones: Ancho: 58.0 cm, Alto: 70.0 cm, Profundidad: 50.0 cm. Materiales / Acabados disponibles: Tabatex Roma Oyster, Tabatex Dylan Chocolate,  Flip Flop Silver,  Dylan Latte,  Napoli Oxford.',
                 'precio' => 3900.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row18.png',
                 'categoria' => 'Sillas y Bancos',
@@ -55,7 +55,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Tina - De Madera',
-                'descripcion' => 'Silla Dimensiones: Ancho: 45.0 cm, Alto: 70.0 cm, Profundidad: 50.0 cm. Materiales / Acabados disponibles: Tabatex Roma Oyster, Tabatex Mondra Taupe, SAMAR Napoli Olivo, Madera de pino entonada- Blanco Medio, Madera de pino entonada- Nogal Medio 1. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Silla Dimensiones: Ancho: 45.0 cm, Alto: 70.0 cm, Profundidad: 50.0 cm. Materiales / Acabados disponibles: Tabatex Roma Oyster, Tabatex Mondra Taupe,  Napoli Olivo, Madera de pino entonada- Blanco Medio, Madera de pino entonada- Nogal Medio 1.',
                 'precio' => 4150.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row19.png',
                 'categoria' => 'Sillas y Bancos',
@@ -67,7 +67,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Torento - Tapizada',
-                'descripcion' => 'Silla Dimensiones: Ancho: 64.0 cm, Alto: 84.0 cm, Profundidad: 64.0 cm. Materiales / Acabados disponibles: Tabatex Roma Steel, Tabatex Dylan Chocolate, SAMAR Dylan Latte, SAMAR Napoli Marino. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Silla Dimensiones: Ancho: 64.0 cm, Alto: 84.0 cm, Profundidad: 64.0 cm. Materiales / Acabados disponibles: Tabatex Roma Steel, Tabatex Dylan Chocolate,  Dylan Latte,  Napoli Marino.',
                 'precio' => 4400.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row20.png',
                 'categoria' => 'Sillas y Bancos',
@@ -79,7 +79,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Padua - Herrería Y Tapizado',
-                'descripcion' => 'Silla Dimensiones: Ancho: 55.0 cm, Alto: 70.0 cm, Profundidad: 55.0 cm. Materiales / Acabados disponibles: Tabatex Roma Oyster, Tabatex Liquid Silver, Tabatex Dylan Evony. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Silla Dimensiones: Ancho: 55.0 cm, Alto: 70.0 cm, Profundidad: 55.0 cm. Materiales / Acabados disponibles: Tabatex Roma Oyster, Tabatex Liquid Silver, Tabatex Dylan Evony.',
                 'precio' => 4650.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row21.png',
                 'categoria' => 'Sillas y Bancos',
@@ -91,7 +91,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Bimba - Tapizado',
-                'descripcion' => 'Sillón Comedor Dimensiones: Ancho: 65.0 cm, Alto: 78.0 cm, Profundidad: 65.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Wood, Tabatex Dylan Cream, SAMAR Napoli Oxford, SAMAR Napoli Black, Madera de pino entonada- Nogal Medio 1. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sillón Comedor Dimensiones: Ancho: 65.0 cm, Alto: 78.0 cm, Profundidad: 65.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Wood, Tabatex Dylan Cream,  Napoli Oxford,  Napoli Black, Madera de pino entonada- Nogal Medio 1.',
                 'precio' => 15400.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row22.png',
                 'categoria' => 'Comedor',
@@ -103,7 +103,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Olvera - Tapizado',
-                'descripcion' => 'Sillón Dimensiones: Ancho: 70.0 cm, Alto: 70.0 cm, Profundidad: 75.0 cm. Materiales / Acabados disponibles: Tabatex Germany Moka, Tabatex Germany Brick, Tabatex Germany Olive, Tabatex Mondra Coffe, SAMAR Flip Flop Silver. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sillón Dimensiones: Ancho: 70.0 cm, Alto: 70.0 cm, Profundidad: 75.0 cm. Materiales / Acabados disponibles: Tabatex Germany Moka, Tabatex Germany Brick, Tabatex Germany Olive, Tabatex Mondra Coffe,  Flip Flop Silver.',
                 'precio' => 8500.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row23.png',
                 'categoria' => 'Salón',
@@ -115,7 +115,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Palermo - Modudlar',
-                'descripcion' => 'Sofa Dimensiones: Ancho: 255.0 cm, Alto: 80.0 cm, Profundidad: 95.0 cm. Materiales / Acabados disponibles: Tabatex Roma Oyster, Tabatex Roma Steel, Tabatex Liquid Ebony. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sofa Dimensiones: Ancho: 255.0 cm, Alto: 80.0 cm, Profundidad: 95.0 cm. Materiales / Acabados disponibles: Tabatex Roma Oyster, Tabatex Roma Steel, Tabatex Liquid Ebony.',
                 'precio' => 17050.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row24.png',
                 'categoria' => 'Salón',
@@ -127,7 +127,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Zenit - Tapizada',
-                'descripcion' => 'Banca Dimensiones: Ancho: 142.0 cm, Alto: 44.0 cm, Profundidad: 42.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Midnight, Tabatex Sakura Moleskin, Tabatex Germany Navy, Tabatex Roma Latte, Tabatex Liquid Olivo. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Banca Dimensiones: Ancho: 142.0 cm, Alto: 44.0 cm, Profundidad: 42.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Midnight, Tabatex Sakura Moleskin, Tabatex Germany Navy, Tabatex Roma Latte, Tabatex Liquid Olivo.',
                 'precio' => 5700.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row25.png',
                 'categoria' => 'Sillas y Bancos',
@@ -139,7 +139,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'West - Sillon Ind. Angosto',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 75.0 cm, Alto: 72.5 cm, Profundidad: 100.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Silver, SAMAR Napoli Oxford, SAMAR Napoli Black. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 75.0 cm, Alto: 72.5 cm, Profundidad: 100.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Silver,  Napoli Oxford,  Napoli Black.',
                 'precio' => 25250.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row26.png',
                 'categoria' => 'Salón',
@@ -151,7 +151,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'West - Sillon Ind. Ancho',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 100.0 cm, Alto: 72.5 cm, Profundidad: 100.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 100.0 cm, Alto: 72.5 cm, Profundidad: 100.0 cm.',
                 'precio' => 25500.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row26.png',
                 'categoria' => 'Salón',
@@ -163,7 +163,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'West - Love Seat',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 125.0 cm, Alto: 72.5 cm, Profundidad: 100.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 125.0 cm, Alto: 72.5 cm, Profundidad: 100.0 cm.',
                 'precio' => 25750.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row26.png',
                 'categoria' => 'Salón',
@@ -175,7 +175,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'West - Chaice',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 100.0 cm, Alto: 72.5 cm, Profundidad: 145.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 100.0 cm, Alto: 72.5 cm, Profundidad: 145.0 cm.',
                 'precio' => 26000.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row26.png',
                 'categoria' => 'Salón',
@@ -187,7 +187,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'West - Esquinero',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 100.0 cm, Alto: 72.5 cm, Profundidad: 100.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 100.0 cm, Alto: 72.5 cm, Profundidad: 100.0 cm.',
                 'precio' => 24500.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row26.png',
                 'categoria' => 'Salón',
@@ -199,7 +199,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'West - Taburete Cuadrado Grande',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 100.0 cm, Alto: 42.5 cm, Profundidad: 100.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 100.0 cm, Alto: 42.5 cm, Profundidad: 100.0 cm.',
                 'precio' => 4050.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row26.png',
                 'categoria' => 'Sillas y Bancos',
@@ -211,7 +211,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'West - Taburete Rectangular Grande',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 50.0 cm, Alto: 42.5 cm, Profundidad: 100.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 50.0 cm, Alto: 42.5 cm, Profundidad: 100.0 cm.',
                 'precio' => 4300.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row26.png',
                 'categoria' => 'Sillas y Bancos',
@@ -223,7 +223,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'West - Taburete Cuadrado Mediano',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 75.0 cm, Alto: 42.5 cm, Profundidad: 75.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 75.0 cm, Alto: 42.5 cm, Profundidad: 75.0 cm.',
                 'precio' => 4550.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row26.png',
                 'categoria' => 'Sillas y Bancos',
@@ -235,7 +235,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'West - Brazos',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 25.0 cm, Alto: 60.0 cm, Profundidad: 80.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 25.0 cm, Alto: 60.0 cm, Profundidad: 80.0 cm.',
                 'precio' => 25500.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row26.png',
                 'categoria' => 'Salón',
@@ -247,7 +247,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Virgo - Taburete Cuadrado',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 100.0 cm, Alto: 45.0 cm, Profundidad: 100.0 cm. Materiales / Acabados disponibles: Tabatex Roma Latte, Tabatex Roma Steel, Tabatex Liquid Silver, Tabatex Liquid Beige, Tabatex Liquid Navy. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 100.0 cm, Alto: 45.0 cm, Profundidad: 100.0 cm. Materiales / Acabados disponibles: Tabatex Roma Latte, Tabatex Roma Steel, Tabatex Liquid Silver, Tabatex Liquid Beige, Tabatex Liquid Navy.',
                 'precio' => 5050.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row35.png',
                 'categoria' => 'Sillas y Bancos',
@@ -259,7 +259,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Virgo - Taburete Rectangular',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 180.0 cm, Alto: 45.0 cm, Profundidad: 100.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 180.0 cm, Alto: 45.0 cm, Profundidad: 100.0 cm.',
                 'precio' => 5300.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row35.png',
                 'categoria' => 'Sillas y Bancos',
@@ -271,7 +271,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Virgo - Esquinero',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 135.0 cm, Alto: 45.0 cm, Profundidad: 135.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 135.0 cm, Alto: 45.0 cm, Profundidad: 135.0 cm.',
                 'precio' => 24500.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row35.png',
                 'categoria' => 'Salón',
@@ -283,7 +283,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Virgo - Respaldo',
-                'descripcion' => 'Sala Modular Dimensiones: Ancho: 80.0 cm, Alto: 35.0 cm, Profundidad: 35.0 cm. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sala Modular Dimensiones: Ancho: 80.0 cm, Alto: 35.0 cm, Profundidad: 35.0 cm.',
                 'precio' => 24750.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row35.png',
                 'categoria' => 'Salón',
@@ -295,7 +295,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Lucier - Tapizada',
-                'descripcion' => 'Recamara Dimensiones: Ancho: 214.0 cm, Alto: 110.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Chocolate, SAMAR Napoli Oxford, SAMAR Napoli Sand. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Recamara Dimensiones: Ancho: 214.0 cm, Alto: 110.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Chocolate,  Napoli Oxford,  Napoli Sand.',
                 'precio' => 22400.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row39.png',
                 'categoria' => 'Dormitorio',
@@ -307,7 +307,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Aura - Tapizada',
-                'descripcion' => 'Recamara Dimensiones: Ancho: 230.0 cm, Alto: 130.0 cm, Profundidad: 218.0 cm. Materiales / Acabados disponibles: Tabatex Germany Ivory, Tabatex Germany Navy, Tabatex Germany Olive, Tabatex Liquid Wood, Tabatex Liquid Rose. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Recamara Dimensiones: Ancho: 230.0 cm, Alto: 130.0 cm, Profundidad: 218.0 cm. Materiales / Acabados disponibles: Tabatex Germany Ivory, Tabatex Germany Navy, Tabatex Germany Olive, Tabatex Liquid Wood, Tabatex Liquid Rose.',
                 'precio' => 22650.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row40.png',
                 'categoria' => 'Dormitorio',
@@ -319,7 +319,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Isabella - Tapizada',
-                'descripcion' => 'Recamara Dimensiones: Ancho: 214.0 cm, Alto: 110.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Silver, Tabatex Liquid Beige, Tabatex Mondra Taupe. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Recamara Dimensiones: Ancho: 214.0 cm, Alto: 110.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Silver, Tabatex Liquid Beige, Tabatex Mondra Taupe.',
                 'precio' => 22900.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row41.png',
                 'categoria' => 'Dormitorio',
@@ -331,7 +331,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Duna - Tapizada',
-                'descripcion' => 'Recamara Dimensiones: Ancho: 214.0 cm, Alto: 110.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Wood, Tabatex Liquid Olivo, Tabatex Napoli Marino, Tabatex Liquid Otter. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Recamara Dimensiones: Ancho: 214.0 cm, Alto: 110.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Wood, Tabatex Liquid Olivo, Tabatex Napoli Marino, Tabatex Liquid Otter.',
                 'precio' => 23150.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row42.png',
                 'categoria' => 'Dormitorio',
@@ -343,7 +343,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Luna - Tapizada',
-                'descripcion' => 'Recamara Dimensiones: Ancho: 214.0 cm, Alto: 110.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Germany Ivory, Tabatex Germany Olive, Tabatex Liquid Otter, Tabatex Mondra Coffe. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Recamara Dimensiones: Ancho: 214.0 cm, Alto: 110.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Germany Ivory, Tabatex Germany Olive, Tabatex Liquid Otter, Tabatex Mondra Coffe.',
                 'precio' => 23400.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row43.png',
                 'categoria' => 'Dormitorio',
@@ -355,7 +355,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Pistacho - Tapizada',
-                'descripcion' => 'Cama Dimensiones: Ancho: 214.0 cm, Alto: 120.0 cm, Profundidad: 220.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Moleskin, Tabatex Germany Brick, SAMAR Flip Flop Silver, SAMAR Napoli Sand. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Cama Dimensiones: Ancho: 214.0 cm, Alto: 120.0 cm, Profundidad: 220.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Moleskin, Tabatex Germany Brick,  Flip Flop Silver,  Napoli Sand.',
                 'precio' => 13500.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row44.png',
                 'categoria' => 'Dormitorio',
@@ -367,7 +367,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Molina - Madera Sólida',
-                'descripcion' => 'Cama Dimensiones: Ancho: 190.0 cm, Alto: 87.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Madera de pino entonada- Nogal Medio 1, Madera de pino entonada- Nogal Oscuro. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Cama Dimensiones: Ancho: 190.0 cm, Alto: 87.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Madera de pino entonada- Nogal Medio 1, Madera de pino entonada- Nogal Oscuro.',
                 'precio' => 13750.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row45.png',
                 'categoria' => 'Dormitorio',
@@ -379,7 +379,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Patricio - Tapizado',
-                'descripcion' => 'Taburete Dimensiones: Ancho: 67.0 cm, Alto: 51.5 cm, Profundidad: 58.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Steel, Tabatex Germany Moka, Tabatex Mondra Coffe, SAMAR Flip Flop Latte, SAMAR Napoli Olivo. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Taburete Dimensiones: Ancho: 67.0 cm, Alto: 51.5 cm, Profundidad: 58.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Steel, Tabatex Germany Moka, Tabatex Mondra Coffe,  Flip Flop Latte,  Napoli Olivo.',
                 'precio' => 4300.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row46.png',
                 'categoria' => 'Sillas y Bancos',
@@ -391,7 +391,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Torres - Asiento Tapizado Base Madera',
-                'descripcion' => 'Taburete Dimensiones: Ancho: 55.0 cm, Alto: 50.0 cm, Profundidad: 55.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Midnight, Tabatex Germany Brick, Tabatex Liquid Ebony, SAMAR Flip Flop Latte, SAMAR Napoli Marino. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Taburete Dimensiones: Ancho: 55.0 cm, Alto: 50.0 cm, Profundidad: 55.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Midnight, Tabatex Germany Brick, Tabatex Liquid Ebony,  Flip Flop Latte,  Napoli Marino.',
                 'precio' => 4550.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row47.png',
                 'categoria' => 'Sillas y Bancos',
@@ -403,7 +403,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Del Rio - Tapizado Base Madera',
-                'descripcion' => 'Taburete Dimensiones: Ancho: 45.0 cm, Alto: 50.0 cm, Profundidad: 45.0 cm. Materiales / Acabados disponibles: Tabatex Germany Silver, Tabatex Germany Moka, Tabatex Germany Olive, SAMAR Flip Flop Latte, Madera de pino entonada- Blanco Medio. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Taburete Dimensiones: Ancho: 45.0 cm, Alto: 50.0 cm, Profundidad: 45.0 cm. Materiales / Acabados disponibles: Tabatex Germany Silver, Tabatex Germany Moka, Tabatex Germany Olive,  Flip Flop Latte, Madera de pino entonada- Blanco Medio.',
                 'precio' => 4800.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row48.png',
                 'categoria' => 'Sillas y Bancos',
@@ -415,7 +415,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Del Rio',
-                'descripcion' => 'Taburete Dimensiones: Ancho: ↔ (Ancho) cm, Alto: ↕ (Altura) cm, Profundidad: ↗ (Prof) cm. Materiales / Acabados disponibles: MATERIAL 2, MATERIAL 3, MATERIAL 4, MATERIAL 5, MATERIAL 6. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Taburete Dimensiones: Ancho: ↔ (Ancho) cm, Alto: ↕ (Altura) cm, Profundidad: ↗ (Prof) cm. Materiales / Acabados disponibles: MATERIAL 2, MATERIAL 3, MATERIAL 4, MATERIAL 5, MATERIAL 6.',
                 'precio' => 5050.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row48.png',
                 'categoria' => 'Sillas y Bancos',
@@ -427,7 +427,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Risotto - Melamina',
-                'descripcion' => 'Buró Dimensiones: Ancho: 55.0 cm, Alto: 45.0 cm, Profundidad: 45.0 cm. Materiales / Acabados disponibles: Melamina Arauco Copal, Melamina Arauco Malta, Melamina Arauco Durango, Melamina Arauco Wengué. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Buró Dimensiones: Ancho: 55.0 cm, Alto: 45.0 cm, Profundidad: 45.0 cm. Materiales / Acabados disponibles: Melamina Arauco Copal, Melamina Arauco Malta, Melamina Arauco Durango, Melamina Arauco Wengué.',
                 'precio' => 6300.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row51.png',
                 'categoria' => 'Dormitorio',
@@ -439,7 +439,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Risotto - Con Cubierta De Mármol',
-                'descripcion' => 'Buró Dimensiones: Ancho: 55.0 cm, Alto: 45.0 cm, Profundidad: 45.0 cm. Materiales / Acabados disponibles: Melamina Arauco Copal, Melamina Arauco Malta, Melamina Arauco Durango, Melamina Arauco Wengué, Mármol Travertino Blanco. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Buró Dimensiones: Ancho: 55.0 cm, Alto: 45.0 cm, Profundidad: 45.0 cm. Materiales / Acabados disponibles: Melamina Arauco Copal, Melamina Arauco Malta, Melamina Arauco Durango, Melamina Arauco Wengué, Mármol Travertino Blanco.',
                 'precio' => 4800.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row52.png',
                 'categoria' => 'Dormitorio',
@@ -451,7 +451,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Domingo - Melamina',
-                'descripcion' => 'Buró Dimensiones: Ancho: 45.0 cm, Alto: 50.0 cm, Profundidad: 40.0 cm. Materiales / Acabados disponibles: Melamina Arauco Copal, Melamina Arauco Malta, Melamina Arauco Durango, Melamina Arauco Wengué. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Buró Dimensiones: Ancho: 45.0 cm, Alto: 50.0 cm, Profundidad: 40.0 cm. Materiales / Acabados disponibles: Melamina Arauco Copal, Melamina Arauco Malta, Melamina Arauco Durango, Melamina Arauco Wengué.',
                 'precio' => 5050.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row53.png',
                 'categoria' => 'Dormitorio',
@@ -463,7 +463,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Noruega - Mármol',
-                'descripcion' => 'Buró Dimensiones: Ancho: 45.0 cm, Alto: 50.0 cm, Profundidad: 45.0 cm. Materiales / Acabados disponibles: Mármol Travertino Blanco, Mármol Querétaro Negro, Mármol Carrara, Pdte. cotización. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Buró Dimensiones: Ancho: 45.0 cm, Alto: 50.0 cm, Profundidad: 45.0 cm. Materiales / Acabados disponibles: Mármol Travertino Blanco, Mármol Querétaro Negro, Mármol Carrara, Pdte. cotización.',
                 'precio' => 5300.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row54.png',
                 'categoria' => 'Dormitorio',
@@ -475,7 +475,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Suecia - Mármol',
-                'descripcion' => 'Buró Dimensiones: Ancho: 45.0 cm, Alto: 50.0 cm, Profundidad: 45.0 cm. Materiales / Acabados disponibles: Mármol Travertino Blanco, Mármol Querétaro Negro, Mármol Carrara, Pdte. cotización. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Buró Dimensiones: Ancho: 45.0 cm, Alto: 50.0 cm, Profundidad: 45.0 cm. Materiales / Acabados disponibles: Mármol Travertino Blanco, Mármol Querétaro Negro, Mármol Carrara, Pdte. cotización.',
                 'precio' => 5550.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row55.png',
                 'categoria' => 'Dormitorio',
@@ -487,7 +487,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Romina - Mármol',
-                'descripcion' => 'Recibidor Dimensiones: Ancho: 80.0 cm, Alto: 85.0 cm, Profundidad: 25.0 cm. Materiales / Acabados disponibles: Mármol Travertino Blanco, Mármol Querétaro Negro, Mármol Carrara, Pdte. cotización. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Recibidor Dimensiones: Ancho: 80.0 cm, Alto: 85.0 cm, Profundidad: 25.0 cm. Materiales / Acabados disponibles: Mármol Travertino Blanco, Mármol Querétaro Negro, Mármol Carrara, Pdte. cotización.',
                 'precio' => 9900.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row56.png',
                 'categoria' => 'Muebles Auxiliares',
@@ -499,7 +499,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Julia - Pedestal',
-                'descripcion' => 'Buró/Mesa auxiliar Dimensiones: Ancho: 40.0 cm, Alto: 55.0 cm, Profundidad: 40.0 cm. Materiales / Acabados disponibles: Mármol Travertino Blanco, Mármol Querétaro Negro, Mármol Carrara, Pdte. cotización. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Buró/Mesa auxiliar Dimensiones: Ancho: 40.0 cm, Alto: 55.0 cm, Profundidad: 40.0 cm. Materiales / Acabados disponibles: Mármol Travertino Blanco, Mármol Querétaro Negro, Mármol Carrara, Pdte. cotización.',
                 'precio' => 15150.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row57.png',
                 'categoria' => 'Comedor',
@@ -511,7 +511,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Pino - Pedestal',
-                'descripcion' => 'Mesa de comedor Materiales / Acabados disponibles: Pdte. cotización cubierta. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor Materiales / Acabados disponibles: Pdte. cotización cubierta.',
                 'precio' => 15400.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row58.png',
                 'categoria' => 'Comedor',
@@ -523,7 +523,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Diandra - Pedestal',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 13900.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row59.png',
                 'categoria' => 'Comedor',
@@ -535,7 +535,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Nina - Pedestal',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14150.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row60.png',
                 'categoria' => 'Comedor',
@@ -547,7 +547,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Otoño - Pedestal',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14400.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row61.png',
                 'categoria' => 'Comedor',
@@ -559,7 +559,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Romero - Pedestal',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14650.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row62.png',
                 'categoria' => 'Comedor',
@@ -571,7 +571,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Carol - Pedestal',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14900.0,
                 'imagen_url' => '/storage/productos/mueble_tapi_row63.png',
                 'categoria' => 'Comedor',
@@ -583,7 +583,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sao Paulo - Cubierta Redonda 4 Personas',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 12450.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -595,7 +595,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sao Paulo - Cubierta Redonda 6 Personas',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 16000.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -607,7 +607,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sao Paulo - Cubierta Redonda 8 Personas',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 18900.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -619,7 +619,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Atenas - Cubierta Cuadrada 4 Personas',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 11450.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -631,7 +631,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Atenas - Cubierta Cuadrada 8 Personas',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 19400.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -643,7 +643,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Santiago - Cubierta Rectangular 6 Personas',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 15250.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -655,7 +655,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Santiago - Cubierta Rectangular 8 Personas',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 19900.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -667,7 +667,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Oslo',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 15150.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -679,7 +679,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 15400.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -691,7 +691,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 13900.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -703,7 +703,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14150.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -715,7 +715,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14400.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -727,7 +727,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14650.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -739,7 +739,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14900.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -751,7 +751,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 15150.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -763,7 +763,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 15400.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -775,7 +775,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 13900.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -787,7 +787,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14150.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -799,7 +799,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14400.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -811,7 +811,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14650.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -823,7 +823,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14900.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -835,7 +835,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Budapest',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 15150.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -847,7 +847,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Tokio',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 15400.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -859,7 +859,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Denver',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 13900.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -871,7 +871,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Moscou',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14150.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -883,7 +883,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Milán',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14400.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -895,7 +895,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Nápoles',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14650.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -907,7 +907,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Lisboa',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14900.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -919,7 +919,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Turín',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 15150.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -931,7 +931,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Osaka',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 15400.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -943,7 +943,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Moringo',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 13900.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -955,7 +955,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Berlín',
-                'descripcion' => 'Mesa de comedor Proveedor: CASA TAPIER.',
+                'descripcion' => 'Mesa de comedor.',
                 'precio' => 14150.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Comedor',
@@ -967,7 +967,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sillón',
-                'descripcion' => 'Sillón Dimensiones: Ancho: 55.0 cm, Alto: 90.0 cm, Profundidad: 60.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Otter, SAMAR Dylan Latte, SAMAR Napoli Oxford, SAMAR Napoli Sand. Proveedor: CASA TAPIER.',
+                'descripcion' => 'Sillón Dimensiones: Ancho: 55.0 cm, Alto: 90.0 cm, Profundidad: 60.0 cm. Materiales / Acabados disponibles: Tabatex Liquid Otter,  Dylan Latte,  Napoli Oxford,  Napoli Sand.',
                 'precio' => 9000.0,
                 'imagen_url' => 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800',
                 'categoria' => 'Salón',
@@ -979,7 +979,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Lucca - Sofá',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 199.0 cm, Alto: 88.0 cm, Profundidad: 167.0 cm. Materiales / Acabados disponibles: Tabatex Roma Steel, Tabatex Liquid Beige, Tabatex Liquid Ebony. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 199.0 cm, Alto: 88.0 cm, Profundidad: 167.0 cm. Materiales / Acabados disponibles: Tabatex Roma Steel, Tabatex Liquid Beige, Tabatex Liquid Ebony.',
                 'precio' => 17550.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row16.jpg',
                 'categoria' => 'Salón',
@@ -991,7 +991,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Cataluña - Sofá',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 237.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm. Materiales / Acabados disponibles: SAMAR Napoli Oxford, SAMAR Napoli Sand, SAMAR Napoli Marino, SAMAR Napoli Black. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 237.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm. Materiales / Acabados disponibles:  Napoli Oxford,  Napoli Sand,  Napoli Marino,  Napoli Black.',
                 'precio' => 17800.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row17.png',
                 'categoria' => 'Salón',
@@ -1003,7 +1003,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Cataluña - Loveseat',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 180.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 180.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm.',
                 'precio' => 14150.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row17.png',
                 'categoria' => 'Salón',
@@ -1015,7 +1015,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Cataluña - Sillón',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 130.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 130.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm.',
                 'precio' => 10000.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row17.png',
                 'categoria' => 'Salón',
@@ -1027,7 +1027,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Samoa - Esquinero',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 90.0 cm, Alto: 75.0 cm, Profundidad: 90.0 cm. Materiales / Acabados disponibles: SAMAR Napoli Oxford, SAMAR Napoli Sand, SAMAR Napoli Marino, SAMAR Napoli Black. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 90.0 cm, Alto: 75.0 cm, Profundidad: 90.0 cm. Materiales / Acabados disponibles:  Napoli Oxford,  Napoli Sand,  Napoli Marino,  Napoli Black.',
                 'precio' => 24500.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row20.jpg',
                 'categoria' => 'Salón',
@@ -1039,7 +1039,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Samoa - Sillón',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 90.0 cm, Alto: 73.0 cm, Profundidad: 90.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 90.0 cm, Alto: 73.0 cm, Profundidad: 90.0 cm.',
                 'precio' => 8750.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row20.jpg',
                 'categoria' => 'Salón',
@@ -1051,7 +1051,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Samoa - Taburete',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 90.0 cm, Alto: 45.0 cm, Profundidad: 90.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 90.0 cm, Alto: 45.0 cm, Profundidad: 90.0 cm.',
                 'precio' => 4300.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row20.jpg',
                 'categoria' => 'Sillas y Bancos',
@@ -1063,7 +1063,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Trevere - Loveseat',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 195.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Chocolate, Tabatex Dylan Evony, SAMAR Napoli Sand, SAMAR Napoli Black. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 195.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Chocolate, Tabatex Dylan Evony,  Napoli Sand,  Napoli Black.',
                 'precio' => 13650.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row23.jpg',
                 'categoria' => 'Salón',
@@ -1075,7 +1075,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sala Modular Fernanda',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: CHAISE  : 85  CM X 80 CM X  160  CM                   LOVESEAT: 170 CM X  80 CM X 85 CM            ESQUINERO : 85 CM X 80CM  X 85  CM   TABURETE 75 CM X 45CM X 85 CM cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: CHAISE  : 85  CM X 80 CM X  160  CM                   LOVESEAT: 170 CM X  80 CM X 85 CM            ESQUINERO : 85 CM X 80CM  X 85  CM   TABURETE 75 CM X 45CM X 85 CM cm.',
                 'precio' => 15500.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row24.jpg',
                 'categoria' => 'Salón',
@@ -1087,7 +1087,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Edimburgo - Loveseat',
-                'descripcion' => 'Sala modular reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 135.0 cm, Alto: 90.0 cm, Profundidad: 87.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Chocolate, Tabatex Dylan Evony, SAMAR Napoli Sand, SAMAR Napoli Black. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Sala modular reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 135.0 cm, Alto: 90.0 cm, Profundidad: 87.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Chocolate, Tabatex Dylan Evony,  Napoli Sand,  Napoli Black.',
                 'precio' => 25750.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row25.jpg',
                 'categoria' => 'Salón',
@@ -1099,7 +1099,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Edimburgo - Esquinero',
-                'descripcion' => 'Sala modular reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 104.0 cm, Alto: 90.0 cm, Profundidad: 87.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Sala modular reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 104.0 cm, Alto: 90.0 cm, Profundidad: 87.0 cm.',
                 'precio' => 26000.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row25.jpg',
                 'categoria' => 'Salón',
@@ -1111,7 +1111,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Edimburgo - Baúl',
-                'descripcion' => 'Sala modular reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 91.0 cm, Alto: 45.0 cm, Profundidad: 90.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Sala modular reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 91.0 cm, Alto: 45.0 cm, Profundidad: 90.0 cm.',
                 'precio' => 24500.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row25.jpg',
                 'categoria' => 'Salón',
@@ -1123,7 +1123,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Milán - Sofá',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 220.0 cm, Alto: 100.0 cm, Profundidad: 70.0 cm. Materiales / Acabados disponibles: Tabatex Germany Silver, Tabatex Roma Oyster, Tabatex Liquid Wood, Tabatex Liquid Olivo, SAMAR Napoli Oxford. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 220.0 cm, Alto: 100.0 cm, Profundidad: 70.0 cm. Materiales / Acabados disponibles: Tabatex Germany Silver, Tabatex Roma Oyster, Tabatex Liquid Wood, Tabatex Liquid Olivo,  Napoli Oxford.',
                 'precio' => 17050.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row28.jpg',
                 'categoria' => 'Salón',
@@ -1135,7 +1135,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sillon Morrocoy - Sillón',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 85.0 cm, Alto: 83.0 cm, Profundidad: 83.0 cm. Materiales / Acabados disponibles: Tabatex Germany Silver, Tabatex Roma Oyster, Tabatex Liquid Wood, Tabatex Liquid Olivo, SAMAR Napoli Oxford. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 85.0 cm, Alto: 83.0 cm, Profundidad: 83.0 cm. Materiales / Acabados disponibles: Tabatex Germany Silver, Tabatex Roma Oyster, Tabatex Liquid Wood, Tabatex Liquid Olivo,  Napoli Oxford.',
                 'precio' => 9000.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row29.png',
                 'categoria' => 'Salón',
@@ -1147,7 +1147,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sala Venecia - Loveseat',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 168.0 cm, Alto: 92.0 cm, Profundidad: 83.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Cream, Tabatex Dylan Chocolate, Tabatex Dylan Evony. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 168.0 cm, Alto: 92.0 cm, Profundidad: 83.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Cream, Tabatex Dylan Chocolate, Tabatex Dylan Evony.',
                 'precio' => 13650.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row30.png',
                 'categoria' => 'Salón',
@@ -1159,7 +1159,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sala Venecia - Sillón',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 120.0 cm, Alto: 92.0 cm, Profundidad: 83.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 120.0 cm, Alto: 92.0 cm, Profundidad: 83.0 cm.',
                 'precio' => 9500.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row30.png',
                 'categoria' => 'Salón',
@@ -1171,7 +1171,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sala Venecia - Sofá',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 220.0 cm, Alto: 92.0 cm, Profundidad: 83.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 220.0 cm, Alto: 92.0 cm, Profundidad: 83.0 cm.',
                 'precio' => 18050.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row30.png',
                 'categoria' => 'Salón',
@@ -1183,7 +1183,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sala Concherto - Loveseat',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 180.0 cm, Alto: 102.0 cm, Profundidad: 90.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Cream, Tabatex Dylan Chocolate, Tabatex Dylan Evony. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 180.0 cm, Alto: 102.0 cm, Profundidad: 90.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Cream, Tabatex Dylan Chocolate, Tabatex Dylan Evony.',
                 'precio' => 14400.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row33.png',
                 'categoria' => 'Salón',
@@ -1195,7 +1195,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sala Concherto - Sillón',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 125.0 cm, Alto: 102.0 cm, Profundidad: 90.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 125.0 cm, Alto: 102.0 cm, Profundidad: 90.0 cm.',
                 'precio' => 8500.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row33.png',
                 'categoria' => 'Salón',
@@ -1207,7 +1207,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Sala Concherto - Sofá',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 240.0 cm, Alto: 102.0 cm, Profundidad: 90.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 240.0 cm, Alto: 102.0 cm, Profundidad: 90.0 cm.',
                 'precio' => 17050.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row33.png',
                 'categoria' => 'Salón',
@@ -1219,7 +1219,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Yorkshire - Sofa',
-                'descripcion' => 'Sillón reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 218.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Cream, Tabatex Dylan Chocolate, Tabatex Dylan Evony, SAMAR Napoli Black. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Sillón reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 218.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Cream, Tabatex Dylan Chocolate, Tabatex Dylan Evony,  Napoli Black.',
                 'precio' => 17300.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row36.png',
                 'categoria' => 'Salón',
@@ -1231,7 +1231,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Yorkshire - Loveseat',
-                'descripcion' => 'Sillón reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 167.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Sillón reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 167.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm.',
                 'precio' => 13650.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row36.png',
                 'categoria' => 'Salón',
@@ -1243,7 +1243,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Yorkshire - Sillon',
-                'descripcion' => 'Sillón reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 120.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Sillón reclinable fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 120.0 cm, Alto: 97.0 cm, Profundidad: 93.0 cm.',
                 'precio' => 9500.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row36.png',
                 'categoria' => 'Salón',
@@ -1255,7 +1255,7 @@ class ProductoSeeder extends Seeder
             ],
             [
                 'nombre' => 'Bombay - Sofá Cama',
-                'descripcion' => 'Sofá cama tamaño matrimonial Dimensiones: Ancho: 190.0 cm, Alto: 170.0 cm, Profundidad: 90.0 cm. Materiales / Acabados disponibles: Tabatex Germany Ivory, Tabatex Roma Steel, Tabatex Dylan Evony, SAMAR Napoli Sand, SAMAR Napoli Marino. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Sofá cama tamaño matrimonial Dimensiones: Ancho: 190.0 cm, Alto: 170.0 cm, Profundidad: 90.0 cm. Materiales / Acabados disponibles: Tabatex Germany Ivory, Tabatex Roma Steel, Tabatex Dylan Evony,  Napoli Sand,  Napoli Marino.',
                 'precio' => 14750.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row39.png',
                 'categoria' => 'Dormitorio',
@@ -1268,7 +1268,7 @@ class ProductoSeeder extends Seeder
             [
                 'nombre' => 'Recámara Atenea',
                 'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: Base: 215 CM X 30 CM  2.05CM
-CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
+CABECERA : 205CM X 1.20 CM X25 CM cm.',
                 'precio' => 16000.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row40.jpg',
                 'categoria' => 'Salón',
@@ -1280,7 +1280,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Creta Matrimonial - Base',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 149.0 cm, Alto: 25.0 cm, Profundidad: 197.0 cm. Materiales / Acabados disponibles: SAMAR Napoli Oxford, SAMAR Napoli Sand, SAMAR Napoli Marino, SAMAR Napoli Olivo. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 149.0 cm, Alto: 25.0 cm, Profundidad: 197.0 cm. Materiales / Acabados disponibles:  Napoli Oxford,  Napoli Sand,  Napoli Marino,  Napoli Olivo.',
                 'precio' => 13500.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row41.jpg',
                 'categoria' => 'Dormitorio',
@@ -1292,7 +1292,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Creta Matrimonial - Cabecera',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 145.0 cm, Alto: 120.0 cm, Profundidad: 25.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 145.0 cm, Alto: 120.0 cm, Profundidad: 25.0 cm.',
                 'precio' => 8050.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row41.jpg',
                 'categoria' => 'Dormitorio',
@@ -1304,7 +1304,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Recámara Santorini - Base',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 149.0 cm, Alto: 25.0 cm, Profundidad: 197.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Midnight, Tabatex Sakura Moleskin, Tabatex Mondra Curry, Tabatex Mondra Coffe. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 149.0 cm, Alto: 25.0 cm, Profundidad: 197.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Midnight, Tabatex Sakura Moleskin, Tabatex Mondra Curry, Tabatex Mondra Coffe.',
                 'precio' => 14000.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row43.jpg',
                 'categoria' => 'Dormitorio',
@@ -1316,7 +1316,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Recámara Santorini - Cabecera',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 145.0 cm, Alto: 120.0 cm, Profundidad: 25.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 145.0 cm, Alto: 120.0 cm, Profundidad: 25.0 cm.',
                 'precio' => 8550.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row43.jpg',
                 'categoria' => 'Dormitorio',
@@ -1328,7 +1328,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Mikonos - Base',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 149.0 cm, Alto: 25.0 cm, Profundidad: 197.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Chocolate, Tabatex Dylan Evony, Tabatex Dylan Latte. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 149.0 cm, Alto: 25.0 cm, Profundidad: 197.0 cm. Materiales / Acabados disponibles: Tabatex Dylan Chocolate, Tabatex Dylan Evony, Tabatex Dylan Latte.',
                 'precio' => 14500.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row45.jpg',
                 'categoria' => 'Dormitorio',
@@ -1340,7 +1340,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Mikonos - Cabecera',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 145.0 cm, Alto: 120.0 cm, Profundidad: 15.0 cm. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil pendiente por definir. Dimensiones: Ancho: 145.0 cm, Alto: 120.0 cm, Profundidad: 15.0 cm.',
                 'precio' => 9050.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row45.jpg',
                 'categoria' => 'Dormitorio',
@@ -1352,7 +1352,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Artemisa - Sofá',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil  TAMPA SILVER. Dimensiones: Ancho: 190.0 cm, Alto: 83.0 cm, Profundidad: 90.0 cm. Materiales / Acabados disponibles: Tabatex Germany Ivory, Tabatex Roma Oyster, Tabatex Dylan Evony, SAMAR Napoli Black. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil  TAMPA SILVER. Dimensiones: Ancho: 190.0 cm, Alto: 83.0 cm, Profundidad: 90.0 cm. Materiales / Acabados disponibles: Tabatex Germany Ivory, Tabatex Roma Oyster, Tabatex Dylan Evony,  Napoli Black.',
                 'precio' => 18300.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row47.jpg',
                 'categoria' => 'Salón',
@@ -1364,7 +1364,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Marielle - Sofá',
-                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil  FRANKFURT Dimensiones: Ancho: 170.0 cm, Alto: 81.0 cm, Profundidad: 95.0 cm. Materiales / Acabados disponibles: Tabatex Germany Ivory, Tabatex Germany Navy, Tabatex Mondra Coffe, Tabatex Dylan Cream, SAMAR Napoli Oxford. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Fabricado en madera estufada de Pino, forrada de hule espuma de alta densidad y textil  FRANKFURT Dimensiones: Ancho: 170.0 cm, Alto: 81.0 cm, Profundidad: 95.0 cm. Materiales / Acabados disponibles: Tabatex Germany Ivory, Tabatex Germany Navy, Tabatex Mondra Coffe, Tabatex Dylan Cream,  Napoli Oxford.',
                 'precio' => 16800.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row48.jpg',
                 'categoria' => 'Salón',
@@ -1376,7 +1376,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Capri Matromonial - Base',
-                'descripcion' => 'Base matrimonial Capri Dimensiones: Ancho: 150.0 cm, Alto: 120.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Moleskin, Tabatex Germany Brick, SAMAR Flip Flop Silver, SAMAR Napoli Sand. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Base matrimonial Capri Dimensiones: Ancho: 150.0 cm, Alto: 120.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Moleskin, Tabatex Germany Brick,  Flip Flop Silver,  Napoli Sand.',
                 'precio' => 13750.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row49.jpg',
                 'categoria' => 'Dormitorio',
@@ -1388,7 +1388,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Capri Matromonial - Cabecera',
-                'descripcion' => 'Base matrimonial Capri Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Base matrimonial Capri.',
                 'precio' => 14000.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row49.jpg',
                 'categoria' => 'Dormitorio',
@@ -1400,7 +1400,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Capri Base King Capri',
-                'descripcion' => 'Base King Tipo Capri Dimensiones: Ancho: 216.0 cm, Alto: 217.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Moleskin, Tabatex Germany Brick, SAMAR Flip Flop Silver, SAMAR Napoli Sand. Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Base King Tipo Capri Dimensiones: Ancho: 216.0 cm, Alto: 217.0 cm, Profundidad: 210.0 cm. Materiales / Acabados disponibles: Tabatex Sakura Moleskin, Tabatex Germany Brick,  Flip Flop Silver,  Napoli Sand.',
                 'precio' => 14250.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row51.jpg',
                 'categoria' => 'Dormitorio',
@@ -1412,7 +1412,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             ],
             [
                 'nombre' => 'Capri Base King Capri - Cabecera',
-                'descripcion' => 'Base King Tipo Capri Proveedor: SAMAR MUEBLES.',
+                'descripcion' => 'Base King Tipo Capri.',
                 'precio' => 14500.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row51.jpg',
                 'categoria' => 'Dormitorio',
@@ -1432,7 +1432,7 @@ CABECERA : 205CM X 1.20 CM X25 CM cm. Proveedor: SAMAR MUEBLES.',
             $counter = 1;
 
             while (in_array($slug, $slugsUsados)) {
-                $slug = $baseSlug . '-' . $counter;
+                $slug = $baseSlug. '-'. $counter;
                 $counter++;
             }
 
