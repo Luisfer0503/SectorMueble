@@ -110,7 +110,6 @@ class AdminController extends Controller
             'imagen_dimension_frontal' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'imagen_dimension_superior' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'categoria' => 'required|string',
-            'stock' => 'required|integer|min:0',
             'calificacion' => 'required|numeric|between:1,5',
         ]);
 
@@ -165,7 +164,6 @@ class AdminController extends Controller
             'imagen_url' => $imagenUrl,
             'imagen_secundaria_url' => $imagenSecundariaUrl,
             'categoria' => $request->categoria,
-            'stock' => $request->stock,
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
             'colores' => !empty($acabadosData) ? $acabadosData : null,
@@ -198,7 +196,6 @@ class AdminController extends Controller
             'imagen_dimension_frontal' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'imagen_dimension_superior' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'categoria' => 'required|string',
-            'stock' => 'required|integer|min:0',
             'calificacion' => 'required|numeric|between:1,5',
         ]);
 
@@ -256,7 +253,6 @@ class AdminController extends Controller
             'imagen_url' => $imagenUrl,
             'imagen_secundaria_url' => $imagenSecundariaUrl,
             'categoria' => $request->categoria,
-            'stock' => $request->stock,
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
             'colores' => !empty($acabadosData) ? $acabadosData : null,

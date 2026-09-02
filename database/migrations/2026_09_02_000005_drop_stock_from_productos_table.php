@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasColumn('productos', 'precio')) {
+        if (Schema::hasColumn('productos', 'stock')) {
             Schema::table('productos', function (Blueprint $table) {
-                $table->dropColumn('precio');
+                $table->dropColumn('stock');
             });
         }
     }
@@ -23,9 +23,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if (!Schema::hasColumn('productos', 'precio')) {
+        if (!Schema::hasColumn('productos', 'stock')) {
             Schema::table('productos', function (Blueprint $table) {
-                $table->decimal('precio', 10, 2)->default(0.00)->after('descripcion');
+                $table->integer('stock')->default(0)->after('categoria');
             });
         }
     }

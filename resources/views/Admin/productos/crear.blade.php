@@ -47,15 +47,6 @@
                     @enderror
                 </div>
 
-                <!-- Stock / Inventario -->
-                <div>
-                    <label for="stock" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Inventario (Stock)</label>
-                    <input type="number" name="stock" id="stock" required value="{{ old('stock', 10) }}" placeholder="Ej: 15" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
-                    @error('stock')
-                        <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
-                    @enderror
-                </div>
-
                 <!-- Calificación Inicial -->
                 <div>
                     <label for="calificacion" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Calificación Inicial (1 a 5)</label>

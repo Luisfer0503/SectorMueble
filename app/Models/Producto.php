@@ -19,7 +19,6 @@ class Producto extends Model
         'imagen_secundaria_url',
         'modelo_3d_url',
         'categoria',
-        'stock',
         'calificacion',
         'destacado',
         'porcentaje_descuento',
@@ -34,7 +33,6 @@ class Producto extends Model
         'precio_descuento'      => 'decimal:2',
         'calificacion'          => 'decimal:1',
         'destacado'             => 'boolean',
-        'stock'                 => 'integer',
         'porcentaje_descuento'  => 'integer',
         'colores'               => 'array',
     ];
@@ -216,5 +214,16 @@ class Producto extends Model
         }
 
         return 0.00;
+    }
+
+    /**
+     * Obtiene dinámicamente el stock total del mueble sumando el inventario de sus subartículos (producto_detalles).
+     */
+    public function getStockAttribute(): int
+    {
+        if ($this->relationLoaded('detalles')) {
+            return (int) $this->detalles->sum('stock');
+        }
+        return (int) $this->detalles()->sum('stock');
     }
 }
