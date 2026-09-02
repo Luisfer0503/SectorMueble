@@ -49,6 +49,50 @@ class AdminController extends Controller
         return view('Admin.productos.index', compact('productos'));
     }
 
+    /**
+     * Exporta el catálogo completo de muebles a un archivo Excel/CSV con BOM UTF-8.
+     */
+    public function productosExportarExcel()
+    {
+        $productos = Producto::orderBy('id', 'asc')->get();
+        $fileName = 'Catálogo_Muebles_' . date('Y-m-d_H-i') . '.csv';
+
+        $headers = [
+            "Content-Type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=\"$fileName\"",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use ($productos) {
+            $file = fopen('php://output', 'w');
+            // Incluir BOM UTF-8 para que Excel lo abra nativamente con caracteres y acentos correctos
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+            
+            // Encabezados requeridos: ID, Nombre, Descripción, Stock, Precio, Categoría
+            fputcsv($file, ['ID', 'Nombre', 'Descripción', 'Stock', 'Precio', 'Categoría']);
+
+            foreach ($productos as $p) {
+                // Limpiar saltos de línea en descripción para presentación ordenada en Excel
+                $descLimpia = preg_replace('/\s+/', ' ', trim($p->descripcion ?? ''));
+
+                fputcsv($file, [
+                    $p->id,
+                    $p->nombre,
+                    $descLimpia,
+                    $p->stock,
+                    number_format((float)$p->precio, 2, '.', ''),
+                    $p->categoria,
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
     public function productosCrear()
     {
         return view('Admin.productos.crear');

@@ -45,7 +45,10 @@
                 <span class="text-2xl font-bold text-zinc-900 block mt-2 font-sans">{{ $mueblesTotales }}</span>
             </div>
             <div class="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
-                <a href="{{ route('admin.productos') }}" class="text-amber-850 hover:underline">Ver catálogo</a>
+                <a href="{{ route('admin.productos') }}" class="text-amber-850 hover:underline font-semibold">Ver catálogo</a>
+                <a href="{{ route('admin.productos.excel') }}" class="text-emerald-700 hover:underline font-semibold flex items-center space-x-1">
+                    <span>📊 Exportar Excel</span>
+                </a>
             </div>
         </div>
 

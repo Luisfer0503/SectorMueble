@@ -69,6 +69,7 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     // CRUD de Muebles / Artículos
     Route::get('/muebles', [AdminController::class, 'productosIndex'])->name('admin.productos');
     Route::get('/muebles/crear', [AdminController::class, 'productosCrear'])->name('admin.productos.crear');
+    Route::get('/muebles/exportar-excel', [AdminController::class, 'productosExportarExcel'])->name('admin.productos.excel');
     Route::post('/muebles/guardar', [AdminController::class, 'productosGuardar'])->name('admin.productos.guardar');
     Route::get('/muebles/editar/{id}', [AdminController::class, 'productosEditar'])->name('admin.productos.editar');
     Route::post('/muebles/actualizar/{id}', [AdminController::class, 'productosActualizar'])->name('admin.productos.actualizar');

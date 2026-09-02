@@ -7,7 +7,13 @@
             <h1 class="serif-title text-3xl font-bold text-zinc-950">Muebles en el Catálogo</h1>
             <p class="text-zinc-500 text-sm mt-1">Gestiona el catálogo completo de productos visibles en la tienda.</p>
         </div>
-        <div>
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ route('admin.productos.excel') }}" class="bg-emerald-750 hover:bg-emerald-800 text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded shadow transition-colors flex items-center space-x-2">
+                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span>📊 Exportar Excel</span>
+            </a>
             <a href="{{ route('admin.productos.crear') }}" class="bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider px-6 py-3 rounded shadow transition-colors">
                 + Agregar Mueble
             </a>
