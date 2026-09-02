@@ -235,7 +235,9 @@
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
                                         5. Muestra del Material (Opcional)
                                     </label>
-                                    <input type="file" name="acabados_materiales[0]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                                    <div class="flex items-center space-x-2">
+                                        <input type="file" name="acabados_materiales[0]" accept="image/*" onchange="previewAcabadoImage(this)" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                                    </div>
                                 </div>
 
                                 <!-- 6. Foto Mueble con Material -->
@@ -244,7 +246,9 @@
                                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
                                             6. Foto Mueble con este Material
                                         </label>
-                                        <input type="file" name="acabados_muebles[0]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                                        <div class="flex items-center space-x-2">
+                                            <input type="file" name="acabados_muebles[0]" accept="image/*" onchange="previewAcabadoImage(this)" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                                        </div>
                                     </div>
                                     <button type="button" onclick="eliminarAcabadoRow(this)" class="text-rose-600 hover:text-rose-800 p-2 cursor-pointer mb-0.5" title="Eliminar acabado">
                                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -286,14 +290,32 @@
             }
         }
 
+        function previewAcabadoImage(input) {
+            if (input.files && input.files[0]) {
+                let parentDiv = input.parentNode;
+                let prevImg = parentDiv.querySelector('img');
+                if (!prevImg) {
+                    prevImg = document.createElement('img');
+                    prevImg.className = 'h-8 w-8 object-cover rounded border border-zinc-300 flex-shrink-0 mr-2';
+                    parentDiv.insertBefore(prevImg, input);
+                }
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    prevImg.src = e.target.result;
+                    prevImg.classList.remove('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         let acabadoIndexCount = 1;
         function agregarAcabadoRow() {
             const container = document.getElementById('acabados-container');
             const row = document.createElement('div');
             row.className = 'acabado-row p-4 bg-zinc-50/90 border border-zinc-200 rounded-2xl space-y-3';
             const generatedSku = 'SKU-AUTO-' + String(acabadoIndexCount + 1).padStart(2, '0');
-            const parentPrice = document.getElementById('precio')?.value || '0.00';
-            const parentStock = document.getElementById('stock')?.value || '10';
+            const firstPrice = document.querySelector('input[name="acabados_precios[]"]')?.value || '0.00';
+            const firstStock = document.querySelector('input[name="acabados_stocks[]"]')?.value || '10';
 
             row.innerHTML = `
                 <input type="hidden" name="acabados_skus[]" value="${generatedSku}">
@@ -315,13 +337,13 @@
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
                             3. Precio ($ MXN)
                         </label>
-                        <input type="number" step="0.01" min="0" name="acabados_precios[]" required value="${parentPrice}" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                        <input type="number" step="0.01" min="0" name="acabados_precios[]" required value="${firstPrice}" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
                             4. Stock (Inventario)
                         </label>
-                        <input type="number" min="0" name="acabados_stocks[]" required value="${parentStock}" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                        <input type="number" min="0" name="acabados_stocks[]" required value="${firstStock}" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
                     </div>
                 </div>
 
@@ -330,14 +352,18 @@
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
                             5. Muestra del Material (Opcional)
                         </label>
-                        <input type="file" name="acabados_materiales[${acabadoIndexCount}]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                        <div class="flex items-center space-x-2">
+                            <input type="file" name="acabados_materiales[${acabadoIndexCount}]" accept="image/*" onchange="previewAcabadoImage(this)" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                        </div>
                     </div>
                     <div class="flex items-end gap-2">
                         <div class="flex-grow">
                             <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
                                 6. Foto Mueble con Material
                             </label>
-                            <input type="file" name="acabados_muebles[${acabadoIndexCount}]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                            <div class="flex items-center space-x-2">
+                                <input type="file" name="acabados_muebles[${acabadoIndexCount}]" accept="image/*" onchange="previewAcabadoImage(this)" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                            </div>
                         </div>
                         <button type="button" onclick="eliminarAcabadoRow(this)" class="text-rose-600 hover:text-rose-800 p-2 cursor-pointer mb-0.5" title="Eliminar acabado">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -347,9 +373,6 @@
                     </div>
                 </div>
             `;
-            container.appendChild(row);
-            acabadoIndexCount++;
-        }
             container.appendChild(row);
             acabadoIndexCount++;
         }

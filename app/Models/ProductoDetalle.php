@@ -17,6 +17,7 @@ class ProductoDetalle extends Model
         'sku',
         'nombre',
         'imagen',
+        'material_imagen',
         'precio',
         'stock',
     ];
@@ -42,6 +43,23 @@ class ProductoDetalle extends Model
         $val = $this->attributes['imagen'] ?? null;
         if (empty($val)) {
             return asset('storage/productos/default.png');
+        }
+
+        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://')) {
+            return $val;
+        }
+
+        return asset(ltrim($val, '/'));
+    }
+
+    /**
+     * Accessor para la URL completa de la muestra de material.
+     */
+    public function getMaterialImagenUrlAttribute(): ?string
+    {
+        $val = $this->attributes['material_imagen'] ?? null;
+        if (empty($val)) {
+            return null;
         }
 
         if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://')) {

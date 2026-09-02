@@ -279,17 +279,19 @@ class AdminController extends Controller
             foreach ($acabadosData as $idx => $acabado) {
                 $nombre = !empty($acabado['nombre']) ? trim($acabado['nombre']) : 'Acabado';
                 $imagen = $acabado['mueble_imagen'] ?? $acabado['material_imagen'] ?? null;
+                $matImg = $acabado['material_imagen'] ?? null;
                 $precio = (isset($acabado['precio']) && $acabado['precio'] !== null) ? (float) $acabado['precio'] : (float) $producto->precio;
                 $stock  = (isset($acabado['stock']) && $acabado['stock'] !== null) ? (int) $acabado['stock'] : (int) $producto->stock;
                 $sku    = !empty($acabado['sku']) ? trim($acabado['sku']) : ('SKU-' . sprintf('%04d', $producto->id) . '-' . sprintf('%02d', $idx + 1));
 
                 ProductoDetalle::create([
-                    'producto_id' => $producto->id,
-                    'sku'         => $sku,
-                    'nombre'      => $nombre,
-                    'imagen'      => $imagen,
-                    'precio'      => $precio,
-                    'stock'       => $stock,
+                    'producto_id'     => $producto->id,
+                    'sku'             => $sku,
+                    'nombre'          => $nombre,
+                    'imagen'          => $imagen,
+                    'material_imagen' => $matImg,
+                    'precio'          => $precio,
+                    'stock'           => $stock,
                 ]);
             }
         } else {
@@ -334,7 +336,13 @@ class AdminController extends Controller
                 $skuVal = isset($skus[$i]) && $skus[$i] !== '' ? trim($skus[$i]) : null;
 
                 // Subida de imagen de muestra de material
-                if ($request->hasFile("acabados_materiales.{$i}") && $request->file("acabados_materiales.{$i}")->isValid()) {
+                $matFiles = $request->file('acabados_materiales');
+                if (is_array($matFiles) && isset($matFiles[$i]) && $matFiles[$i]->isValid()) {
+                    $matFile = $matFiles[$i];
+                    $matFilename = time() . '_mat_' . $i . '_' . Str::slug(pathinfo($matFile->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $matFile->getClientOriginalExtension();
+                    $matFile->move($folder, $matFilename);
+                    $materialPath = 'storage/productos/' . $matFilename;
+                } elseif ($request->hasFile("acabados_materiales.{$i}") && $request->file("acabados_materiales.{$i}")->isValid()) {
                     $matFile = $request->file("acabados_materiales.{$i}");
                     $matFilename = time() . '_mat_' . $i . '_' . Str::slug(pathinfo($matFile->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $matFile->getClientOriginalExtension();
                     $matFile->move($folder, $matFilename);
@@ -342,7 +350,13 @@ class AdminController extends Controller
                 }
 
                 // Subida de foto del mueble con este material
-                if ($request->hasFile("acabados_muebles.{$i}") && $request->file("acabados_muebles.{$i}")->isValid()) {
+                $muebleFiles = $request->file('acabados_muebles');
+                if (is_array($muebleFiles) && isset($muebleFiles[$i]) && $muebleFiles[$i]->isValid()) {
+                    $muebleFile = $muebleFiles[$i];
+                    $muebleFilename = time() . '_acabmueble_' . $i . '_' . Str::slug(pathinfo($muebleFile->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $muebleFile->getClientOriginalExtension();
+                    $muebleFile->move($folder, $muebleFilename);
+                    $mueblePath = 'storage/productos/' . $muebleFilename;
+                } elseif ($request->hasFile("acabados_muebles.{$i}") && $request->file("acabados_muebles.{$i}")->isValid()) {
                     $muebleFile = $request->file("acabados_muebles.{$i}");
                     $muebleFilename = time() . '_acabmueble_' . $i . '_' . Str::slug(pathinfo($muebleFile->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $muebleFile->getClientOriginalExtension();
                     $muebleFile->move($folder, $muebleFilename);
