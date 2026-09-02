@@ -45,7 +45,7 @@
                                 <!-- Imagen & Nombre -->
                                 <td class="p-4 pl-6">
                                     <div class="flex items-center space-x-3">
-                                        <div class="w-12 h-12 rounded bg-zinc-100 overflow-hidden flex-shrink-0">
+                                        <div class="w-12 h-12 rounded bg-zinc-100 overflow-hidden flex-shrink-0 border border-zinc-200">
                                             <img src="{{ $producto->imagen_url }}" alt="{{ $producto->nombre }}" class="w-full h-full object-cover">
                                         </div>
                                         <div>
@@ -105,6 +105,64 @@
                                     <a href="{{ route('admin.productos.descuento', $producto->id) }}" class="text-xs font-bold text-indigo-600 hover:underline">Descuento</a>
                                     <a href="{{ route('admin.productos.editar', $producto->id) }}" class="text-xs font-bold text-amber-850 hover:underline">Editar</a>
                                     <a href="{{ route('admin.productos.eliminar', $producto->id) }}" onclick="return confirm('¿Estás seguro de que deseas eliminar este mueble del catálogo?')" class="text-xs font-bold text-rose-600 hover:underline">Eliminar</a>
+                                </td>
+                            </tr>
+
+                            <!-- Subartículos (Producto Detalles) -->
+                            <tr class="bg-zinc-50/60 border-b border-zinc-200">
+                                <td colspan="6" class="p-3 pl-8 sm:pl-12 pr-6">
+                                    <div class="bg-white border border-zinc-200 rounded-xl p-3.5 shadow-2xs">
+                                        <div class="flex items-center justify-between mb-2 pb-2 border-b border-zinc-150">
+                                            <div class="flex items-center space-x-2">
+                                                <span class="text-xs">📦</span>
+                                                <span class="text-xs font-bold uppercase tracking-wider text-zinc-700">Subartículos (Detalles)</span>
+                                                <span class="text-[10px] font-bold text-amber-900 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                                                    {{ $producto->detalles->count() }} subartículo(s)
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="overflow-x-auto">
+                                            <table class="w-full text-left text-xs">
+                                                <thead>
+                                                    <tr class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-100">
+                                                        <th class="py-1.5 px-2">ID Producto</th>
+                                                        <th class="py-1.5 px-2">SKU</th>
+                                                        <th class="py-1.5 px-2">Imagen</th>
+                                                        <th class="py-1.5 px-2">Nombre del Subartículo</th>
+                                                        <th class="py-1.5 px-2">Precio</th>
+                                                        <th class="py-1.5 px-2">Stock</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-zinc-50">
+                                                    @forelse($producto->detalles as $det)
+                                                        <tr class="hover:bg-zinc-50 transition-colors">
+                                                            <td class="py-2 px-2 font-mono font-bold text-zinc-500">#{{ $det->producto_id }}</td>
+                                                            <td class="py-2 px-2 font-mono text-zinc-600 font-semibold">{{ $det->sku ?? '-' }}</td>
+                                                            <td class="py-2 px-2">
+                                                                <div class="w-8 h-8 rounded border border-zinc-200 overflow-hidden bg-zinc-100 flex items-center justify-center">
+                                                                    <img src="{{ $det->imagen_url }}" alt="{{ $det->nombre }}" class="w-full h-full object-cover">
+                                                                </div>
+                                                            </td>
+                                                            <td class="py-2 px-2 font-semibold text-zinc-800">{{ $det->nombre }}</td>
+                                                            <td class="py-2 px-2 font-bold text-emerald-700 font-sans">$ {{ number_format($det->precio ?? $producto->precio, 2, '.', ',') }}</td>
+                                                            <td class="py-2 px-2">
+                                                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-zinc-100 text-zinc-700 font-sans">
+                                                                    {{ $det->stock }} disp.
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="6" class="py-2 px-2 text-zinc-400 italic text-[11px]">
+                                                                Sin subartículos registrados.
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

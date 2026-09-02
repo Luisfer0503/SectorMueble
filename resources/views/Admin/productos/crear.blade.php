@@ -47,15 +47,6 @@
                     @enderror
                 </div>
 
-                <!-- Precio -->
-                <div>
-                    <label for="precio" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Precio ($ MXN)</label>
-                    <input type="number" step="0.01" name="precio" id="precio" required value="{{ old('precio') }}" placeholder="Ej: 4500.00" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
-                    @error('precio')
-                        <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
-                    @enderror
-                </div>
-
                 <!-- Stock / Inventario -->
                 <div>
                     <label for="stock" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Inventario (Stock)</label>
@@ -208,32 +199,68 @@
                         </button>
                     </div>
 
-                    <div id="acabados-container" class="space-y-3">
+                    <div id="acabados-container" class="space-y-4">
                         <!-- Acabado 1 Default -->
-                        <div class="acabado-row flex flex-col md:flex-row items-center gap-3 p-3.5 bg-zinc-50 border border-zinc-200 rounded-xl">
-                            <!-- 1. Imagen del Material -->
-                            <div class="w-full md:w-1/3">
-                                <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">1. Muestra del Material</label>
-                                <input type="file" name="acabados_materiales[0]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
-                            </div>
+                        <div class="acabado-row p-4 bg-zinc-50/90 border border-zinc-200 rounded-2xl space-y-3">
+                            <input type="hidden" name="acabados_skus[]" value="SKU-AUTO-01">
 
-                            <!-- 2. Nombre del Material -->
-                            <div class="w-full md:w-1/3">
-                                <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">2. Nombre del Material</label>
-                                <input type="text" name="acabados_nombres[]" required value="Madera Natural" placeholder="Ej: Roble Claro, Nogal, Mármol..." class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
-                            </div>
-
-                            <!-- 3. Foto del Mueble con este Material -->
-                            <div class="w-full md:w-1/3 flex items-end gap-2">
-                                <div class="flex-grow">
-                                    <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">3. Foto Mueble con Material</label>
-                                    <input type="file" name="acabados_muebles[0]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
+                                <!-- 1. SKU (No editable) -->
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
+                                        1. SKU (Auto-generado)
+                                    </label>
+                                    <input type="text" value="SKU-AUTO-01" disabled readonly class="w-full bg-zinc-100 border border-zinc-200 rounded-lg text-xs px-2.5 py-2 font-mono text-zinc-500 cursor-not-allowed">
                                 </div>
-                                <button type="button" onclick="eliminarAcabadoRow(this)" class="text-rose-600 hover:text-rose-800 p-2 cursor-pointer mb-0.5" title="Eliminar acabado">
-                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                    </svg>
-                                </button>
+
+                                <!-- 2. Nombre del Acabado -->
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                                        2. Nombre del Acabado
+                                    </label>
+                                    <input type="text" name="acabados_nombres[]" required value="Madera Natural" placeholder="Ej: Roble Claro, Nogal, Mármol..." class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                </div>
+
+                                <!-- 3. Precio ($) -->
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                                        3. Precio ($ MXN)
+                                    </label>
+                                    <input type="number" step="0.01" min="0" name="acabados_precios[]" required placeholder="Precio Mueble" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                </div>
+
+                                <!-- 4. Stock -->
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                                        4. Stock (Inventario)
+                                    </label>
+                                    <input type="number" min="0" name="acabados_stocks[]" required placeholder="Stock Mueble" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end pt-2 border-t border-zinc-200/60">
+                                <!-- 5. Muestra del Material -->
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                                        5. Muestra del Material (Opcional)
+                                    </label>
+                                    <input type="file" name="acabados_materiales[0]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                                </div>
+
+                                <!-- 6. Foto Mueble con Material -->
+                                <div class="flex items-end gap-2">
+                                    <div class="flex-grow">
+                                        <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                                            6. Foto Mueble con este Material
+                                        </label>
+                                        <input type="file" name="acabados_muebles[0]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                                    </div>
+                                    <button type="button" onclick="eliminarAcabadoRow(this)" class="text-rose-600 hover:text-rose-800 p-2 cursor-pointer mb-0.5" title="Eliminar acabado">
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -272,28 +299,66 @@
         function agregarAcabadoRow() {
             const container = document.getElementById('acabados-container');
             const row = document.createElement('div');
-            row.className = 'acabado-row flex flex-col md:flex-row items-center gap-3 p-3.5 bg-zinc-50 border border-zinc-200 rounded-xl';
+            row.className = 'acabado-row p-4 bg-zinc-50/90 border border-zinc-200 rounded-2xl space-y-3';
+            const generatedSku = 'SKU-AUTO-' + String(acabadoIndexCount + 1).padStart(2, '0');
+            const parentPrice = document.getElementById('precio')?.value || '0.00';
+            const parentStock = document.getElementById('stock')?.value || '10';
+
             row.innerHTML = `
-                <div class="w-full md:w-1/3">
-                    <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">1. Muestra del Material</label>
-                    <input type="file" name="acabados_materiales[${acabadoIndexCount}]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
-                </div>
-                <div class="w-full md:w-1/3">
-                    <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">2. Nombre del Material</label>
-                    <input type="text" name="acabados_nombres[]" required placeholder="Ej: Nogal Oscuro, Mármol Negro..." class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-3 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
-                </div>
-                <div class="w-full md:w-1/3 flex items-end gap-2">
-                    <div class="flex-grow">
-                        <label class="block text-[10px] font-bold uppercase text-zinc-500 mb-1">3. Foto Mueble con Material</label>
-                        <input type="file" name="acabados_muebles[${acabadoIndexCount}]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                <input type="hidden" name="acabados_skus[]" value="${generatedSku}">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
+                            1. SKU (Auto-generado)
+                        </label>
+                        <input type="text" value="${generatedSku}" disabled readonly class="w-full bg-zinc-100 border border-zinc-200 rounded-lg text-xs px-2.5 py-2 font-mono text-zinc-500 cursor-not-allowed">
                     </div>
-                    <button type="button" onclick="eliminarAcabadoRow(this)" class="text-rose-600 hover:text-rose-800 p-2 cursor-pointer mb-0.5" title="Eliminar acabado">
-                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                    </button>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                            2. Nombre del Acabado
+                        </label>
+                        <input type="text" name="acabados_nombres[]" required placeholder="Ej: Nogal Oscuro" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                            3. Precio ($ MXN)
+                        </label>
+                        <input type="number" step="0.01" min="0" name="acabados_precios[]" required value="${parentPrice}" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                            4. Stock (Inventario)
+                        </label>
+                        <input type="number" min="0" name="acabados_stocks[]" required value="${parentStock}" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end pt-2 border-t border-zinc-200/60">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                            5. Muestra del Material (Opcional)
+                        </label>
+                        <input type="file" name="acabados_materiales[${acabadoIndexCount}]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                    </div>
+                    <div class="flex items-end gap-2">
+                        <div class="flex-grow">
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                                6. Foto Mueble con Material
+                            </label>
+                            <input type="file" name="acabados_muebles[${acabadoIndexCount}]" accept="image/*" class="w-full text-[11px] text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-amber-100 file:text-amber-900 hover:file:bg-amber-200">
+                        </div>
+                        <button type="button" onclick="eliminarAcabadoRow(this)" class="text-rose-600 hover:text-rose-800 p-2 cursor-pointer mb-0.5" title="Eliminar acabado">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             `;
+            container.appendChild(row);
+            acabadoIndexCount++;
+        }
             container.appendChild(row);
             acabadoIndexCount++;
         }

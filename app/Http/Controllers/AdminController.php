@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Producto;
+use App\Models\ProductoDetalle;
 use App\Models\Pedido;
 use App\Models\Cupon;
 use App\Models\User;
@@ -45,7 +46,7 @@ class AdminController extends Controller
 
     public function productosIndex()
     {
-        $productos = Producto::orderBy('created_at', 'desc')->paginate(10);
+        $productos = Producto::with('detalles')->orderBy('created_at', 'desc')->paginate(10);
         return view('Admin.productos.index', compact('productos'));
     }
 
@@ -103,7 +104,6 @@ class AdminController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'precio' => 'required|numeric|min:0',
             'imagen_archivo' => 'required|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'imagen_secundaria_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'imagen_dimension_lateral' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
@@ -158,11 +158,10 @@ class AdminController extends Controller
 
         $acabadosData = $this->procesarColoresRequest($request);
 
-        Producto::create([
+        $producto = Producto::create([
             'nombre' => $request->nombre,
             'slug' => Str::slug($request->nombre),
             'descripcion' => $request->descripcion,
-            'precio' => $request->precio,
             'imagen_url' => $imagenUrl,
             'imagen_secundaria_url' => $imagenSecundariaUrl,
             'categoria' => $request->categoria,
@@ -174,6 +173,8 @@ class AdminController extends Controller
             'imagen_dimension_frontal' => $dimFrontal,
             'imagen_dimension_superior' => $dimSuperior,
         ]);
+
+        $this->syncProductoDetalles($producto, $acabadosData);
 
         return redirect()->route('admin.productos')->with('success', 'Mueble agregado con éxito al catálogo.');
     }
@@ -191,7 +192,6 @@ class AdminController extends Controller
         $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'required|string',
-            'precio' => 'required|numeric|min:0',
             'imagen_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'imagen_secundaria_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'imagen_dimension_lateral' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
@@ -253,7 +253,6 @@ class AdminController extends Controller
             'nombre' => $request->nombre,
             'slug' => Str::slug($request->nombre),
             'descripcion' => $request->descripcion,
-            'precio' => $request->precio,
             'imagen_url' => $imagenUrl,
             'imagen_secundaria_url' => $imagenSecundariaUrl,
             'categoria' => $request->categoria,
@@ -266,7 +265,45 @@ class AdminController extends Controller
             'imagen_dimension_superior' => $dimSuperior,
         ]);
 
+        $this->syncProductoDetalles($producto, $acabadosData);
+
         return redirect()->route('admin.productos')->with('success', 'Mueble actualizado correctamente.');
+    }
+
+    /**
+     * Sincroniza la tabla producto_detalles a partir de los datos de acabados, precio, stock y SKU.
+     */
+    private function syncProductoDetalles(Producto $producto, array $acabadosData): void
+    {
+        ProductoDetalle::where('producto_id', $producto->id)->delete();
+
+        if (!empty($acabadosData)) {
+            foreach ($acabadosData as $idx => $acabado) {
+                $nombre = !empty($acabado['nombre']) ? trim($acabado['nombre']) : 'Acabado';
+                $imagen = $acabado['mueble_imagen'] ?? $acabado['material_imagen'] ?? null;
+                $precio = (isset($acabado['precio']) && $acabado['precio'] !== null) ? (float) $acabado['precio'] : (float) $producto->precio;
+                $stock  = (isset($acabado['stock']) && $acabado['stock'] !== null) ? (int) $acabado['stock'] : (int) $producto->stock;
+                $sku    = !empty($acabado['sku']) ? trim($acabado['sku']) : ('SKU-' . sprintf('%04d', $producto->id) . '-' . sprintf('%02d', $idx + 1));
+
+                ProductoDetalle::create([
+                    'producto_id' => $producto->id,
+                    'sku'         => $sku,
+                    'nombre'      => $nombre,
+                    'imagen'      => $imagen,
+                    'precio'      => $precio,
+                    'stock'       => $stock,
+                ]);
+            }
+        } else {
+            ProductoDetalle::create([
+                'producto_id' => $producto->id,
+                'sku'         => 'SKU-' . sprintf('%04d', $producto->id) . '-01',
+                'nombre'      => $producto->nombre . ' (Original / Natural)',
+                'imagen'      => $producto->getRawOriginal('imagen_url'),
+                'precio'      => (float) $producto->precio,
+                'stock'       => (int) $producto->stock,
+            ]);
+        }
     }
 
     /**
@@ -283,6 +320,9 @@ class AdminController extends Controller
         // Si se reciben nuevos acabados estructurados (material + nombre + foto mueble)
         if ($request->has('acabados_nombres') || $request->has('colores_nombres')) {
             $nombres = $request->input('acabados_nombres', $request->input('colores_nombres', []));
+            $precios = $request->input('acabados_precios', []);
+            $stocks  = $request->input('acabados_stocks', []);
+            $skus    = $request->input('acabados_skus', []);
             $matExistentes = $request->input('acabados_materiales_existentes', []);
             $muebleExistentes = $request->input('acabados_muebles_existentes', $request->input('colores_imagenes_existentes', []));
 
@@ -291,6 +331,9 @@ class AdminController extends Controller
 
                 $materialPath = $matExistentes[$i] ?? null;
                 $mueblePath = $muebleExistentes[$i] ?? null;
+                $precioVal = isset($precios[$i]) && $precios[$i] !== '' ? (float) $precios[$i] : null;
+                $stockVal = isset($stocks[$i]) && $stocks[$i] !== '' ? (int) $stocks[$i] : null;
+                $skuVal = isset($skus[$i]) && $skus[$i] !== '' ? trim($skus[$i]) : null;
 
                 // Subida de imagen de muestra de material
                 if ($request->hasFile("acabados_materiales.{$i}") && $request->file("acabados_materiales.{$i}")->isValid()) {
@@ -314,9 +357,12 @@ class AdminController extends Controller
                 }
 
                 $acabados[] = [
-                    'nombre' => trim($nombre),
+                    'nombre'          => trim($nombre),
                     'material_imagen' => $materialPath,
-                    'mueble_imagen' => $mueblePath,
+                    'mueble_imagen'   => $mueblePath,
+                    'precio'          => $precioVal,
+                    'stock'           => $stockVal,
+                    'sku'             => $skuVal,
                 ];
             }
         }

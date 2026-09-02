@@ -15,7 +15,6 @@ class Producto extends Model
         'nombre',
         'slug',
         'descripcion',
-        'precio',
         'imagen_url',
         'imagen_secundaria_url',
         'modelo_3d_url',
@@ -32,7 +31,6 @@ class Producto extends Model
     ];
 
     protected $casts = [
-        'precio'                => 'decimal:2',
         'precio_descuento'      => 'decimal:2',
         'calificacion'          => 'decimal:1',
         'destacado'             => 'boolean',
@@ -81,10 +79,22 @@ class Producto extends Model
     }
 
     /**
-     * Accessor para formatear siempre correctamente la URL de la imagen principal del producto.
+     * Accessor para la imagen principal del producto.
+     * Toma prioritariamente la imagen del primer acabado/subartículo registrado en producto_detalles.
      */
     public function getImagenUrlAttribute($value): string
     {
+        $primerDetalle = null;
+        if ($this->relationLoaded('detalles')) {
+            $primerDetalle = $this->detalles->first();
+        } else {
+            $primerDetalle = $this->detalles()->first();
+        }
+
+        if ($primerDetalle && !empty($primerDetalle->imagen)) {
+            return $primerDetalle->imagen_url;
+        }
+
         if (empty($value)) {
             return asset('storage/productos/default.png');
         }
@@ -178,5 +188,33 @@ class Producto extends Model
         if (empty($val)) return null;
         if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://')) return $val;
         return asset(ltrim($val, '/'));
+    }
+
+    /**
+     * Relación HasMany con los subartículos/detalles del mueble.
+     */
+    public function detalles()
+    {
+        return $this->hasMany(ProductoDetalle::class, 'producto_id');
+    }
+
+    /**
+     * Obtiene dinámicamente el precio principal del mueble desde el primer subartículo (producto_detalles).
+     */
+    public function getPrecioAttribute(): float
+    {
+        if ($this->relationLoaded('detalles')) {
+            $primerDetalle = $this->detalles->first();
+            if ($primerDetalle && $primerDetalle->precio !== null) {
+                return (float) $primerDetalle->precio;
+            }
+        }
+
+        $primerDetalle = $this->detalles()->first();
+        if ($primerDetalle && $primerDetalle->precio !== null) {
+            return (float) $primerDetalle->precio;
+        }
+
+        return 0.00;
     }
 }

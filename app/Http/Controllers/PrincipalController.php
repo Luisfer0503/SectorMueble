@@ -122,7 +122,7 @@ class PrincipalController extends Controller
      */
     public function detalle($id)
     {
-        $producto = Producto::findOrFail($id);
+        $producto = Producto::with('detalles')->findOrFail($id);
         
         $productosRelacionados = Producto::where('categoria', $producto->categoria)
             ->where('id', '!=', $producto->id)
@@ -169,33 +169,85 @@ class PrincipalController extends Controller
      */
     public function agregarAlCarrito(Request $request, $id)
     {
-        $producto = Producto::findOrFail($id);
-        $cantidad = $request->input('cantidad', 1);
+        $producto = Producto::with('detalles')->findOrFail($id);
+        $cantidad = (int) $request->input('cantidad', 1);
+        $subarticuloId = $request->input('subarticulo_id');
+        $colorNombre = $request->input('color');
+
+        // Buscar el detalle/subartículo específico (soporta IDs numéricos y en cadena)
+        $detalle = null;
+        if (!empty($subarticuloId)) {
+            $subIdInt = (int)$subarticuloId;
+            $detalle = $producto->detalles->first(function ($det) use ($subIdInt) {
+                return (int)$det->id === $subIdInt;
+            });
+        }
+        if (!$detalle && !empty($colorNombre)) {
+            $cName = trim(mb_strtolower($colorNombre));
+            $detalle = $producto->detalles->first(function ($det) use ($cName) {
+                return trim(mb_strtolower($det->nombre)) === $cName;
+            });
+        }
+        if (!$detalle) {
+            $detalle = $producto->detalles->first();
+        }
+
+        $detalleId = $detalle ? $detalle->id : 0;
+        $itemKey = $detalle ? "{$producto->id}_{$detalle->id}" : (string)$producto->id;
+
+        $nombreSub = $detalle ? $detalle->nombre : ($colorNombre ?? 'Original / Natural');
+        $skuSub = $detalle ? $detalle->sku : "SKU-{$producto->id}";
+        $precioUnitario = $detalle && $detalle->precio !== null ? (float)$detalle->precio : (float)$producto->precio;
+        $imagenUrl = $detalle && !empty($detalle->imagen) ? $detalle->imagen_url : $producto->imagen_url;
+        
+        // Stock disponible: preferencia al stock del subartículo, fallback al stock del producto si es cero
+        $stockDisponible = ($detalle && (int)$detalle->stock > 0) ? (int)$detalle->stock : (int)max($producto->stock, 1);
 
         // Validar stock disponible
-        if ($producto->stock < $cantidad) {
-            return redirect()->back()->with('error', 'No hay suficiente stock de este producto.');
+        if ($stockDisponible < $cantidad) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No hay suficiente stock de este acabado.',
+                ], 422);
+            }
+            return redirect()->back()->with('error', 'No hay suficiente stock de este acabado.');
         }
 
         $carrito = session()->get('carrito', []);
 
-        // Si ya existe, se suma la cantidad
-        if (isset($carrito[$id])) {
-            $nuevaCantidad = $carrito[$id]['cantidad'] + $cantidad;
-            if ($producto->stock < $nuevaCantidad) {
-                return redirect()->back()->with('error', 'No puedes añadir más unidades de este producto (stock máximo alcanzado).');
+        // Si ya existe este subartículo específico, se suma la cantidad
+        if (isset($carrito[$itemKey])) {
+            $nuevaCantidad = $carrito[$itemKey]['cantidad'] + $cantidad;
+            if ($stockDisponible < $nuevaCantidad) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No puedes añadir más unidades de este acabado (stock máximo alcanzado).',
+                    ], 422);
+                }
+                return redirect()->back()->with('error', 'No puedes añadir más unidades de este acabado (stock máximo alcanzado).');
             }
-            $carrito[$id]['cantidad'] = $nuevaCantidad;
+            $carrito[$itemKey]['cantidad'] = $nuevaCantidad;
         } else {
-            $carrito[$id] = [
+            $tieneDesc = $producto->tieneDescuento();
+            $descPct = (float)($producto->porcentaje_descuento ?? 0);
+            $precioEf = $tieneDesc ? ($precioUnitario * (1 - $descPct / 100)) : $precioUnitario;
+
+            $carrito[$itemKey] = [
+                'producto_id'       => $producto->id,
+                'subarticulo_id'    => $detalleId,
                 'nombre'            => $producto->nombre,
-                'precio'            => $producto->precioEfectivo(),
-                'precio_original'   => (float) $producto->precio,
-                'con_descuento'     => $producto->tieneDescuento(),
-                'imagen_url'        => $producto->imagen_url,
+                'subarticulo_nombre' => $nombreSub,
+                'sku'               => $skuSub,
+                'precio'            => $precioEf,
+                'precio_original'   => $precioUnitario,
+                'con_descuento'     => $tieneDesc,
+                'imagen_url'        => $imagenUrl,
                 'cantidad'          => $cantidad,
                 'categoria'         => $producto->categoria,
-                'stock_disponible'  => $producto->stock
+                'color'             => $nombreSub,
+                'stock_disponible'  => $stockDisponible,
             ];
         }
 
@@ -218,40 +270,39 @@ class PrincipalController extends Controller
     /**
      * Actualizar la cantidad de un ítem en el carrito.
      */
-    public function actualizarCarrito(Request $request, $id)
+    public function actualizarCarrito(Request $request, $itemKey)
     {
-        $cantidad = $request->input('cantidad');
-        $producto = Producto::findOrFail($id);
+        $cantidad = (int) $request->input('cantidad');
 
         if ($cantidad < 1) {
             return redirect()->back()->with('error', 'La cantidad mínima es 1.');
         }
 
-        if ($producto->stock < $cantidad) {
-            return redirect()->back()->with('error', 'No hay suficiente stock para la cantidad solicitada.');
-        }
-
         $carrito = session()->get('carrito', []);
 
-        if (isset($carrito[$id])) {
-            $carrito[$id]['cantidad'] = $cantidad;
+        if (isset($carrito[$itemKey])) {
+            $stockDisponible = $carrito[$itemKey]['stock_disponible'] ?? 99;
+            if ($stockDisponible < $cantidad) {
+                return redirect()->back()->with('error', 'No hay suficiente stock para la cantidad solicitada.');
+            }
+            $carrito[$itemKey]['cantidad'] = $cantidad;
             session()->put('carrito', $carrito);
             $this->sincronizarCarritoUsuario();
             return redirect()->route('carrito')->with('success', 'Carrito actualizado correctamente.');
         }
 
-        return redirect()->route('carrito')->with('error', 'El producto no existe en tu carrito.');
+        return redirect()->route('carrito')->with('error', 'El mueble no existe en tu carrito.');
     }
 
     /**
      * Eliminar un producto del carrito.
      */
-    public function eliminarDelCarrito($id)
+    public function eliminarDelCarrito($itemKey)
     {
         $carrito = session()->get('carrito', []);
 
-        if (isset($carrito[$id])) {
-            unset($carrito[$id]);
+        if (isset($carrito[$itemKey])) {
+            unset($carrito[$itemKey]);
             session()->put('carrito', $carrito);
             $this->sincronizarCarritoUsuario();
             return redirect()->route('carrito')->with('success', 'Mueble eliminado del carrito.');

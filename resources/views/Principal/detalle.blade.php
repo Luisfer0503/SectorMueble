@@ -83,39 +83,43 @@
                     </button>
                 </div>
 
-                <!-- Material Options Selector Configured by Admin -->
+                <!-- Subartículos & Acabados Selector Configured from producto_detalles -->
                 @php
-                    $acabados = $producto->acabados_lista;
-                    $primerAcabado = $acabados[0]['nombre'] ?? 'Original / Natural';
+                    $detalles = $producto->detalles;
+                    $primerDetalle = $detalles->first();
                 @endphp
                 <div class="bg-white border border-zinc-200 rounded-2xl p-4 shadow-sm">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center space-x-2">
-                            <span class="text-sm">🪵</span>
-                            <span class="text-xs font-bold uppercase tracking-wider text-zinc-700">Acabados y Materiales</span>
+                            <span class="text-sm">📦</span>
+                            <span class="text-xs font-bold uppercase tracking-wider text-zinc-700">Subartículos y Acabados</span>
                         </div>
-                        <span id="selected-color-label" class="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200/60 px-2.5 py-0.5 rounded-full">
-                            {{ $primerAcabado }}
+                        <span id="selected-color-label" class="text-xs font-bold text-amber-900 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-full">
+                            {{ $primerDetalle->nombre ?? 'Original / Natural' }}
                         </span>
                     </div>
 
                     <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                        @foreach($acabados as $idx => $c)
+                        @foreach($detalles as $idx => $det)
                             <button type="button" 
-                                    id="swatch-btn-{{ $c['key'] }}"
-                                    data-nombre="{{ $c['nombre'] }}"
-                                    data-mueble-imagen="{{ $c['mueble_imagen'] }}"
-                                    onclick="switchProductAcabado('{{ $c['key'] }}')" 
-                                    class="color-swatch-btn flex flex-col items-center p-2.5 rounded-xl border-2 {{ $idx === 0 ? 'border-amber-800 bg-amber-50/80 ring-2 ring-amber-800/30' : 'border-zinc-200 bg-white' }} transition-all cursor-pointer hover:shadow-md group">
+                                    id="subart-btn-{{ $det->id }}"
+                                    data-id="{{ $det->id }}"
+                                    data-nombre="{{ $det->nombre }}"
+                                    data-imagen="{{ $det->imagen_url }}"
+                                    data-stock="{{ $det->stock }}"
+                                    data-precio="{{ $det->precio ?? $producto->precio }}"
+                                    onclick="switchSubArticulo('{{ $det->id }}')" 
+                                    class="subarticulo-btn flex flex-col items-center p-2.5 rounded-xl border-2 {{ $idx === 0 ? 'border-amber-800 bg-amber-50/80 ring-2 ring-amber-800/30' : 'border-zinc-200 bg-white' }} transition-all cursor-pointer hover:shadow-md group">
                                 
                                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg shadow-sm border border-zinc-200 overflow-hidden bg-zinc-100 group-hover:scale-105 transition-transform flex items-center justify-center">
-                                    @if(!empty($c['material_imagen']))
-                                        <img src="{{ $c['material_imagen'] }}" alt="{{ $c['nombre'] }}" class="w-full h-full object-cover">
+                                    @if(!empty($det->imagen))
+                                        <img src="{{ $det->imagen_url }}" alt="{{ $det->nombre }}" class="w-full h-full object-cover">
                                     @else
                                         <span class="text-xs font-bold text-amber-850">🪵</span>
                                     @endif
                                 </div>
-                                <span class="text-[11px] font-bold text-zinc-900 mt-1.5 truncate max-w-full text-center leading-tight">{{ $c['nombre'] }}</span>
+                                <span class="text-[11px] font-bold text-zinc-900 mt-1.5 truncate max-w-full text-center leading-tight">{{ $det->nombre }}</span>
+                                <span class="text-[9px] font-extrabold text-amber-900 mt-0.5 font-sans">$ {{ number_format((float)($det->precio ?? $producto->precio), 2, '.', ',') }}</span>
                             </button>
                         @endforeach
                     </div>
@@ -128,6 +132,14 @@
                     <!-- Category & Title -->
                     <span class="text-xs text-zinc-400 font-bold uppercase tracking-wider">{{ $producto->categoria }}</span>
                     <h1 class="serif-title text-3xl sm:text-4xl font-bold text-zinc-950 mt-2 leading-tight">{{ $producto->nombre }}</h1>
+                    
+                    <!-- Subartículo Seleccionado (Información de producto_detalles) -->
+                    <div class="mt-2.5 flex items-center space-x-2">
+                        <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Subartículo:</span>
+                        <span id="selected-subarticulo-nombre" class="text-xs font-extrabold text-amber-900 bg-amber-50 border border-amber-200/80 px-3 py-1 rounded-full shadow-2xs">
+                            {{ $primerDetalle->nombre ?? $producto->nombre }}
+                        </span>
+                    </div>
                     
                     <!-- Rating and Reviews -->
                     <div class="flex items-center space-x-2 mt-3">
@@ -142,18 +154,24 @@
                     </div>
 
                     <!-- Price -->
-                    <div class="mt-6">
-                        @if($producto->tieneDescuento())
+                    @php
+                        $precioInicialSub = (float)($primerDetalle->precio ?? $producto->precio);
+                        $tieneDescSub = $producto->tieneDescuento();
+                        $descPctSub = (float)($producto->porcentaje_descuento ?? 0);
+                        $precioDescInicialSub = $tieneDescSub ? ($precioInicialSub * (1 - $descPctSub / 100)) : $precioInicialSub;
+                    @endphp
+                    <div class="mt-6" id="price-container" data-descuento-pct="{{ $descPctSub }}">
+                        @if($tieneDescSub)
                             <div class="flex items-center space-x-3">
-                                <span class="text-2xl font-bold text-emerald-700 font-sans">$ {{ number_format($producto->precio_descuento, 2, '.', ',') }} MXN</span>
-                                <span class="text-base text-zinc-400 line-through font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }}</span>
+                                <span id="price-discounted-display" class="text-2xl font-bold text-emerald-700 font-sans">$ {{ number_format($precioDescInicialSub, 2, '.', ',') }} MXN</span>
+                                <span id="price-original-display" class="text-base text-zinc-400 line-through font-sans">$ {{ number_format($precioInicialSub, 2, '.', ',') }}</span>
                                 <span class="bg-rose-600 text-white text-xs font-bold px-2.5 py-1 rounded">-{{ $producto->porcentaje_descuento }}%</span>
                             </div>
                             <p class="text-xs text-emerald-600 font-semibold mt-1">
-                                Ahorras $ {{ number_format($producto->precio - $producto->precio_descuento, 2, '.', ',') }} MXN
+                                Ahorras <span id="price-savings-display">$ {{ number_format($precioInicialSub - $precioDescInicialSub, 2, '.', ',') }} MXN</span>
                             </p>
                         @else
-                            <span class="text-2xl font-bold text-zinc-950 font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }} MXN</span>
+                            <span id="price-main-display" class="text-2xl font-bold text-zinc-950 font-sans">$ {{ number_format($precioInicialSub, 2, '.', ',') }} MXN</span>
                         @endif
                         <p class="text-xs text-zinc-400 mt-1">IVA incluido. Envío estimado en 3-5 días laborables.</p>
                         <div class="mt-2.5 inline-flex items-center space-x-1.5 text-xs text-amber-900 bg-amber-50 border border-amber-200/80 px-3 py-1 rounded-lg">
@@ -266,14 +284,16 @@
                 <div class="mt-8 border-t border-zinc-200 pt-6">
                     @if($producto->stock > 0)
                         <form
+                            id="form-add-to-cart"
                             action="{{ route('carrito.agregar', $producto->id) }}"
                             method="POST"
                             class="flex flex-row items-center space-x-3"
                             data-nombre="{{ $producto->nombre }}"
-                            data-img="{{ $producto->imagen_url }}"
+                            data-img="{{ $primerDetalle->imagen_url ?? $producto->imagen_url }}"
                             onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
                             @csrf
-                            <input type="hidden" name="color" id="input-color-seleccionado" value="Original / Natural">
+                            <input type="hidden" name="color" id="input-color-seleccionado" value="{{ $primerDetalle->nombre ?? 'Original / Natural' }}">
+                            <input type="hidden" name="subarticulo_id" id="input-subarticulo-id" value="{{ $primerDetalle->id ?? '' }}">
                             <!-- Quantity -->
                             <div class="flex items-center border border-zinc-300 rounded-xl overflow-hidden h-12 bg-white flex-shrink-0">
                                 <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value > 1) qty.value = parseInt(qty.value)-1;" class="px-3 sm:px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors text-base">-</button>
@@ -298,8 +318,10 @@
                                     $ {{ number_format($producto->precio_descuento ?? $producto->precio, 2, '.', ',') }} MXN
                                 </span>
                             </div>
-                            <form action="{{ route('carrito.agregar', $producto->id) }}" method="POST" data-nombre="{{ $producto->nombre }}" data-img="{{ $producto->imagen_url }}" onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
+                            <form id="form-add-to-cart-mobile" action="{{ route('carrito.agregar', $producto->id) }}" method="POST" data-nombre="{{ $producto->nombre }}" data-img="{{ $primerDetalle->imagen_url ?? $producto->imagen_url }}" onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
                                 @csrf
+                                <input type="hidden" name="color" id="input-color-seleccionado-mobile" value="{{ $primerDetalle->nombre ?? 'Original / Natural' }}">
+                                <input type="hidden" name="subarticulo_id" id="input-subarticulo-id-mobile" value="{{ $primerDetalle->id ?? '' }}">
                                 <button type="submit" class="bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl uppercase tracking-wider shadow whitespace-nowrap">
                                     🛒 Añadir
                                 </button>
@@ -442,6 +464,101 @@
             }
         }
 
+        function switchSubArticulo(id) {
+            const btn = document.getElementById('subart-btn-' + id);
+            if (!btn) return;
+
+            const nombre = btn.dataset.nombre;
+            const imagen = btn.dataset.imagen;
+            const precioRaw = parseFloat(btn.dataset.precio || 0);
+
+            const mainImg = document.getElementById('main-product-image');
+            const selectedLabel = document.getElementById('selected-color-label');
+            const subTitleLabel = document.getElementById('selected-subarticulo-nombre');
+
+            if (mainImg && imagen && imagen.trim() !== '') {
+                mainImg.style.opacity = '0';
+                setTimeout(() => {
+                    mainImg.src = imagen;
+                    mainImg.style.opacity = '1';
+                }, 150);
+            }
+
+            const hiddenColorInput = document.getElementById('input-color-seleccionado');
+            const hiddenColorMobileInput = document.getElementById('input-color-seleccionado-mobile');
+            const hiddenSubartInput = document.getElementById('input-subarticulo-id');
+            const hiddenSubartMobileInput = document.getElementById('input-subarticulo-id-mobile');
+
+            if (subTitleLabel) {
+                subTitleLabel.textContent = nombre;
+            }
+
+            if (selectedLabel) {
+                selectedLabel.textContent = nombre;
+            }
+
+            if (hiddenColorInput) {
+                hiddenColorInput.value = nombre;
+            }
+            if (hiddenColorMobileInput) {
+                hiddenColorMobileInput.value = nombre;
+            }
+
+            if (hiddenSubartInput) {
+                hiddenSubartInput.value = id;
+            }
+            if (hiddenSubartMobileInput) {
+                hiddenSubartMobileInput.value = id;
+            }
+
+            // Actualizar datasets de los formularios para la animación de vuelo y el modal
+            const mainForm = document.getElementById('form-add-to-cart');
+            const mobileForm = document.getElementById('form-add-to-cart-mobile');
+            if (mainForm) {
+                if (nombre) mainForm.dataset.nombre = nombre;
+                if (imagen) mainForm.dataset.img = imagen;
+            }
+            if (mobileForm) {
+                if (nombre) mobileForm.dataset.nombre = nombre;
+                if (imagen) mobileForm.dataset.img = imagen;
+            }
+
+            // Actualizar Precio Dinámicamente
+            if (precioRaw > 0) {
+                const priceContainer = document.getElementById('price-container');
+                const descPct = parseFloat(priceContainer?.dataset?.descuentoPct || 0);
+
+                const priceMainDisplay = document.getElementById('price-main-display');
+                const priceOriginalDisplay = document.getElementById('price-original-display');
+                const priceDiscountedDisplay = document.getElementById('price-discounted-display');
+                const priceSavingsDisplay = document.getElementById('price-savings-display');
+
+                const formatMoney = (amount) => {
+                    return amount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                };
+
+                if (descPct > 0) {
+                    const discountedPrice = precioRaw * (1 - descPct / 100);
+                    const savings = precioRaw - discountedPrice;
+
+                    if (priceDiscountedDisplay) priceDiscountedDisplay.textContent = `$ ${formatMoney(discountedPrice)} MXN`;
+                    if (priceOriginalDisplay) priceOriginalDisplay.textContent = `$ ${formatMoney(precioRaw)}`;
+                    if (priceSavingsDisplay) priceSavingsDisplay.textContent = `$ ${formatMoney(savings)} MXN`;
+                } else {
+                    if (priceMainDisplay) priceMainDisplay.textContent = `$ ${formatMoney(precioRaw)} MXN`;
+                }
+            }
+
+            // Actualizar apariencia visual de botones de subartículos
+            document.querySelectorAll('.subarticulo-btn').forEach(b => {
+                b.classList.remove('border-amber-800', 'bg-amber-50/80', 'ring-2', 'ring-amber-800/30');
+                b.classList.add('border-zinc-200', 'bg-white');
+            });
+
+            btn.classList.remove('border-zinc-200', 'bg-white');
+            btn.classList.add('border-amber-800', 'bg-amber-50/80', 'ring-2', 'ring-amber-800/30');
+        }
+
         function switchProductAcabado(key) {
             const btn = document.getElementById('swatch-btn-' + key);
             if (!btn) return;
@@ -451,6 +568,7 @@
 
             const mainImg = document.getElementById('main-product-image');
             const selectedLabel = document.getElementById('selected-color-label');
+            const subTitleLabel = document.getElementById('selected-subarticulo-nombre');
             const hiddenColorInput = document.getElementById('input-color-seleccionado');
 
             if (mainImg) {
@@ -463,6 +581,10 @@
                     mainImg.src = targetSrc;
                     mainImg.style.opacity = '1';
                 }, 150);
+            }
+
+            if (subTitleLabel) {
+                subTitleLabel.textContent = acabadoNombre;
             }
 
             if (selectedLabel) {
