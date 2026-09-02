@@ -122,11 +122,11 @@
                             @endif
 
                             <!-- Barra de progreso para Envío Gratis -->
-                            @if($subtotal < 8000)
+                            @if($subtotal < 10000)
                                 <div class="bg-amber-50 border border-amber-200 rounded p-3 text-xs text-amber-800">
-                                    <p>Añade <strong>$ {{ number_format(8000 - $subtotal, 2, '.', ',') }}</strong> más para tener <strong>Envío Gratis</strong>.</p>
+                                    <p>Añade <strong>$ {{ number_format(10000 - $subtotal, 2, '.', ',') }}</strong> más para tener <strong>Envío Gratis</strong>.</p>
                                     <div class="w-full bg-amber-200/50 rounded-full h-1.5 mt-2 overflow-hidden">
-                                        <div class="bg-amber-800 h-1.5 rounded-full" style="width: {{ ($subtotal / 8000) * 100 }}%"></div>
+                                        <div class="bg-amber-800 h-1.5 rounded-full" style="width: {{ min(100, ($subtotal / 10000) * 100) }}%"></div>
                                     </div>
                                 </div>
                             @else

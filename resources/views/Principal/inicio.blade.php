@@ -43,7 +43,7 @@
                                     <span class="text-amber-700">🌱</span> <span>Madera Sustentable</span>
                                 </span>
                                 <span class="flex items-center space-x-1.5 bg-white/90 px-3.5 py-1.5 rounded-xl border border-amber-900/10 shadow-xs">
-                                    <span class="text-amber-700">📦</span> <span>Envío Gratis &gt; $8,000 MXN</span>
+                                    <span class="text-amber-700">📦</span> <span>Envío Gratis &gt; $10,000 MXN</span>
                                 </span>
                                 <span class="flex items-center space-x-1.5 bg-white/90 px-3.5 py-1.5 rounded-xl border border-amber-900/10 shadow-xs">
                                     <span class="text-amber-700">🛡️</span> <span>Garantía de 3 Años</span>
@@ -305,7 +305,7 @@
                     </div>
                     <div>
                         <h3 class="text-sm font-bold text-zinc-950">Envío Gratuito Premium</h3>
-                        <p class="mt-1 text-xs text-zinc-500 leading-relaxed">En todas las órdenes mayores a $8,000 MXN en la República Mexicana.</p>
+                        <p class="mt-1 text-xs text-zinc-500 leading-relaxed">En todas las órdenes de $10,000 MXN en adelante en la República Mexicana.</p>
                     </div>
                 </div>
 

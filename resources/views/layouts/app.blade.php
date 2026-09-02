@@ -638,6 +638,32 @@
         @endauth
     </nav>
 
+    <!-- Botón Flotante Fijo de WhatsApp (Lado Izquierdo) -->
+    <a href="https://wa.me/5215500000000?text=Hola,%20quisiera%20más%20información%20sobre%20los%20muebles%20de%20Sector%20Mueble" 
+       target="_blank" 
+       rel="noopener noreferrer" 
+       class="fixed bottom-20 md:bottom-6 left-5 sm:left-6 z-[9990] flex items-center justify-center rounded-full transition-transform duration-300 hover:scale-110 active:scale-95 group"
+       style="background-color: #25D366 !important; width: 56px; height: 56px; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.45) !important;"
+       title="¿Necesitas ayuda? Chatea con nosotros por WhatsApp">
+        
+        <!-- Indicador de pulso activo -->
+        <span class="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-300 border-2 border-white"></span>
+        </span>
+
+        <!-- Tooltip emergente hacia la derecha -->
+        <span class="absolute left-full ml-3 bg-zinc-950/90 text-white text-xs font-bold py-2 px-3.5 rounded-2xl shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap pointer-events-none hidden sm:flex items-center space-x-1.5" style="backdrop-filter: blur(8px);">
+            <span>¡Hola! ¿Dudas con tu mueble? Chatea aquí</span>
+            <span class="text-base">💬</span>
+        </span>
+
+        <!-- Ícono oficial blanco de WhatsApp -->
+        <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 24 24" style="width: 32px; height: 32px; fill: #ffffff !important;">
+            <path fill="#ffffff" d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.765.459 3.488 1.332 5.006l-1.417 5.176 5.302-1.39a9.923 9.923 0 0 0 4.77 1.214h.004c5.505 0 9.988-4.478 9.989-9.985 0-2.668-1.037-5.176-2.922-7.062a9.925 9.925 0 0 0-7.066-2.943zm5.666 14.237c-.247.691-1.442 1.32-1.996 1.405-.512.079-1.18.113-3.398-.804-2.836-1.173-4.66-4.062-4.802-4.25-.141-.188-1.144-1.523-1.144-2.906 0-1.383.72-2.062.977-2.344.257-.282.564-.352.752-.352.188 0 .376.002.538.009.172.008.403-.065.63.48.236.568.804 1.96.874 2.102.07.142.117.309.023.497-.094.188-.141.305-.282.47-.141.164-.296.368-.423.494-.141.141-.288.294-.124.576.164.282.729 1.203 1.564 1.947 1.074.957 1.98 1.254 2.262 1.395.282.141.446.117.61-.07.165-.188.705-.822.893-1.104.188-.282.376-.235.635-.141.258.094 1.643.775 1.925.916.282.141.446.117.54.329.07.117.07.681-.177 1.372z"/>
+        </svg>
+    </a>
+
 </body>
 
 {{-- ═══════════════════════════════════════════════════════

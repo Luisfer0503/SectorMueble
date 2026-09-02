@@ -135,15 +135,10 @@
 
                     <!-- Stock Status Badge -->
                     <div class="mt-6 flex items-center space-x-2">
-                        @if($producto->stock > 5)
+                        @if($producto->stock > 0)
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
                                 <span class="h-1.5 w-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
-                                En Stock ({{ $producto->stock }} unidades disponibles)
-                            </span>
-                        @elseif($producto->stock > 0)
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-800 border border-amber-200">
-                                <span class="h-1.5 w-1.5 rounded-full bg-amber-600 mr-1.5"></span>
-                                ¡Últimas unidades! Solo quedan {{ $producto->stock }}
+                                En stock
                             </span>
                         @else
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200">
@@ -205,18 +200,12 @@
                 </div>
 
                 <!-- Small Trust Features -->
-                <div class="mt-8 grid grid-cols-3 gap-4 border-t border-zinc-200 pt-6 text-center text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">
+                <div class="mt-8 grid grid-cols-2 gap-4 border-t border-zinc-200 pt-6 text-center text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">
                     <div class="flex flex-col items-center">
                         <svg class="h-5 w-5 text-amber-800 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         <span>Garantía de 3 años</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <svg class="h-5 w-5 text-amber-800 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 15v-1a4 4 0 00-4-4H8m0 0l3 3m-3-3l3-3"/>
-                        </svg>
-                        <span>Devolución fácil</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <svg class="h-5 w-5 text-amber-800 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -157,8 +157,8 @@ class PrincipalController extends Controller
             }
         }
 
-        // Envío gratis si supera los $8,000 MXN, si no, $400 MXN de coste de envío
-        $envio = ($subtotal > 8000 || $subtotal == 0) ? 0 : 400.00;
+        // Envío gratis si alcanza o supera los $10,000 MXN, si no, $400 MXN de coste de envío
+        $envio = ($subtotal >= 10000 || $subtotal == 0) ? 0 : 400.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
         return view('Principal.carrito', compact('carrito', 'subtotal', 'envio', 'descuento', 'total', 'cuponAplicado'));
@@ -289,7 +289,7 @@ class PrincipalController extends Controller
             }
         }
 
-        $envio = ($subtotal > 8000) ? 0 : 400.00;
+        $envio = ($subtotal >= 10000) ? 0 : 400.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
         return view('Principal.checkout', compact('carrito', 'subtotal', 'envio', 'descuento', 'total', 'cuponAplicado'));
@@ -337,7 +337,7 @@ class PrincipalController extends Controller
             }
         }
 
-        $envio = ($subtotal > 8000) ? 0 : 400.00;
+        $envio = ($subtotal >= 10000) ? 0 : 400.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
         try {
@@ -461,7 +461,7 @@ class PrincipalController extends Controller
                     $descuento = $cupon->calcularDescuento($subtotal);
                 }
             }
-            $envio = ($subtotal > 8000) ? 0 : 400.00;
+            $envio = ($subtotal >= 10000) ? 0 : 400.00;
 
             if ($envio > 0) {
                 $lineItems[] = [
@@ -529,7 +529,7 @@ class PrincipalController extends Controller
                 }
             }
 
-            $envio = ($subtotal > 8000) ? 0 : 400.00;
+            $envio = ($subtotal >= 10000) ? 0 : 400.00;
             $total = max(0, $subtotal - $descuento) + $envio;
 
             $pedido = Pedido::create([
