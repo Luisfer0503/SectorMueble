@@ -26,7 +26,9 @@ class AdminController extends Controller
         $pedidosPendientes = Pedido::where('estado', 'pendiente')->count();
         $mueblesTotales = Producto::count();
         $clientesTotales = User::where('is_admin', false)->count();
-        $mueblesStockBajo = Producto::where('stock', '<=', 5)->get();
+        $mueblesStockBajo = Producto::with('detalles')->get()->filter(function ($p) {
+            return $p->stock <= 5;
+        });
 
         // Pedidos recientes
         $pedidosRecientes = Pedido::orderBy('created_at', 'desc')->take(5)->get();

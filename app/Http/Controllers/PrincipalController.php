@@ -421,8 +421,18 @@ class PrincipalController extends Controller
                     'cantidad' => $item['cantidad'],
                 ]);
 
-                // Descontar stock
-                $producto->decrement('stock', $item['cantidad']);
+                // Descontar stock del subartículo / acabado específico
+                if (!empty($item['subarticulo_id'])) {
+                    $det = ProductoDetalle::find($item['subarticulo_id']);
+                    if ($det) {
+                        $det->decrement('stock', $item['cantidad']);
+                    }
+                } else {
+                    $det = $producto->detalles->first();
+                    if ($det) {
+                        $det->decrement('stock', $item['cantidad']);
+                    }
+                }
             }
 
             // Vaciar carrito y cupón en sesión y base de datos
@@ -607,7 +617,18 @@ class PrincipalController extends Controller
                         'precio'          => $item['precio'],
                         'cantidad'        => $item['cantidad'],
                     ]);
-                    $producto->decrement('stock', $item['cantidad']);
+                    // Descontar stock del subartículo / acabado específico
+                    if (!empty($item['subarticulo_id'])) {
+                        $det = ProductoDetalle::find($item['subarticulo_id']);
+                        if ($det) {
+                            $det->decrement('stock', $item['cantidad']);
+                        }
+                    } else {
+                        $det = $producto->detalles->first();
+                        if ($det) {
+                            $det->decrement('stock', $item['cantidad']);
+                        }
+                    }
                 }
             }
 
