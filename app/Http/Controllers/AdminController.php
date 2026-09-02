@@ -62,6 +62,9 @@ class AdminController extends Controller
             'precio' => 'required|numeric|min:0',
             'imagen_archivo' => 'required|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'imagen_secundaria_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
+            'imagen_dimension_lateral' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
+            'imagen_dimension_frontal' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
+            'imagen_dimension_superior' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'categoria' => 'required|string',
             'stock' => 'required|integer|min:0',
             'calificacion' => 'required|numeric|between:1,5',
@@ -85,6 +88,30 @@ class AdminController extends Controller
             $imagenSecundariaUrl = 'storage/productos/' . $filename2;
         }
 
+        $dimLateral = null;
+        if ($request->hasFile('imagen_dimension_lateral') && $request->file('imagen_dimension_lateral')->isValid()) {
+            $fDim = $request->file('imagen_dimension_lateral');
+            $fName = time() . '_dim_lat_' . Str::slug(pathinfo($fDim->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $fDim->getClientOriginalExtension();
+            $fDim->move($folder, $fName);
+            $dimLateral = 'storage/productos/' . $fName;
+        }
+
+        $dimFrontal = null;
+        if ($request->hasFile('imagen_dimension_frontal') && $request->file('imagen_dimension_frontal')->isValid()) {
+            $fDim = $request->file('imagen_dimension_frontal');
+            $fName = time() . '_dim_fro_' . Str::slug(pathinfo($fDim->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $fDim->getClientOriginalExtension();
+            $fDim->move($folder, $fName);
+            $dimFrontal = 'storage/productos/' . $fName;
+        }
+
+        $dimSuperior = null;
+        if ($request->hasFile('imagen_dimension_superior') && $request->file('imagen_dimension_superior')->isValid()) {
+            $fDim = $request->file('imagen_dimension_superior');
+            $fName = time() . '_dim_sup_' . Str::slug(pathinfo($fDim->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $fDim->getClientOriginalExtension();
+            $fDim->move($folder, $fName);
+            $dimSuperior = 'storage/productos/' . $fName;
+        }
+
         $acabadosData = $this->procesarColoresRequest($request);
 
         Producto::create([
@@ -99,6 +126,9 @@ class AdminController extends Controller
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
             'colores' => !empty($acabadosData) ? $acabadosData : null,
+            'imagen_dimension_lateral' => $dimLateral,
+            'imagen_dimension_frontal' => $dimFrontal,
+            'imagen_dimension_superior' => $dimSuperior,
         ]);
 
         return redirect()->route('admin.productos')->with('success', 'Mueble agregado con éxito al catálogo.');
@@ -120,6 +150,9 @@ class AdminController extends Controller
             'precio' => 'required|numeric|min:0',
             'imagen_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'imagen_secundaria_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
+            'imagen_dimension_lateral' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
+            'imagen_dimension_frontal' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
+            'imagen_dimension_superior' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'categoria' => 'required|string',
             'stock' => 'required|integer|min:0',
             'calificacion' => 'required|numeric|between:1,5',
@@ -146,6 +179,30 @@ class AdminController extends Controller
             $imagenSecundariaUrl = 'storage/productos/' . $filename2;
         }
 
+        $dimLateral = $producto->getRawOriginal('imagen_dimension_lateral');
+        if ($request->hasFile('imagen_dimension_lateral') && $request->file('imagen_dimension_lateral')->isValid()) {
+            $fDim = $request->file('imagen_dimension_lateral');
+            $fName = time() . '_dim_lat_' . Str::slug(pathinfo($fDim->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $fDim->getClientOriginalExtension();
+            $fDim->move($folder, $fName);
+            $dimLateral = 'storage/productos/' . $fName;
+        }
+
+        $dimFrontal = $producto->getRawOriginal('imagen_dimension_frontal');
+        if ($request->hasFile('imagen_dimension_frontal') && $request->file('imagen_dimension_frontal')->isValid()) {
+            $fDim = $request->file('imagen_dimension_frontal');
+            $fName = time() . '_dim_fro_' . Str::slug(pathinfo($fDim->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $fDim->getClientOriginalExtension();
+            $fDim->move($folder, $fName);
+            $dimFrontal = 'storage/productos/' . $fName;
+        }
+
+        $dimSuperior = $producto->getRawOriginal('imagen_dimension_superior');
+        if ($request->hasFile('imagen_dimension_superior') && $request->file('imagen_dimension_superior')->isValid()) {
+            $fDim = $request->file('imagen_dimension_superior');
+            $fName = time() . '_dim_sup_' . Str::slug(pathinfo($fDim->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $fDim->getClientOriginalExtension();
+            $fDim->move($folder, $fName);
+            $dimSuperior = 'storage/productos/' . $fName;
+        }
+
         $acabadosData = $this->procesarColoresRequest($request);
 
         $producto->update([
@@ -160,6 +217,9 @@ class AdminController extends Controller
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
             'colores' => !empty($acabadosData) ? $acabadosData : null,
+            'imagen_dimension_lateral' => $dimLateral,
+            'imagen_dimension_frontal' => $dimFrontal,
+            'imagen_dimension_superior' => $dimSuperior,
         ]);
 
         return redirect()->route('admin.productos')->with('success', 'Mueble actualizado correctamente.');

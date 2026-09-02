@@ -26,6 +26,9 @@ class Producto extends Model
         'porcentaje_descuento',
         'precio_descuento',
         'colores',
+        'imagen_dimension_lateral',
+        'imagen_dimension_frontal',
+        'imagen_dimension_superior',
     ];
 
     protected $casts = [
@@ -148,5 +151,32 @@ class Producto extends Model
     public function getColoresListaAttribute(): array
     {
         return $this->getAcabadosListaAttribute();
+    }
+
+    /**
+     * Accessors para las URLs de imágenes de dimensiones
+     */
+    public function getImagenDimensionLateralUrlAttribute(): ?string
+    {
+        $val = $this->getRawOriginal('imagen_dimension_lateral');
+        if (empty($val)) return null;
+        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://')) return $val;
+        return asset(ltrim($val, '/'));
+    }
+
+    public function getImagenDimensionFrontalUrlAttribute(): ?string
+    {
+        $val = $this->getRawOriginal('imagen_dimension_frontal');
+        if (empty($val)) return null;
+        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://')) return $val;
+        return asset(ltrim($val, '/'));
+    }
+
+    public function getImagenDimensionSuperiorUrlAttribute(): ?string
+    {
+        $val = $this->getRawOriginal('imagen_dimension_superior');
+        if (empty($val)) return null;
+        if (str_starts_with($val, 'http://') || str_starts_with($val, 'https://')) return $val;
+        return asset(ltrim($val, '/'));
     }
 }

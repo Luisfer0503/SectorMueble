@@ -24,26 +24,63 @@
             
             <!-- Left Column: Full Image & Configured Material Options Below -->
             <div class="flex flex-col space-y-4">
-                <!-- Main Image Box (Full view without cropping) -->
-                <div class="relative bg-zinc-50/90 border border-zinc-200 rounded-2xl overflow-hidden aspect-square shadow-sm max-h-[520px] flex items-center justify-center p-4 group cursor-pointer">
+                <!-- Main Image Box (Enhanced framing & presentation) -->
+                <div class="relative bg-gradient-to-b from-zinc-50 via-zinc-50/80 to-zinc-100/60 border border-zinc-200/90 rounded-2xl overflow-hidden aspect-square shadow-sm max-h-[520px] flex items-center justify-center p-2 sm:p-3 group cursor-pointer"
+                     onclick="openDimensionModal(document.getElementById('main-product-image').src, '{{ $producto->nombre }}')">
                     <!-- Foto 1 (Principal) -->
                     <img id="main-product-image" 
                          src="{{ $producto->imagen_url }}" 
                          alt="{{ $producto->nombre }}" 
                          data-original-src="{{ $producto->imagen_url }}"
-                         class="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out">
+                         class="w-full h-full object-contain p-2 transition-all duration-500 ease-out group-hover:scale-105 filter drop-shadow-sm">
 
                     <!-- Foto 2 (Secundaria en Hover) -->
                     @if($producto->imagen_secundaria_url)
                         <img id="secondary-product-image"
                              src="{{ $producto->imagen_secundaria_url }}"
                              alt="{{ $producto->nombre }} (Secundaria)"
-                             class="absolute inset-0 w-full h-full object-contain p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-in-out bg-zinc-50/90 pointer-events-none">
+                             class="absolute inset-0 w-full h-full object-contain p-2 sm:p-3 opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-out bg-gradient-to-b from-zinc-50 via-zinc-50/90 to-zinc-100/90 pointer-events-none filter drop-shadow-sm">
                     @endif
 
                     @if($producto->destacado)
-                        <span class="absolute top-4 left-4 bg-amber-800 text-white text-[10px] font-bold px-3 py-1 uppercase rounded tracking-wider shadow z-10">Destacado</span>
+                        <span class="absolute top-4 left-4 bg-amber-850/95 text-white text-[10px] font-extrabold px-3 py-1 uppercase rounded-full tracking-wider shadow-md z-10 backdrop-blur-sm">Destacado</span>
                     @endif
+
+                    <!-- Zoom Overlay Hint -->
+                    <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-md border border-zinc-200/80 text-zinc-850 text-xs font-bold px-3 py-1.5 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center space-x-1.5 pointer-events-none">
+                        <svg class="w-4 h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                        </svg>
+                        <span>Clic para ampliar</span>
+                    </div>
+                </div>
+
+                <!-- Mini Galería de Fotografías del Producto (Foto Principal y Secundaria) -->
+                <div class="flex items-center space-x-3 pt-1">
+                    <button type="button" 
+                            onclick="setMainProductPhoto('{{ $producto->imagen_url }}', this)" 
+                            class="photo-thumb-btn border-2 border-amber-800 rounded-xl p-1.5 w-16 h-16 bg-zinc-50 flex items-center justify-center shadow-sm overflow-hidden focus:outline-none transition-all cursor-pointer hover:scale-105"
+                            title="Foto Principal">
+                        <img src="{{ $producto->imagen_url }}" alt="Foto Principal" class="max-w-full max-h-full object-contain">
+                    </button>
+
+                    @if($producto->imagen_secundaria_url)
+                        <button type="button" 
+                                onclick="setMainProductPhoto('{{ $producto->imagen_secundaria_url }}', this)" 
+                                class="photo-thumb-btn border-2 border-zinc-200 hover:border-amber-700 rounded-xl p-1.5 w-16 h-16 bg-zinc-50 flex items-center justify-center shadow-sm overflow-hidden focus:outline-none transition-all cursor-pointer hover:scale-105"
+                                title="Foto Secundaria">
+                            <img src="{{ $producto->imagen_secundaria_url }}" alt="Foto Secundaria" class="max-w-full max-h-full object-contain">
+                        </button>
+                    @endif
+
+                    <button type="button" 
+                            onclick="openDimensionModal(document.getElementById('main-product-image').src, '{{ $producto->nombre }}')" 
+                            class="text-xs font-bold text-amber-850 hover:text-amber-700 flex items-center space-x-1.5 border border-amber-200 bg-amber-50/80 px-3.5 py-2.5 rounded-xl transition-colors cursor-pointer ml-auto">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
+                        </svg>
+                        <span>Ampliar Fotografía</span>
+                    </button>
                 </div>
 
                 <!-- Material Options Selector Configured by Admin -->
@@ -131,6 +168,82 @@
                     <div class="mt-8 border-t border-zinc-200 pt-6">
                         <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-500">Descripción del Mueble</h3>
                         <p class="mt-3 text-sm text-zinc-600 leading-relaxed">{{ $producto->descripcion }}</p>
+                    </div>
+
+                    <!-- Dimensiones Section (Miniaturas compactas) -->
+                    <div class="mt-8 border-t border-zinc-200 pt-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-sm">📐</span>
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-700">Dimensiones del Mueble</h3>
+                            </div>
+                            <span class="text-[10px] text-zinc-400 font-medium">Clic para ampliar vista</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-2.5">
+                            <!-- Vista Lateral -->
+                            <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-2 text-center flex flex-col items-center justify-between group transition-all hover:border-amber-700 hover:shadow-sm">
+                                <span class="text-[10px] font-extrabold text-zinc-600 uppercase tracking-wider block mb-1">Vista Lateral</span>
+                                <div class="relative h-16 sm:h-20 w-full rounded-lg overflow-hidden bg-white border border-zinc-150 flex items-center justify-center p-1 cursor-pointer" 
+                                     @if($producto->imagen_dimension_lateral_url) onclick="openDimensionModal('{{ $producto->imagen_dimension_lateral_url }}', 'Vista Lateral - Dimensiones')" @endif>
+                                    @if($producto->imagen_dimension_lateral_url)
+                                        <img src="{{ $producto->imagen_dimension_lateral_url }}" alt="Vista Lateral" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
+                                            <span class="bg-white/95 text-zinc-900 text-[9px] font-bold px-1.5 py-0.5 rounded shadow">🔍 Ampliar</span>
+                                        </div>
+                                    @else
+                                        <div class="flex flex-col items-center justify-center text-zinc-300 text-center">
+                                            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <span class="text-[9px] font-medium text-zinc-400">Sin plano</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Vista Frontal -->
+                            <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-2 text-center flex flex-col items-center justify-between group transition-all hover:border-amber-700 hover:shadow-sm">
+                                <span class="text-[10px] font-extrabold text-zinc-600 uppercase tracking-wider block mb-1">Vista Frontal</span>
+                                <div class="relative h-16 sm:h-20 w-full rounded-lg overflow-hidden bg-white border border-zinc-150 flex items-center justify-center p-1 cursor-pointer" 
+                                     @if($producto->imagen_dimension_frontal_url) onclick="openDimensionModal('{{ $producto->imagen_dimension_frontal_url }}', 'Vista Frontal - Dimensiones')" @endif>
+                                    @if($producto->imagen_dimension_frontal_url)
+                                        <img src="{{ $producto->imagen_dimension_frontal_url }}" alt="Vista Frontal" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
+                                            <span class="bg-white/95 text-zinc-900 text-[9px] font-bold px-1.5 py-0.5 rounded shadow">🔍 Ampliar</span>
+                                        </div>
+                                    @else
+                                        <div class="flex flex-col items-center justify-center text-zinc-300 text-center">
+                                            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <span class="text-[9px] font-medium text-zinc-400">Sin plano</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Vista Superior -->
+                            <div class="bg-zinc-50 border border-zinc-200 rounded-xl p-2 text-center flex flex-col items-center justify-between group transition-all hover:border-amber-700 hover:shadow-sm">
+                                <span class="text-[10px] font-extrabold text-zinc-600 uppercase tracking-wider block mb-1">Vista Superior</span>
+                                <div class="relative h-16 sm:h-20 w-full rounded-lg overflow-hidden bg-white border border-zinc-150 flex items-center justify-center p-1 cursor-pointer" 
+                                     @if($producto->imagen_dimension_superior_url) onclick="openDimensionModal('{{ $producto->imagen_dimension_superior_url }}', 'Vista Superior - Dimensiones')" @endif>
+                                    @if($producto->imagen_dimension_superior_url)
+                                        <img src="{{ $producto->imagen_dimension_superior_url }}" alt="Vista Superior" class="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-300">
+                                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
+                                            <span class="bg-white/95 text-zinc-900 text-[9px] font-bold px-1.5 py-0.5 rounded shadow">🔍 Ampliar</span>
+                                        </div>
+                                    @else
+                                        <div class="flex flex-col items-center justify-center text-zinc-300 text-center">
+                                            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <span class="text-[9px] font-medium text-zinc-400">Sin plano</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Stock Status Badge -->
@@ -274,7 +387,61 @@
         @endif
     </div>
 
+    <!-- Modal Zoom de Dimensiones -->
+    <div id="dimension-modal" class="fixed inset-0 z-[100] hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4" onclick="closeDimensionModal()">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl relative" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between border-b border-zinc-200 pb-4 mb-4">
+                <h4 id="dimension-modal-title" class="text-base font-bold text-zinc-900 uppercase tracking-wider">Esquema de Dimensiones</h4>
+                <button type="button" onclick="closeDimensionModal()" class="text-zinc-400 hover:text-zinc-700 p-1">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex items-center justify-center max-h-[75vh] overflow-hidden bg-zinc-50 rounded-xl p-3">
+                <img id="dimension-modal-img" src="" alt="Plano de Dimensiones" class="max-w-full max-h-[70vh] object-contain">
+            </div>
+        </div>
+    </div>
+
     <script>
+        function setMainProductPhoto(src, btn) {
+            const mainImg = document.getElementById('main-product-image');
+            if (mainImg) {
+                mainImg.style.opacity = '0';
+                setTimeout(() => {
+                    mainImg.src = src;
+                    mainImg.style.opacity = '1';
+                }, 150);
+            }
+            if (btn) {
+                document.querySelectorAll('.photo-thumb-btn').forEach(b => {
+                    b.classList.remove('border-amber-800');
+                    b.classList.add('border-zinc-200');
+                });
+                btn.classList.remove('border-zinc-200');
+                btn.classList.add('border-amber-800');
+            }
+        }
+
+        function openDimensionModal(imgSrc, title) {
+            const modal = document.getElementById('dimension-modal');
+            const img = document.getElementById('dimension-modal-img');
+            const titleEl = document.getElementById('dimension-modal-title');
+            if (modal && img && titleEl) {
+                img.src = imgSrc;
+                titleEl.textContent = title;
+                modal.classList.remove('hidden');
+            }
+        }
+
+        function closeDimensionModal() {
+            const modal = document.getElementById('dimension-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        }
+
         function switchProductAcabado(key) {
             const btn = document.getElementById('swatch-btn-' + key);
             if (!btn) return;

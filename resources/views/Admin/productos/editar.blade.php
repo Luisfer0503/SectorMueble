@@ -118,6 +118,79 @@
                     @enderror
                 </div>
 
+                <!-- Subir / Actualizar Imágenes de Dimensiones (Vista Lateral, Frontal, Superior) -->
+                <div class="sm:col-span-2 space-y-3 border-t border-zinc-200 pt-6">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-800">
+                        📐 Fotografías de Dimensiones del Mueble
+                    </label>
+                    <p class="text-xs text-zinc-500">Sube o actualiza los esquemas de las medidas del mueble (Lateral, Frontal y Superior).</p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+                        <!-- Vista Lateral -->
+                        <div class="border-2 border-dashed border-zinc-200 hover:border-amber-700 rounded-xl p-4 bg-zinc-50 transition-colors text-center cursor-pointer relative" onclick="document.getElementById('imagen_dimension_lateral').click()">
+                            <span class="block text-[11px] font-extrabold uppercase tracking-wider text-amber-900 mb-2">Vista Lateral</span>
+                            <input type="file" name="imagen_dimension_lateral" id="imagen_dimension_lateral" accept="image/*" class="hidden" onchange="previewMainImage(this, 'preview_dim_lat')">
+                            
+                            <div class="flex flex-col items-center">
+                                @if($producto->imagen_dimension_lateral_url)
+                                    <img id="preview_dim_lat" src="{{ $producto->imagen_dimension_lateral_url }}" alt="Vista Lateral" class="max-h-36 rounded border border-zinc-200 shadow-sm object-contain mb-2">
+                                @else
+                                    <img id="preview_dim_lat" src="#" alt="Sin Vista Lateral" class="hidden max-h-36 rounded border border-zinc-200 shadow-sm object-contain mb-2">
+                                    <div id="holder_dim_lat" class="space-y-2 py-3">
+                                        <svg class="mx-auto h-7 w-7 text-amber-800/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <div class="text-[11px] font-bold text-zinc-700">Subir Vista Lateral</div>
+                                    </div>
+                                @endif
+                                <span class="text-[10px] text-amber-850 font-semibold hover:underline">Clic para seleccionar / cambiar</span>
+                            </div>
+                        </div>
+
+                        <!-- Vista Frontal -->
+                        <div class="border-2 border-dashed border-zinc-200 hover:border-amber-700 rounded-xl p-4 bg-zinc-50 transition-colors text-center cursor-pointer relative" onclick="document.getElementById('imagen_dimension_frontal').click()">
+                            <span class="block text-[11px] font-extrabold uppercase tracking-wider text-amber-900 mb-2">Vista Frontal</span>
+                            <input type="file" name="imagen_dimension_frontal" id="imagen_dimension_frontal" accept="image/*" class="hidden" onchange="previewMainImage(this, 'preview_dim_fro')">
+                            
+                            <div class="flex flex-col items-center">
+                                @if($producto->imagen_dimension_frontal_url)
+                                    <img id="preview_dim_fro" src="{{ $producto->imagen_dimension_frontal_url }}" alt="Vista Frontal" class="max-h-36 rounded border border-zinc-200 shadow-sm object-contain mb-2">
+                                @else
+                                    <img id="preview_dim_fro" src="#" alt="Sin Vista Frontal" class="hidden max-h-36 rounded border border-zinc-200 shadow-sm object-contain mb-2">
+                                    <div id="holder_dim_fro" class="space-y-2 py-3">
+                                        <svg class="mx-auto h-7 w-7 text-amber-800/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <div class="text-[11px] font-bold text-zinc-700">Subir Vista Frontal</div>
+                                    </div>
+                                @endif
+                                <span class="text-[10px] text-amber-850 font-semibold hover:underline">Clic para seleccionar / cambiar</span>
+                            </div>
+                        </div>
+
+                        <!-- Vista Superior -->
+                        <div class="border-2 border-dashed border-zinc-200 hover:border-amber-700 rounded-xl p-4 bg-zinc-50 transition-colors text-center cursor-pointer relative" onclick="document.getElementById('imagen_dimension_superior').click()">
+                            <span class="block text-[11px] font-extrabold uppercase tracking-wider text-amber-900 mb-2">Vista Superior</span>
+                            <input type="file" name="imagen_dimension_superior" id="imagen_dimension_superior" accept="image/*" class="hidden" onchange="previewMainImage(this, 'preview_dim_sup')">
+                            
+                            <div class="flex flex-col items-center">
+                                @if($producto->imagen_dimension_superior_url)
+                                    <img id="preview_dim_sup" src="{{ $producto->imagen_dimension_superior_url }}" alt="Vista Superior" class="max-h-36 rounded border border-zinc-200 shadow-sm object-contain mb-2">
+                                @else
+                                    <img id="preview_dim_sup" src="#" alt="Sin Vista Superior" class="hidden max-h-36 rounded border border-zinc-200 shadow-sm object-contain mb-2">
+                                    <div id="holder_dim_sup" class="space-y-2 py-3">
+                                        <svg class="mx-auto h-7 w-7 text-amber-800/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <div class="text-[11px] font-bold text-zinc-700">Subir Vista Superior</div>
+                                    </div>
+                                @endif
+                                <span class="text-[10px] text-amber-850 font-semibold hover:underline">Clic para seleccionar / cambiar</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Descripcion -->
                 <div class="sm:col-span-2">
                     <label for="descripcion" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Descripción del Mueble</label>
