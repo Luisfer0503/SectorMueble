@@ -1,0 +1,822 @@
+[
+  {
+    "model": "KATTIA",
+    "clean_model": "KATTIA",
+    "type": "Silla",
+    "detail": "Tapizada",
+    "clean_full": "KATTIA SILLA TAPIZADA",
+    "price": 5990.0,
+    "sheet": "Hoja1",
+    "row": 3
+  },
+  {
+    "model": "SERRANO",
+    "clean_model": "SERRANO",
+    "type": "Silla",
+    "detail": "De Madera",
+    "clean_full": "SERRANO SILLA DE MADERA",
+    "price": 6590.0,
+    "sheet": "Hoja1",
+    "row": 4
+  },
+  {
+    "model": "MONNA",
+    "clean_model": "MONNA",
+    "type": "Silla",
+    "detail": "De Madera",
+    "clean_full": "MONNA SILLA DE MADERA",
+    "price": 6690.0,
+    "sheet": "Hoja1",
+    "row": 5
+  },
+  {
+    "model": "TINA",
+    "clean_model": "TINA",
+    "type": "Silla",
+    "detail": "De Madera",
+    "clean_full": "TINA SILLA DE MADERA",
+    "price": 6390.0,
+    "sheet": "Hoja1",
+    "row": 6
+  },
+  {
+    "model": "TORENTO",
+    "clean_model": "TORENTO",
+    "type": "Silla",
+    "detail": "Tapizada",
+    "clean_full": "TORENTO SILLA TAPIZADA",
+    "price": 6190.0,
+    "sheet": "Hoja1",
+    "row": 7
+  },
+  {
+    "model": "PADUA",
+    "clean_model": "PADUA",
+    "type": "Silla",
+    "detail": "Herrería y Tapizado",
+    "clean_full": "PADUA SILLA HERRERIA Y TAPIZADO",
+    "price": 5990.0,
+    "sheet": "Hoja1",
+    "row": 8
+  },
+  {
+    "model": "BIMBA",
+    "clean_model": "BIMBA",
+    "type": "Sillón Comedor",
+    "detail": "Tapizado",
+    "clean_full": "BIMBA SILLON COMEDOR TAPIZADO",
+    "price": 6390.0,
+    "sheet": "Hoja1",
+    "row": 9
+  },
+  {
+    "model": "OLVERA",
+    "clean_model": "OLVERA",
+    "type": "Sillón",
+    "detail": "Tapizado",
+    "clean_full": "OLVERA SILLON TAPIZADO",
+    "price": 11860.0,
+    "sheet": "Hoja1",
+    "row": 10
+  },
+  {
+    "model": "PALERMO",
+    "clean_model": "PALERMO",
+    "type": "Sofa",
+    "detail": "Modudlar",
+    "clean_full": "PALERMO SOFA MODUDLAR",
+    "price": 28990.0,
+    "sheet": "Hoja1",
+    "row": 11
+  },
+  {
+    "model": "ZENIT",
+    "clean_model": "ZENIT",
+    "type": "Banca",
+    "detail": "Tapizada",
+    "clean_full": "ZENIT BANCA TAPIZADA",
+    "price": 8650.0,
+    "sheet": "Hoja1",
+    "row": 12
+  },
+  {
+    "model": "WEST",
+    "clean_model": "WEST",
+    "type": "Sala Modular",
+    "detail": "SILLON IND. ANGOSTO",
+    "clean_full": "WEST SALA MODULAR SILLON IND ANGOSTO",
+    "price": 10240.0,
+    "sheet": "Hoja1",
+    "row": 13
+  },
+  {
+    "model": "WEST",
+    "clean_model": "WEST",
+    "type": "",
+    "detail": "SILLON IND. ANCHO",
+    "clean_full": "WEST SILLON IND ANCHO",
+    "price": 11370.0,
+    "sheet": "Hoja1",
+    "row": 14
+  },
+  {
+    "model": "WEST",
+    "clean_model": "WEST",
+    "type": "",
+    "detail": "LOVE SEAT",
+    "clean_full": "WEST LOVE SEAT",
+    "price": 15990.0,
+    "sheet": "Hoja1",
+    "row": 15
+  },
+  {
+    "model": "WEST",
+    "clean_model": "WEST",
+    "type": "",
+    "detail": "CHAICE",
+    "clean_full": "WEST CHAICE",
+    "price": 16890.0,
+    "sheet": "Hoja1",
+    "row": 16
+  },
+  {
+    "model": "WEST",
+    "clean_model": "WEST",
+    "type": "",
+    "detail": "ESQUINERO",
+    "clean_full": "WEST ESQUINERO",
+    "price": 11660.0,
+    "sheet": "Hoja1",
+    "row": 17
+  },
+  {
+    "model": "WEST",
+    "clean_model": "WEST",
+    "type": "",
+    "detail": "TABURETE CUADRADO GRANDE",
+    "clean_full": "WEST TABURETE CUADRADO GRANDE",
+    "price": 8990.0,
+    "sheet": "Hoja1",
+    "row": 18
+  },
+  {
+    "model": "WEST",
+    "clean_model": "WEST",
+    "type": "",
+    "detail": "TABURETE RECTANGULAR GRANDE",
+    "clean_full": "WEST TABURETE RECTANGULAR GRANDE",
+    "price": 8190.0,
+    "sheet": "Hoja1",
+    "row": 19
+  },
+  {
+    "model": "WEST",
+    "clean_model": "WEST",
+    "type": "",
+    "detail": "TABURETE CUADRADO MEDIANO",
+    "clean_full": "WEST TABURETE CUADRADO MEDIANO",
+    "price": 8490.0,
+    "sheet": "Hoja1",
+    "row": 20
+  },
+  {
+    "model": "WEST",
+    "clean_model": "WEST",
+    "type": "",
+    "detail": "BRAZOS",
+    "clean_full": "WEST BRAZOS",
+    "price": 5290.0,
+    "sheet": "Hoja1",
+    "row": 21
+  },
+  {
+    "model": "VIRGO",
+    "clean_model": "VIRGO",
+    "type": "Sala Modular",
+    "detail": "TABURETE CUADRADO",
+    "clean_full": "VIRGO SALA MODULAR TABURETE CUADRADO",
+    "price": 10890.0,
+    "sheet": "Hoja1",
+    "row": 22
+  },
+  {
+    "model": "VIRGO",
+    "clean_model": "VIRGO",
+    "type": "",
+    "detail": "TABURETE RECTANGULAR",
+    "clean_full": "VIRGO TABURETE RECTANGULAR",
+    "price": 16090.0,
+    "sheet": "Hoja1",
+    "row": 23
+  },
+  {
+    "model": "VIRGO",
+    "clean_model": "VIRGO",
+    "type": "",
+    "detail": "ESQUINERO",
+    "clean_full": "VIRGO ESQUINERO",
+    "price": 14340.0,
+    "sheet": "Hoja1",
+    "row": 24
+  },
+  {
+    "model": "VIRGO",
+    "clean_model": "VIRGO",
+    "type": "",
+    "detail": "RESPALDO",
+    "clean_full": "VIRGO RESPALDO",
+    "price": 4490.0,
+    "sheet": "Hoja1",
+    "row": 25
+  },
+  {
+    "model": "LUCIER",
+    "clean_model": "LUCIER",
+    "type": "Cama KS",
+    "detail": "Tapizada",
+    "clean_full": "LUCIER CAMA KS TAPIZADA",
+    "price": 19440.0,
+    "sheet": "Hoja1",
+    "row": 26
+  },
+  {
+    "model": "LUCIER",
+    "clean_model": "LUCIER",
+    "type": "Cama Matrimonial",
+    "detail": "Tapizada",
+    "clean_full": "LUCIER CAMA MATRIMONIAL TAPIZADA",
+    "price": 17290.0,
+    "sheet": "Hoja1",
+    "row": 27
+  },
+  {
+    "model": "AURA",
+    "clean_model": "AURA",
+    "type": "Cama KS",
+    "detail": "Tapizada",
+    "clean_full": "AURA CAMA KS TAPIZADA",
+    "price": 18190.0,
+    "sheet": "Hoja1",
+    "row": 28
+  },
+  {
+    "model": "AURA",
+    "clean_model": "AURA",
+    "type": "Cama Matrimonial",
+    "detail": "Tapizada",
+    "clean_full": "AURA CAMA MATRIMONIAL TAPIZADA",
+    "price": 15240.0,
+    "sheet": "Hoja1",
+    "row": 29
+  },
+  {
+    "model": "ISABELLA",
+    "clean_model": "ISABELLA",
+    "type": "Cama KS",
+    "detail": "Tapizada",
+    "clean_full": "ISABELLA CAMA KS TAPIZADA",
+    "price": 18190.0,
+    "sheet": "Hoja1",
+    "row": 30
+  },
+  {
+    "model": "ISABELLA",
+    "clean_model": "ISABELLA",
+    "type": "Cama Matrimonial",
+    "detail": "Tapizada",
+    "clean_full": "ISABELLA CAMA MATRIMONIAL TAPIZADA",
+    "price": 15240.0,
+    "sheet": "Hoja1",
+    "row": 31
+  },
+  {
+    "model": "DUNA",
+    "clean_model": "DUNA",
+    "type": "Cama KS",
+    "detail": "Tapizada",
+    "clean_full": "DUNA CAMA KS TAPIZADA",
+    "price": 18190.0,
+    "sheet": "Hoja1",
+    "row": 32
+  },
+  {
+    "model": "DUNA",
+    "clean_model": "DUNA",
+    "type": "Cama Matrimonial",
+    "detail": "Tapizada",
+    "clean_full": "DUNA CAMA MATRIMONIAL TAPIZADA",
+    "price": 15240.0,
+    "sheet": "Hoja1",
+    "row": 33
+  },
+  {
+    "model": "LUNA",
+    "clean_model": "LUNA",
+    "type": "Cama KS",
+    "detail": "Tapizada",
+    "clean_full": "LUNA CAMA KS TAPIZADA",
+    "price": 18190.0,
+    "sheet": "Hoja1",
+    "row": 34
+  },
+  {
+    "model": "LUNA",
+    "clean_model": "LUNA",
+    "type": "Cama Matrimonial",
+    "detail": "Tapizada",
+    "clean_full": "LUNA CAMA MATRIMONIAL TAPIZADA",
+    "price": 15240.0,
+    "sheet": "Hoja1",
+    "row": 35
+  },
+  {
+    "model": "PISTACHO",
+    "clean_model": "PISTACHO",
+    "type": "Cama KS",
+    "detail": "Tapizada",
+    "clean_full": "PISTACHO CAMA KS TAPIZADA",
+    "price": 18190.0,
+    "sheet": "Hoja1",
+    "row": 36
+  },
+  {
+    "model": "PISTACHO",
+    "clean_model": "PISTACHO",
+    "type": "Cama Matrimonial",
+    "detail": "Tapizada",
+    "clean_full": "PISTACHO CAMA MATRIMONIAL TAPIZADA",
+    "price": 15240.0,
+    "sheet": "Hoja1",
+    "row": 37
+  },
+  {
+    "model": "MOLINA",
+    "clean_model": "MOLINA",
+    "type": "Cama KS",
+    "detail": "Tapizada",
+    "clean_full": "MOLINA CAMA KS TAPIZADA",
+    "price": 19440.0,
+    "sheet": "Hoja1",
+    "row": 38
+  },
+  {
+    "model": "MOLINA",
+    "clean_model": "MOLINA",
+    "type": "Cama Matrimonial",
+    "detail": "Tapizada",
+    "clean_full": "MOLINA CAMA MATRIMONIAL TAPIZADA",
+    "price": 17290.0,
+    "sheet": "Hoja1",
+    "row": 39
+  },
+  {
+    "model": "PATRICIO",
+    "clean_model": "PATRICIO",
+    "type": "Taburete",
+    "detail": "Tapizado",
+    "clean_full": "PATRICIO TABURETE TAPIZADO",
+    "price": 5760.0,
+    "sheet": "Hoja1",
+    "row": 40
+  },
+  {
+    "model": "TORRES",
+    "clean_model": "TORRES",
+    "type": "Taburete",
+    "detail": "Asiento tapizado base madera",
+    "clean_full": "TORRES TABURETE ASIENTO TAPIZADO BASE MADERA",
+    "price": 6440.0,
+    "sheet": "Hoja1",
+    "row": 41
+  },
+  {
+    "model": "DEL RIO",
+    "clean_model": "DEL RIO",
+    "type": "Taburete",
+    "detail": "Tapizado base madera",
+    "clean_full": "DEL RIO TABURETE TAPIZADO BASE MADERA",
+    "price": 6890.0,
+    "sheet": "Hoja1",
+    "row": 42
+  },
+  {
+    "model": "RISOTTO",
+    "clean_model": "RISOTTO",
+    "type": "Buró",
+    "detail": "Melamina",
+    "clean_full": "RISOTTO BURO MELAMINA",
+    "price": 6950.0,
+    "sheet": "Hoja1",
+    "row": 43
+  },
+  {
+    "model": "RISOTTO",
+    "clean_model": "RISOTTO",
+    "type": "Buró",
+    "detail": "MDF chapa de encino con cubierta de mármol",
+    "clean_full": "RISOTTO BURO MDF CHAPA DE ENCINO CON CUBIERTA DE MARMOL",
+    "price": 9790.0,
+    "sheet": "Hoja1",
+    "row": 44
+  },
+  {
+    "model": "DOMINGO",
+    "clean_model": "DOMINGO",
+    "type": "Mesa Lateral / Buro",
+    "detail": "Melamina",
+    "clean_full": "DOMINGO MESA LATERAL BURO MELAMINA",
+    "price": 3770.0,
+    "sheet": "Hoja1",
+    "row": 45
+  },
+  {
+    "model": "DOMINGO",
+    "clean_model": "DOMINGO",
+    "type": "",
+    "detail": "MDF chapa de encino",
+    "clean_full": "DOMINGO MDF CHAPA DE ENCINO",
+    "price": 6470.0,
+    "sheet": "Hoja1",
+    "row": 46
+  },
+  {
+    "model": "NORUEGA",
+    "clean_model": "NORUEGA",
+    "type": "Mesa Lateral / Buro",
+    "detail": "Piedra Travertino Blanco (tonalidad beige)",
+    "clean_full": "NORUEGA MESA LATERAL BURO PIEDRA TRAVERTINO BLANCO TONALIDAD BEIGE",
+    "price": 7490.0,
+    "sheet": "Hoja1",
+    "row": 47
+  },
+  {
+    "model": "NORUEGA",
+    "clean_model": "NORUEGA",
+    "type": "",
+    "detail": "Piedra Volcanica Negra (gris cenizo)",
+    "clean_full": "NORUEGA PIEDRA VOLCANICA NEGRA GRIS CENIZO",
+    "price": 7490.0,
+    "sheet": "Hoja1",
+    "row": 48
+  },
+  {
+    "model": "SUECIA",
+    "clean_model": "SUECIA",
+    "type": "Mesa Lateral / Buro",
+    "detail": "Piedra Travertino Blanco (tonalidad beige)",
+    "clean_full": "SUECIA MESA LATERAL BURO PIEDRA TRAVERTINO BLANCO TONALIDAD BEIGE",
+    "price": 8190.0,
+    "sheet": "Hoja1",
+    "row": 49
+  },
+  {
+    "model": "SUECIA",
+    "clean_model": "SUECIA",
+    "type": "",
+    "detail": "Piedra Volcanica Negra (gris cenizo)",
+    "clean_full": "SUECIA PIEDRA VOLCANICA NEGRA GRIS CENIZO",
+    "price": 8190.0,
+    "sheet": "Hoja1",
+    "row": 50
+  },
+  {
+    "model": "ROMINA",
+    "clean_model": "ROMINA",
+    "type": "Mueble Recibidor",
+    "detail": "Piedra Travertino Blanco (tonalidad beige)",
+    "clean_full": "ROMINA MUEBLE RECIBIDOR PIEDRA TRAVERTINO BLANCO TONALIDAD BEIGE",
+    "price": 12490.0,
+    "sheet": "Hoja1",
+    "row": 51
+  },
+  {
+    "model": "ROMINA",
+    "clean_model": "ROMINA",
+    "type": "",
+    "detail": "Piedra Volcanica Negra (gris cenizo)",
+    "clean_full": "ROMINA PIEDRA VOLCANICA NEGRA GRIS CENIZO",
+    "price": 12490.0,
+    "sheet": "Hoja1",
+    "row": 52
+  },
+  {
+    "model": "JULIA",
+    "clean_model": "JULIA",
+    "type": "Buró/Mesa auxiliar",
+    "detail": "Piedra Travertino Blanco (tonalidad beige)",
+    "clean_full": "JULIA BURO MESA AUXILIAR PIEDRA TRAVERTINO BLANCO TONALIDAD BEIGE",
+    "price": 11590.0,
+    "sheet": "Hoja1",
+    "row": 53
+  },
+  {
+    "model": "JULIA",
+    "clean_model": "JULIA",
+    "type": "",
+    "detail": "Piedra Volcanica Negra (gris cenizo)",
+    "clean_full": "JULIA PIEDRA VOLCANICA NEGRA GRIS CENIZO",
+    "price": 11590.0,
+    "sheet": "Hoja1",
+    "row": 54
+  },
+  {
+    "model": "JULIA",
+    "clean_model": "JULIA",
+    "type": "Pedestal para mesa de 4p",
+    "detail": "Cubierta No Incluida y de material variable",
+    "clean_full": "JULIA PEDESTAL PARA MESA DE 4P CUBIERTA NO INCLUIDA Y DE MATERIAL VARIABLE",
+    "price": 7910.0,
+    "sheet": "Hoja1",
+    "row": 55
+  },
+  {
+    "model": "JULIA",
+    "clean_model": "JULIA",
+    "type": "Pedestal para mesa de 6p",
+    "detail": "",
+    "clean_full": "JULIA PEDESTAL PARA MESA DE 6P",
+    "price": 7910.0,
+    "sheet": "Hoja1",
+    "row": 56
+  },
+  {
+    "model": "JULIA",
+    "clean_model": "JULIA",
+    "type": "Pedestal para mesa de 8p",
+    "detail": "",
+    "clean_full": "JULIA PEDESTAL PARA MESA DE 8P",
+    "price": 8640.0,
+    "sheet": "Hoja1",
+    "row": 57
+  },
+  {
+    "model": "DIANDRA",
+    "clean_model": "DIANDRA",
+    "type": "Pedestal para mesa de 6p (2 medios circulos)",
+    "detail": "",
+    "clean_full": "DIANDRA PEDESTAL PARA MESA DE 6P 2 MEDIOS CIRCULOS",
+    "price": 16610.0,
+    "sheet": "Hoja1",
+    "row": 59
+  },
+  {
+    "model": "DIANDRA",
+    "clean_model": "DIANDRA",
+    "type": "Pedestal para mesa de 8p (2 medios circulos)",
+    "detail": "",
+    "clean_full": "DIANDRA PEDESTAL PARA MESA DE 8P 2 MEDIOS CIRCULOS",
+    "price": 18990.0,
+    "sheet": "Hoja1",
+    "row": 60
+  },
+  {
+    "model": "NINA",
+    "clean_model": "NINA",
+    "type": "Pedestal circular para mesa de 4p",
+    "detail": "Cubierta No Incluida y de material variable",
+    "clean_full": "NINA PEDESTAL CIRCULAR PARA MESA DE 4P CUBIERTA NO INCLUIDA Y DE MATERIAL VARIABLE",
+    "price": 14690.0,
+    "sheet": "Hoja1",
+    "row": 61
+  },
+  {
+    "model": "NINA",
+    "clean_model": "NINA",
+    "type": "Pedestal circular para mesa de 6p",
+    "detail": "",
+    "clean_full": "NINA PEDESTAL CIRCULAR PARA MESA DE 6P",
+    "price": 14690.0,
+    "sheet": "Hoja1",
+    "row": 62
+  },
+  {
+    "model": "NINA",
+    "clean_model": "NINA",
+    "type": "Pedestal circular para mesa de 8p",
+    "detail": "",
+    "clean_full": "NINA PEDESTAL CIRCULAR PARA MESA DE 8P",
+    "price": 16890.0,
+    "sheet": "Hoja1",
+    "row": 63
+  },
+  {
+    "model": "OTOÑO",
+    "clean_model": "OTONO",
+    "type": "Pedestal para mesa de 6p (2 Piezas T)",
+    "detail": "",
+    "clean_full": "OTONO PEDESTAL PARA MESA DE 6P 2 PIEZAS T",
+    "price": 14990.0,
+    "sheet": "Hoja1",
+    "row": 65
+  },
+  {
+    "model": "OTOÑO",
+    "clean_model": "OTONO",
+    "type": "Pedestal para mesa de 8p (2 Piezas T)",
+    "detail": "",
+    "clean_full": "OTONO PEDESTAL PARA MESA DE 8P 2 PIEZAS T",
+    "price": 15890.0,
+    "sheet": "Hoja1",
+    "row": 66
+  },
+  {
+    "model": "ROMERO",
+    "clean_model": "ROMERO",
+    "type": "Pedestal para mesa de 6p (2 Piezas V)",
+    "detail": "",
+    "clean_full": "ROMERO PEDESTAL PARA MESA DE 6P 2 PIEZAS V",
+    "price": 14990.0,
+    "sheet": "Hoja1",
+    "row": 68
+  },
+  {
+    "model": "ROMERO",
+    "clean_model": "ROMERO",
+    "type": "Pedestal para mesa de 8p (2 Piezas V)",
+    "detail": "",
+    "clean_full": "ROMERO PEDESTAL PARA MESA DE 8P 2 PIEZAS V",
+    "price": 15890.0,
+    "sheet": "Hoja1",
+    "row": 69
+  },
+  {
+    "model": "CAROL",
+    "clean_model": "CAROL",
+    "type": "Pedestal para mesa de 4p",
+    "detail": "Cubierta No Incluida y de material variable",
+    "clean_full": "CAROL PEDESTAL PARA MESA DE 4P CUBIERTA NO INCLUIDA Y DE MATERIAL VARIABLE",
+    "price": 12890.0,
+    "sheet": "Hoja1",
+    "row": 70
+  },
+  {
+    "model": "CAROL",
+    "clean_model": "CAROL",
+    "type": "Pedestal para mesa de 6p",
+    "detail": "",
+    "clean_full": "CAROL PEDESTAL PARA MESA DE 6P",
+    "price": 12890.0,
+    "sheet": "Hoja1",
+    "row": 71
+  },
+  {
+    "model": "CAROL",
+    "clean_model": "CAROL",
+    "type": "Pedestal para mesa de 8p",
+    "detail": "",
+    "clean_full": "CAROL PEDESTAL PARA MESA DE 8P",
+    "price": 14490.0,
+    "sheet": "Hoja1",
+    "row": 72
+  },
+  {
+    "model": "SAO PAULO",
+    "clean_model": "SAO PAULO",
+    "type": "Cubierta Circular Chapa ENCINO para mesa 4p",
+    "detail": "Pedestal No Incluida y de material variable",
+    "clean_full": "SAO PAULO CUBIERTA CIRCULAR CHAPA ENCINO PARA MESA 4P PEDESTAL NO INCLUIDA Y DE MATERIAL VARIABLE",
+    "price": 6890.0,
+    "sheet": "Hoja1",
+    "row": 73
+  },
+  {
+    "model": "SAO PAULO",
+    "clean_model": "SAO PAULO",
+    "type": "Cubierta Circular Chapa ENCINO para mesa 6p",
+    "detail": "",
+    "clean_full": "SAO PAULO CUBIERTA CIRCULAR CHAPA ENCINO PARA MESA 6P",
+    "price": 7560.0,
+    "sheet": "Hoja1",
+    "row": 74
+  },
+  {
+    "model": "SAO PAULO",
+    "clean_model": "SAO PAULO",
+    "type": "Cubierta Circular Chapa ENCINO para mesa 8p",
+    "detail": "",
+    "clean_full": "SAO PAULO CUBIERTA CIRCULAR CHAPA ENCINO PARA MESA 8P",
+    "price": 10890.0,
+    "sheet": "Hoja1",
+    "row": 75
+  },
+  {
+    "model": "SAO PAULO",
+    "clean_model": "SAO PAULO",
+    "type": "Cubierta Rectangular u Ovalada  Chapa Encino para mesa 6p",
+    "detail": "Pedestal No Incluida y de material variable",
+    "clean_full": "SAO PAULO CUBIERTA RECTANGULAR U OVALADA CHAPA ENCINO PARA MESA 6P PEDESTAL NO INCLUIDA Y DE MATERIAL VARIABLE",
+    "price": 9660.0,
+    "sheet": "Hoja1",
+    "row": 76
+  },
+  {
+    "model": "SAO PAULO",
+    "clean_model": "SAO PAULO",
+    "type": "Cubierta Rectangular u Ovalada  Chapa Encino para mesa 8p",
+    "detail": "",
+    "clean_full": "SAO PAULO CUBIERTA RECTANGULAR U OVALADA CHAPA ENCINO PARA MESA 8P",
+    "price": 13480.0,
+    "sheet": "Hoja1",
+    "row": 77
+  },
+  {
+    "model": "ATENAS",
+    "clean_model": "ATENAS",
+    "type": "Cubierta Cuadrada  en MDF chapa ENCINO para mesa 4p",
+    "detail": "Pedestal No Incluida y de material variable",
+    "clean_full": "ATENAS CUBIERTA CUADRADA EN MDF CHAPA ENCINO PARA MESA 4P PEDESTAL NO INCLUIDA Y DE MATERIAL VARIABLE",
+    "price": 6640.0,
+    "sheet": "Hoja1",
+    "row": 78
+  },
+  {
+    "model": "ATENAS",
+    "clean_model": "ATENAS",
+    "type": "",
+    "detail": "",
+    "clean_full": "ATENAS",
+    "price": 7390.0,
+    "sheet": "Hoja1",
+    "row": 79
+  },
+  {
+    "model": "ATENAS",
+    "clean_model": "ATENAS",
+    "type": "Cubierta Cuadrada  en MDF chapa ENCINO para mesa 8p",
+    "detail": "",
+    "clean_full": "ATENAS CUBIERTA CUADRADA EN MDF CHAPA ENCINO PARA MESA 8P",
+    "price": 10890.0,
+    "sheet": "Hoja1",
+    "row": 80
+  },
+  {
+    "model": "SALA VENECIA",
+    "clean_model": "SALA VENECIA",
+    "type": "LOVESEAT",
+    "detail": "",
+    "clean_full": "SALA VENECIA LOVESEAT",
+    "price": 32490.0,
+    "sheet": "Hoja2",
+    "row": 5
+  },
+  {
+    "model": "SALA CONCHERTO",
+    "clean_model": "SALA CONCHERTO",
+    "type": "LOVESEAT",
+    "detail": "",
+    "clean_full": "SALA CONCHERTO LOVESEAT",
+    "price": 39900.0,
+    "sheet": "Hoja2",
+    "row": 8
+  },
+  {
+    "model": "YORKSHIRE",
+    "clean_model": "YORKSHIRE",
+    "type": "SOFA",
+    "detail": "",
+    "clean_full": "YORKSHIRE SOFA",
+    "price": 38890.0,
+    "sheet": "Hoja2",
+    "row": 11
+  },
+  {
+    "model": "CATALUÑA",
+    "clean_model": "CATALUNA",
+    "type": "SOFÁ",
+    "detail": "",
+    "clean_full": "CATALUNA SOFA",
+    "price": 38190.0,
+    "sheet": "Hoja2",
+    "row": 14
+  },
+  {
+    "model": "EDIMBURGO",
+    "clean_model": "EDIMBURGO",
+    "type": "LOVESEAT",
+    "detail": "",
+    "clean_full": "EDIMBURGO LOVESEAT",
+    "price": 41490.0,
+    "sheet": "Hoja2",
+    "row": 17
+  },
+  {
+    "model": "MILÁN",
+    "clean_model": "MILAN",
+    "type": "SOFÁ",
+    "detail": "",
+    "clean_full": "MILAN SOFA",
+    "price": 17820.0,
+    "sheet": "Hoja2",
+    "row": 28
+  },
+  {
+    "model": "BOMBAY",
+    "clean_model": "BOMBAY",
+    "type": "SOFÁ CAMA",
+    "detail": "",
+    "clean_full": "BOMBAY SOFA CAMA",
+    "price": 16490.0,
+    "sheet": "Hoja2",
+    "row": 31
+  }
+]
