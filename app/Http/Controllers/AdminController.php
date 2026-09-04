@@ -112,6 +112,9 @@ class AdminController extends Controller
             'imagen_dimension_frontal' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'imagen_dimension_superior' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'categoria' => 'required|string',
+            'proveedor' => 'required|string|in:Casa Tapier,Muebles Samar',
+            'tipo_mueble' => 'nullable|string',
+            'numero_piezas' => 'required|integer|min:1',
             'calificacion' => 'required|numeric|between:1,5',
         ]);
 
@@ -166,6 +169,9 @@ class AdminController extends Controller
             'imagen_url' => $imagenUrl,
             'imagen_secundaria_url' => $imagenSecundariaUrl,
             'categoria' => $request->categoria,
+            'proveedor' => $request->proveedor,
+            'tipo_mueble' => $request->tipo_mueble ?? '01',
+            'numero_piezas' => (int) ($request->numero_piezas ?? 1),
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
             'colores' => !empty($acabadosData) ? $acabadosData : null,
@@ -198,6 +204,9 @@ class AdminController extends Controller
             'imagen_dimension_frontal' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'imagen_dimension_superior' => 'nullable|image|mimes:jpeg,jpg,png,webp,gif|max:5120',
             'categoria' => 'required|string',
+            'proveedor' => 'required|string|in:Casa Tapier,Muebles Samar',
+            'tipo_mueble' => 'nullable|string',
+            'numero_piezas' => 'required|integer|min:1',
             'calificacion' => 'required|numeric|between:1,5',
         ]);
 
@@ -255,6 +264,9 @@ class AdminController extends Controller
             'imagen_url' => $imagenUrl,
             'imagen_secundaria_url' => $imagenSecundariaUrl,
             'categoria' => $request->categoria,
+            'proveedor' => $request->proveedor,
+            'tipo_mueble' => $request->tipo_mueble ?? '01',
+            'numero_piezas' => (int) ($request->numero_piezas ?? 1),
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
             'colores' => !empty($acabadosData) ? $acabadosData : null,
@@ -282,7 +294,10 @@ class AdminController extends Controller
                 $matImg = $acabado['material_imagen'] ?? null;
                 $precio = (isset($acabado['precio']) && $acabado['precio'] !== null) ? (float) $acabado['precio'] : (float) $producto->precio;
                 $stock  = (isset($acabado['stock']) && $acabado['stock'] !== null) ? (int) $acabado['stock'] : (int) $producto->stock;
-                $sku    = !empty($acabado['sku']) ? trim($acabado['sku']) : ('SKU-' . sprintf('%04d', $producto->id) . '-' . sprintf('%02d', $idx + 1));
+                
+                $defaultSku = Producto::generarSkuFormateado($producto, $nombre);
+                $rawSku = !empty($acabado['sku']) ? trim($acabado['sku']) : '';
+                $sku = (!empty($rawSku) && !str_contains($rawSku, 'AUTO') && !str_starts_with($rawSku, 'SKU-0')) ? $rawSku : $defaultSku;
 
                 ProductoDetalle::create([
                     'producto_id'     => $producto->id,
@@ -297,7 +312,7 @@ class AdminController extends Controller
         } else {
             ProductoDetalle::create([
                 'producto_id' => $producto->id,
-                'sku'         => 'SKU-' . sprintf('%04d', $producto->id) . '-01',
+                'sku'         => Producto::generarSkuFormateado($producto, 'Original'),
                 'nombre'      => $producto->nombre . ' (Original / Natural)',
                 'imagen'      => $producto->getRawOriginal('imagen_url'),
                 'precio'      => (float) $producto->precio,

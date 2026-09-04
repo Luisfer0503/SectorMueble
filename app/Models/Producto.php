@@ -19,6 +19,9 @@ class Producto extends Model
         'imagen_secundaria_url',
         'modelo_3d_url',
         'categoria',
+        'proveedor',
+        'tipo_mueble',
+        'numero_piezas',
         'calificacion',
         'destacado',
         'porcentaje_descuento',
@@ -225,5 +228,59 @@ class Producto extends Model
             return (int) $this->detalles->sum('stock');
         }
         return (int) $this->detalles()->sum('stock');
+    }
+
+    /**
+     * Genera un SKU formateado estructurado según las reglas del negocio:
+     * Ejemplo: CT-01KT01-TBTX-LO
+     * [PROVEEDOR]-[TIPO][MODELO][PIEZAS]-[MATERIAL]
+     */
+    public static function generarSkuFormateado(Producto $producto, ?string $materialNombre): string
+    {
+        // 1. Proveedor (CT o MS)
+        $provCode = ($producto->proveedor === 'Muebles Samar') ? 'MS' : 'CT';
+
+        // 2. Código de Tipo de Mueble (2 dígitos)
+        $tipoCode = sprintf('%02d', (int) ($producto->tipo_mueble ?? 1));
+
+        // 3. Primeras 2 consonantes del nombre del mueble (modelo)
+        $cleanNombre = \Illuminate\Support\Str::ascii($producto->nombre ?? '');
+        preg_match_all('/[BCDFGHJKLMNPQRSTVWXYZ]/i', $cleanNombre, $matches);
+        $consonantes = $matches[0] ?? [];
+        $modeloCode = strtoupper(implode('', array_slice($consonantes, 0, 2)));
+        if (strlen($modeloCode) < 2) {
+            $onlyLetters = strtoupper(preg_replace('/[^A-Z]/i', '', $cleanNombre));
+            $modeloCode = str_pad(substr($onlyLetters, 0, 2), 2, 'X');
+        }
+
+        // 4. Número de piezas (2 dígitos, por defecto 01)
+        $piezasCode = sprintf('%02d', (int) ($producto->numero_piezas ?? 1));
+
+        // 5. Código del material (primeras consonantes de la 1ra palabra + iniciales de palabras restantes)
+        $matCode = 'NAT';
+        if (!empty($materialNombre) && trim($materialNombre) !== '') {
+            $cleanMat = preg_replace('/[^A-Za-z0-9\s]/', '', \Illuminate\Support\Str::ascii($materialNombre));
+            $words = array_values(array_filter(explode(' ', trim($cleanMat))));
+
+            if (count($words) === 1) {
+                preg_match_all('/[BCDFGHJKLMNPQRSTVWXYZ]/i', $words[0], $mMat);
+                $consMat = strtoupper(implode('', $mMat[0] ?? []));
+                $matCode = strlen($consMat) >= 2 ? substr($consMat, 0, 4) : strtoupper(substr($words[0], 0, 3));
+            } elseif (count($words) >= 2) {
+                $w1 = $words[0];
+                preg_match_all('/[BCDFGHJKLMNPQRSTVWXYZ]/i', $w1, $m1);
+                $w1Cons = strtoupper(implode('', $m1[0] ?? []));
+                $part1 = strlen($w1Cons) >= 2 ? substr($w1Cons, 0, 4) : strtoupper(substr($w1, 0, 3));
+
+                $restInitials = '';
+                for ($i = 1; $i < count($words); $i++) {
+                    $restInitials .= strtoupper(substr($words[$i], 0, 1));
+                }
+
+                $matCode = $part1 . '-' . $restInitials;
+            }
+        }
+
+        return "{$provCode}-{$tipoCode}{$modeloCode}{$piezasCode}-{$matCode}";
     }
 }

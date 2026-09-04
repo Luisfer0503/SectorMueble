@@ -47,6 +47,55 @@
                     @enderror
                 </div>
 
+                <!-- Proveedor (Uso Interno Admin / SKU) -->
+                <div>
+                    <label for="proveedor" class="block text-xs font-semibold text-amber-900 uppercase tracking-wider mb-1">
+                        🏢 Proveedor (Uso Interno SKU)
+                    </label>
+                    <select name="proveedor" id="proveedor" required class="w-full bg-amber-50/50 border border-amber-300 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700 font-medium">
+                        <option value="Casa Tapier" {{ old('proveedor', 'Casa Tapier') === 'Casa Tapier' ? 'selected' : '' }}>Casa Tapier (CT)</option>
+                        <option value="Muebles Samar" {{ old('proveedor') === 'Muebles Samar' ? 'selected' : '' }}>Muebles Samar (MS)</option>
+                    </select>
+                    <span class="text-[10px] text-zinc-400 block mt-1">* Solo visible en Admin. Usado para SKU (CT / MS)</span>
+                    @error('proveedor')
+                        <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Tipo de Mueble (Código SKU 01 - 10) -->
+                <div>
+                    <label for="tipo_mueble" class="block text-xs font-semibold text-amber-900 uppercase tracking-wider mb-1">
+                        🏷️ Tipo de Mueble (Código SKU)
+                    </label>
+                    <select name="tipo_mueble" id="tipo_mueble" required class="w-full bg-amber-50/50 border border-amber-300 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700 font-medium">
+                        <option value="01" {{ old('tipo_mueble', '01') === '01' ? 'selected' : '' }}>01 - Silla</option>
+                        <option value="02" {{ old('tipo_mueble') === '02' ? 'selected' : '' }}>02 - Sillón Comedor</option>
+                        <option value="03" {{ old('tipo_mueble') === '03' ? 'selected' : '' }}>03 - Sillón</option>
+                        <option value="04" {{ old('tipo_mueble') === '04' ? 'selected' : '' }}>04 - Sala Modular</option>
+                        <option value="05" {{ old('tipo_mueble') === '05' ? 'selected' : '' }}>05 - Recámara</option>
+                        <option value="06" {{ old('tipo_mueble') === '06' ? 'selected' : '' }}>06 - Cama</option>
+                        <option value="07" {{ old('tipo_mueble') === '07' ? 'selected' : '' }}>07 - Taburete</option>
+                        <option value="08" {{ old('tipo_mueble') === '08' ? 'selected' : '' }}>08 - Buró</option>
+                        <option value="09" {{ old('tipo_mueble') === '09' ? 'selected' : '' }}>09 - Recibidor</option>
+                        <option value="10" {{ old('tipo_mueble') === '10' ? 'selected' : '' }}>10 - Mesa Comedor</option>
+                    </select>
+                    @error('tipo_mueble')
+                        <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Número de Piezas (Uso Interno SKU) -->
+                <div>
+                    <label for="numero_piezas" class="block text-xs font-semibold text-amber-900 uppercase tracking-wider mb-1">
+                        🧩 Número de Piezas
+                    </label>
+                    <input type="number" min="1" max="99" name="numero_piezas" id="numero_piezas" required value="{{ old('numero_piezas', 1) }}" placeholder="Ej: 1" class="w-full bg-amber-50/50 border border-amber-300 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700 font-medium">
+                    <span class="text-[10px] text-zinc-400 block mt-1">* Por defecto 01. Se formatea a 2 dígitos en el SKU</span>
+                    @error('numero_piezas')
+                        <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
+                    @enderror
+                </div>
+
                 <!-- Calificación Inicial -->
                 <div>
                     <label for="calificacion" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Calificación Inicial (1 a 5)</label>

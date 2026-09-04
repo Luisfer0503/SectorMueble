@@ -50,9 +50,14 @@
                                         </div>
                                         <div>
                                             <span class="font-semibold text-zinc-900 block">{{ $producto->nombre }}</span>
-                                            @if($producto->destacado)
-                                                <span class="inline-block text-[9px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 uppercase tracking-wider rounded mt-0.5">Destacado</span>
-                                            @endif
+                                            <div class="flex flex-wrap items-center gap-1 mt-0.5">
+                                                @if($producto->destacado)
+                                                    <span class="inline-block text-[9px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 uppercase tracking-wider rounded">Destacado</span>
+                                                @endif
+                                                <span class="inline-block text-[9px] font-bold text-zinc-700 bg-zinc-100 border border-zinc-200 px-1.5 py-0.5 uppercase tracking-wider rounded">
+                                                    🏢 {{ $producto->proveedor ?? 'Casa Tapier' }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
