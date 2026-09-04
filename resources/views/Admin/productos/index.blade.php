@@ -33,6 +33,7 @@
                         <tr class="bg-zinc-50 text-xs font-bold text-zinc-450 border-b border-zinc-200 uppercase tracking-wider">
                             <th class="p-4 pl-6">Mueble</th>
                             <th class="p-4">Categoría</th>
+                            <th class="p-4">Visibilidad</th>
                             <th class="p-4">Precio</th>
                             <th class="p-4">Inventario</th>
                             <th class="p-4">Calificación</th>
@@ -41,7 +42,7 @@
                     </thead>
                     <tbody class="divide-y divide-zinc-100">
                         @foreach($productos as $producto)
-                            <tr class="hover:bg-zinc-50/50 transition-colors">
+                            <tr class="hover:bg-zinc-50/50 transition-colors {{ !$producto->activo ? 'bg-rose-50/20' : '' }}">
                                 <!-- Imagen & Nombre -->
                                 <td class="p-4 pl-6">
                                     <div class="flex items-center space-x-3">
@@ -65,6 +66,17 @@
                                 <!-- Categoría -->
                                 <td class="p-4 text-zinc-500 font-medium">{{ $producto->categoria }}</td>
                                 
+                                <!-- Visibilidad / Botón Activo/Inactivo -->
+                                <td class="p-4">
+                                    <form action="{{ route('admin.productos.toggle_activo', $producto->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all shadow-2xs cursor-pointer {{ $producto->activo ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 border border-rose-300 hover:bg-rose-200' }}" title="Haz clic para {{ $producto->activo ? 'desactivar' : 'activar' }}">
+                                            <span class="w-2 h-2 rounded-full {{ $producto->activo ? 'bg-emerald-600 animate-pulse' : 'bg-rose-600' }}"></span>
+                                            <span>{{ $producto->activo ? 'Activo (Público)' : 'Inactivo (Oculto)' }}</span>
+                                        </button>
+                                    </form>
+                                </td>
+
                                 <!-- Precio -->
                                 <td class="p-4">
                                     <div class="flex flex-col">
@@ -115,7 +127,7 @@
 
                             <!-- Subartículos (Producto Detalles) -->
                             <tr class="bg-zinc-50/60 border-b border-zinc-200">
-                                <td colspan="6" class="p-3 pl-8 sm:pl-12 pr-6">
+                                <td colspan="7" class="p-3 pl-8 sm:pl-12 pr-6">
                                     <div class="bg-white border border-zinc-200 rounded-xl p-3.5 shadow-2xs">
                                         <div class="flex items-center justify-between mb-2 pb-2 border-b border-zinc-150">
                                             <div class="flex items-center space-x-2">
@@ -137,11 +149,12 @@
                                                         <th class="py-1.5 px-2">Nombre del Subartículo</th>
                                                         <th class="py-1.5 px-2">Precio</th>
                                                         <th class="py-1.5 px-2">Stock</th>
+                                                        <th class="py-1.5 px-2">Visibilidad</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="divide-y divide-zinc-50">
                                                     @forelse($producto->detalles as $det)
-                                                        <tr class="hover:bg-zinc-50 transition-colors">
+                                                        <tr class="hover:bg-zinc-50 transition-colors {{ !$det->activo ? 'bg-rose-50/30' : '' }}">
                                                             <td class="py-2 px-2 font-mono font-bold text-zinc-500">#{{ $det->producto_id }}</td>
                                                             <td class="py-2 px-2 font-mono text-zinc-600 font-semibold">{{ $det->sku ?? '-' }}</td>
                                                             <td class="py-2 px-2">
@@ -156,10 +169,19 @@
                                                                     {{ $det->stock }} disp.
                                                                 </span>
                                                             </td>
+                                                            <td class="py-2 px-2">
+                                                                <form action="{{ route('admin.productos.subarticulo_toggle_activo', $det->id) }}" method="POST" class="inline-block">
+                                                                    @csrf
+                                                                    <button type="submit" class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer {{ $det->activo ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 border border-rose-300 hover:bg-rose-200' }}" title="Haz clic para {{ $det->activo ? 'desactivar' : 'activar' }}">
+                                                                        <span class="w-1.5 h-1.5 rounded-full {{ $det->activo ? 'bg-emerald-600' : 'bg-rose-600' }}"></span>
+                                                                        <span>{{ $det->activo ? 'Activo' : 'Inactivo' }}</span>
+                                                                    </button>
+                                                                </form>
+                                                            </td>
                                                         </tr>
                                                     @empty
                                                         <tr>
-                                                            <td colspan="6" class="py-2 px-2 text-zinc-400 italic text-[11px]">
+                                                            <td colspan="7" class="py-2 px-2 text-zinc-400 italic text-[11px]">
                                                                 Sin subartículos registrados.
                                                             </td>
                                                         </tr>

@@ -24,6 +24,7 @@ class Producto extends Model
         'numero_piezas',
         'calificacion',
         'destacado',
+        'activo',
         'porcentaje_descuento',
         'precio_descuento',
         'colores',
@@ -36,9 +37,18 @@ class Producto extends Model
         'precio_descuento'      => 'decimal:2',
         'calificacion'          => 'decimal:1',
         'destacado'             => 'boolean',
+        'activo'                => 'boolean',
         'porcentaje_descuento'  => 'integer',
         'colores'               => 'array',
     ];
+
+    /**
+     * Scope para filtrar únicamente productos activos para la tienda pública.
+     */
+    public function scopeActivo($query)
+    {
+        return $query->where('activo', true);
+    }
 
     /**
      * Indica si el producto tiene descuento directo activo.
@@ -87,9 +97,9 @@ class Producto extends Model
     {
         $primerDetalle = null;
         if ($this->relationLoaded('detalles')) {
-            $primerDetalle = $this->detalles->first();
+            $primerDetalle = $this->detalles->where('activo', true)->first() ?? $this->detalles->first();
         } else {
-            $primerDetalle = $this->detalles()->first();
+            $primerDetalle = $this->detalles()->where('activo', true)->first() ?? $this->detalles()->first();
         }
 
         if ($primerDetalle && !empty($primerDetalle->imagen)) {
@@ -205,13 +215,13 @@ class Producto extends Model
     public function getPrecioAttribute(): float
     {
         if ($this->relationLoaded('detalles')) {
-            $primerDetalle = $this->detalles->first();
+            $primerDetalle = $this->detalles->where('activo', true)->first() ?? $this->detalles->first();
             if ($primerDetalle && $primerDetalle->precio !== null) {
                 return (float) $primerDetalle->precio;
             }
         }
 
-        $primerDetalle = $this->detalles()->first();
+        $primerDetalle = $this->detalles()->where('activo', true)->first() ?? $this->detalles()->first();
         if ($primerDetalle && $primerDetalle->precio !== null) {
             return (float) $primerDetalle->precio;
         }
@@ -225,9 +235,9 @@ class Producto extends Model
     public function getStockAttribute(): int
     {
         if ($this->relationLoaded('detalles')) {
-            return (int) $this->detalles->sum('stock');
+            return (int) $this->detalles->where('activo', true)->sum('stock');
         }
-        return (int) $this->detalles()->sum('stock');
+        return (int) $this->detalles()->where('activo', true)->sum('stock');
     }
 
     /**

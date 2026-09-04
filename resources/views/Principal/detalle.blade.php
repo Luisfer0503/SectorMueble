@@ -85,7 +85,7 @@
 
                 <!-- Subartículos & Acabados Selector Configured from producto_detalles -->
                 @php
-                    $detalles = $producto->detalles;
+                    $detalles = $producto->detalles->where('activo', true);
                     $primerDetalle = $detalles->first();
                 @endphp
                 <div class="bg-white border border-zinc-200 rounded-2xl p-4 shadow-sm">

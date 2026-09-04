@@ -174,6 +174,7 @@ class AdminController extends Controller
             'numero_piezas' => (int) ($request->numero_piezas ?? 1),
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
+            'activo' => $request->has('activo') ? (bool)$request->activo : true,
             'colores' => !empty($acabadosData) ? $acabadosData : null,
             'imagen_dimension_lateral' => $dimLateral,
             'imagen_dimension_frontal' => $dimFrontal,
@@ -269,6 +270,7 @@ class AdminController extends Controller
             'numero_piezas' => (int) ($request->numero_piezas ?? 1),
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
+            'activo' => $request->has('activo') ? (bool)$request->activo : true,
             'colores' => !empty($acabadosData) ? $acabadosData : null,
             'imagen_dimension_lateral' => $dimLateral,
             'imagen_dimension_frontal' => $dimFrontal,
@@ -294,6 +296,7 @@ class AdminController extends Controller
                 $matImg = $acabado['material_imagen'] ?? null;
                 $precio = (isset($acabado['precio']) && $acabado['precio'] !== null) ? (float) $acabado['precio'] : (float) $producto->precio;
                 $stock  = (isset($acabado['stock']) && $acabado['stock'] !== null) ? (int) $acabado['stock'] : (int) $producto->stock;
+                $activoSub = isset($acabado['activo']) ? (bool) $acabado['activo'] : true;
                 
                 $defaultSku = Producto::generarSkuFormateado($producto, $nombre);
                 $rawSku = !empty($acabado['sku']) ? trim($acabado['sku']) : '';
@@ -307,6 +310,7 @@ class AdminController extends Controller
                     'material_imagen' => $matImg,
                     'precio'          => $precio,
                     'stock'           => $stock,
+                    'activo'          => $activoSub,
                 ]);
             }
         } else {
@@ -340,6 +344,7 @@ class AdminController extends Controller
             $skus    = $request->input('acabados_skus', []);
             $matExistentes = $request->input('acabados_materiales_existentes', []);
             $muebleExistentes = $request->input('acabados_muebles_existentes', $request->input('colores_imagenes_existentes', []));
+            $activosInput = $request->input('acabados_activos', []);
 
             foreach ($nombres as $i => $nombre) {
                 if (trim($nombre) === '') continue;
@@ -349,6 +354,7 @@ class AdminController extends Controller
                 $precioVal = isset($precios[$i]) && $precios[$i] !== '' ? (float) $precios[$i] : null;
                 $stockVal = isset($stocks[$i]) && $stocks[$i] !== '' ? (int) $stocks[$i] : null;
                 $skuVal = isset($skus[$i]) && $skus[$i] !== '' ? trim($skus[$i]) : null;
+                $activoVal = isset($activosInput[$i]) ? (bool) $activosInput[$i] : true;
 
                 // Subida de imagen de muestra de material
                 $matFiles = $request->file('acabados_materiales');
@@ -390,6 +396,7 @@ class AdminController extends Controller
                     'precio'          => $precioVal,
                     'stock'           => $stockVal,
                     'sku'             => $skuVal,
+                    'activo'          => $activoVal,
                 ];
             }
         }
@@ -402,6 +409,46 @@ class AdminController extends Controller
         $producto->delete();
 
         return redirect()->route('admin.productos')->with('success', 'Mueble eliminado del catálogo.');
+    }
+
+    /**
+     * Alterna (toggle) el estado activo / inactivo de un mueble principal.
+     */
+    public function toggleProductoActivo(Request $request, $id)
+    {
+        $producto = Producto::findOrFail($id);
+        $nuevoEstado = $request->has('activo') ? (bool)$request->activo : !$producto->activo;
+        $producto->update(['activo' => $nuevoEstado]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'activo' => $producto->activo,
+                'message' => $producto->activo ? 'El mueble "' . $producto->nombre . '" está ahora ACTIVO al público.' : 'El mueble "' . $producto->nombre . '" está ahora INACTIVO al público.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', $producto->activo ? 'El mueble "' . $producto->nombre . '" está ahora activo al público.' : 'El mueble "' . $producto->nombre . '" está ahora inactivo al público.');
+    }
+
+    /**
+     * Alterna (toggle) el estado activo / inactivo de un subartículo (acabado / variante).
+     */
+    public function toggleSubarticuloActivo(Request $request, $id)
+    {
+        $detalle = ProductoDetalle::findOrFail($id);
+        $nuevoEstado = $request->has('activo') ? (bool)$request->activo : !$detalle->activo;
+        $detalle->update(['activo' => $nuevoEstado]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'activo' => $detalle->activo,
+                'message' => $detalle->activo ? 'Subartículo "' . $detalle->nombre . '" activado.' : 'Subartículo "' . $detalle->nombre . '" desactivado.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', $detalle->activo ? 'Subartículo "' . $detalle->nombre . '" activado.' : 'Subartículo "' . $detalle->nombre . '" desactivado.');
     }
 
     /**

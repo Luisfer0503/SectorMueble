@@ -20,12 +20,22 @@ class ProductoDetalle extends Model
         'material_imagen',
         'precio',
         'stock',
+        'activo',
     ];
 
     protected $casts = [
         'precio' => 'float',
         'stock'  => 'integer',
+        'activo' => 'boolean',
     ];
+
+    /**
+     * Scope para filtrar únicamente subartículos activos.
+     */
+    public function scopeActivo($query)
+    {
+        return $query->where('activo', true);
+    }
 
     /**
      * Relación con el mueble padre.

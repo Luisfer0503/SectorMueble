@@ -23,9 +23,9 @@ class PrincipalController extends Controller
      */
     public function inicio()
     {
-        $productosDestacados = Producto::where('destacado', true)->take(4)->get();
+        $productosDestacados = Producto::activo()->where('destacado', true)->take(4)->get();
         
-        $categorias = Producto::select('categoria')
+        $categorias = Producto::activo()->select('categoria')
             ->distinct()
             ->pluck('categoria');
 
@@ -37,7 +37,7 @@ class PrincipalController extends Controller
      */
     public function catalogo(Request $request)
     {
-        $consulta = Producto::query();
+        $consulta = Producto::activo();
 
         // Filtro por búsqueda
         if ($request->filled('buscar')) {
@@ -105,7 +105,7 @@ class PrincipalController extends Controller
 
         $productos = $consulta->paginate(9)->withQueryString();
 
-        $categorias = Producto::select('categoria')
+        $categorias = Producto::activo()->select('categoria')
             ->distinct()
             ->pluck('categoria');
 
@@ -122,9 +122,11 @@ class PrincipalController extends Controller
      */
     public function detalle($id)
     {
-        $producto = Producto::with('detalles')->findOrFail($id);
+        $producto = Producto::activo()->with(['detalles' => function($q) {
+            $q->where('activo', true);
+        }])->findOrFail($id);
         
-        $productosRelacionados = Producto::where('categoria', $producto->categoria)
+        $productosRelacionados = Producto::activo()->where('categoria', $producto->categoria)
             ->where('id', '!=', $producto->id)
             ->take(4)
             ->get();
@@ -169,7 +171,9 @@ class PrincipalController extends Controller
      */
     public function agregarAlCarrito(Request $request, $id)
     {
-        $producto = Producto::with('detalles')->findOrFail($id);
+        $producto = Producto::activo()->with(['detalles' => function($q) {
+            $q->where('activo', true);
+        }])->findOrFail($id);
         $cantidad = (int) $request->input('cantidad', 1);
         $subarticuloId = $request->input('subarticulo_id');
         $colorNombre = $request->input('color');
@@ -190,6 +194,16 @@ class PrincipalController extends Controller
         }
         if (!$detalle) {
             $detalle = $producto->detalles->first();
+        }
+
+        if (!$detalle || !$detalle->activo) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Este producto o acabado no se encuentra disponible.',
+                ], 422);
+            }
+            return redirect()->back()->with('error', 'Este producto o acabado no se encuentra disponible.');
         }
 
         $detalleId = $detalle ? $detalle->id : 0;

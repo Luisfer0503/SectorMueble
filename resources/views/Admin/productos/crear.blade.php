@@ -217,10 +217,17 @@
                     @enderror
                 </div>
 
-                <!-- Destacado -->
-                <div class="sm:col-span-2 flex items-center">
-                    <input type="checkbox" name="destacado" id="destacado" {{ old('destacado') ? 'checked' : '' }} class="h-4 w-4 text-amber-850 border-zinc-300 rounded focus:ring-amber-700">
-                    <label for="destacado" class="ml-2 text-xs text-zinc-700 font-medium cursor-pointer">Destacar este mueble en la página principal</label>
+                <!-- Visibilidad & Destacado -->
+                <div class="sm:col-span-2 flex flex-wrap items-center gap-6 border-t border-zinc-200 pt-4">
+                    <div class="flex items-center">
+                        <input type="checkbox" name="activo" id="activo" value="1" {{ old('activo', '1') ? 'checked' : '' }} class="h-4 w-4 text-emerald-600 border-zinc-300 rounded focus:ring-emerald-500">
+                        <label for="activo" class="ml-2 text-xs text-zinc-900 font-bold cursor-pointer">Activo (Visible al público en la tienda)</label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input type="checkbox" name="destacado" id="destacado" {{ old('destacado') ? 'checked' : '' }} class="h-4 w-4 text-amber-850 border-zinc-300 rounded focus:ring-amber-700">
+                        <label for="destacado" class="ml-2 text-xs text-zinc-700 font-medium cursor-pointer">Destacar este mueble en la página principal</label>
+                    </div>
                 </div>
 
                 <!-- Gestión de Acabados y Materiales del Mueble -->
@@ -244,11 +251,11 @@
                         <div class="acabado-row p-4 bg-zinc-50/90 border border-zinc-200 rounded-2xl space-y-3">
                             <input type="hidden" name="acabados_skus[]" value="SKU-AUTO-01">
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end">
                                 <!-- 1. SKU (No editable) -->
                                 <div>
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
-                                        1. SKU (Auto-generado)
+                                        1. SKU (Auto)
                                     </label>
                                     <input type="text" value="SKU-AUTO-01" disabled readonly class="w-full bg-zinc-100 border border-zinc-200 rounded-lg text-xs px-2.5 py-2 font-mono text-zinc-500 cursor-not-allowed">
                                 </div>
@@ -256,9 +263,9 @@
                                 <!-- 2. Nombre del Acabado -->
                                 <div>
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-                                        2. Nombre del Acabado
+                                        2. Nombre
                                     </label>
-                                    <input type="text" name="acabados_nombres[]" required value="Madera Natural" placeholder="Ej: Roble Claro, Nogal, Mármol..." class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                    <input type="text" name="acabados_nombres[]" required value="Madera Natural" placeholder="Ej: Roble Claro, Nogal..." class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 </div>
 
                                 <!-- 3. Precio ($) -->
@@ -272,9 +279,20 @@
                                 <!-- 4. Stock -->
                                 <div>
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-                                        4. Stock (Inventario)
+                                        4. Stock
                                     </label>
-                                    <input type="number" min="0" name="acabados_stocks[]" required placeholder="Stock Mueble" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                    <input type="number" min="0" name="acabados_stocks[]" required placeholder="Stock" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                </div>
+
+                                <!-- 5. Visibilidad (Activo / Inactivo) -->
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                                        5. Estado
+                                    </label>
+                                    <select name="acabados_activos[]" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700 font-semibold">
+                                        <option value="1" selected>Activo</option>
+                                        <option value="0">Inactivo</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -369,16 +387,16 @@
             row.innerHTML = `
                 <input type="hidden" name="acabados_skus[]" value="${generatedSku}">
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end">
                     <div>
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
-                            1. SKU (Auto-generado)
+                            1. SKU (Auto)
                         </label>
                         <input type="text" value="${generatedSku}" disabled readonly class="w-full bg-zinc-100 border border-zinc-200 rounded-lg text-xs px-2.5 py-2 font-mono text-zinc-500 cursor-not-allowed">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-                            2. Nombre del Acabado
+                            2. Nombre
                         </label>
                         <input type="text" name="acabados_nombres[]" required placeholder="Ej: Nogal Oscuro" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
                     </div>
@@ -390,9 +408,18 @@
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-                            4. Stock (Inventario)
+                            4. Stock
                         </label>
                         <input type="number" min="0" name="acabados_stocks[]" required value="${firstStock}" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                            5. Estado
+                        </label>
+                        <select name="acabados_activos[]" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700 font-semibold">
+                            <option value="1" selected>Activo</option>
+                            <option value="0">Inactivo</option>
+                        </select>
                     </div>
                 </div>
 

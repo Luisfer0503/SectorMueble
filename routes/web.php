@@ -76,6 +76,8 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::get('/muebles/eliminar/{id}', [AdminController::class, 'productosEliminar'])->name('admin.productos.eliminar');
     Route::get('/muebles/descuento/{id}', [AdminController::class, 'productosDescuento'])->name('admin.productos.descuento');
     Route::post('/muebles/descuento/{id}', [AdminController::class, 'productosAplicarDescuento'])->name('admin.productos.aplicar_descuento');
+    Route::post('/muebles/toggle-activo/{id}', [AdminController::class, 'toggleProductoActivo'])->name('admin.productos.toggle_activo');
+    Route::post('/subarticulos/toggle-activo/{id}', [AdminController::class, 'toggleSubarticuloActivo'])->name('admin.productos.subarticulo_toggle_activo');
 
     // CRUD de Cupones / Descuentos
     Route::get('/cupones', [AdminController::class, 'cuponesIndex'])->name('admin.cupones');
