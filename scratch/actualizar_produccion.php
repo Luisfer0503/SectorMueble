@@ -1,9 +1,11 @@
 <?php
 
 require __DIR__ . '/../vendor/autoload.php';
-$app = require_once __DIR__ . '/../bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
-$kernel->bootstrap();
+$app = require __DIR__ . '/../bootstrap/app.php';
+if (is_object($app) && method_exists($app, 'make')) {
+    $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+    $kernel->bootstrap();
+}
 
 echo "===============================================================\n";
 echo "EJECUTANDO ACTUALIZACIÓN COMPLETA DE SKUS Y PRECIOS EN PRODUCCIÓN\n";

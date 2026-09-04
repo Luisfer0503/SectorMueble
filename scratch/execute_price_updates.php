@@ -1,9 +1,13 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
-$app = require_once __DIR__ . '/../bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
-$kernel->bootstrap();
+if (!isset($app) || !is_object($app)) {
+    require __DIR__ . '/../vendor/autoload.php';
+    $app = require __DIR__ . '/../bootstrap/app.php';
+    if (is_object($app) && method_exists($app, 'make')) {
+        $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+        $kernel->bootstrap();
+    }
+}
 
 use App\Models\Producto;
 use App\Models\ProductoDetalle;
@@ -136,10 +140,3 @@ echo "===============================================================\n";
 echo "Muebles principales actualizados: {$totalActualizados} / " . count($productos) . "\n";
 echo "Subartículos (variantes) actualizados: {$detallesActualizados}\n";
 echo "Muebles sin cambios (no especificados en Excel): " . count($omitidos) . "\n";
-
-if (!empty($omitidos)) {
-    echo "\nLista de Muebles mantenidos con su precio previo:\n";
-    foreach ($omitidos as $om) {
-        echo " - {$om}\n";
-    }
-}
