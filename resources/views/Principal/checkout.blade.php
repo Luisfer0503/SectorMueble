@@ -68,7 +68,8 @@
                             </div>
                             <div>
                                 <label for="codigo_postal" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Código Postal</label>
-                                <input type="text" name="codigo_postal" id="codigo_postal" required value="{{ old('codigo_postal', auth()->user()->codigo_postal ?? session('codigo_postal', '')) }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="codigo_postal" id="codigo_postal" required value="{{ old('codigo_postal', auth()->user()->codigo_postal ?? session('codigo_postal', '')) }}" maxlength="5" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <p id="cp-cobertura-status" class="hidden text-xs font-semibold mt-1.5"></p>
                                 @error('codigo_postal')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
@@ -192,11 +193,36 @@
                         <button type="button" 
                                 id="btn-procesar-stripe"
                                 onclick="iniciarPagoStripe(event)"
-                                class="w-full bg-gradient-to-r from-amber-800 to-amber-900 hover:from-amber-700 hover:to-amber-800 text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                style="background-color: #78350f; color: #ffffff;"
+                                class="w-full text-xs sm:text-sm font-bold uppercase tracking-wider py-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer">
+                            <svg id="btn-stripe-icon" class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                             </svg>
-                            <span id="btn-stripe-texto">Pagar $ {{ number_format($total, 2, '.', ',') }} MXN</span>
+                            <span id="btn-stripe-texto" class="font-bold">Pagar $ {{ number_format($total, 2, '.', ',') }} MXN</span>
+                        </button>
+
+                        <!-- Alerta de Bloqueo por CP Fuera de Cobertura -->
+                        <div id="cp-bloqueo-alerta" class="hidden mt-3 p-3.5 bg-amber-50 border border-amber-200/90 rounded-xl text-xs text-amber-900 leading-relaxed">
+                            <div class="flex items-start space-x-2.5">
+                                <svg class="w-5 h-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                </svg>
+                                <div>
+                                    <strong class="font-bold block text-amber-950 mb-0.5">Pago en línea no disponible</strong>
+                                    <span id="cp-bloqueo-mensaje">El Código Postal ingresado no se encuentra en nuestra base de datos para pago directo. Puedes contactar a un agente de ventas.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botón Contactar Agente de Ventas (WhatsApp) -->
+                        <button type="button" 
+                                id="btn-contactar-agente"
+                                onclick="contactarAgenteVentas()"
+                                class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-3.5 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2.5 mt-3 cursor-pointer">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                            </svg>
+                            <span>Contactar agente de ventas</span>
                         </button>
                         
                         <a href="{{ route('carrito') }}" class="w-full block text-center border border-zinc-200 hover:bg-zinc-50 text-zinc-700 text-xs font-bold uppercase tracking-wider py-3 mt-3 rounded-xl transition-colors">
@@ -210,8 +236,173 @@
     </div>
 
     <script>
+        const carritoItemsCheckout = @json(array_values($carrito));
+        const totalCarritoCheckout = "{{ number_format($total, 2, '.', ',') }}";
+
+        let cpValidadoEnBD = false;
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const inputCP = document.getElementById('codigo_postal');
+            if (inputCP) {
+                inputCP.addEventListener('input', function () {
+                    const cpVal = this.value.trim();
+                    if (cpVal.length === 5 && /^[0-9]{5}$/.test(cpVal)) {
+                        verificarCPCheckout(cpVal);
+                    } else {
+                        bloquearPagoCP('Ingresa un Código Postal válido de 5 dígitos.');
+                    }
+                });
+
+                // Si ya tiene un CP cargado al iniciar la página
+                if (inputCP.value.trim().length === 5) {
+                    verificarCPCheckout(inputCP.value.trim());
+                } else {
+                    bloquearPagoCP('Ingresa un Código Postal para verificar la cobertura de envío.');
+                }
+            }
+        });
+
+        async function verificarCPCheckout(cp) {
+            const statusElem = document.getElementById('cp-cobertura-status');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+            try {
+                const response = await fetch("{{ route('cp.verificar') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ codigo_postal: cp })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.tiene_cobertura) {
+                    cpValidadoEnBD = true;
+                    desbloquearPagoCP();
+
+                    if (statusElem) {
+                        statusElem.className = 'text-xs font-semibold mt-1.5 text-emerald-700 block';
+                        statusElem.innerText = `✓ Cobertura confirmada para ${data.data.municipio}, ${data.data.estado}.`;
+                    }
+
+                    const ciudadInput = document.getElementById('ciudad');
+                    if (ciudadInput && !ciudadInput.value) {
+                        ciudadInput.value = data.data.municipio;
+                    }
+                } else {
+                    cpValidadoEnBD = false;
+                    const msg = (data.data && data.data.mensaje) ? data.data.mensaje : 'El Código Postal ingresado no cuenta con cobertura registrada en la base de datos.';
+                    bloquearPagoCP(msg);
+
+                    if (statusElem) {
+                        statusElem.className = 'text-xs font-semibold mt-1.5 text-amber-700 block';
+                        statusElem.innerText = `⚠️ ${msg}`;
+                    }
+                }
+            } catch (err) {
+                console.error(err);
+                bloquearPagoCP('No se pudo verificar el Código Postal. Inténtalo de nuevo.');
+            }
+        }
+
+        function bloquearPagoCP(mensaje) {
+            const btnPagar = document.getElementById('btn-procesar-stripe');
+            const alertaBox = document.getElementById('cp-bloqueo-alerta');
+            const mensajeElem = document.getElementById('cp-bloqueo-mensaje');
+            const btnTexto = document.getElementById('btn-stripe-texto');
+
+            if (btnPagar) {
+                btnPagar.disabled = true;
+                btnPagar.style.backgroundColor = '#e4e4e7';
+                btnPagar.style.color = '#52525b';
+                btnPagar.style.border = '2px dashed #d4d4d8';
+                btnPagar.style.cursor = 'not-allowed';
+                btnPagar.style.opacity = '1';
+                btnPagar.style.boxShadow = 'none';
+            }
+
+            if (btnTexto) {
+                btnTexto.innerText = `🔒 Pagar $ ${totalCarritoCheckout} MXN (No disponible)`;
+            }
+
+            if (alertaBox) {
+                alertaBox.classList.remove('hidden');
+            }
+
+            if (mensajeElem && mensaje) {
+                mensajeElem.innerText = mensaje;
+            }
+        }
+
+        function desbloquearPagoCP() {
+            const btnPagar = document.getElementById('btn-procesar-stripe');
+            const alertaBox = document.getElementById('cp-bloqueo-alerta');
+            const btnTexto = document.getElementById('btn-stripe-texto');
+
+            if (btnPagar) {
+                btnPagar.disabled = false;
+                btnPagar.style.backgroundColor = '#78350f';
+                btnPagar.style.color = '#ffffff';
+                btnPagar.style.border = 'none';
+                btnPagar.style.cursor = 'pointer';
+                btnPagar.style.opacity = '1';
+                btnPagar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+            }
+
+            if (btnTexto) {
+                btnTexto.innerText = `Pagar $ ${totalCarritoCheckout} MXN`;
+            }
+
+            if (alertaBox) {
+                alertaBox.classList.add('hidden');
+            }
+        }
+
+        function contactarAgenteVentas() {
+            const cpInput = document.getElementById('codigo_postal')?.value || '';
+            const nombreInput = document.getElementById('nombre_cliente')?.value || '';
+            const telInput = document.getElementById('telefono_cliente')?.value || '';
+
+            let mensaje = "¡Hola! Quisiera solicitar información y ayuda para procesar mi compra en Sector Mueble:\n\n";
+            mensaje += "🛋️ *Resumen de mi Carrito:*\n";
+
+            if (carritoItemsCheckout && carritoItemsCheckout.length > 0) {
+                carritoItemsCheckout.forEach(item => {
+                    const subtotalItem = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(item.precio * item.cantidad);
+                    mensaje += `• ${item.cantidad}x ${item.nombre} (${subtotalItem})\n`;
+                });
+            } else {
+                mensaje += "• (Carrito de compras)\n";
+            }
+
+            mensaje += `\n💰 *Total:* $${totalCarritoCheckout} MXN\n`;
+
+            if (cpInput.trim()) {
+                mensaje += `📍 *CP:* ${cpInput.trim()}\n`;
+            }
+            if (nombreInput.trim()) {
+                mensaje += `👤 *Cliente:* ${nombreInput.trim()}\n`;
+            }
+            if (telInput.trim()) {
+                mensaje += `📞 *Teléfono:* ${telInput.trim()}\n`;
+            }
+
+            const numeroWhatsApp = "522213565347";
+            const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+            window.open(url, '_blank');
+        }
+
         async function iniciarPagoStripe(e) {
             if (e) e.preventDefault();
+
+            if (!cpValidadoEnBD) {
+                alert('El Código Postal ingresado no cuenta con cobertura de envío directa para pago en línea. Por favor contacta a un agente de ventas.');
+                return;
+            }
+
             const form = document.getElementById('checkout-form') || document.querySelector('form');
             const btn = document.getElementById('btn-procesar-stripe');
             const btnTexto = document.getElementById('btn-stripe-texto');

@@ -154,11 +154,6 @@
             smCPActual = cpSession;
             localStorage.setItem('sm_codigo_postal', cpSession);
             actualizarHeaderCP(smCPActual, '');
-        } else {
-            // Primera visita: mostrar modal de código postal
-            setTimeout(() => {
-                abrirModalCP(true);
-            }, 600);
         }
     });
 

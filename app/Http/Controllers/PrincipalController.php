@@ -380,6 +380,11 @@ class PrincipalController extends Controller
             'codigo_postal' => 'required|string|max:10',
         ]);
 
+        $cpValido = CatalogoCodigoPostal::where('codigo_postal', trim($request->codigo_postal))->where('activo', true)->exists();
+        if (!$cpValido) {
+            return redirect()->back()->with('error', 'El Código Postal ' . $request->codigo_postal . ' no cuenta con cobertura para pago en línea. Por favor contacta a un agente de ventas.')->withInput();
+        }
+
         $subtotal = 0;
         foreach ($carrito as $id => $item) {
             // Verificar stock en tiempo real
@@ -477,6 +482,14 @@ class PrincipalController extends Controller
             'ciudad'           => 'required|string|max:100',
             'codigo_postal'    => 'required|string|max:10',
         ]);
+
+        $cpValido = CatalogoCodigoPostal::where('codigo_postal', trim($request->codigo_postal))->where('activo', true)->exists();
+        if (!$cpValido) {
+            return response()->json([
+                'success' => false,
+                'message' => 'El Código Postal ' . $request->codigo_postal . ' no cuenta con cobertura de envío directo para pago en línea. Por favor contacta a un agente de ventas.'
+            ], 422);
+        }
 
         $carrito = session()->get('carrito', []);
 
