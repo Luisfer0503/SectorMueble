@@ -59,6 +59,9 @@ Route::post('/ruleta/reclamar', [PrincipalController::class, 'reclamarPremioRule
 // Ruta para verificación de Cobertura de Código Postal (CP)
 Route::post('/verificar-cobertura-cp', [PrincipalController::class, 'verificarCodigoPostal'])->name('cp.verificar');
 
+// Ruta para enviar solicitud de atención a ventas por API
+Route::post('/carrito/contactar-agente', [PrincipalController::class, 'contactarAgenteVentasApi'])->name('carrito.contactar_agente');
+
 
 
 // --- RUTAS DE ADMINISTRACIÓN (Protegidas por verificación de rol de administrador) ---

@@ -45,5 +45,11 @@ return [
         'currency' => env('STRIPE_CURRENCY', 'mxn'),
     ],
 
+    'whatsapp' => [
+        'ventas_number' => env('WHATSAPP_VENTAS_NUMBER', '522213565347'),
+        'api_token' => env('WHATSAPP_API_TOKEN'),
+        'api_url' => env('WHATSAPP_API_URL'),
+    ],
+
 ];
 

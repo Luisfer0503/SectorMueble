@@ -1130,5 +1130,106 @@ class PrincipalController extends Controller
             'data' => $coberturaInfo,
         ]);
     }
+
+    /**
+     * Procesa y envía la solicitud del carrito al agente de ventas (2213565347)
+     * por API en segundo plano con enlace directo al WhatsApp del cliente.
+     */
+    public function contactarAgenteVentasApi(Request $request)
+    {
+        $request->validate([
+            'nombre_cliente'   => 'nullable|string|max:255',
+            'telefono_cliente' => 'required|string|min:10|max:20',
+            'codigo_postal'    => 'nullable|string|max:10',
+        ], [
+            'telefono_cliente.required' => 'Por favor ingresa tu número de teléfono móvil para que el agente pueda responderte por WhatsApp.',
+            'telefono_cliente.min'      => 'Ingresa un número de teléfono válido de al menos 10 dígitos.',
+        ]);
+
+        $carrito = session()->get('carrito', []);
+        if (empty($carrito)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tu carrito de compras está vacío.'
+            ], 422);
+        }
+
+        $nombre = trim($request->input('nombre_cliente')) ?: (auth()->user()->name ?? 'Cliente Web');
+        $telefonoBruto = trim($request->input('telefono_cliente'));
+        $cp = trim($request->input('codigo_postal')) ?: session('codigo_postal', 'Sin especificar');
+
+        // Limpiar número del cliente a dígitos
+        $digitosTel = preg_replace('/[^0-9]/', '', $telefonoBruto);
+        if (strlen($digitosTel) === 10) {
+            $digitosTel = '52' . $digitosTel; // Formato México
+        }
+
+        // Calcular totales
+        $subtotal = 0;
+        $itemsTexto = "";
+        foreach ($carrito as $item) {
+            $subtotalItem = $item['precio'] * $item['cantidad'];
+            $subtotal += $subtotalItem;
+            $precioFmt = number_format($subtotalItem, 2, '.', ',');
+            $itemsTexto .= "• {$item['cantidad']}x {$item['nombre']} (\${$precioFmt} MXN)\n";
+        }
+
+        $descuento = 0.00;
+        $cuponAplicado = session()->get('cupon');
+        if ($cuponAplicado) {
+            $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
+            if ($cupon) {
+                $descuento = $cupon->calcularDescuento($subtotal);
+            }
+        }
+        $envio = ($subtotal >= 10000) ? 0 : 400.00;
+        $total = max(0, $subtotal - $descuento) + $envio;
+        $totalFmt = number_format($total, 2, '.', ',');
+
+        // Enlace interactivo para que el agente responda directamente al WhatsApp del cliente
+        $mensajeRespuestaAgente = rawurlencode("Hola {$nombre}, un gusto saludarte. Recibimos tu solicitud en Sector Mueble para tu pedido con CP {$cp}. ¿En qué podemos ayudarte?");
+        $linkRespuestaCliente = "https://wa.me/{$digitosTel}?text={$mensajeRespuestaAgente}";
+
+        // Construir mensaje estructurado para la API de Ventas
+        $mensajeVentas = "📥 *NUEVA SOLICITUD DE ATENCIÓN DE VENTAS*\n\n";
+        $mensajeVentas .= "👤 *Cliente:* {$nombre}\n";
+        $mensajeVentas .= "📞 *Teléfono:* +{$digitosTel}\n";
+        $mensajeVentas .= "📍 *Código Postal:* {$cp}\n\n";
+        $mensajeVentas .= "🛋️ *RESUMEN DEL CARRITO:*\n{$itemsTexto}\n";
+        $mensajeVentas .= "💰 *Total Estimado:* \${$totalFmt} MXN\n\n";
+        $mensajeVentas .= "💬 *HAZ CLIC AQUÍ PARA RESPONDER AL CLIENTE POR WHATSAPP:*\n{$linkRespuestaCliente}";
+
+        $numeroVentas = config('services.whatsapp.ventas_number', '522213565347');
+        $apiUrl = config('services.whatsapp.api_url');
+        $apiToken = config('services.whatsapp.api_token');
+
+        // Registro de respaldo en logs
+        \Illuminate\Support\Facades\Log::info("SOLICITUD DE ATENCIÓN A VENTAS POR WHATSAPP:\n" . $mensajeVentas);
+
+        // Despacho vía API si está configurado en .env
+        $enviadoPorApi = false;
+        if (!empty($apiUrl) && !empty($apiToken)) {
+            try {
+                \Illuminate\Support\Facades\Http::timeout(10)->withHeaders([
+                    'Authorization' => 'Bearer ' . $apiToken,
+                    'Content-Type'  => 'application/json',
+                ])->post($apiUrl, [
+                    'to'      => $numeroVentas,
+                    'body'    => $mensajeVentas,
+                    'message' => $mensajeVentas,
+                ]);
+                $enviadoPorApi = true;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error al enviar WhatsApp por API: " . $e->getMessage());
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "¡Solicitud enviada con éxito! Nuestro agente de ventas te contactará directamente a tu número (+{$digitosTel}) a la brevedad.",
+            'telefono_cliente' => $digitosTel,
+            'enviado_api' => $enviadoPorApi,
+        ]);
+    }
 }
 
