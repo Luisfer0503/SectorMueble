@@ -1206,18 +1206,53 @@ class PrincipalController extends Controller
         // Registro de respaldo en logs
         \Illuminate\Support\Facades\Log::info("SOLICITUD DE ATENCIÓN A VENTAS POR WHATSAPP:\n" . $mensajeVentas);
 
-        // Despacho vía API si está configurado en .env
+        // Despacho vía API (Soporta CallMeBot, UltraMsg, Meta Cloud API o Webhook)
         $enviadoPorApi = false;
-        if (!empty($apiUrl) && !empty($apiToken)) {
+
+        if (!empty($apiToken) && empty($apiUrl)) {
+            // Pasarela Gratuita CallMeBot
             try {
-                \Illuminate\Support\Facades\Http::timeout(10)->withHeaders([
-                    'Authorization' => 'Bearer ' . $apiToken,
-                    'Content-Type'  => 'application/json',
-                ])->post($apiUrl, [
-                    'to'      => $numeroVentas,
-                    'body'    => $mensajeVentas,
-                    'message' => $mensajeVentas,
-                ]);
+                $urlCallMeBot = "https://api.callmebot.com/whatsapp.php?phone={$numeroVentas}&text=" . urlencode($mensajeVentas) . "&apikey={$apiToken}";
+                \Illuminate\Support\Facades\Http::timeout(10)->get($urlCallMeBot);
+                $enviadoPorApi = true;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error al enviar WhatsApp por CallMeBot: " . $e->getMessage());
+            }
+        } elseif (!empty($apiUrl)) {
+            // Pasarela UltraMsg, Meta WhatsApp Cloud API, Green API o Webhook Universal
+            try {
+                if (str_contains($apiUrl, 'graph.facebook.com')) {
+                    // Meta WhatsApp Cloud API oficial
+                    \Illuminate\Support\Facades\Http::timeout(10)->withToken($apiToken)->post($apiUrl, [
+                        'messaging_product' => 'whatsapp',
+                        'recipient_type'    => 'individual',
+                        'to'                => $numeroVentas,
+                        'type'              => 'text',
+                        'text'              => [
+                            'preview_url' => true,
+                            'body'        => $mensajeVentas,
+                        ],
+                    ]);
+                } elseif (str_contains($apiUrl, 'green-api.com')) {
+                    // Green API
+                    \Illuminate\Support\Facades\Http::timeout(10)->post($apiUrl, [
+                        'chatId'  => $numeroVentas . '@c.us',
+                        'message' => $mensajeVentas,
+                    ]);
+                } else {
+                    // UltraMsg / Evolution API / Custom Webhook Universal
+                    \Illuminate\Support\Facades\Http::timeout(10)->withHeaders([
+                        'Authorization' => 'Bearer ' . $apiToken,
+                        'Content-Type'  => 'application/json',
+                    ])->post($apiUrl, [
+                        'to'        => $numeroVentas,
+                        'phone'     => $numeroVentas,
+                        'body'      => $mensajeVentas,
+                        'message'   => $mensajeVentas,
+                        'token'     => $apiToken,
+                        'token_key' => $apiToken,
+                    ]);
+                }
                 $enviadoPorApi = true;
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error("Error al enviar WhatsApp por API: " . $e->getMessage());

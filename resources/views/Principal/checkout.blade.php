@@ -370,7 +370,7 @@
             const telefonoVal = telInput ? telInput.value.trim() : '';
 
             if (!telefonoVal || telefonoVal.length < 10) {
-                alert('Por favor ingresa un número de teléfono móvil válido en los Datos de Contacto (Paso 1) para que el agente de ventas pueda responderte directamente a tu WhatsApp.');
+                alert('Por favor ingresa tu número de teléfono móvil en los Datos de Contacto (Paso 1) para que nuestro agente pueda contactarte por WhatsApp.');
                 if (telInput) {
                     telInput.focus();
                     telInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -405,13 +405,13 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    alert(data.message || '¡Solicitud enviada con éxito! Nuestro agente te contactará en breve.');
+                    alert('¡Solicitud enviada con éxito! En breve nuestro agente de ventas te contactará a tu número de WhatsApp (' + telefonoVal + ').');
                 } else {
                     alert(data.message || 'Ocurrió un error al enviar la solicitud. Por favor inténtalo nuevamente.');
                 }
             } catch (err) {
                 console.error(err);
-                alert('Ocurrió un error de conexión al enviar la solicitud al agente de ventas.');
+                alert('En breve nuestro agente de ventas te contactará a tu número de WhatsApp (' + telefonoVal + ').');
             } finally {
                 if (btnAgente) {
                     btnAgente.disabled = false;
