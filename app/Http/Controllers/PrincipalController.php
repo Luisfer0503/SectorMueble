@@ -1132,7 +1132,7 @@ class PrincipalController extends Controller
     }
 
     /**
-     * Procesa y envía la solicitud del carrito al agente de ventas (2213565347)
+     * Procesa y envía la solicitud del carrito al agente de ventas (2225722219)
      * por API en segundo plano con enlace directo al WhatsApp del cliente.
      */
     public function contactarAgenteVentasApi(Request $request)
@@ -1199,7 +1199,7 @@ class PrincipalController extends Controller
         $mensajeVentas .= "💰 *Total Estimado:* \${$totalFmt} MXN\n\n";
         $mensajeVentas .= "💬 *HAZ CLIC AQUÍ PARA RESPONDER AL CLIENTE POR WHATSAPP:*\n{$linkRespuestaCliente}";
 
-        $numeroVentas = config('services.whatsapp.ventas_number', '522213565347');
+        $numeroVentas = config('services.whatsapp.ventas_number', '522225722219');
         $apiUrl = config('services.whatsapp.api_url');
         $apiToken = config('services.whatsapp.api_token');
 
