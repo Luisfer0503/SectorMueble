@@ -189,36 +189,36 @@
             <div class="flex items-center justify-between h-16 sm:h-20 py-2 border-b border-zinc-150 gap-2 sm:gap-4">
                 
                 <!-- Botón Menú Móvil (Sólo en pantallas pequeñas) -->
-                <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl text-zinc-700 hover:text-[#4c6f4f] hover:bg-emerald-50 focus:outline-none transition-colors shrink-0" aria-label="Abrir menú">
+                <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl text-zinc-700 hover:text-[#88674B] hover:bg-amber-50 focus:outline-none transition-colors shrink-0" aria-label="Abrir menú">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
 
-                <!-- Logos Principales (Izquierda - shrink-0 para evitar solapamientos con el buscador) -->
+                <!-- Logos Principales (Izquierda - Caja SM en #8a7e72) -->
                 <div class="flex-shrink-0 flex items-center space-x-1.5 sm:space-x-2.5 min-w-0 shrink-0">
                     <a href="{{ route('inicio') }}" class="flex items-center space-x-1.5 sm:space-x-2.5 group py-1 shrink-0">
-                        <div class="relative hidden sm:flex items-center justify-center p-1 bg-gradient-to-br from-emerald-500/10 to-emerald-900/10 rounded-xl border border-emerald-800/15 shadow-sm shrink-0">
+                        <div class="relative hidden sm:flex items-center justify-center p-1 bg-[#8a7e72] rounded-xl border border-[#8a7e72]/40 shadow-sm shrink-0">
                             <img src="{{ asset('logo2.png') }}" alt="Sector Mueble Isotipo" class="h-6 sm:h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm brand-logo-img" style="max-height: 40px; max-width: 120px;">
                         </div>
                         <img src="{{ asset('logo1.png') }}" alt="Sector Mueble Logotipo" class="h-7 sm:h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm brand-logo-img shrink-0" style="max-height: 48px; max-width: 220px;">
                     </a>
                 </div>
 
-                <!-- Buscador Rápido en Centro (Desktop - flex-1 min-w-0 para adaptarse perfectamente sin empujar el logo) -->
+                <!-- Buscador Rápido en Centro (Desktop) -->
                 <form action="{{ route('catalogo') }}" method="GET" class="hidden md:block relative flex-1 min-w-0 max-w-xs xl:max-w-md mx-3 xl:mx-6">
-                    <input type="text" name="buscar" placeholder="Buscar muebles de diseño..." class="w-full bg-zinc-50 focus:bg-white text-xs px-4 py-2.5 pr-9 rounded-full border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#4c6f4f]/50 focus:border-[#4c6f4f] transition-all duration-300 shadow-inner">
-                    <button type="submit" class="absolute right-3 top-2.5 text-zinc-400 hover:text-[#4c6f4f] transition-colors">
+                    <input type="text" name="buscar" placeholder="Buscar muebles de diseño..." class="w-full bg-zinc-50 focus:bg-white text-xs px-4 py-2.5 pr-9 rounded-full border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#88674B]/50 focus:border-[#88674B] transition-all duration-300 shadow-inner">
+                    <button type="submit" class="absolute right-3 top-2.5 text-zinc-400 hover:text-[#88674B] transition-colors">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </button>
                 </form>
 
-                <!-- Bloque Derecha: Acciones de usuario (Verde Bosque #4c6f4f) -->
+                <!-- Bloque Derecha: Acciones de usuario -->
                 <div class="hidden md:flex items-center space-x-2 sm:space-x-3 flex-shrink-0 z-20">
                     
-                    <!-- Botón Carrito de Compras (Verde Bosque #4c6f4f) -->
+                    <!-- Botón Carrito de Compras (ÚNICAMENTE este botón en Verde Bosque #4c6f4f) -->
                     <a href="{{ route('carrito') }}" id="nav-cart-icon" class="relative flex items-center space-x-1.5 px-3 py-2 bg-[#4c6f4f] hover:bg-[#3c583e] text-white rounded-xl shadow transition-all duration-300 active:scale-95 flex-shrink-0 border border-white/20">
                         <svg class="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -232,27 +232,27 @@
                         </span>
                     </a>
 
-                    <!-- Usuario Autenticado / Sesión (Nombre en Verde Bosque #4c6f4f) -->
+                    <!-- Usuario Autenticado / Sesión (ÚNICAMENTE el nombre de usuario en Verde Bosque #4c6f4f) -->
                     @auth
                         <div class="flex items-center space-x-2 border-l border-zinc-200 pl-2 sm:pl-3">
                             <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-[#4c6f4f] font-extrabold">{{ auth()->user()->name }}</strong></span>
                             @if(auth()->user()->is_admin)
-                                <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-white bg-[#4c6f4f] hover:bg-[#3c583e] px-2 py-1 rounded-lg uppercase tracking-wider">Admin</a>
+                                <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-white bg-[#88674B] hover:bg-[#74563C] px-2 py-1 rounded-lg uppercase tracking-wider">Admin</a>
                             @endif
                             <a href="{{ route('logout') }}" class="text-[11px] font-bold text-rose-600 hover:text-rose-700 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors uppercase tracking-wider">Salir</a>
                         </div>
                     @else
                         <div class="flex items-center space-x-1.5 sm:space-x-2 border-l border-zinc-200 pl-2 sm:pl-3">
                             <!-- Botón Iniciar Sesión -->
-                            <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-emerald-950 bg-emerald-50/70 hover:bg-emerald-100/80 border border-emerald-200/80 px-2.5 sm:px-3.5 py-1.5 rounded-xl transition-all shadow-xs whitespace-nowrap">
-                                <svg class="w-3.5 h-3.5 text-[#4c6f4f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2.5 sm:px-3.5 py-1.5 rounded-xl transition-all shadow-xs whitespace-nowrap">
+                                <svg class="w-3.5 h-3.5 text-[#88674B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                                 <span>Iniciar Sesión</span>
                             </a>
 
-                            <!-- Botón Registro (Verde Bosque #4c6f4f) -->
-                            <a href="{{ route('registro') }}" class="inline-flex items-center justify-center text-xs font-bold text-white bg-[#4c6f4f] hover:bg-[#3c583e] px-3.5 py-1.5 rounded-xl transition-all shadow-xs hover:shadow whitespace-nowrap border border-white/20">
+                            <!-- Botón Registro (Taupe #88674B) -->
+                            <a href="{{ route('registro') }}" class="inline-flex items-center justify-center text-xs font-bold text-white bg-[#88674B] hover:bg-[#74563C] px-3.5 py-1.5 rounded-xl transition-all shadow-xs hover:shadow whitespace-nowrap border border-white/20">
                                 <span>Registro</span>
                             </a>
                         </div>
@@ -347,9 +347,9 @@
                     </a>
                 </nav>
 
-                <!-- Botón de Código Postal (CP) con Fondo Sólido 6 (Negro) y Letras Blancas 2 -->
-                <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1.5 text-xs font-bold text-white bg-[#0B0A0A] hover:bg-[#1F0F0B] border border-[#88674B]/50 px-3.5 py-1.5 rounded-xl transition-all shadow-md group cursor-pointer" title="Consultar o cambiar tu Código Postal">
-                    <svg class="w-3.5 h-3.5 text-amber-300 shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Botón de Código Postal (CP) con Fondo Sólido #8C8EA1 -->
+                <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1.5 text-xs font-bold text-white bg-[#8C8EA1] hover:bg-[#7b7d90] border border-[#8C8EA1]/50 px-3.5 py-1.5 rounded-xl transition-all shadow-md group cursor-pointer" title="Consultar o cambiar tu Código Postal">
+                    <svg class="w-3.5 h-3.5 text-white shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
@@ -360,7 +360,7 @@
                             Ingresa tu CP
                         @endif
                     </span>
-                    <span class="text-[10px] text-amber-300 underline font-normal">(Cambiar)</span>
+                    <span class="text-[10px] text-white/90 underline font-normal">(Cambiar)</span>
                 </button>
 
             </div>
@@ -384,9 +384,9 @@
                 <a href="{{ route('catalogo') }}" class="p-3 bg-amber-800 rounded-xl text-white">Todo el Catálogo</a>
             </div>
 
-            <!-- Botón CP Móvil -->
-            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-[#0B0A0A] text-white rounded-xl border border-[#88674B]/50 font-bold text-xs shadow-md">
-                <svg class="w-4 h-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <!-- Botón CP Móvil (Fondo #8C8EA1) -->
+            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-[#8C8EA1] hover:bg-[#7b7d90] text-white rounded-xl border border-[#8C8EA1]/50 font-bold text-xs shadow-md">
+                <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
