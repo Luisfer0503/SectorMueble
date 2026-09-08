@@ -215,10 +215,10 @@
                     </button>
                 </form>
 
-                <!-- Bloque Derecha: Acciones de usuario (Carrito, Iniciar Sesión, Registro y CP debajo) -->
-                <div class="flex items-center space-x-2 sm:space-x-4 flex-shrink-0 z-20">
+                <!-- Bloque Derecha: Acciones de usuario (Ocultos en móvil, disponibles en la barra inferior para una experiencia limpia) -->
+                <div class="hidden md:flex items-center space-x-2 sm:space-x-4 flex-shrink-0 z-20">
                     
-                    <!-- Botón Carrito de Compras -->
+                    <!-- Botón Carrito de Compras (Escritorio) -->
                     <a href="{{ route('carrito') }}" id="nav-cart-icon" class="relative flex items-center space-x-1 px-2.5 sm:px-3 py-2 bg-amber-800 hover:bg-amber-700 text-white rounded-xl shadow transition-all duration-300 active:scale-95 flex-shrink-0">
                         <svg class="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -232,7 +232,7 @@
                         </span>
                     </a>
 
-                    <!-- Usuario Autenticado / Sesión -->
+                    <!-- Usuario Autenticado / Sesión (Escritorio) -->
                     @auth
                         <div class="flex items-center space-x-2 border-l border-zinc-200 pl-2 sm:pl-3">
                             <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-amber-800">{{ auth()->user()->name }}</strong></span>
@@ -248,19 +248,18 @@
                                 <svg class="w-3.5 h-3.5 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
-                                <span class="hidden sm:inline">Iniciar Sesión</span>
-                                <span class="sm:hidden">Entrar</span>
+                                <span>Iniciar Sesión</span>
                             </a>
 
                             <!-- Botón Registro -->
-                            <a href="{{ route('registro') }}" class="hidden sm:inline-flex items-center justify-center text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3.5 py-1.5 rounded-xl transition-all shadow-xs hover:shadow whitespace-nowrap">
+                            <a href="{{ route('registro') }}" class="inline-flex items-center justify-center text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3.5 py-1.5 rounded-xl transition-all shadow-xs hover:shadow whitespace-nowrap">
                                 <span>Registro</span>
                             </a>
                         </div>
                     @endauth
 
-                    <!-- Botón CP Compacto para pantallas móviles pequeños (Celular) -->
-                    <button type="button" onclick="abrirModalCP()" class="md:hidden flex items-center space-x-1 text-[11px] font-bold text-white bg-[#0B0A0A] hover:bg-[#1F0F0B] border border-[#88674B]/40 px-2.5 py-1 rounded-lg shadow-sm">
+                    <!-- Botón CP Compacto (Escritorio) -->
+                    <button type="button" onclick="abrirModalCP()" class="flex items-center space-x-1 text-[11px] font-bold text-white bg-[#0B0A0A] hover:bg-[#1F0F0B] border border-[#88674B]/40 px-2.5 py-1 rounded-lg shadow-sm">
                         <svg class="w-3 h-3 text-amber-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                         </svg>
