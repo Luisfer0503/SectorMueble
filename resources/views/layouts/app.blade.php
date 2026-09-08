@@ -140,7 +140,7 @@
 @endphp
 
 <!-- Banner Sticky de Premio Activo de Ruleta -->
-<div id="ruleta-sticky-banner" class="{{ ($cuponSesion && isset($cuponSesion['expira_en'])) ? '' : 'hidden' }} sticky top-0 z-50 bg-gradient-to-r from-amber-900 via-amber-800 to-amber-950 text-white px-4 py-2.5 shadow-md border-b border-amber-600">
+<div id="ruleta-sticky-banner" class="{{ ($cuponSesion && isset($cuponSesion['expira_en'])) ? '' : 'hidden' }} relative z-30 bg-gradient-to-r from-amber-900 via-amber-800 to-amber-950 text-white px-4 py-2.5 shadow-md border-b border-amber-600">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm">
         <div class="flex items-center space-x-2 font-medium">
             <span class="animate-bounce text-base">🎁</span>
@@ -154,7 +154,7 @@
                 <span>Expira en:</span>
                 <strong id="ruleta-banner-timer" class="text-white font-bold text-sm">--:--</strong>
             </div>
-            <a href="{{ route('carrito') }}" class="bg-amber-500 hover:bg-amber-400 text-amber-950 text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-colors shadow">
+            <a href="{{ route('carrito') }}" class="bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-colors shadow">
                 Ir al Carrito
             </a>
         </div>
@@ -163,14 +163,14 @@
 
 <!-- Banner Sticky de Notificación de Productos Esperando en Carrito -->
 @if(session()->has('notificacion_carrito_abandonado') || (auth()->check() && !empty(auth()->user()->carrito_guardado) && session()->has('carrito') && count(session('carrito', [])) > 0 && !request()->routeIs('carrito') && !request()->routeIs('checkout')))
-<div id="carrito-guardado-banner" class="sticky top-0 z-[48] bg-gradient-to-r from-amber-950 via-amber-900 to-amber-950 text-white px-4 py-2.5 shadow-md border-b border-amber-600/60">
+<div id="carrito-guardado-banner" class="relative z-30 bg-gradient-to-r from-amber-950 via-amber-900 to-amber-950 text-white px-4 py-2.5 shadow-md border-b border-amber-600/60">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm">
         <div class="flex items-center space-x-2 font-medium">
             <span class="animate-bounce text-base">🛒</span>
             <span><strong>¡Tus productos te están esperando!</strong> Dejamos guardados los muebles que tenías en tu carrito para que puedas completar tu compra.</span>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('carrito') }}" class="bg-amber-400 hover:bg-amber-300 text-amber-950 text-xs font-extrabold px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-colors shadow">
+            <a href="{{ route('carrito') }}" class="bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-extrabold px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-colors shadow">
                 Ver mi Carrito ({{ array_sum(array_column(session('carrito', []), 'cantidad')) }})
             </a>
             <button type="button" onclick="document.getElementById('carrito-guardado-banner').remove()" class="text-amber-300 hover:text-white text-xs font-bold px-1.5 py-0.5" title="Cerrar aviso">
@@ -186,40 +186,40 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
             <!-- FILA 1: Logos (Izquierda), Buscador (Centro), Acciones (Derecha: Carrito, Login, Registro) -->
-            <div class="flex items-center justify-between h-16 sm:h-20 py-2 border-b border-zinc-150">
+            <div class="flex items-center justify-between h-16 sm:h-20 py-2 border-b border-zinc-150 gap-2 sm:gap-4">
                 
                 <!-- Botón Menú Móvil (Sólo en pantallas pequeñas) -->
-                <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl text-zinc-700 hover:text-amber-800 hover:bg-amber-50 focus:outline-none transition-colors" aria-label="Abrir menú">
+                <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl text-zinc-700 hover:text-[#1b4332] hover:bg-emerald-50 focus:outline-none transition-colors shrink-0" aria-label="Abrir menú">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
 
-                <!-- Logos Principales (Izquierda) -->
-                <div class="flex-shrink flex items-center space-x-1.5 sm:space-x-2.5 min-w-0">
-                    <a href="{{ route('inicio') }}" class="flex items-center space-x-1.5 sm:space-x-2.5 group py-1">
-                        <div class="relative flex items-center justify-center p-1 bg-gradient-to-br from-amber-500/10 to-amber-800/10 rounded-xl border border-amber-800/15 shadow-sm shrink-0">
+                <!-- Logos Principales (Izquierda - shrink-0 para evitar solapamientos con el buscador) -->
+                <div class="flex-shrink-0 flex items-center space-x-1.5 sm:space-x-2.5 min-w-0 shrink-0">
+                    <a href="{{ route('inicio') }}" class="flex items-center space-x-1.5 sm:space-x-2.5 group py-1 shrink-0">
+                        <div class="relative hidden sm:flex items-center justify-center p-1 bg-gradient-to-br from-emerald-500/10 to-emerald-900/10 rounded-xl border border-emerald-800/15 shadow-sm shrink-0">
                             <img src="{{ asset('logo2.png') }}" alt="Sector Mueble Isotipo" class="h-6 sm:h-9 md:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm brand-logo-img" style="max-height: 40px; max-width: 120px;">
                         </div>
-                        <img src="{{ asset('logo1.png') }}" alt="Sector Mueble Logotipo" class="h-7 sm:h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm brand-logo-img" style="max-height: 48px; max-width: 220px;">
+                        <img src="{{ asset('logo1.png') }}" alt="Sector Mueble Logotipo" class="h-7 sm:h-10 md:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105 drop-shadow-sm brand-logo-img shrink-0" style="max-height: 48px; max-width: 220px;">
                     </a>
                 </div>
 
-                <!-- Buscador Rápido en Centro (Desktop) -->
-                <form action="{{ route('catalogo') }}" method="GET" class="hidden md:block relative max-w-xs xl:max-w-md w-full mx-4">
-                    <input type="text" name="buscar" placeholder="Buscar muebles de diseño..." class="w-full bg-zinc-50 focus:bg-white text-xs px-4 py-2 pr-9 rounded-full border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-700/50 focus:border-amber-700 transition-all duration-300 shadow-inner">
-                    <button type="submit" class="absolute right-3 top-2 text-zinc-400 hover:text-amber-800 transition-colors">
+                <!-- Buscador Rápido en Centro (Desktop - flex-1 min-w-0 para adaptarse perfectamente sin empujar el logo) -->
+                <form action="{{ route('catalogo') }}" method="GET" class="hidden md:block relative flex-1 min-w-0 max-w-xs xl:max-w-md mx-3 xl:mx-6">
+                    <input type="text" name="buscar" placeholder="Buscar muebles de diseño..." class="w-full bg-zinc-50 focus:bg-white text-xs px-4 py-2.5 pr-9 rounded-full border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#1b4332]/50 focus:border-[#1b4332] transition-all duration-300 shadow-inner">
+                    <button type="submit" class="absolute right-3 top-2.5 text-zinc-400 hover:text-[#1b4332] transition-colors">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </button>
                 </form>
 
-                <!-- Bloque Derecha: Acciones de usuario (Ocultos en móvil, disponibles en la barra inferior para una experiencia limpia) -->
-                <div class="hidden md:flex items-center space-x-2 sm:space-x-4 flex-shrink-0 z-20">
+                <!-- Bloque Derecha: Acciones de usuario (Verde Bosque #1b4332) -->
+                <div class="hidden md:flex items-center space-x-2 sm:space-x-3 flex-shrink-0 z-20">
                     
-                    <!-- Botón Carrito de Compras (Escritorio) -->
-                    <a href="{{ route('carrito') }}" id="nav-cart-icon" class="relative flex items-center space-x-1 px-2.5 sm:px-3 py-2 bg-amber-800 hover:bg-amber-700 text-white rounded-xl shadow transition-all duration-300 active:scale-95 flex-shrink-0">
+                    <!-- Botón Carrito de Compras (Verde Bosque #1b4332) -->
+                    <a href="{{ route('carrito') }}" id="nav-cart-icon" class="relative flex items-center space-x-1.5 px-3 py-2 bg-[#1b4332] hover:bg-[#143427] text-white rounded-xl shadow transition-all duration-300 active:scale-95 flex-shrink-0 border border-white/20">
                         <svg class="h-4.5 w-4.5 sm:h-5 sm:w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                         </svg>
@@ -227,50 +227,36 @@
                         @php
                             $cantidadCarrito = array_sum(array_column(session('carrito', []), 'cantidad'));
                         @endphp
-                        <span id="cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} ml-1 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-extrabold leading-none text-amber-950 bg-amber-300 rounded-full shadow">
+                        <span id="cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} ml-1 px-1.5 py-0.5 text-[10px] sm:text-[11px] font-extrabold leading-none text-white bg-[#143427] rounded-full shadow">
                             {{ $cantidadCarrito }}
                         </span>
                     </a>
 
-                    <!-- Usuario Autenticado / Sesión (Escritorio) -->
+                    <!-- Usuario Autenticado / Sesión (Nombre en Verde Bosque #1b4332) -->
                     @auth
                         <div class="flex items-center space-x-2 border-l border-zinc-200 pl-2 sm:pl-3">
-                            <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-amber-800">{{ auth()->user()->name }}</strong></span>
+                            <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-[#1b4332] font-extrabold">{{ auth()->user()->name }}</strong></span>
                             @if(auth()->user()->is_admin)
-                                <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2 py-1 rounded-lg uppercase tracking-wider">Admin</a>
+                                <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-white bg-[#1b4332] hover:bg-[#143427] px-2 py-1 rounded-lg uppercase tracking-wider">Admin</a>
                             @endif
                             <a href="{{ route('logout') }}" class="text-[11px] font-bold text-rose-600 hover:text-rose-700 px-2 py-1 rounded-lg hover:bg-rose-50 transition-colors uppercase tracking-wider">Salir</a>
                         </div>
                     @else
                         <div class="flex items-center space-x-1.5 sm:space-x-2 border-l border-zinc-200 pl-2 sm:pl-3">
                             <!-- Botón Iniciar Sesión -->
-                            <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2.5 sm:px-3.5 py-1.5 rounded-xl transition-all shadow-xs whitespace-nowrap">
-                                <svg class="w-3.5 h-3.5 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-emerald-950 bg-emerald-50/70 hover:bg-emerald-100/80 border border-emerald-200/80 px-2.5 sm:px-3.5 py-1.5 rounded-xl transition-all shadow-xs whitespace-nowrap">
+                                <svg class="w-3.5 h-3.5 text-[#1b4332]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                                 <span>Iniciar Sesión</span>
                             </a>
 
-                            <!-- Botón Registro -->
-                            <a href="{{ route('registro') }}" class="inline-flex items-center justify-center text-xs font-bold text-white bg-amber-800 hover:bg-amber-700 px-3.5 py-1.5 rounded-xl transition-all shadow-xs hover:shadow whitespace-nowrap">
+                            <!-- Botón Registro (Verde Bosque #1b4332) -->
+                            <a href="{{ route('registro') }}" class="inline-flex items-center justify-center text-xs font-bold text-white bg-[#1b4332] hover:bg-[#143427] px-3.5 py-1.5 rounded-xl transition-all shadow-xs hover:shadow whitespace-nowrap border border-white/20">
                                 <span>Registro</span>
                             </a>
                         </div>
                     @endauth
-
-                    <!-- Botón CP Compacto (Escritorio) -->
-                    <button type="button" onclick="abrirModalCP()" class="flex items-center space-x-1 text-[11px] font-bold text-white bg-[#0B0A0A] hover:bg-[#1F0F0B] border border-[#88674B]/40 px-2.5 py-1 rounded-lg shadow-sm">
-                        <svg class="w-3 h-3 text-amber-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                        </svg>
-                        <span class="cp-header-text-span font-bold text-white">
-                            @if(session('codigo_postal'))
-                                {{ session('codigo_postal') }}
-                            @else
-                                CP
-                            @endif
-                        </span>
-                    </button>
                 </div>
             </div>
 
@@ -548,9 +534,7 @@
                 <div>
                     <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Servicio al Cliente</h3>
                     <ul class="mt-4 space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-amber-500 transition-colors">Preguntas Frecuentes</a></li>
                         <li><a href="#" class="hover:text-amber-500 transition-colors">Políticas de Envío</a></li>
-                        <li><a href="#" class="hover:text-amber-500 transition-colors">Garantía de Satisfacción</a></li>
                         <li><a href="#" class="hover:text-amber-500 transition-colors">Términos y Condiciones</a></li>
                     </ul>
                 </div>
@@ -596,7 +580,7 @@
     <!-- Barra de Navegación Flotante Inferior para Celulares (Mobile App-Like Experience) -->
     <nav class="md:hidden fixed bottom-0 left-0 right-0 z-[80] bg-white/95 backdrop-blur-lg border-t border-zinc-200/90 shadow-2xl py-2 px-3 flex items-center justify-around">
         <!-- Inicio -->
-        <a href="{{ route('inicio') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('inicio') ? 'text-amber-800 font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+        <a href="{{ route('inicio') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('inicio') ? 'text-[#88674B] font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
             </svg>
@@ -604,7 +588,7 @@
         </a>
 
         <!-- Catálogo -->
-        <a href="{{ route('catalogo') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('catalogo') ? 'text-amber-800 font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+        <a href="{{ route('catalogo') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('catalogo') ? 'text-[#88674B] font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/>
             </svg>
@@ -612,12 +596,12 @@
         </a>
 
         <!-- Carrito -->
-        <a href="{{ route('carrito') }}" class="relative flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('carrito') ? 'text-amber-800 font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+        <a href="{{ route('carrito') }}" class="relative flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('carrito') ? 'text-[#88674B] font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
             <div class="relative">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                 </svg>
-                <span id="mobile-cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} absolute -top-1.5 -right-2.5 bg-amber-600 text-white text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center shadow">
+                <span id="mobile-cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} absolute -top-1.5 -right-2.5 bg-[#88674B] text-white text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center shadow">
                     {{ $cantidadCarrito }}
                 </span>
             </div>
@@ -633,7 +617,7 @@
                 <span class="text-[10px]">Salir</span>
             </a>
         @else
-            <a href="{{ route('login') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('login') ? 'text-amber-800 font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+            <a href="{{ route('login') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('login') ? 'text-[#88674B] font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>

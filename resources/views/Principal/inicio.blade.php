@@ -405,71 +405,7 @@
     </div>
 
 
-    <!-- ── 7. SECCIÓN DE PRUEBA SOCIAL / RESEÑAS DE CLIENTES ── -->
-    <div class="py-20 sm:py-28 bg-[#FAF8F5] border-b border-zinc-200/80">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto">
-                <div class="inline-flex items-center space-x-1.5 text-amber-500 text-sm mb-2">
-                    <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
-                    <span class="text-zinc-800 font-bold text-xs ml-2">4.9 / 5.0 en +1,200 Reseñas</span>
-                </div>
-                <h2 class="serif-title text-3xl sm:text-5xl font-bold text-zinc-950">Experiencias de Nuestros Clientes</h2>
-                <p class="mt-2 text-zinc-600 text-sm sm:text-base font-light">Descubre por qué arquitectos y amantes del diseño confían en Sector Mueble para vestir sus espacios.</p>
-            </div>
 
-            <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-8">
-                
-                <div class="bg-white p-8 rounded-3xl border border-zinc-200/80 shadow-sm flex flex-col justify-between hover:shadow-lg transition-all">
-                    <div>
-                        <div class="flex text-amber-500 text-xs mb-4">★★★★★</div>
-                        <p class="text-zinc-700 text-sm italic leading-relaxed">
-                            "La calidad de la madera maciza superó mis expectativas. El armado en casa fue impecable y el sofá modular luce espectacular en nuestro proyecto residencial."
-                        </p>
-                    </div>
-                    <div class="mt-6 flex items-center space-x-3 pt-4 border-t border-zinc-100">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=120" alt="Cliente Valery" class="w-10 h-10 rounded-full object-cover">
-                        <div>
-                            <h4 class="text-xs font-bold text-zinc-950">Arq. Valery Mendoza</h4>
-                            <span class="text-[11px] text-zinc-400">Cliente Verificado • Ciudad de México</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-8 rounded-3xl border border-zinc-200/80 shadow-sm flex flex-col justify-between hover:shadow-lg transition-all">
-                    <div>
-                        <div class="flex text-amber-500 text-xs mb-4">★★★★★</div>
-                        <p class="text-zinc-700 text-sm italic leading-relaxed">
-                            "Compré la mesa de comedor de roble. El empaque protector multicapa llegó perfecto y el seguimiento de envío por WhatsApp fue constante de principio a fin."
-                        </p>
-                    </div>
-                    <div class="mt-6 flex items-center space-x-3 pt-4 border-t border-zinc-100">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=120" alt="Cliente Rodrigo" class="w-10 h-10 rounded-full object-cover">
-                        <div>
-                            <h4 class="text-xs font-bold text-zinc-950">Rodrigo Alarcón</h4>
-                            <span class="text-[11px] text-zinc-400">Cliente Verificado • Guadalajara</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white p-8 rounded-3xl border border-zinc-200/80 shadow-sm flex flex-col justify-between hover:shadow-lg transition-all">
-                    <div>
-                        <div class="flex text-amber-500 text-xs mb-4">★★★★★</div>
-                        <p class="text-zinc-700 text-sm italic leading-relaxed">
-                            "El diseño minimalista nórdico de Sector Mueble le dio a mi estudio de arquitectura exactamente el tono de elegancia cálida que estaba buscando."
-                        </p>
-                    </div>
-                    <div class="mt-6 flex items-center space-x-3 pt-4 border-t border-zinc-100">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=120" alt="Cliente Diana" class="w-10 h-10 rounded-full object-cover">
-                        <div>
-                            <h4 class="text-xs font-bold text-zinc-950">Interiorista Diana Campos</h4>
-                            <span class="text-[11px] text-zinc-400">Cliente Verificado • Monterrey</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </div>
 
 
     <!-- ── 8. BANNER DE PRIVILEGIOS / NEWSLETTER ── -->
