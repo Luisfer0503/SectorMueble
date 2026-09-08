@@ -52,9 +52,29 @@ h1, h2, h3, h4, h5, h6, .serif-title, .font-heading {
     font-family: 'Playfair Display', 'Poppins', Georgia, serif;
 }
 
-/* Color Utility Helpers */
+/* Color Utility Helpers por Número de Paleta Marca Sector Mueble */
+.bg-palette-1, .bg-brand-1 { background-color: #88674B; }
+.text-palette-1, .text-brand-1 { color: #88674B; }
+.border-palette-1 { border-color: #88674B; }
+
+.bg-palette-2, .bg-brand-2 { background-color: #ffffff; }
+.text-palette-2, .text-brand-2 { color: #ffffff; }
+
+.bg-palette-3, .bg-brand-3 { background-color: #74563C; }
+.text-palette-3, .text-brand-3 { color: #74563C; }
+.border-palette-3 { border-color: #74563C; }
+
+.bg-palette-4, .bg-brand-4 { background-color: #2B241A; }
+.text-palette-4, .text-brand-4 { color: #2B241A; }
+
+.bg-palette-5, .bg-brand-5 { background-color: #FAF8F5; }
+.text-palette-5, .text-brand-5 { color: #FAF8F5; }
+
+.bg-palette-6, .bg-brand-6 { background-color: #0B0A0A; }
+.text-palette-6, .text-brand-6 { color: #0B0A0A; }
+
 .bg-brand-cream { background-color: #ffffff; }
-.bg-brand-sand { background-color: #ffffff; }
+.bg-brand-sand { background-color: #FAF8F5; }
 .bg-brand-taupe { background-color: #88674B; }
 .bg-brand-espresso { background-color: #2B241A; }
 .bg-brand-deep { background-color: #1F0F0B; }

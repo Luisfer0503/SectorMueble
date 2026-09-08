@@ -100,17 +100,22 @@
 @include('Principal.partials.modal-cp')
 
 <!-- Banner Superior de Leyenda Informativa / Precios de Muestra (Demostración) -->
-<div class="bg-amber-950 text-amber-100 text-xs py-2 px-4 border-b border-amber-800/40 text-center font-medium shadow-sm z-[60] relative">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-        <span class="inline-flex items-center space-x-1 bg-amber-800/80 text-amber-200 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider">
-            <svg class="w-3 h-3 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>Sitio de Demostración</span>
-        </span>
-        <span class="text-amber-100/90 text-[11px] sm:text-xs">
-            Los precios, productos y promociones mostrados en este sitio web son <strong>exclusivamente de muestra</strong> (fines educativos/demo) y no representan ofertas comerciales ni ventas reales.
-        </span>
+<div id="demo-site-banner" class="bg-[#74563C] text-white text-xs py-2 px-4 border-b border-[#88674B]/40 text-center font-medium shadow-sm z-[60] relative transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+        <div class="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
+            <span class="inline-flex items-center space-x-1 bg-[#88674B] text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider shadow-xs">
+                <svg class="w-3 h-3 text-amber-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Sitio de Demostración</span>
+            </span>
+            <span class="text-white/95 text-[11px] sm:text-xs">
+                Los precios, productos y promociones mostrados son exclusivamente de muestra (fines educativos/demo).
+            </span>
+        </div>
+        <button type="button" onclick="document.getElementById('demo-site-banner').remove()" class="text-white/80 hover:text-white text-xs font-bold px-2 py-0.5 rounded hover:bg-black/20" title="Ocultar aviso">
+            ✕
+        </button>
     </div>
 </div>
 
@@ -255,11 +260,11 @@
                     @endauth
 
                     <!-- Botón CP Compacto para pantallas móviles pequeños (Celular) -->
-                    <button type="button" onclick="abrirModalCP()" class="md:hidden flex items-center space-x-1 text-[11px] font-bold text-amber-900 bg-amber-100/80 border border-amber-300/80 px-2 py-1 rounded-lg shadow-2xs">
-                        <svg class="w-3 h-3 text-amber-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button type="button" onclick="abrirModalCP()" class="md:hidden flex items-center space-x-1 text-[11px] font-bold text-white bg-[#0B0A0A] hover:bg-[#1F0F0B] border border-[#88674B]/40 px-2.5 py-1 rounded-lg shadow-sm">
+                        <svg class="w-3 h-3 text-amber-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                         </svg>
-                        <span class="cp-header-text-span font-bold text-amber-950">
+                        <span class="cp-header-text-span font-bold text-white">
                             @if(session('codigo_postal'))
                                 {{ session('codigo_postal') }}
                             @else
@@ -357,20 +362,20 @@
                     </a>
                 </nav>
 
-                <!-- Botón de Código Postal (CP) a la misma altura que Categorías y justo DEBAJO de Iniciar Sesión -->
-                <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1.5 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/90 px-3 py-1 rounded-xl transition-all shadow-2xs group cursor-pointer" title="Consultar o cambiar tu Código Postal">
-                    <svg class="w-3.5 h-3.5 text-amber-800 shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Botón de Código Postal (CP) con Fondo Sólido 6 (Negro) y Letras Blancas 2 -->
+                <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1.5 text-xs font-bold text-white bg-[#0B0A0A] hover:bg-[#1F0F0B] border border-[#88674B]/50 px-3.5 py-1.5 rounded-xl transition-all shadow-md group cursor-pointer" title="Consultar o cambiar tu Código Postal">
+                    <svg class="w-3.5 h-3.5 text-amber-300 shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
-                    <span class="cp-header-text-span font-bold text-amber-950">
+                    <span class="cp-header-text-span font-bold text-white">
                         @if(session('codigo_postal'))
                             CP: <strong>{{ session('codigo_postal') }}</strong>
                         @else
                             Ingresa tu CP
                         @endif
                     </span>
-                    <span class="text-[10px] text-amber-700 underline font-normal">(Cambiar)</span>
+                    <span class="text-[10px] text-amber-300 underline font-normal">(Cambiar)</span>
                 </button>
 
             </div>
@@ -395,12 +400,12 @@
             </div>
 
             <!-- Botón CP Móvil -->
-            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-amber-100/70 text-amber-950 rounded-xl border border-amber-300/80 font-bold text-xs">
-                <svg class="w-4 h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-[#0B0A0A] text-white rounded-xl border border-[#88674B]/50 font-bold text-xs shadow-md">
+                <svg class="w-4 h-4 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
-                <span class="cp-header-text-span">Consultar / Cambiar Código Postal</span>
+                <span class="cp-header-text-span font-bold text-white">Consultar / Cambiar Código Postal</span>
             </button>
 
             @auth

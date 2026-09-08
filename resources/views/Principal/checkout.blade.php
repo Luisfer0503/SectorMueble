@@ -36,7 +36,7 @@
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="telefono_cliente" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Teléfono móvil</label>
-                                <input type="tel" name="telefono_cliente" id="telefono_cliente" required value="{{ old('telefono_cliente') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="tel" name="telefono_cliente" id="telefono_cliente" required value="{{ old('telefono_cliente', auth()->user()->telefono ?? '') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 @error('telefono_cliente')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
@@ -68,71 +68,43 @@
                             </div>
                             <div>
                                 <label for="codigo_postal" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Código Postal</label>
-                                <input type="text" name="codigo_postal" id="codigo_postal" required value="{{ old('codigo_postal', auth()->user()->codigo_postal ?? session('codigo_postal', '')) }}" maxlength="5" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
-                                <p id="cp-cobertura-status" class="hidden text-xs font-semibold mt-1.5"></p>
+                                <input type="text" name="codigo_postal" id="codigo_postal" required maxlength="5" value="{{ old('codigo_postal', session('codigo_postal', '')) }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700 font-mono font-bold">
+                                <span id="cp-cobertura-status" class="text-xs font-semibold mt-1.5 hidden"></span>
                                 @error('codigo_postal')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
+                            <div class="sm:col-span-3">
+                                <label for="referencias" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Referencias de entrega <span class="text-zinc-400 font-normal">(Opcional)</span></label>
+                                <input type="text" name="referencias" id="referencias" value="{{ old('referencias') }}" placeholder="Ej. Entre calle Olivos y Sauces, fachada blanca con portón de madera" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Paso 3: Datos de Pago (Stripe / Pasarela Segura) -->
+                    <!-- Paso 3: Método de Pago (Stripe) -->
                     <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center space-x-3">
-                                <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
-                                <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Método de Pago Seguro</h2>
-                            </div>
-                            <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
-                                <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                                </svg>
-                                <span>Encriptación SSL 256-bit</span>
-                            </span>
+                        <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+                            <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
+                            <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Método de Pago Seguro</h2>
                         </div>
 
-                        <!-- Selector de Tarjeta / Stripe -->
-                        <div class="mb-6 p-4 bg-gradient-to-r from-amber-50/80 via-white to-amber-50/40 border border-amber-200/90 rounded-2xl">
+                        <div class="bg-gradient-to-r from-amber-500/10 via-amber-100/40 to-amber-50/20 p-4 sm:p-5 rounded-2xl border border-amber-200">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-3">
-                                    <div class="p-2.5 bg-amber-900 text-white rounded-xl shadow-sm">
+                                    <div class="p-2 bg-amber-800 text-white rounded-xl shadow-sm">
                                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                         </svg>
                                     </div>
                                     <div>
                                         <h3 class="text-sm font-extrabold text-amber-950">Tarjeta de Crédito / Débito (Stripe)</h3>
-                                        <p class="text-xs text-zinc-600 mt-0.5">Procesamiento seguro directo en Stripe Sandbox o Producción</p>
+                                        <p class="text-xs text-zinc-600 mt-0.5">Procesamiento seguro directo en Stripe</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center space-x-1.5 opacity-80">
                                     <span class="text-[10px] font-bold bg-zinc-100 text-zinc-700 px-2 py-1 rounded">VISA</span>
                                     <span class="text-[10px] font-bold bg-zinc-100 text-zinc-700 px-2 py-1 rounded">MC</span>
                                     <span class="text-[10px] font-bold bg-zinc-100 text-zinc-700 px-2 py-1 rounded">AMEX</span>
-                                </div>
-                            </div>
-
-                            <!-- Explicación Clara del Proceso de Pago en Stripe -->
-                            <div class="mt-4 pt-3 border-t border-amber-200/60 text-xs text-amber-900 space-y-2">
-                                <div class="flex items-start space-x-2">
-                                    <span class="text-base leading-none">🔐</span>
-                                    <div>
-                                        <strong class="text-amber-950 block">¿Cómo ingresar tu tarjeta?</strong>
-                                        <p class="mt-0.5 text-zinc-600 leading-relaxed">
-                                            Al hacer clic en el botón <strong>"Pagar $ {{ number_format($total, 2, '.', ',') }} MXN"</strong>, serás redirigido en 1 segundo a la pasarela bancaria cifrada de <strong>Stripe Checkout</strong> donde podrás ingresar tu tarjeta de forma 100% protegida.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-start space-x-2 bg-amber-100/70 p-2.5 rounded-xl border border-amber-200">
-                                    <span class="text-base leading-none">💡</span>
-                                    <div>
-                                        <strong class="text-amber-950">Tarjeta de prueba para este ambiente:</strong>
-                                        <p class="text-[11px] text-amber-900 mt-0.5">
-                                            Usa la tarjeta <code class="bg-white px-1.5 py-0.5 rounded font-mono font-bold text-amber-950 border border-amber-300">4242 4242 4242 4242</code> con cualquier fecha futura (ej. <code class="bg-white px-1 py-0.5 rounded font-mono">12/28</code>) y CVC <code class="bg-white px-1 py-0.5 rounded font-mono">123</code>.
-                                        </p>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -193,8 +165,8 @@
                         <button type="button" 
                                 id="btn-procesar-stripe"
                                 onclick="iniciarPagoStripe(event)"
-                                style="background-color: #78350f; color: #ffffff;"
-                                class="w-full text-xs sm:text-sm font-bold uppercase tracking-wider py-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer">
+                                style="background-color: #88674B; color: #ffffff;"
+                                class="w-full text-xs sm:text-sm font-bold uppercase tracking-wider py-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer border border-white/20">
                             <svg id="btn-stripe-icon" class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                             </svg>
@@ -202,14 +174,16 @@
                         </button>
 
                         <!-- Alerta de Bloqueo por CP Fuera de Cobertura -->
-                        <div id="cp-bloqueo-alerta" class="hidden mt-3 p-3.5 bg-amber-50 border border-amber-200/90 rounded-xl text-xs text-amber-900 leading-relaxed">
-                            <div class="flex items-start space-x-2.5">
-                                <svg class="w-5 h-5 text-amber-700 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                                </svg>
+                        <div id="cp-bloqueo-alerta" class="hidden mt-4 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl text-xs text-amber-950 leading-relaxed shadow-sm">
+                            <div class="flex items-start space-x-3">
+                                <div class="p-1.5 bg-amber-600 text-white rounded-full shrink-0 mt-0.5 shadow-sm">
+                                    <svg class="w-5 h-5 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
                                 <div>
-                                    <strong class="font-bold block text-amber-950 mb-0.5">Pago en línea no disponible</strong>
-                                    <span id="cp-bloqueo-mensaje">El Código Postal ingresado no se encuentra en nuestra base de datos para pago directo. Puedes contactar a un agente de ventas.</span>
+                                    <strong class="font-extrabold text-sm block text-amber-950 mb-1">¡Queremos ayudarte a coordinar tu envío de la mejor manera!</strong>
+                                    <span id="cp-bloqueo-mensaje" class="text-xs text-amber-900 leading-relaxed block font-medium">Para poder dar seguimiento a tu solicitud, haz clic en "Contactar agente de ventas" y nos comunicaremos contigo muy pronto.</span>
                                 </div>
                             </div>
                         </div>
@@ -218,7 +192,7 @@
                         <button type="button" 
                                 id="btn-contactar-agente"
                                 onclick="contactarAgenteVentas()"
-                                class="w-full bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-3.5 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2.5 mt-3 cursor-pointer">
+                                class="w-full bg-[#88674B] hover:bg-[#74563C] active:scale-[0.99] text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-4 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2.5 mt-3 cursor-pointer border border-white/20">
                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
                                 <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
                             </svg>

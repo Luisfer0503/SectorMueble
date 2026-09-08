@@ -72,8 +72,8 @@
                     <label for="remember" class="ml-2.5 text-xs text-zinc-600 font-medium cursor-pointer select-none">Mantener sesión iniciada</label>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="w-full bg-gradient-to-r from-amber-800 via-amber-800 to-amber-950 hover:from-amber-700 hover:to-amber-900 text-white font-bold text-xs sm:text-sm uppercase tracking-wider py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98]">
+                <!-- Submit Button (Color 1 Sólido #88674B) -->
+                <button type="submit" class="w-full bg-[#88674B] hover:bg-[#74563C] text-white font-bold text-xs sm:text-sm uppercase tracking-wider py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.98]">
                     Entrar a mi Cuenta
                 </button>
             </form>

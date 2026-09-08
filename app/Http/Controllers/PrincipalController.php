@@ -855,8 +855,12 @@ class PrincipalController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'telefono' => 'required|string|min:10|max:20',
             'codigo_postal' => 'nullable|string|size:5',
             'password' => 'required|string|min:8|confirmed',
+        ], [
+            'telefono.required' => 'El número de teléfono móvil es obligatorio para coordinar envíos y contacto.',
+            'telefono.min' => 'Ingresa un número de teléfono válido de al menos 10 dígitos.',
         ]);
 
         // Preservar estado del carrito y cupón antes de registrar y regenerar sesión
@@ -869,6 +873,7 @@ class PrincipalController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'telefono' => $request->telefono,
             'codigo_postal' => $cpRegistrado,
             'carrito_guardado' => !empty($carritoPrevio) ? json_encode($carritoPrevio) : null,
             'password' => Hash::make($request->password),
@@ -1223,7 +1228,7 @@ class PrincipalController extends Controller
             try {
                 if (str_contains($apiUrl, 'graph.facebook.com')) {
                     // Meta WhatsApp Cloud API oficial
-                    \Illuminate\Support\Facades\Http::timeout(10)->withToken($apiToken)->post($apiUrl, [
+                    $responseMeta = \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(10)->withToken($apiToken)->post($apiUrl, [
                         'messaging_product' => 'whatsapp',
                         'recipient_type'    => 'individual',
                         'to'                => $numeroVentas,
@@ -1233,15 +1238,16 @@ class PrincipalController extends Controller
                             'body'        => $mensajeVentas,
                         ],
                     ]);
+                    \Illuminate\Support\Facades\Log::info("Meta WhatsApp API Response status=" . $responseMeta->status() . " body=" . $responseMeta->body());
                 } elseif (str_contains($apiUrl, 'green-api.com')) {
                     // Green API
-                    \Illuminate\Support\Facades\Http::timeout(10)->post($apiUrl, [
+                    \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(10)->post($apiUrl, [
                         'chatId'  => $numeroVentas . '@c.us',
                         'message' => $mensajeVentas,
                     ]);
                 } else {
                     // UltraMsg / Evolution API / Custom Webhook Universal
-                    \Illuminate\Support\Facades\Http::timeout(10)->withHeaders([
+                    \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(10)->withHeaders([
                         'Authorization' => 'Bearer ' . $apiToken,
                         'Content-Type'  => 'application/json',
                     ])->post($apiUrl, [

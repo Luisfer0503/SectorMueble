@@ -58,6 +58,22 @@
                     @enderror
                 </div>
 
+                <!-- Teléfono Móvil -->
+                <div>
+                    <label for="telefono" class="block text-xs font-bold text-zinc-600 uppercase tracking-wider mb-1">Teléfono Móvil <span class="text-zinc-400 text-[10px] font-normal normal-case">(para seguimiento y envíos)</span></label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                            </svg>
+                        </div>
+                        <input type="tel" name="telefono" id="telefono" required value="{{ old('telefono') }}" placeholder="Ej. 2221234567" class="w-full bg-zinc-50/80 focus:bg-white text-base sm:text-sm pl-11 pr-4 py-3 rounded-2xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-700/40 focus:border-amber-700 transition-all shadow-inner">
+                    </div>
+                    @error('telefono')
+                        <span class="text-xs text-rose-600 font-semibold mt-1 block">{{ $message }}</span>
+                    @enderror
+                </div>
+
                 <!-- Código Postal -->
                 <div>
                     <label for="reg_codigo_postal" class="block text-xs font-bold text-zinc-600 uppercase tracking-wider mb-1">
