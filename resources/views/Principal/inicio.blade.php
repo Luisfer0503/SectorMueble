@@ -32,7 +32,7 @@
                 Descubre nuestra colección exclusiva de muebles minimalistas de autor. Diseños concebidos para transformar tus espacios con elegancia, calidez y confort artesanal.
             </p>
 
-            <!-- Botón Principal "Explorar Catálogo" (Color 1 Sólido #88674B) y Botón Secundario Centrados -->
+            <!-- Botón Principal "Explorar Catálogo" y Botón Secundario Centrados -->
             <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="{{ route('catalogo') }}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 bg-[#88674B] hover:bg-[#74563C] text-white text-xs sm:text-sm font-bold px-9 py-4 rounded-2xl shadow-2xl hover:shadow-amber-900/50 transition-all duration-300 transform hover:-translate-y-0.5 border border-white/20">
                     <span>Explorar Catálogo</span>
@@ -49,56 +49,34 @@
     </div>
 
 
-    <!-- ── 2. BARRA DE BENEFICIOS Y GARANTÍAS (Fondo 5 Arena Beige Suave, Íconos y Acentos Color 3) ── -->
-    <div class="bg-[#FAF8F5] py-12 sm:py-16 border-b border-[#88674B]/20 shadow-xs relative z-10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- ── 2. BARRA DE BENEFICIOS Y GARANTÍAS ── -->
+    <div class="bg-[#FAF8F5] py-8 sm:py-14 border-b border-[#88674B]/20 relative z-10">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 
-                <div class="hover-lift bg-white p-6 rounded-2xl border border-[#88674B]/20 shadow-xs flex items-start space-x-4 group hover:border-[#88674B] transition-all duration-300">
+                <!-- Envío Gratuito -->
+                <div class="hover-lift bg-[#FAF8F5] p-5 sm:p-6 rounded-2xl border border-[#88674B]/30 shadow-xs flex items-start space-x-4 group hover:border-[#88674B] transition-all duration-300">
                     <div class="p-3.5 bg-[#74563C] text-white rounded-2xl group-hover:bg-[#88674B] transition-colors duration-300 shadow-md flex-shrink-0">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002-2V8m-9 4h4"/>
                         </svg>
                     </div>
                     <div>
                         <h3 class="text-sm font-bold text-zinc-950">Envío Gratuito Premium</h3>
-                        <p class="mt-1 text-xs text-zinc-500 leading-relaxed">En todas las órdenes de $10,000 MXN en adelante en la República Mexicana.</p>
+                        <p class="mt-1 text-xs text-zinc-600 leading-relaxed">Aplica en compras desde $10,000 MXN dentro de la zona de cobertura y estados cercanos.</p>
                     </div>
                 </div>
 
-                <div class="hover-lift bg-white p-6 rounded-2xl border border-[#88674B]/20 shadow-xs flex items-start space-x-4 group hover:border-[#88674B] transition-all duration-300">
+                <!-- Pago Seguro -->
+                <div class="hover-lift bg-[#FAF8F5] p-5 sm:p-6 rounded-2xl border border-[#88674B]/30 shadow-xs flex items-start space-x-4 group hover:border-[#88674B] transition-all duration-300">
                     <div class="p-3.5 bg-[#74563C] text-white rounded-2xl group-hover:bg-[#88674B] transition-colors duration-300 shadow-md flex-shrink-0">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-zinc-950">Garantía Extendida 3 Años</h3>
-                        <p class="mt-1 text-xs text-zinc-500 leading-relaxed">Protección integral contra defectos de fábrica y estructura.</p>
-                    </div>
-                </div>
-
-                <div class="hover-lift bg-white p-6 rounded-2xl border-2 border-[#74563C] shadow-md flex items-start space-x-4 group transition-all duration-300">
-                    <div class="p-3.5 bg-[#74563C] text-white rounded-2xl shadow-md flex-shrink-0">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold text-[#74563C]">Pago 100% Seguro (Color 3)</h3>
+                        <h3 class="text-sm font-bold text-zinc-950">Pago 100% Seguro</h3>
                         <p class="mt-1 text-xs text-zinc-600 leading-relaxed">Encriptación bancaria SSL y meses sin intereses en tarjetas elegibles.</p>
-                    </div>
-                </div>
-
-                <div class="hover-lift bg-white p-6 rounded-2xl border border-[#88674B]/20 shadow-xs flex items-start space-x-4 group hover:border-[#88674B] transition-all duration-300">
-                    <div class="p-3.5 bg-[#74563C] text-white rounded-2xl group-hover:bg-[#88674B] transition-colors duration-300 shadow-md flex-shrink-0">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.2"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h3 class="text-sm font-bold text-zinc-950">Montaje Profesional</h3>
-                        <p class="mt-1 text-xs text-zinc-500 leading-relaxed">Servicio opcional de desempaque y ensamble directo en tu domicilio.</p>
                     </div>
                 </div>
 
@@ -107,7 +85,7 @@
     </div>
 
 
-    <!-- ── 3. BANNER DE OFERTA FLASH (Botón Copiar Cupón en Color 3 #74563C) ── -->
+    <!-- ── 3. BANNER DE OFERTA FLASH ── -->
     <div class="bg-gradient-to-r from-[#FAF8F5] via-amber-50/80 to-[#FAF8F5] py-12 sm:py-16 text-zinc-950 border-y border-[#88674B]/30 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
             
@@ -119,7 +97,7 @@
                 <h2 class="serif-title text-3xl sm:text-5xl font-bold leading-tight text-zinc-950">Últimas Horas: Colección Escandinava</h2>
                 <p class="mt-2 text-zinc-700 text-sm sm:text-base font-normal">Obtén un <strong class="text-[#74563C] font-bold">15% EXTRA</strong> en tu carrito aplicando el código exclusivo de temporada.</p>
                 
-                <!-- Botón Copiar Cupón (Color 3 #74563C) -->
+                <!-- Botón Copiar Cupón -->
                 <div class="mt-5 inline-flex items-center space-x-2 bg-white p-1.5 pl-4 rounded-2xl border border-[#74563C]/40 shadow-md">
                     <span class="text-xs font-mono font-extrabold tracking-widest text-[#74563C]" id="coupon-code-val">SECTOR2026</span>
                     <button type="button" onclick="copyCouponCode()" id="copy-coupon-btn" class="bg-[#74563C] hover:bg-[#5C4331] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-xs">
@@ -494,7 +472,7 @@
     </div>
 
 
-    <!-- ── 8. BANNER DE PRIVILEGIOS / NEWSLETTER (Fondo Sólido 4 #2B241A, Botón Color 1 #88674B) ── -->
+    <!-- ── 8. BANNER DE PRIVILEGIOS / NEWSLETTER ── -->
     <div class="bg-[#0B0A0A] text-white py-20 sm:py-24 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="bg-[#2B241A] p-8 sm:p-14 rounded-3xl border border-[#88674B]/40 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8">
