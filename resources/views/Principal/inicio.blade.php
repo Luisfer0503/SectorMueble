@@ -19,7 +19,7 @@
             <!-- Sub-badge Superior Centrado -->
             <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#88674B]/90 border border-[#FAF3E0]/30 text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-widest shadow-lg mb-6 backdrop-blur-md">
                 <span>✨ Colección Editorial 2026</span>
-                <span class="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-[#FAF3E0] animate-pulse"></span>
             </div>
 
             <!-- Título Principal con Cápsula Sutil y Altamente Transparente -->
@@ -216,9 +216,9 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
                 <div>
-                    <span class="text-xs font-extrabold uppercase tracking-widest text-amber-900 bg-amber-100/90 border border-amber-200 px-3.5 py-1.5 rounded-full">Experiencia Interactiva</span>
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-[#74563C] bg-[#FAF3E0] border border-[#E6D7C3] px-3.5 py-1.5 rounded-full">Experiencia Interactiva</span>
                     <h2 class="serif-title text-3xl sm:text-5xl font-bold mt-3">Inspírate en la Estancia Real</h2>
-                    <p class="mt-2 text-zinc-600 text-sm sm:text-base font-normal">Pasa el cursor o haz clic sobre los puntos flotantes <span class="text-amber-800 font-bold">(+)</span> para explorar los muebles destacados de esta sala.</p>
+                    <p class="mt-2 text-zinc-600 text-sm sm:text-base font-normal">Pasa el cursor o haz clic sobre los puntos flotantes <span class="text-[#88674B] font-bold">(+)</span> para explorar los muebles destacados de esta sala.</p>
                 </div>
             </div>
 
@@ -285,18 +285,18 @@
             
             <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-zinc-200/80 pb-6 gap-6">
                 <div>
-                    <span class="text-xs font-extrabold uppercase tracking-widest text-amber-900 bg-amber-50 border border-amber-200/80 px-3.5 py-1.5 rounded-full">Diseños Exclusivos</span>
+                    <span class="text-xs font-extrabold uppercase tracking-widest text-[#74563C] bg-[#FAF3E0] border border-[#E6D7C3] px-3.5 py-1.5 rounded-full">Diseños Exclusivos</span>
                     <h2 class="serif-title text-3xl sm:text-4xl font-bold text-zinc-950 mt-2">Muebles Destacados</h2>
                     <p class="mt-1 text-zinc-500 text-sm">Nuestras piezas más aclamadas por arquitectos e interioristas.</p>
                 </div>
                 
                 <!-- Pestañas de Filtrado Rápido -->
                 <div class="flex flex-wrap gap-2">
-                    <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-amber-800 text-white shadow-md" data-category="todos">
+                    <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-[#88674B] text-white shadow-md" data-category="todos">
                         Todos
                     </button>
                     @foreach($categorias as $cat)
-                        <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-zinc-100 hover:bg-amber-50 text-zinc-700 hover:text-amber-900 border border-zinc-200/80" data-category="{{ $cat }}">
+                        <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-zinc-100 hover:bg-[#FAF3E0] text-zinc-700 hover:text-[#74563C] border border-zinc-200/80" data-category="{{ $cat }}">
                             {{ $cat }}
                         </button>
                     @endforeach
@@ -306,7 +306,7 @@
             <!-- Products Grid con Tarjetas Rediseñadas de Alta Gama -->
             <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 @foreach($productosDestacados as $producto)
-                    <div class="product-item group relative bg-white border border-zinc-200/90 rounded-3xl p-3.5 flex flex-col justify-between h-full hover:border-amber-700/40 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1.5" data-cat="{{ $producto->categoria }}">
+                    <div class="product-item group relative bg-white border border-zinc-200/90 rounded-3xl p-3.5 flex flex-col justify-between h-full hover:border-[#88674B]/40 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1.5" data-cat="{{ $producto->categoria }}">
                         
                         <!-- Img Container con Aspecto Proporcional -->
                         <div class="relative w-full h-72 sm:h-80 rounded-2xl bg-zinc-100 overflow-hidden">
@@ -321,14 +321,14 @@
                             <!-- Insignias / Badges -->
                             <div class="absolute top-3 left-3 flex flex-col space-y-1.5 z-10">
                                 @if($producto->modelo_3d_url)
-                                    <span class="bg-amber-500 text-zinc-950 text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md flex items-center space-x-1">
+                                    <span class="bg-[#FAF3E0] text-[#74563C] border border-[#E6D7C3] text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md flex items-center space-x-1">
                                         <span>🎮 3D DISPONIBLE</span>
                                     </span>
                                 @endif
                                 @if($producto->tieneDescuento())
                                     <span class="bg-rose-600 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">-{{ $producto->porcentaje_descuento }}% OFERTA</span>
                                 @endif
-                                <span class="bg-amber-800 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">Destacado</span>
+                                <span class="bg-[#88674B] text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">Destacado</span>
                                 @if($producto->stock <= 5)
                                     <span class="bg-zinc-900 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">Últimas {{ $producto->stock }} unid.</span>
                                 @endif
@@ -336,7 +336,7 @@
 
                             <!-- Botón de Vista Rápida en Hover -->
                             <div class="absolute inset-0 bg-zinc-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
-                                <a href="{{ route('productos.detalle', $producto->id) }}" class="bg-white/95 text-zinc-950 text-xs font-bold px-5 py-3 rounded-xl shadow-xl hover:bg-amber-800 hover:text-white transition-all transform group-hover:scale-100 scale-95">
+                                <a href="{{ route('productos.detalle', $producto->id) }}" class="bg-white/95 text-zinc-950 text-xs font-bold px-5 py-3 rounded-xl shadow-xl hover:bg-[#88674B] hover:text-white transition-all transform group-hover:scale-100 scale-95">
                                     Ver Ficha Técnica
                                 </a>
                             </div>
@@ -345,17 +345,17 @@
                         <!-- Información del producto -->
                         <div class="p-3 flex-grow flex flex-col justify-between mt-2">
                             <div>
-                                <span class="text-[11px] font-bold text-amber-800 uppercase tracking-widest">{{ $producto->categoria }}</span>
+                                <span class="text-[11px] font-bold text-[#88674B] uppercase tracking-widest">{{ $producto->categoria }}</span>
                                 <h3 class="text-base font-bold text-zinc-950 mt-1 line-clamp-1">
-                                    <a href="{{ route('productos.detalle', $producto->id) }}" class="hover:text-amber-800 transition-colors">
+                                    <a href="{{ route('productos.detalle', $producto->id) }}" class="hover:text-[#88674B] transition-colors">
                                         {{ $producto->nombre }}
                                     </a>
                                 </h3>
                                 
                                 <!-- Calificación -->
                                 <div class="flex items-center space-x-1.5 mt-2">
-                                    <div class="flex text-amber-500 text-xs">
-                                        <svg class="h-4 w-4 fill-current text-amber-500" viewBox="0 0 20 20">
+                                    <div class="flex text-[#C49A6C] text-xs">
+                                        <svg class="h-4 w-4 fill-current text-[#C49A6C]" viewBox="0 0 20 20">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                         </svg>
                                     </div>
@@ -370,7 +370,7 @@
                                 @if($detallesActivos->count() > 0)
                                     <div class="mt-2.5 pt-2 border-t border-zinc-100/80">
                                         <div class="flex items-center justify-between mb-1">
-                                            <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-900 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/60 inline-flex items-center gap-1">
+                                            <span class="text-[9px] font-extrabold uppercase tracking-wider text-[#74563C] bg-[#FAF3E0] px-2 py-0.5 rounded-full border border-[#E6D7C3] inline-flex items-center gap-1">
                                                 <span>🎨</span>
                                                 <span>+{{ $detallesActivos->count() }} {{ $detallesActivos->count() === 1 ? 'combinación' : 'combinaciones' }}</span>
                                             </span>
@@ -381,7 +381,7 @@
                                                     type="button"
                                                     title="{{ $det->nombre }}"
                                                     onclick="cambiarImagenCard(this, 'img-prod-dest-{{ $producto->id }}', '{{ $det->imagen_url }}', '{{ $det->id }}', 'form-add-dest-{{ $producto->id }}')"
-                                                    class="btn-var-thumb relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg overflow-hidden border-2 transition-all duration-200 shrink-0 focus:outline-none {{ $idx === 0 ? 'border-amber-700 ring-2 ring-amber-700/20' : 'border-zinc-200 hover:border-amber-500' }}">
+                                                    class="btn-var-thumb relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg overflow-hidden border-2 transition-all duration-200 shrink-0 focus:outline-none {{ $idx === 0 ? 'border-[#88674B] ring-2 ring-[#88674B]/20' : 'border-zinc-200 hover:border-[#88674B]' }}">
                                                     <img src="{{ $det->imagen_url }}" alt="{{ $det->nombre }}" class="w-full h-full object-cover">
                                                 </button>
                                             @endforeach
@@ -395,7 +395,7 @@
                                 <div class="flex flex-col">
                                     @if($producto->tieneDescuento())
                                         <span class="text-xs text-zinc-400 line-through font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }}</span>
-                                        <span class="text-lg font-extrabold text-amber-900 font-sans">$ {{ number_format($producto->precio_descuento, 2, '.', ',') }} <span class="text-xs font-normal text-zinc-500">MXN</span></span>
+                                        <span class="text-lg font-extrabold text-[#74563C] font-sans">$ {{ number_format($producto->precio_descuento, 2, '.', ',') }} <span class="text-xs font-normal text-zinc-500">MXN</span></span>
                                     @else
                                         <span class="text-lg font-extrabold text-zinc-950 font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }} <span class="text-xs font-normal text-zinc-500">MXN</span></span>
                                     @endif
@@ -410,7 +410,7 @@
                                     onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
                                     @csrf
                                     <input type="hidden" name="subarticulo_id" value="{{ $detallesActivos->first()->id ?? '' }}">
-                                    <button type="submit" aria-label="Añadir {{ $producto->nombre }} al carrito" class="p-3 bg-amber-50 hover:bg-amber-800 text-amber-900 hover:text-white rounded-2xl border border-amber-200/80 hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-md">
+                                    <button type="submit" aria-label="Añadir {{ $producto->nombre }} al carrito" class="p-3 bg-[#FAF3E0] hover:bg-[#88674B] text-[#74563C] hover:text-white rounded-2xl border border-[#E6D7C3] hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-md">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                                         </svg>
@@ -424,7 +424,7 @@
             </div>
 
             <div class="mt-12 text-center">
-                <a href="{{ route('catalogo') }}" class="inline-flex items-center space-x-2 bg-zinc-900 hover:bg-amber-800 text-white text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-2xl transition-all shadow-lg hover:shadow-xl">
+                <a href="{{ route('catalogo') }}" class="inline-flex items-center space-x-2 bg-zinc-900 hover:bg-[#88674B] text-white text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-2xl transition-all shadow-lg hover:shadow-xl">
                     <span>Ver Catálogo Completo (+120 Piezas)</span>
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
@@ -486,9 +486,9 @@
                 dots.forEach((dot, idx) => {
                     if (idx === index) {
                         dot.classList.remove('w-2.5', 'bg-zinc-300');
-                        dot.classList.add('w-8', 'bg-amber-800');
+                        dot.classList.add('w-8', 'bg-[#88674B]');
                     } else {
-                        dot.classList.remove('w-8', 'bg-amber-800');
+                        dot.classList.remove('w-8', 'bg-[#88674B]');
                         dot.classList.add('w-2.5', 'bg-zinc-300');
                     }
                 });
@@ -573,12 +573,12 @@
                     const category = btn.getAttribute('data-category');
 
                     tabBtns.forEach(b => {
-                        b.classList.remove('bg-amber-800', 'text-white', 'shadow-md');
+                        b.classList.remove('bg-[#88674B]', 'text-white', 'shadow-md');
                         b.classList.add('bg-zinc-100', 'text-zinc-700', 'border', 'border-zinc-200/80');
                     });
 
                     btn.classList.remove('bg-zinc-100', 'text-zinc-700', 'border', 'border-zinc-200/80');
-                    btn.classList.add('bg-amber-800', 'text-white', 'shadow-md');
+                    btn.classList.add('bg-[#88674B]', 'text-white', 'shadow-md');
 
                     productItems.forEach(item => {
                         const itemCat = item.getAttribute('data-cat');
@@ -635,13 +635,13 @@
 
             const btns = document.querySelectorAll('.model-select-btn');
             btns.forEach(b => {
-                b.classList.remove('bg-amber-800', 'text-white', 'border-amber-700', 'shadow-sm');
-                b.classList.add('bg-zinc-100', 'hover:bg-amber-50', 'text-zinc-700', 'border-zinc-200/90');
+                b.classList.remove('bg-[#88674B]', 'text-white', 'border-[#88674B]', 'shadow-sm');
+                b.classList.add('bg-zinc-100', 'hover:bg-[#FAF3E0]', 'text-zinc-700', 'border-zinc-200/90');
             });
 
             if (btnEl) {
-                btnEl.classList.remove('bg-zinc-100', 'hover:bg-amber-50', 'text-zinc-700', 'border-zinc-200/90');
-                btnEl.classList.add('bg-amber-800', 'text-white', 'border-amber-700', 'shadow-sm');
+                btnEl.classList.remove('bg-zinc-100', 'hover:bg-[#FAF3E0]', 'text-zinc-700', 'border-zinc-200/90');
+                btnEl.classList.add('bg-[#88674B]', 'text-white', 'border-[#88674B]', 'shadow-sm');
             }
         }
     </script>

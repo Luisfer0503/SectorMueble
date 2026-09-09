@@ -247,29 +247,29 @@
                 <nav class="flex items-center space-x-8">
                     <!-- SALA con Submenú Desplegable Estilo Marca -->
                     <div class="relative group">
-                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
+                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
                             <span>Sala</span>
-                            <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#88674B] transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
                         
                         <!-- Submenú flotante compacto -->
                         <div class="absolute top-full left-0 mt-1.5 w-64 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                                <span class="text-amber-400 font-bold">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                                <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Sofás y salas modulares</span>
                             </a>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                                <span class="text-amber-400 font-bold">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                                <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Mesas de centro y laterales</span>
                             </a>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                                <span class="text-amber-400 font-bold">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                                <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Sillones</span>
                             </a>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                                <span class="text-amber-400 font-bold">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                                <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Credenzas</span>
                             </a>
                         </div>
@@ -277,24 +277,24 @@
 
                     <!-- RECÁMARA con Submenú Desplegable Estilo Marca -->
                     <div class="relative group">
-                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
+                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
                             <span>Recámara</span>
-                            <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#88674B] transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
 
                         <div class="absolute top-full left-0 mt-1.5 w-60 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
-                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                                <span class="text-amber-400 font-bold">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                                <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Camas</span>
                             </a>
-                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                                <span class="text-amber-400 font-bold">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                                <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Burós</span>
                             </a>
-                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                                <span class="text-amber-400 font-bold">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                                <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Divanes</span>
                             </a>
                         </div>
@@ -302,27 +302,27 @@
 
                     <!-- COMEDOR con Submenú Desplegable Estilo Marca -->
                     <div class="relative group">
-                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors cursor-pointer">
+                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
                             <span>Comedor</span>
-                            <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-amber-800 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#88674B] transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
 
                         <div class="absolute top-full left-0 mt-1.5 w-56 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
-                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                                <span class="text-amber-400 font-bold">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                                <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Sillas</span>
                             </a>
-                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-amber-200 transition-colors">
-                                <span class="text-amber-400 font-bold">•</span>
+                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                                <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Mesas</span>
                             </a>
                         </div>
                     </div>
 
                     <!-- CATÁLOGO COMPLETO -->
-                    <a href="{{ route('catalogo') }}" class="text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-amber-800 py-1 transition-colors">
+                    <a href="{{ route('catalogo') }}" class="text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors">
                         Catálogo Completo
                     </a>
                 </nav>
@@ -502,11 +502,11 @@
                 <div>
                     <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Categorías</h3>
                     <ul class="mt-4 space-y-2 text-sm">
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-amber-500 transition-colors">Salón y Estancia</a></li>
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-amber-500 transition-colors">Dormitorio y Cunas</a></li>
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="hover:text-amber-500 transition-colors">Comedor y Cocina</a></li>
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Oficina']) }}" class="hover:text-amber-500 transition-colors">Oficina y Despacho</a></li>
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Exterior']) }}" class="hover:text-amber-500 transition-colors">Jardín y Exterior</a></li>
+                        <li><a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-[#FAF3E0] transition-colors">Salón y Estancia</a></li>
+                        <li><a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-[#FAF3E0] transition-colors">Dormitorio y Cunas</a></li>
+                        <li><a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="hover:text-[#FAF3E0] transition-colors">Comedor y Cocina</a></li>
+                        <li><a href="{{ route('catalogo', ['categoria' => 'Oficina']) }}" class="hover:text-[#FAF3E0] transition-colors">Oficina y Despacho</a></li>
+                        <li><a href="{{ route('catalogo', ['categoria' => 'Exterior']) }}" class="hover:text-[#FAF3E0] transition-colors">Jardín y Exterior</a></li>
                     </ul>
                 </div>
 
@@ -514,19 +514,19 @@
                 <div>
                     <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Servicio al Cliente</h3>
                     <ul class="mt-4 space-y-2.5 text-sm">
-                        <li><a href="#" class="hover:text-amber-500 transition-colors">Políticas de Envío</a></li>
-                        <li><a href="{{ route('terminos') }}" class="hover:text-amber-500 transition-colors">Términos y Condiciones</a></li>
+                        <li><a href="#" class="hover:text-[#FAF3E0] transition-colors">Políticas de Envío</a></li>
+                        <li><a href="{{ route('terminos') }}" class="hover:text-[#FAF3E0] transition-colors">Términos y Condiciones</a></li>
                         <li class="pt-2 flex items-center space-x-2 text-xs text-zinc-300">
-                            <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-4 h-4 text-[#C49A6C] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h32a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM3 10a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8z"/>
                             </svg>
-                            <a href="tel:2226702641" class="hover:text-amber-400 transition-colors font-medium">Cel: 222 670 2641</a>
+                            <a href="tel:2226702641" class="hover:text-[#FAF3E0] transition-colors font-medium">Cel: 222 670 2641</a>
                         </li>
                         <li class="flex items-center space-x-2 text-xs text-zinc-300">
-                            <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-4 h-4 text-[#C49A6C] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                             </svg>
-                            <a href="mailto:hola@sectormueble.com.mx" class="hover:text-amber-400 transition-colors font-medium">hola@sectormueble.com.mx</a>
+                            <a href="mailto:hola@sectormueble.com.mx" class="hover:text-[#FAF3E0] transition-colors font-medium">hola@sectormueble.com.mx</a>
                         </li>
                     </ul>
                 </div>
@@ -536,8 +536,8 @@
                     <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Suscríbete</h3>
                     <p class="mt-4 text-sm text-zinc-400">Recibe 10% de descuento en tu primera compra y novedades exclusivas.</p>
                     <form action="#" class="mt-4 flex max-w-md">
-                        <input type="email" placeholder="Tu correo electrónico" required class="w-full bg-zinc-800 text-white text-xs px-4 py-3 rounded-l border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-amber-500 focus:border-transparent">
-                        <button type="submit" class="bg-amber-800 hover:bg-amber-700 text-white text-xs px-6 py-3 rounded-r font-medium transition-colors">Unirse</button>
+                        <input type="email" placeholder="Tu correo electrónico" required class="w-full bg-zinc-800 text-white text-xs px-4 py-3 rounded-l border border-zinc-700 focus:outline-none focus:ring-1 focus:ring-[#C49A6C] focus:border-transparent">
+                        <button type="submit" class="bg-[#88674B] hover:bg-[#74563C] text-white text-xs px-6 py-3 rounded-r font-medium transition-colors">Unirse</button>
                     </form>
                 </div>
             </div>
