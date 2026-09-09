@@ -11,6 +11,9 @@ Route::redirect('/inicio', '/');
 // Catálogo y filtros
 Route::get('/catalogo', [PrincipalController::class, 'catalogo'])->name('catalogo');
 
+// Términos y Condiciones
+Route::get('/terminos-y-condiciones', [PrincipalController::class, 'terminosCondiciones'])->name('terminos');
+
 // Ficha de detalle de producto
 Route::get('/productos/{id}', [PrincipalController::class, 'detalle'])->name('productos.detalle');
 
@@ -111,4 +114,8 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::get('/pedidos', [AdminController::class, 'pedidosIndex'])->name('admin.pedidos');
     Route::get('/pedidos/detalle/{id}', [AdminController::class, 'pedidosDetalle'])->name('admin.pedidos.detalle');
     Route::post('/pedidos/actualizar-estado/{id}', [AdminController::class, 'pedidosActualizarEstado'])->name('admin.pedidos.actualizar_estado');
+
+    // Edición de Términos y Condiciones
+    Route::get('/terminos', [AdminController::class, 'terminosIndex'])->name('admin.terminos');
+    Route::post('/terminos/actualizar', [AdminController::class, 'terminosActualizar'])->name('admin.terminos.actualizar');
 });

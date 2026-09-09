@@ -515,7 +515,7 @@
                     <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Servicio al Cliente</h3>
                     <ul class="mt-4 space-y-2.5 text-sm">
                         <li><a href="#" class="hover:text-amber-500 transition-colors">Políticas de Envío</a></li>
-                        <li><a href="#" class="hover:text-amber-500 transition-colors">Términos y Condiciones</a></li>
+                        <li><a href="{{ route('terminos') }}" class="hover:text-amber-500 transition-colors">Términos y Condiciones</a></li>
                         <li class="pt-2 flex items-center space-x-2 text-xs text-zinc-300">
                             <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h32a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM3 10a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8z"/>

@@ -172,6 +172,20 @@
                             <span class="text-lg font-bold font-sans">$ {{ number_format($total, 2, '.', ',') }}</span>
                         </div>
 
+                        <!-- Términos y Condiciones Checkbox -->
+                        <div class="mb-4 pt-2 border-t border-zinc-200">
+                            <label class="flex items-start space-x-3 cursor-pointer select-none">
+                                <input type="checkbox" id="aceptar_terminos" name="aceptar_terminos" required class="mt-1 h-4 w-4 text-[#88674B] border-zinc-300 rounded focus:ring-[#88674B]">
+                                <span class="text-xs text-zinc-700 font-medium leading-tight">
+                                    He leído y acepto los <button type="button" onclick="abrirModalTerminos(event)" class="text-[#88674B] font-bold underline hover:text-amber-950 focus:outline-none">Términos y Condiciones</button> de Sector Mueble para efectuar mi compra. *
+                                </span>
+                            </label>
+                            <p id="error-terminos" class="hidden text-xs text-rose-600 font-semibold mt-1.5 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Debes aceptar los Términos y Condiciones para continuar con el pago.
+                            </p>
+                        </div>
+
                         <button type="button" 
                                 id="btn-procesar-stripe"
                                 onclick="iniciarPagoStripe(event)"
@@ -412,6 +426,18 @@
                 return;
             }
 
+            const checkTerminos = document.getElementById('aceptar_terminos');
+            const errorTerminos = document.getElementById('error-terminos');
+
+            if (checkTerminos && !checkTerminos.checked) {
+                if (errorTerminos) errorTerminos.classList.remove('hidden');
+                checkTerminos.focus();
+                checkTerminos.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            } else if (errorTerminos) {
+                errorTerminos.classList.add('hidden');
+            }
+
             const form = document.getElementById('checkout-form') || document.querySelector('form');
             const btn = document.getElementById('btn-procesar-stripe');
             const btnTexto = document.getElementById('btn-stripe-texto');
@@ -464,5 +490,59 @@
                 if (btnTexto) btnTexto.innerText = 'Reintentar Pago con Stripe';
             }
         }
+
+        function abrirModalTerminos(e) {
+            if (e) e.preventDefault();
+            const modal = document.getElementById('modal-terminos');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function cerrarModalTerminos() {
+            const modal = document.getElementById('modal-terminos');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function aceptarTerminosDesdeModal() {
+            const checkTerminos = document.getElementById('aceptar_terminos');
+            const errorTerminos = document.getElementById('error-terminos');
+            if (checkTerminos) {
+                checkTerminos.checked = true;
+            }
+            if (errorTerminos) {
+                errorTerminos.classList.add('hidden');
+            }
+            cerrarModalTerminos();
+        }
     </script>
+
+    <!-- Modal Términos y Condiciones -->
+    <div id="modal-terminos" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity">
+        <div class="bg-white w-full max-w-3xl max-h-[85vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-zinc-200">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-zinc-100 flex items-center justify-between bg-zinc-50">
+                <h3 class="text-base font-bold text-zinc-900 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-[#88674B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Términos y Condiciones - Sector Mueble
+                </h3>
+                <button type="button" onclick="cerrarModalTerminos()" class="text-zinc-400 hover:text-zinc-700 p-1 rounded-lg transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto text-xs sm:text-sm text-zinc-700 space-y-4 leading-relaxed font-sans">
+                {!! nl2br(e(\App\Models\TerminoCondicion::obtenerContenido())) !!}
+            </div>
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-zinc-100 bg-zinc-50 flex justify-end gap-3">
+                <button type="button" onclick="cerrarModalTerminos()" class="px-5 py-2.5 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 text-xs font-bold uppercase rounded-xl transition-all">
+                    Cerrar
+                </button>
+                <button type="button" onclick="aceptarTerminosDesdeModal()" style="background-color: #88674B;" class="px-5 py-2.5 text-white text-xs font-bold uppercase rounded-xl transition-all shadow hover:brightness-110">
+                    Aceptar Términos
+                </button>
+            </div>
+        </div>
+    </div>
 @endsection

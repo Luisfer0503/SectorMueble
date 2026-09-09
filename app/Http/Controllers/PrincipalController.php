@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Cupon;
 use App\Models\RuletaOpcion;
 use App\Models\CatalogoCodigoPostal;
+use App\Models\TerminoCondicion;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Auth\Events\Registered;
@@ -445,6 +446,15 @@ class PrincipalController extends Controller
         }
 
         return redirect()->route('carrito')->with('error', 'No se encontró el mueble en tu carrito.');
+    }
+
+    /**
+     * Mostrar la página pública de Términos y Condiciones.
+     */
+    public function terminosCondiciones()
+    {
+        $contenido = TerminoCondicion::obtenerContenido();
+        return view('Principal.terminos', compact('contenido'));
     }
 
     /**

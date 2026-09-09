@@ -9,6 +9,7 @@ use App\Models\Cupon;
 use App\Models\User;
 use App\Models\RuletaOpcion;
 use App\Models\Zapato;
+use App\Models\TerminoCondicion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
@@ -579,12 +580,36 @@ class AdminController extends Controller
         $request->validate([
             'estado' => 'required|in:pendiente,procesado,enviado,entregado,cancelado',
         ]);
-
-        $pedido->update([
+                    $pedido->update([
             'estado' => $request->estado,
         ]);
 
-        return redirect()->route('admin.pedidos.detalle', $pedido->id)->with('success', 'Estado del pedido actualizado correctamente.');
+        return redirect()->back()->with('success', 'Estado del pedido #' . $pedido->id . ' actualizado correctamente.');
+    }
+
+    /**
+     * Mostrar vista de edición de Términos y Condiciones.
+     */
+    public function terminosIndex()
+    {
+        $contenido = TerminoCondicion::obtenerContenido();
+        return view('Admin.terminos.index', compact('contenido'));
+    }
+
+    /**
+     * Guardar/Actualizar los Términos y Condiciones.
+     */
+    public function terminosActualizar(Request $request)
+    {
+        $request->validate([
+            'contenido' => 'required|string',
+        ]);
+
+        $terminos = TerminoCondicion::firstOrNew(['id' => 1]);
+        $terminos->contenido = trim($request->input('contenido'));
+        $terminos->save();
+
+        return redirect()->route('admin.terminos')->with('success', '¡Términos y Condiciones actualizados con éxito!');
     }
 
     // --- GESTIÓN DE RULETA DE PREMIOS ---
