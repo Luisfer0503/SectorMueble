@@ -8,23 +8,23 @@
         
         <!-- Imagen de Fondo Llamativa de Alta Resolución -->
         <div class="absolute inset-0 z-0">
-            <img src="{{ asset('inicio.png') }}" alt="Colección de Muebles de Autor Sector Mueble" class="w-full h-full object-cover object-center brightness-[0.98] contrast-[1.02] transition-transform duration-1000">
-            <!-- Overlay Gradiente Suave para Máxima Visibilidad de la Imagen -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/35"></div>
+            <img src="{{ asset('inicio.png') }}" alt="Colección de Muebles de Autor Sector Mueble" class="w-full h-full object-cover object-center brightness-[1.02] contrast-[1.02] transition-transform duration-1000">
+            <!-- Overlay Ultra Transparente para Máxima Visibilidad de la Foto -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-black/15"></div>
         </div>
 
         <!-- Contenido Centrado Enfrente -->
         <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center w-full">
             
             <!-- Sub-badge Superior Centrado -->
-            <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#88674B]/90 border border-[#FAF3E0]/30 text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-widest shadow-lg mb-6 backdrop-blur-md">
+            <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#88674B]/80 border border-[#FAF3E0]/30 text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-widest shadow-lg mb-6 backdrop-blur-md">
                 <span>Colección Editorial 2026</span>
                 <span class="w-1.5 h-1.5 rounded-full bg-[#FAF3E0] animate-pulse"></span>
             </div>
 
-            <!-- Título Principal con Cápsula Sutil y Altamente Transparente -->
+            <!-- Título Principal con Cápsula Ultra Transparente -->
             <h1 class="serif-title text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
-                <span class="inline-block bg-black/15 backdrop-blur-md px-6 sm:px-8 py-3.5 sm:py-4 rounded-3xl border border-white/20 shadow-lg">
+                <span class="inline-block bg-black/5 backdrop-blur-xs px-6 sm:px-8 py-3.5 sm:py-4 rounded-3xl border border-white/20 shadow-md">
                     La belleza de la simplicidad <span style="color: #4c6f4f;" class="font-extrabold drop-shadow-sm">en tu hogar</span>
                 </span>
             </h1>
