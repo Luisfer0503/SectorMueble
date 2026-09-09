@@ -20,11 +20,71 @@
         </div>
     </div>
 
+    <!-- Buscador de Muebles en el Admin -->
+    <div class="bg-white border border-zinc-200 rounded-2xl p-4 shadow-xs mb-6">
+        <form action="{{ route('admin.productos') }}" method="GET" class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="relative w-full sm:max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input
+                    type="text"
+                    name="buscar"
+                    id="admin-search-input"
+                    value="{{ request('buscar') }}"
+                    placeholder="Buscar por nombre, categoría, SKU o proveedor..."
+                    class="w-full pl-10 pr-10 py-2.5 bg-zinc-50 border border-zinc-200 rounded-xl text-xs font-medium text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-850/20 focus:border-amber-800 transition-all">
+                @if(request('buscar'))
+                    <a href="{{ route('admin.productos') }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-zinc-700 transition-colors" title="Limpiar búsqueda">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </a>
+                @endif
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button type="submit" class="w-full sm:w-auto bg-zinc-900 hover:bg-amber-850 text-white text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-xl transition-all shadow-xs flex items-center justify-center space-x-1.5 cursor-pointer">
+                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <span>Buscar Mueble</span>
+                </button>
+                @if(request('buscar'))
+                    <a href="{{ route('admin.productos') }}" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
+                        Limpiar
+                    </a>
+                @endif
+            </div>
+        </form>
+
+        @if(request('buscar'))
+            <div class="mt-3 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
+                <span>Mostrando resultados para: <strong class="text-amber-900 font-bold">"{{ request('buscar') }}"</strong></span>
+                <span class="font-bold text-zinc-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full">{{ $productos->total() }} mueble(s) encontrado(s)</span>
+            </div>
+        @endif
+    </div>
+
     <!-- Products Table -->
-    <div class="bg-white border border-zinc-200 rounded shadow-sm overflow-hidden">
+    <div class="bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden">
         @if($productos->isEmpty())
-            <div class="text-center py-20 text-zinc-500">
-                No hay productos en el catálogo actualmente.
+            <div class="text-center py-20 px-4 text-zinc-500">
+                @if(request('buscar'))
+                    <div class="max-w-md mx-auto">
+                        <span class="text-4xl block mb-2">🔍</span>
+                        <h3 class="text-base font-bold text-zinc-900">Sin coincidencias para "{{ request('buscar') }}"</h3>
+                        <p class="text-xs text-zinc-500 mt-1">Verifica la ortografía o intenta buscar por otra categoría o proveedor.</p>
+                        <a href="{{ route('admin.productos') }}" class="inline-block mt-4 bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded-xl transition-colors shadow-xs">
+                            Ver todo el catálogo
+                        </a>
+                    </div>
+                @else
+                    <span class="text-4xl block mb-2">🪵</span>
+                    <p class="text-sm font-semibold">No hay productos en el catálogo actualmente.</p>
+                @endif
             </div>
         @else
             <div class="overflow-x-auto">
@@ -203,4 +263,38 @@
             </div>
         @endif
     </div>
+
+    {{-- Script para filtrado rápido en el cliente mientras se escribe --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('admin-search-input');
+            if (!searchInput) return;
+
+            searchInput.addEventListener('input', function() {
+                const term = this.value.toLowerCase().trim();
+                const tbody = document.querySelector('table tbody');
+                if (!tbody) return;
+
+                const rows = Array.from(tbody.querySelectorAll(':scope > tr'));
+                
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row.classList.contains('bg-zinc-50/60')) {
+                        continue;
+                    }
+                    
+                    const nextRow = rows[i + 1] && rows[i + 1].classList.contains('bg-zinc-50/60') ? rows[i + 1] : null;
+                    const text = (row.textContent + ' ' + (nextRow ? nextRow.textContent : '')).toLowerCase();
+                    
+                    if (term === '' || text.includes(term)) {
+                        row.style.display = '';
+                        if (nextRow) nextRow.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                        if (nextRow) nextRow.style.display = 'none';
+                    }
+                }
+            });
+        });
+    </script>
 @endsection

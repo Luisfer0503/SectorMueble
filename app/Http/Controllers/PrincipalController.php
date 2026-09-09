@@ -27,12 +27,15 @@ class PrincipalController extends Controller
         $productosDestacados = Producto::activo()->with(['detalles' => function($q) {
             $q->where('activo', true);
         }])->where('destacado', true)->take(4)->get();
+
+        $hotspotsIds = [39, 47, 22];
+        $productosHotspots = Producto::activo()->whereIn('id', $hotspotsIds)->get()->keyBy('id');
         
         $categorias = Producto::activo()->select('categoria')
             ->distinct()
             ->pluck('categoria');
 
-        return view('Principal.inicio', compact('productosDestacados', 'categorias'));
+        return view('Principal.inicio', compact('productosDestacados', 'productosHotspots', 'categorias'));
     }
 
     /**

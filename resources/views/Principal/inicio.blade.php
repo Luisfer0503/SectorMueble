@@ -226,54 +226,45 @@
             <div class="relative w-full h-[450px] sm:h-[580px] rounded-3xl overflow-hidden shadow-2xl border border-stone-300/80">
                 <img src="{{ asset('imageninicio.png') }}" alt="Sala de Exhibición Interactiva" class="w-full h-full object-cover">
 
-                <!-- Hotspot 1: Cama King Duna -->
-                <div class="absolute top-[42%] left-[48%] z-20 group">
-                    <button type="button" aria-label="Ver Cama King Duna" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white">
-                        +
-                    </button>
-                    <!-- Popover Card Clara -->
-                    <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                        <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">Recámara</span>
-                        <h4 class="text-sm font-bold text-zinc-950 mt-1">Cama King Duna</h4>
-                        <p class="text-xs text-[#88674B] mt-1 font-mono font-extrabold">$ 15,461.50 MXN</p>
-                        <a href="{{ route('productos.detalle', 39) }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
-                            Ver Producto
-                        </a>
-                    </div>
-                </div>
+                @php
+                    $hotspotsConfig = [
+                        ['id' => 39, 'top' => '42%', 'left' => '48%'],
+                        ['id' => 47, 'top' => '58%', 'left' => '20%'],
+                        ['id' => 22, 'top' => '72%', 'left' => '62%'],
+                    ];
+                @endphp
 
-                <!-- Hotspot 2: Burós Risotto -->
-                <div class="absolute top-[58%] left-[20%] z-20 group">
-                    <button type="button" aria-label="Ver Burós Risotto" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white">
-                        +
-                    </button>
-                    <!-- Popover Card Clara -->
-                    <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                        <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">Recámara</span>
-                        <h4 class="text-sm font-bold text-zinc-950 mt-1">Burós Risotto</h4>
-                        <p class="text-xs text-[#88674B] mt-1 font-mono font-extrabold">$ 5,907.50 MXN</p>
-                        <a href="{{ route('productos.detalle', 47) }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
-                            Ver Producto
-                        </a>
-                    </div>
-                </div>
+                @foreach($hotspotsConfig as $hs)
+                    @php
+                        $prod = isset($productosHotspots) ? $productosHotspots->get($hs['id']) : null;
+                    @endphp
+                    @if($prod)
+                        <!-- Hotspot {{ $prod->nombre }} -->
+                        <div class="absolute z-20 group" style="top: {{ $hs['top'] }}; left: {{ $hs['left'] }};">
+                            <button type="button" aria-label="Ver {{ $prod->nombre }}" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white cursor-pointer">
+                                +
+                            </button>
+                            <!-- Popover Card Clara -->
+                            <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
+                                <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">{{ $prod->categoria }}</span>
+                                <h4 class="text-sm font-bold text-zinc-950 mt-1 line-clamp-1">{{ $prod->nombre }}</h4>
+                                
+                                <div class="mt-1 flex items-center gap-1.5 font-mono">
+                                    @if($prod->tieneDescuento())
+                                        <span class="text-xs text-zinc-400 line-through font-sans">$ {{ number_format($prod->precio, 2, '.', ',') }}</span>
+                                        <span class="text-xs text-[#88674B] font-extrabold font-sans">$ {{ number_format($prod->precio_descuento, 2, '.', ',') }} MXN</span>
+                                    @else
+                                        <span class="text-xs text-[#88674B] font-extrabold font-sans">$ {{ number_format($prod->precio, 2, '.', ',') }} MXN</span>
+                                    @endif
+                                </div>
 
-                <!-- Hotspot 3: Banca Zenit -->
-                <div class="absolute top-[72%] left-[62%] z-20 group">
-                    <button type="button" aria-label="Ver Banca Zenit" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white">
-                        +
-                    </button>
-                    <!-- Popover Card Clara -->
-                    <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                        <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">Recámara</span>
-                        <h4 class="text-sm font-bold text-zinc-950 mt-1">Banca Zenit</h4>
-                        <p class="text-xs text-[#88674B] mt-1 font-mono font-extrabold">$ 8,650.00 MXN</p>
-                        <a href="{{ route('productos.detalle', 22) }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
-                            Ver Producto
-                        </a>
-                    </div>
-                </div>
-
+                                <a href="{{ route('productos.detalle', $prod->id) }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
+                                    Ver Producto
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
             </div>
         </div>
     </div>
@@ -315,14 +306,14 @@
                             
                             <!-- Foto 2 (Secundaria en Hover) -->
                             @if($producto->imagen_secundaria_url)
-                                <img src="{{ $producto->imagen_secundaria_url }}" alt="{{ $producto->nombre }} (Vista alternativa)" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-108 transition-all duration-700 ease-out">
+                                <img id="sec-img-prod-dest-{{ $producto->id }}" src="{{ $producto->imagen_secundaria_url }}" alt="{{ $producto->nombre }} (Vista alternativa)" class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-108 transition-all duration-700 ease-out">
                             @endif
                             
                             <!-- Insignias / Badges -->
                             <div class="absolute top-3 left-3 flex flex-col space-y-1.5 z-10">
                                 @if($producto->modelo_3d_url)
                                     <span class="bg-[#FAF3E0] text-[#74563C] border border-[#E6D7C3] text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md flex items-center space-x-1">
-                                        <span>🎮 3D DISPONIBLE</span>
+                                        <span> 3D DISPONIBLE</span>
                                     </span>
                                 @endif
                                 @if($producto->tieneDescuento())
@@ -363,31 +354,7 @@
                                     <span class="text-xs text-zinc-400 font-medium">(Cliente verificado)</span>
                                 </div>
 
-                                {{-- Combinaciones / Acabados disponibles --}}
-                                @php
-                                    $detallesActivos = $producto->detalles ? $producto->detalles->where('activo', true) : collect();
-                                @endphp
-                                @if($detallesActivos->count() > 0)
-                                    <div class="mt-2.5 pt-2 border-t border-zinc-100/80">
-                                        <div class="flex items-center justify-between mb-1">
-                                            <span class="text-[9px] font-extrabold uppercase tracking-wider text-[#74563C] bg-[#FAF3E0] px-2 py-0.5 rounded-full border border-[#E6D7C3] inline-flex items-center gap-1">
-                                                <span>🎨</span>
-                                                <span>+{{ $detallesActivos->count() }} {{ $detallesActivos->count() === 1 ? 'combinación' : 'combinaciones' }}</span>
-                                            </span>
-                                        </div>
-                                        <div class="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
-                                            @foreach($detallesActivos as $idx => $det)
-                                                <button
-                                                    type="button"
-                                                    title="{{ $det->nombre }}"
-                                                    onclick="cambiarImagenCard(this, 'img-prod-dest-{{ $producto->id }}', '{{ $det->imagen_url }}', '{{ $det->id }}', 'form-add-dest-{{ $producto->id }}')"
-                                                    class="btn-var-thumb relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg overflow-hidden border-2 transition-all duration-200 shrink-0 focus:outline-none {{ $idx === 0 ? 'border-[#88674B] ring-2 ring-[#88674B]/20' : 'border-zinc-200 hover:border-[#88674B]' }}">
-                                                    <img src="{{ $det->imagen_url }}" alt="{{ $det->nombre }}" class="w-full h-full object-cover">
-                                                </button>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                @endif
+
                             </div>
                             
                             <!-- Precio y Botón de Carrito -->
@@ -409,7 +376,7 @@
                                     data-img="{{ $producto->imagen_url }}"
                                     onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
                                     @csrf
-                                    <input type="hidden" name="subarticulo_id" value="{{ $detallesActivos->first()->id ?? '' }}">
+                                    <input type="hidden" name="subarticulo_id" value="{{ $producto->detalles ? optional($producto->detalles->where('activo', true)->first())->id : '' }}">
                                     <button type="submit" aria-label="Añadir {{ $producto->nombre }} al carrito" class="p-3 bg-[#FAF3E0] hover:bg-[#88674B] text-[#74563C] hover:text-white rounded-2xl border border-[#E6D7C3] hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-md">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

@@ -423,20 +423,24 @@
     <script>
         function setMainProductPhoto(src, btn) {
             const mainImg = document.getElementById('main-product-image');
-            if (mainImg) {
+            const secImg = document.getElementById('secondary-product-image');
+            if (mainImg && src) {
                 mainImg.style.opacity = '0';
                 setTimeout(() => {
                     mainImg.src = src;
                     mainImg.style.opacity = '1';
                 }, 150);
             }
+            if (secImg && src) {
+                secImg.src = src;
+            }
             if (btn) {
                 document.querySelectorAll('.photo-thumb-btn').forEach(b => {
-                    b.classList.remove('border-amber-800');
+                    b.classList.remove('border-amber-800', 'ring-2', 'ring-amber-800/30');
                     b.classList.add('border-zinc-200');
                 });
                 btn.classList.remove('border-zinc-200');
-                btn.classList.add('border-amber-800');
+                btn.classList.add('border-amber-800', 'ring-2', 'ring-amber-800/30');
             }
         }
 
@@ -467,6 +471,7 @@
             const precioRaw = parseFloat(btn.dataset.precio || 0);
 
             const mainImg = document.getElementById('main-product-image');
+            const secImg = document.getElementById('secondary-product-image');
             const selectedLabel = document.getElementById('selected-color-label');
             const subTitleLabel = document.getElementById('selected-subarticulo-nombre');
 
@@ -476,6 +481,10 @@
                     mainImg.src = imagen;
                     mainImg.style.opacity = '1';
                 }, 150);
+            }
+
+            if (secImg && imagen && imagen.trim() !== '') {
+                secImg.src = imagen;
             }
 
             const hiddenColorInput = document.getElementById('input-color-seleccionado');

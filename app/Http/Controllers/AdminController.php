@@ -47,9 +47,25 @@ class AdminController extends Controller
 
     // --- CRUD DE MUEBLES (ARTÍCULOS) ---
 
-    public function productosIndex()
+    public function productosIndex(Request $request)
     {
-        $productos = Producto::with('detalles')->orderBy('created_at', 'desc')->paginate(10);
+        $query = Producto::with('detalles');
+
+        if ($request->filled('buscar')) {
+            $buscar = trim($request->input('buscar'));
+            $query->where(function($q) use ($buscar) {
+                $q->where('nombre', 'like', "%{$buscar}%")
+                  ->orWhere('categoria', 'like', "%{$buscar}%")
+                  ->orWhere('descripcion', 'like', "%{$buscar}%")
+                  ->orWhere('proveedor', 'like', "%{$buscar}%")
+                  ->orWhereHas('detalles', function($subQ) use ($buscar) {
+                      $subQ->where('nombre', 'like', "%{$buscar}%")
+                           ->orWhere('sku', 'like', "%{$buscar}%");
+                  });
+            });
+        }
+
+        $productos = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         return view('Admin.productos.index', compact('productos'));
     }
 

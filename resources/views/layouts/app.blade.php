@@ -1380,7 +1380,54 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
 
         updateTimer();
         timerInterval = setInterval(updateTimer, 1000);
-    }
+    // Función global para cambiar la imagen del producto al seleccionar una combinación (portada)
+    window.cambiarImagenCard = function(btn, imgId, newSrc, subId, formId) {
+        if (!newSrc || newSrc.trim() === '') return;
+
+        const imgEl = document.getElementById(imgId);
+        if (imgEl) {
+            imgEl.style.transition = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out';
+            imgEl.style.opacity = '0.3';
+            imgEl.style.transform = 'scale(0.97)';
+
+            setTimeout(() => {
+                imgEl.src = newSrc;
+                imgEl.style.opacity = '1';
+                imgEl.style.transform = 'scale(1)';
+            }, 150);
+        }
+
+        const secImgEl = document.getElementById('sec-' + imgId);
+        if (secImgEl) {
+            secImgEl.style.transition = 'opacity 0.2s ease-in-out';
+            secImgEl.style.opacity = '0.3';
+            setTimeout(() => {
+                secImgEl.src = newSrc;
+                secImgEl.style.opacity = '';
+            }, 150);
+        }
+
+        if (formId) {
+            const formEl = document.getElementById(formId);
+            if (formEl) {
+                const subInput = formEl.querySelector('input[name="subarticulo_id"]');
+                if (subInput) subInput.value = subId;
+                formEl.setAttribute('data-img', newSrc);
+            }
+        }
+
+        if (btn) {
+            const parent = btn.closest('.flex') || btn.parentElement;
+            if (parent) {
+                parent.querySelectorAll('.btn-var-thumb').forEach(b => {
+                    b.classList.remove('border-[#88674B]', 'border-amber-700', 'border-amber-800', 'ring-2', 'ring-[#88674B]/30', 'ring-[#88674B]/20', 'ring-amber-700/20', 'scale-105');
+                    b.classList.add('border-zinc-200');
+                });
+                btn.classList.remove('border-zinc-200');
+                btn.classList.add('border-[#88674B]', 'ring-2', 'ring-[#88674B]/30', 'scale-105');
+            }
+        }
+    };
 })();
 </script>
 
