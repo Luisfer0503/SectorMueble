@@ -89,21 +89,21 @@
 
 
     <!-- ── 3. BANNER DE OFERTA FLASH ── -->
-    <div class="bg-gradient-to-r from-[#FAF8F5] via-amber-50/80 to-[#FAF8F5] py-12 sm:py-16 text-zinc-950 border-y border-[#88674B]/30 relative overflow-hidden">
+    <div class="bg-[#C85A32] py-12 sm:py-16 text-white border-y border-white/20 relative overflow-hidden shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
             
             <div class="text-center lg:text-left max-w-xl">
-                <span class="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-[#74563C] bg-white border border-[#74563C]/40 px-4 py-1.5 rounded-full mb-3 shadow-xs">
-                    <span class="w-2 h-2 rounded-full bg-[#74563C] animate-ping"></span>
+                <span class="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-white bg-white/20 border border-white/30 px-4 py-1.5 rounded-full mb-3 shadow-xs">
+                    <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
                     <span>Venta Especial Flash 2026</span>
                 </span>
-                <h2 class="serif-title text-3xl sm:text-5xl font-bold leading-tight text-zinc-950">Últimas Horas: Colección Escandinava</h2>
-                <p class="mt-2 text-zinc-700 text-sm sm:text-base font-normal">Obtén un <strong class="text-[#74563C] font-bold">15% EXTRA</strong> en tu carrito aplicando el código exclusivo de temporada.</p>
+                <h2 class="serif-title text-3xl sm:text-5xl font-bold leading-tight text-white">Últimas Horas: Colección Escandinava</h2>
+                <p class="mt-2 text-white/95 text-sm sm:text-base font-normal">Obtén un <strong class="text-white font-extrabold underline decoration-white/60">15% EXTRA</strong> en tu carrito aplicando el código exclusivo de temporada.</p>
                 
-                <!-- Botón Copiar Cupón -->
-                <div class="mt-5 inline-flex items-center space-x-2 bg-white p-1.5 pl-4 rounded-2xl border border-[#74563C]/40 shadow-md">
-                    <span class="text-xs font-mono font-extrabold tracking-widest text-[#74563C]" id="coupon-code-val">SECTOR2026</span>
-                    <button type="button" onclick="copyCouponCode()" id="copy-coupon-btn" class="bg-[#74563C] hover:bg-[#5C4331] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-xs">
+                <!-- Botón Copiar Cupón (Gris Topo #4A4746) -->
+                <div class="mt-5 inline-flex items-center space-x-2 bg-white/95 p-1.5 pl-4 rounded-2xl border border-white/30 shadow-md">
+                    <span class="text-xs font-mono font-extrabold tracking-widest text-[#4A4746]" id="coupon-code-val">SECTOR2026</span>
+                    <button type="button" onclick="copyCouponCode()" id="copy-coupon-btn" class="bg-[#4A4746] hover:bg-[#383534] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-xs">
                         Copiar Cupón
                     </button>
                 </div>
@@ -111,19 +111,19 @@
 
             <!-- Ticker de Reloj / Cuenta Regresiva Claro -->
             <div class="flex items-center space-x-3 sm:space-x-4 text-center">
-                <div class="bg-white border border-[#74563C]/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
-                    <span id="flash-hours" class="block text-2xl sm:text-4xl font-extrabold text-[#74563C] font-mono">08</span>
-                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-500">Horas</span>
+                <div class="bg-white/95 border border-white/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
+                    <span id="flash-hours" class="block text-2xl sm:text-4xl font-extrabold text-[#C85A32] font-mono">08</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600">Horas</span>
                 </div>
-                <span class="text-2xl sm:text-4xl font-bold text-[#74563C] animate-pulse">:</span>
-                <div class="bg-white border border-[#74563C]/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
-                    <span id="flash-minutes" class="block text-2xl sm:text-4xl font-extrabold text-[#74563C] font-mono">42</span>
-                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-500">Minutos</span>
+                <span class="text-2xl sm:text-4xl font-bold text-white animate-pulse">:</span>
+                <div class="bg-white/95 border border-white/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
+                    <span id="flash-minutes" class="block text-2xl sm:text-4xl font-extrabold text-[#C85A32] font-mono">42</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600">Minutos</span>
                 </div>
-                <span class="text-2xl sm:text-4xl font-bold text-[#74563C] animate-pulse">:</span>
-                <div class="bg-white border border-[#74563C]/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
-                    <span id="flash-seconds" class="block text-2xl sm:text-4xl font-extrabold text-[#74563C] font-mono">19</span>
-                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-500">Segundos</span>
+                <span class="text-2xl sm:text-4xl font-bold text-white animate-pulse">:</span>
+                <div class="bg-white/95 border border-white/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
+                    <span id="flash-seconds" class="block text-2xl sm:text-4xl font-extrabold text-[#C85A32] font-mono">19</span>
+                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600">Segundos</span>
                 </div>
             </div>
 
@@ -600,12 +600,12 @@
                 if (copyBtn) {
                     const originalText = copyBtn.innerText;
                     copyBtn.innerText = '¡Copiado! ✓';
-                    copyBtn.classList.remove('bg-amber-800');
+                    copyBtn.classList.remove('bg-[#4A4746]');
                     copyBtn.classList.add('bg-emerald-700');
                     setTimeout(() => {
                         copyBtn.innerText = originalText;
                         copyBtn.classList.remove('bg-emerald-700');
-                        copyBtn.classList.add('bg-amber-800');
+                        copyBtn.classList.add('bg-[#4A4746]');
                     }, 2000);
                 }
             }).catch(err => console.error('Error al copiar cupón:', err));

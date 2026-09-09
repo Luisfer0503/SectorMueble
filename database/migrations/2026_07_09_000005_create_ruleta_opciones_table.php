@@ -41,11 +41,11 @@ return new class extends Migration
             ],
             [
                 'posicion' => 2,
-                'titulo' => 'Envío Gratis en tu pedido',
-                'codigo_cupon' => 'ENVIORULETA',
-                'tipo_descuento' => 'envio_gratis',
-                'descuento_valor' => 0.00,
-                'tiempo_minutos' => 20,
+                'titulo' => '$200 Descuento Especial',
+                'codigo_cupon' => 'RULETA200',
+                'tipo_descuento' => 'fijo',
+                'descuento_valor' => 200.00,
+                'tiempo_minutos' => 15,
                 'color_bg' => '#15803D', // Green 700
                 'activo' => true,
                 'created_at' => now(),
