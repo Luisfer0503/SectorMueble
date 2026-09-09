@@ -66,7 +66,7 @@
                     </div>
                     <div>
                         <h3 class="text-sm font-bold text-zinc-950">Envío Gratuito Premium</h3>
-                        <p class="mt-1 text-xs text-zinc-600 leading-relaxed">Aplica en compras desde $10,000 MXN dentro de la zona de cobertura(Puebla Capital, San Andres Cholulas y San Pedro Choula).</p>
+                        <p class="mt-1 text-xs text-zinc-600 leading-relaxed">Aplica en compras desde $10,000 MXN dentro de la zona de cobertura(Puebla Capital, San Andrés Cholula y San Pedro Cholula).</p>
                     </div>
                 </div>
 
@@ -406,25 +406,7 @@
 
 
 
-    <!-- ── 8. BANNER DE PRIVILEGIOS / NEWSLETTER ── -->
-    <div class="bg-[#0B0A0A] text-white py-20 sm:py-24 relative overflow-hidden">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="bg-[#C49A6C] p-8 sm:p-14 rounded-3xl border border-white/20 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8">
-                <div class="max-w-xl text-center lg:text-left">
-                    <span class="text-xs font-extrabold uppercase tracking-widest text-[#FAF3E0] bg-white/20 border border-white/30 px-3.5 py-1.5 rounded-full">Club de Miembros VIP</span>
-                    <h2 class="serif-title text-3xl sm:text-4xl font-bold mt-3 text-white">Recibe $500 MXN en tu Primera Compra</h2>
-                    <p class="mt-2 text-[#FAF3E0]/90 text-sm sm:text-base font-light">Suscríbete para recibir lanzamientos privados, catálogos digitales exclusivos y promociones de temporada antes que nadie.</p>
-                </div>
 
-                <form onsubmit="handleNewsletterSubmit(event)" class="w-full lg:w-auto flex flex-col sm:flex-row gap-3">
-                    <input type="email" id="newsletter-email" required placeholder="Tu correo electrónico..." class="px-5 py-3.5 rounded-2xl bg-black/25 border border-white/30 text-white text-sm placeholder-white/70 focus:outline-none focus:border-white/60 w-full sm:w-80 shadow-inner">
-                    <button type="submit" class="bg-[#4c6f4f] hover:bg-[#3c583e] text-white text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-2xl transition-all shadow-xl whitespace-nowrap border border-white/20 active:scale-95">
-                        Unirme al Club
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
 
     <!-- ── SCRIPTS INTERACTIVOS SENIOR FRONTEND ── -->
     <script>
@@ -578,15 +560,7 @@
             }).catch(err => console.error('Error al copiar cupón:', err));
         }
 
-        // ── 5. Newsletter Submission Handler ──
-        function handleNewsletterSubmit(e) {
-            e.preventDefault();
-            const emailInput = document.getElementById('newsletter-email');
-            if (emailInput && emailInput.value) {
-                alert('¡Gracias por unirte al Club Sector Mueble! Te hemos enviado tu código de $500 MXN de regalo a ' + emailInput.value);
-                emailInput.value = '';
-            }
-        }
+
 
         // ── 6. Switcher de Modelos 3D Interactivo ──
         function switch3DModel(modelKey, title, modelUrl, btnEl) {

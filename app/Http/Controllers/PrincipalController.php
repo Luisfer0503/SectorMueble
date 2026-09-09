@@ -1202,8 +1202,9 @@ class PrincipalController extends Controller
             'expira_en' => $expiraEn,
         ]);
 
-        // Marcar ruleta como jugada en la sesión
+        // Marcar ruleta como jugada en la sesión y cookie persistente (1 año)
         session()->put('ruleta_jugada', true);
+        \Illuminate\Support\Facades\Cookie::queue('sm_ruleta_played', 'true', 525600);
 
         // Si el usuario está autenticado, registrar el tiro y premio en la base de datos
         if (auth()->check()) {

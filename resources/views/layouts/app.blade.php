@@ -116,7 +116,7 @@
 @php
     $ruletaOpcionesData = \App\Models\RuletaOpcion::where('activo', true)->orderBy('posicion', 'asc')->get();
     $cuponSesion = session()->get('cupon');
-    $haJugadoRuleta = (auth()->check() && auth()->user()->ruleta_jugada) || session('ruleta_jugada') || session()->has('cupon');
+    $haJugadoRuleta = (auth()->check() && auth()->user()->ruleta_jugada) || session('ruleta_jugada') || session()->has('cupon') || request()->cookie('sm_ruleta_played') === 'true';
 @endphp
 
 <!-- Banner Sticky de Premio Activo de Ruleta -->
@@ -550,7 +550,7 @@
 
             <!-- Bottom Area -->
             <div class="mt-8 pt-8 border-t border-zinc-800 flex flex-col md:flex-row items-center justify-between text-xs">
-                <p>&copy; {{ date('Y') }} Sector Mueble S.L. Todos los derechos reservados. Creado con pasión por el diseño.</p>
+                <p>&copy; {{ date('Y') }} Sector Mueble. Todos los derechos reservados. Creado con pasión por el diseño.</p>
                 <div class="flex space-x-6 mt-4 md:mt-0">
                     <span class="hover:text-white transition-colors cursor-pointer">Instagram</span>
                     <span class="hover:text-white transition-colors cursor-pointer">Pinterest</span>
@@ -704,7 +704,7 @@
 
 @if(!$haJugadoRuleta)
 <!-- Botón Flotante para abrir la Ruleta con Paleta Oficial -->
-<button id="ruleta-trigger-btn" onclick="openRuletaModal()" class="fixed bottom-20 md:bottom-6 left-4 sm:left-6 z-40 bg-[#1E2440] hover:bg-[#151a30] text-white p-3 sm:p-3.5 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center space-x-2 border-2 border-white/20 group">
+<button id="ruleta-trigger-btn" onclick="openRuletaModal()" class="hidden fixed bottom-20 md:bottom-6 left-4 sm:left-6 z-40 bg-[#1E2440] hover:bg-[#151a30] text-white p-3 sm:p-3.5 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center space-x-2 border-2 border-white/20 group">
     <span class="text-xl animate-bounce">🎡</span>
     <span class="text-xs font-bold uppercase tracking-wider hidden sm:inline-block pr-1 text-white">Ruleta de Bienvenida</span>
 </button>
@@ -997,15 +997,28 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
         checkNewUserAutoOpen();
     });
 
+    function markRuletaPlayed() {
+        localStorage.setItem('sm_ruleta_played', 'true');
+        document.cookie = "sm_ruleta_played=true; max-age=31536000; path=/; SameSite=Lax";
+        const triggerBtn = document.getElementById('ruleta-trigger-btn');
+        if (triggerBtn) triggerBtn.style.display = 'none';
+    }
+
     // Auto-apertura si es nuevo usuario y no ha jugado
     function checkNewUserAutoOpen() {
-        const played = localStorage.getItem('sm_ruleta_played');
+        const playedLS = localStorage.getItem('sm_ruleta_played');
+        const playedCookie = document.cookie.split('; ').some(c => c.trim().startsWith('sm_ruleta_played=true'));
         const haJugadoBackend = @json($haJugadoRuleta);
-        if (haJugadoBackend || played === 'true') {
+
+        if (haJugadoBackend || playedLS === 'true' || playedCookie) {
             const triggerBtn = document.getElementById('ruleta-trigger-btn');
             if (triggerBtn) triggerBtn.style.display = 'none';
             return;
         }
+
+        const triggerBtn = document.getElementById('ruleta-trigger-btn');
+        if (triggerBtn) triggerBtn.classList.remove('hidden');
+
         // Abrir automáticamente después de 1.5 segundos
         setTimeout(function() {
             openRuletaModal();
@@ -1228,6 +1241,8 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
         setTimeout(() => {
             modal.classList.add('hidden');
         }, 300);
+
+        markRuletaPlayed();
     };
 
     // Lógica del Giro
@@ -1292,7 +1307,7 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
             document.getElementById('ruleta-input-posicion').value = winningOption.posicion;
 
             // Marcar que el usuario ya giró la ruleta
-            localStorage.setItem('sm_ruleta_played', 'true');
+            markRuletaPlayed();
 
         }, 4100);
     };
@@ -1317,8 +1332,8 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                // Marcar en localStorage que ya jugó
-                localStorage.setItem('sm_ruleta_played', 'true');
+                // Marcar que ya jugó
+                markRuletaPlayed();
                 
                 // Ocultar botón flotante permanentemente
                 const triggerBtn = document.getElementById('ruleta-trigger-btn');
@@ -1386,25 +1401,21 @@ window.RULETA_CUPON_SESION = @json($cuponSesion);
 
         const imgEl = document.getElementById(imgId);
         if (imgEl) {
-            imgEl.style.transition = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out';
-            imgEl.style.opacity = '0.3';
+            imgEl.src = newSrc;
+            imgEl.setAttribute('src', newSrc);
+            imgEl.style.transition = 'opacity 0.15s ease-in-out, transform 0.15s ease-in-out';
+            imgEl.style.opacity = '0.4';
             imgEl.style.transform = 'scale(0.97)';
 
             setTimeout(() => {
-                imgEl.src = newSrc;
                 imgEl.style.opacity = '1';
                 imgEl.style.transform = 'scale(1)';
-            }, 150);
+            }, 100);
         }
 
         const secImgEl = document.getElementById('sec-' + imgId);
         if (secImgEl) {
-            secImgEl.style.transition = 'opacity 0.2s ease-in-out';
-            secImgEl.style.opacity = '0.3';
-            setTimeout(() => {
-                secImgEl.src = newSrc;
-                secImgEl.style.opacity = '';
-            }, 150);
+            secImgEl.style.display = 'none';
         }
 
         if (formId) {

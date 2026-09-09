@@ -425,14 +425,16 @@
             const mainImg = document.getElementById('main-product-image');
             const secImg = document.getElementById('secondary-product-image');
             if (mainImg && src) {
-                mainImg.style.opacity = '0';
+                mainImg.src = src;
+                mainImg.setAttribute('src', src);
+                mainImg.style.transition = 'opacity 0.15s ease-in-out';
+                mainImg.style.opacity = '0.4';
                 setTimeout(() => {
-                    mainImg.src = src;
                     mainImg.style.opacity = '1';
-                }, 150);
+                }, 100);
             }
-            if (secImg && src) {
-                secImg.src = src;
+            if (secImg) {
+                secImg.style.display = '';
             }
             if (btn) {
                 document.querySelectorAll('.photo-thumb-btn').forEach(b => {
@@ -476,15 +478,17 @@
             const subTitleLabel = document.getElementById('selected-subarticulo-nombre');
 
             if (mainImg && imagen && imagen.trim() !== '') {
-                mainImg.style.opacity = '0';
+                mainImg.src = imagen;
+                mainImg.setAttribute('src', imagen);
+                mainImg.style.transition = 'opacity 0.15s ease-in-out';
+                mainImg.style.opacity = '0.4';
                 setTimeout(() => {
-                    mainImg.src = imagen;
                     mainImg.style.opacity = '1';
-                }, 150);
+                }, 100);
             }
 
-            if (secImg && imagen && imagen.trim() !== '') {
-                secImg.src = imagen;
+            if (secImg) {
+                secImg.style.display = 'none';
             }
 
             const hiddenColorInput = document.getElementById('input-color-seleccionado');

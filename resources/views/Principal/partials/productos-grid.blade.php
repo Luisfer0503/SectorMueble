@@ -179,25 +179,21 @@
 
                 const imgEl = document.getElementById(imgId);
                 if (imgEl) {
-                    imgEl.style.transition = 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out';
-                    imgEl.style.opacity = '0.3';
+                    imgEl.src = newSrc;
+                    imgEl.setAttribute('src', newSrc);
+                    imgEl.style.transition = 'opacity 0.15s ease-in-out, transform 0.15s ease-in-out';
+                    imgEl.style.opacity = '0.4';
                     imgEl.style.transform = 'scale(0.97)';
 
                     setTimeout(() => {
-                        imgEl.src = newSrc;
                         imgEl.style.opacity = '1';
                         imgEl.style.transform = 'scale(1)';
-                    }, 150);
+                    }, 100);
                 }
 
                 const secImgEl = document.getElementById('sec-' + imgId);
                 if (secImgEl) {
-                    secImgEl.style.transition = 'opacity 0.2s ease-in-out';
-                    secImgEl.style.opacity = '0.3';
-                    setTimeout(() => {
-                        secImgEl.src = newSrc;
-                        secImgEl.style.opacity = '';
-                    }, 150);
+                    secImgEl.style.display = 'none';
                 }
 
                 if (formId) {
