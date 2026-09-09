@@ -174,12 +174,6 @@
                             <span id="price-main-display" class="text-2xl font-bold text-zinc-950 font-sans">$ {{ number_format($precioInicialSub, 2, '.', ',') }} MXN</span>
                         @endif
                         <p class="text-xs text-zinc-400 mt-1">IVA incluido. Envío estimado en 3-5 días laborables.</p>
-                        <div class="mt-2.5 inline-flex items-center space-x-1.5 text-xs text-amber-900 bg-amber-50 border border-amber-200/80 px-3 py-1 rounded-lg">
-                            <svg class="w-3.5 h-3.5 text-amber-700 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span><strong>Precio de muestra:</strong> Sitio con fines exclusivamente de demostración.</span>
-                        </div>
                     </div>
 
                     <!-- Description -->

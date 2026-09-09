@@ -99,26 +99,6 @@
 
 @include('Principal.partials.modal-cp')
 
-<!-- Banner Superior de Leyenda Informativa / Precios de Muestra (Demostración) -->
-<div id="demo-site-banner" class="bg-[#74563C] text-white text-xs py-2 px-4 border-b border-[#88674B]/40 text-center font-medium shadow-sm z-[60] relative transition-all">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
-        <div class="flex-1 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2">
-            <span class="inline-flex items-center space-x-1 bg-[#88674B] text-white text-[10px] font-extrabold uppercase px-2 py-0.5 rounded tracking-wider shadow-xs">
-                <svg class="w-3 h-3 text-amber-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Sitio de Demostración</span>
-            </span>
-            <span class="text-white/95 text-[11px] sm:text-xs">
-                Los precios, productos y promociones mostrados son exclusivamente de muestra (fines educativos/demo).
-            </span>
-        </div>
-        <button type="button" onclick="document.getElementById('demo-site-banner').remove()" class="text-white/80 hover:text-white text-xs font-bold px-2 py-0.5 rounded hover:bg-black/20" title="Ocultar aviso">
-            ✕
-        </button>
-    </div>
-</div>
-
 @auth
     @if(!auth()->user()->hasVerifiedEmail() && !request()->routeIs('verification.notice'))
         <div class="bg-amber-600 text-white text-xs py-2 px-4 text-center font-medium shadow-sm z-[55] relative flex items-center justify-center gap-2">
@@ -562,20 +542,7 @@
                 </div>
             </div>
 
-            <!-- Cuadro de Descargo Legal / Precios de Muestra -->
-            <div class="mt-10 p-4.5 rounded-2xl bg-zinc-950/80 border border-zinc-800/90 text-xs text-zinc-400 leading-relaxed">
-                <div class="flex items-center space-x-2 font-bold text-amber-400 mb-1.5">
-                    <svg class="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
-                    <span class="uppercase tracking-wider text-[11px]">Aviso de Demostración y Descargo Legal</span>
-                </div>
-                <p class="text-zinc-400">
-                    Este sitio web es una plataforma de prueba desarrollada exclusivamente con fines de demostración, portafolio y exhibición técnica. 
-                    Todos los nombres de productos, fotografías, descripciones, precios, descuentos y procesos de compra son ficticios y de muestra. 
-                    No existe relación mercantil real, no se cobran importes ni se despacha mercancía alguna a través de este portal.
-                </p>
-            </div>
+
 
             <!-- Bottom Area -->
             <div class="mt-8 pt-8 border-t border-zinc-800 flex flex-col md:flex-row items-center justify-between text-xs">
