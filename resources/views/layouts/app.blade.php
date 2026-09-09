@@ -120,21 +120,21 @@
 @endphp
 
 <!-- Banner Sticky de Premio Activo de Ruleta -->
-<div id="ruleta-sticky-banner" class="{{ ($cuponSesion && isset($cuponSesion['expira_en'])) ? '' : 'hidden' }} relative z-30 bg-gradient-to-r from-amber-900 via-amber-800 to-amber-950 text-white px-4 py-2.5 shadow-md border-b border-amber-600">
+<div id="ruleta-sticky-banner" class="{{ ($cuponSesion && isset($cuponSesion['expira_en'])) ? '' : 'hidden' }} relative z-30 bg-[#4c6f4f] text-white px-4 py-2.5 shadow-md border-b border-white/20">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm">
         <div class="flex items-center space-x-2 font-medium">
             <span class="animate-bounce text-base">🎁</span>
             <span><strong>¡Premio de Ruleta Activo!</strong> <span id="ruleta-banner-titulo">{{ $cuponSesion['titulo'] ?? ($cuponSesion['codigo'] ?? 'Descuento Especial') }}</span></span>
         </div>
         <div class="flex items-center space-x-3">
-            <div class="bg-black/40 px-3 py-1 rounded-full border border-amber-400/40 flex items-center space-x-1.5 font-mono text-amber-200">
-                <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="bg-black/25 px-3 py-1 rounded-full border border-white/30 flex items-center space-x-1.5 font-mono text-white">
+                <svg class="w-4 h-4 text-emerald-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span>Expira en:</span>
                 <strong id="ruleta-banner-timer" class="text-white font-bold text-sm">--:--</strong>
             </div>
-            <a href="{{ route('carrito') }}" class="bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-colors shadow">
+            <a href="{{ route('carrito') }}" class="bg-[#3c583e] hover:bg-[#2d442f] text-white text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-colors shadow border border-white/20">
                 Ir al Carrito
             </a>
         </div>
@@ -143,17 +143,17 @@
 
 <!-- Banner Sticky de Notificación de Productos Esperando en Carrito -->
 @if(session()->has('notificacion_carrito_abandonado') || (auth()->check() && !empty(auth()->user()->carrito_guardado) && session()->has('carrito') && count(session('carrito', [])) > 0 && !request()->routeIs('carrito') && !request()->routeIs('checkout')))
-<div id="carrito-guardado-banner" class="relative z-30 bg-gradient-to-r from-amber-950 via-amber-900 to-amber-950 text-white px-4 py-2.5 shadow-md border-b border-amber-600/60">
+<div id="carrito-guardado-banner" class="relative z-30 bg-[#4c6f4f] text-white px-4 py-2.5 shadow-md border-b border-white/20">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs sm:text-sm">
         <div class="flex items-center space-x-2 font-medium">
             <span class="animate-bounce text-base">🛒</span>
             <span><strong>¡Tus productos te están esperando!</strong> Dejamos guardados los muebles que tenías en tu carrito para que puedas completar tu compra.</span>
         </div>
         <div class="flex items-center space-x-3">
-            <a href="{{ route('carrito') }}" class="bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-extrabold px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-colors shadow">
+            <a href="{{ route('carrito') }}" class="bg-[#3c583e] hover:bg-[#2d442f] text-white text-xs font-extrabold px-3.5 py-1.5 rounded-full uppercase tracking-wider transition-colors shadow border border-white/20">
                 Ver mi Carrito ({{ array_sum(array_column(session('carrito', []), 'cantidad')) }})
             </a>
-            <button type="button" onclick="document.getElementById('carrito-guardado-banner').remove()" class="text-amber-300 hover:text-white text-xs font-bold px-1.5 py-0.5" title="Cerrar aviso">
+            <button type="button" onclick="document.getElementById('carrito-guardado-banner').remove()" class="text-white/80 hover:text-white text-xs font-bold px-1.5 py-0.5" title="Cerrar aviso">
                 ✕
             </button>
         </div>
