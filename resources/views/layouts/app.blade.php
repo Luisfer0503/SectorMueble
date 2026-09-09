@@ -700,9 +700,9 @@
 
 @if(!$haJugadoRuleta)
 <!-- Botón Flotante para abrir la Ruleta con Paleta Oficial -->
-<button id="ruleta-trigger-btn" onclick="openRuletaModal()" class="fixed bottom-20 md:bottom-6 left-4 sm:left-6 z-40 bg-gradient-to-r from-[#88674B] via-[#74563C] to-[#2B241A] text-white p-3 sm:p-3.5 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center space-x-2 border.2 border-[#FAF3E0]/40 group">
+<button id="ruleta-trigger-btn" onclick="openRuletaModal()" class="fixed bottom-20 md:bottom-6 left-4 sm:left-6 z-40 bg-[#1E2440] hover:bg-[#151a30] text-white p-3 sm:p-3.5 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 flex items-center space-x-2 border-2 border-white/20 group">
     <span class="text-xl animate-bounce">🎡</span>
-    <span class="text-xs font-bold uppercase tracking-wider hidden sm:inline-block pr-1 text-[#FAF3E0]">Ruleta de Bienvenida</span>
+    <span class="text-xs font-bold uppercase tracking-wider hidden sm:inline-block pr-1 text-white">Ruleta de Bienvenida</span>
 </button>
 
 <!-- Modal de Ruleta de Premios para Nuevos Usuarios -->
@@ -710,14 +710,14 @@
     <!-- Backdrop Overlay -->
     <div class="absolute inset-0 bg-zinc-950/80 backdrop-blur-md" onclick="closeRuletaModal()"></div>
 
-    <!-- Container Card -->
-    <div class="relative bg-[#1F0F0B] border-2 border-[#88674B]/60 rounded-3xl shadow-2xl max-w-md w-full p-6 text-white text-center overflow-hidden transform scale-95 transition-transform duration-300" id="ruleta-modal-card">
+    <!-- Container Card con Fondo Nogal Cálido #4A2E1B -->
+    <div class="relative bg-[#4A2E1B] border-2 border-white/20 rounded-3xl shadow-2xl max-w-md w-full p-6 text-white text-center overflow-hidden transform scale-95 transition-transform duration-300" id="ruleta-modal-card">
         <!-- Glow accents -->
-        <div class="absolute -top-24 -left-24 w-48 h-48 bg-[#88674B]/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-[#2B241A]/40 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-black/40 rounded-full blur-3xl pointer-events-none"></div>
 
         <!-- Botón cerrar -->
-        <button onclick="closeRuletaModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors z-10">
+        <button onclick="closeRuletaModal()" class="absolute top-4 right-4 text-zinc-300 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors z-10">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -726,13 +726,13 @@
         <!-- Header Modal -->
         <div id="ruleta-step-spin">
             <div class="mb-4">
-                <span class="inline-block bg-[#88674B]/30 border border-[#88674B]/50 text-[#FAF3E0] text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest mb-2">
+                <span class="inline-block bg-white/20 border border-white/30 text-white text-[11px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest mb-2">
                     ✨ Exclusivo Nuevos Clientes ✨
                 </span>
                 <h3 class="serif-title text-2xl sm:text-3xl font-bold text-white tracking-wide">
                     ¡Gira la Ruleta de Sector Mueble!
                 </h3>
-                <p class="text-xs text-zinc-300 mt-1">
+                <p class="text-xs text-white/90 mt-1">
                     Obtén un cupón exclusivo para tu primera compra de muebles de diseño.
                 </p>
             </div>
@@ -745,19 +745,19 @@
                 </div>
 
                 <!-- Rueda Canvas -->
-                <div id="ruleta-wheel-wrapper" class="w-full h-full rounded-full shadow-[0_0_35px_rgba(136,103,75,0.45)] border-4 border-[#88674B] overflow-hidden relative" style="transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);">
+                <div id="ruleta-wheel-wrapper" class="w-full h-full rounded-full shadow-[0_0_35px_rgba(0,0,0,0.4)] border-4 border-white/30 overflow-hidden relative" style="transition: transform 4s cubic-bezier(0.15, 0.9, 0.2, 1);">
                     <canvas id="ruleta-canvas" width="320" height="320" class="w-full h-full"></canvas>
                 </div>
 
                 <!-- Centro Elegante de la Rueda (Eje Dorado Maderable) -->
-                <div class="absolute z-20 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#FAF3E0] via-[#C09A75] to-[#88674B] rounded-full shadow-lg border-2 border-[#1F0F0B] flex items-center justify-center pointer-events-none">
-                    <div class="w-4 h-4 rounded-full bg-[#1F0F0B] border border-amber-300/40 flex items-center justify-center text-[10px] text-amber-300">✨</div>
+                <div class="absolute z-20 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#FAF3E0] via-[#C09A75] to-[#88674B] rounded-full shadow-lg border-2 border-[#4A2E1B] flex items-center justify-center pointer-events-none">
+                    <div class="w-4 h-4 rounded-full bg-[#4A2E1B] border border-amber-300/40 flex items-center justify-center text-[10px] text-amber-300">✨</div>
                 </div>
             </div>
 
-            <!-- Botón de Girar posicionado claramente ABAJO de la Ruleta -->
+            <!-- Botón de Girar en Azul Media Noche #1E2440 -->
             <div class="mt-4 pt-1">
-                <button id="ruleta-spin-btn" onclick="spinRuleta()" class="w-full bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 hover:from-amber-600 hover:to-amber-700 text-white font-black text-sm sm:text-base uppercase tracking-wider py-3.5 px-6 rounded-2xl shadow-xl hover:shadow-amber-900/50 transition-all flex items-center justify-center space-x-2 border border-amber-400/30 active:scale-95 group">
+                <button id="ruleta-spin-btn" onclick="spinRuleta()" class="w-full bg-[#1E2440] hover:bg-[#151a30] text-white font-black text-sm sm:text-base uppercase tracking-wider py-3.5 px-6 rounded-2xl shadow-xl hover:shadow-[#1E2440]/50 transition-all flex items-center justify-center space-x-2 border border-white/20 active:scale-95 group">
                     <span class="text-lg group-hover:rotate-12 transition-transform">🎰</span>
                     <span>¡GIRAR RULETA AHORA!</span>
                 </button>
@@ -767,22 +767,22 @@
         <!-- Step Result: Premio Ganado -->
         <div id="ruleta-step-result" class="hidden py-4 space-y-4">
             <div class="text-4xl animate-bounce">🎁</div>
-            <h3 class="serif-title text-2xl font-bold text-[#FAF3E0]">¡FELICIDADES!</h3>
-            <p class="text-sm text-zinc-300">Has ganado este beneficio exclusivo:</p>
+            <h3 class="serif-title text-2xl font-bold text-white">¡FELICIDADES!</h3>
+            <p class="text-sm text-white/90">Has ganado este beneficio exclusivo:</p>
 
-            <div class="bg-gradient-to-r from-[#88674B]/30 via-[#88674B]/20 to-[#88674B]/30 border border-[#88674B]/60 p-4 rounded-2xl">
-                <span id="ruleta-result-titulo" class="serif-title text-2xl font-extrabold text-[#FAF3E0] block">--</span>
+            <div class="bg-white/15 border border-white/25 p-4 rounded-2xl">
+                <span id="ruleta-result-titulo" class="serif-title text-2xl font-extrabold text-white block">--</span>
                 <span class="text-xs text-amber-200 font-mono mt-1 block">Código: <span id="ruleta-result-codigo" class="font-bold">--</span></span>
             </div>
 
-            <p class="text-xs text-zinc-400">
-                Tienes <strong id="ruleta-result-tiempo" class="text-[#FAF3E0]">15 minutos</strong> para utilizarlo en tu carrito.
+            <p class="text-xs text-white/80">
+                Tienes <strong id="ruleta-result-tiempo" class="text-white">15 minutos</strong> para utilizarlo en tu carrito.
             </p>
 
             <form id="form-reclamar-ruleta" onsubmit="reclamarRuletaPremio(event)" class="pt-2">
                 @csrf
                 <input type="hidden" id="ruleta-input-posicion" name="posicion" value="1">
-                <button type="submit" id="ruleta-claim-btn" class="w-full bg-gradient-to-r from-[#88674B] to-[#5C4331] hover:from-[#74563C] hover:to-[#2B241A] text-white font-bold text-sm uppercase tracking-wider py-3.5 px-6 rounded-xl shadow-lg hover:shadow-[#88674B]/30 transition-all flex items-center justify-center space-x-2">
+                <button type="submit" id="ruleta-claim-btn" class="w-full bg-[#1E2440] hover:bg-[#151a30] text-white font-bold text-sm uppercase tracking-wider py-3.5 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center space-x-2 border border-white/20">
                     <span>🎁 Reclamar y Aplicar al Carrito</span>
                 </button>
             </form>
