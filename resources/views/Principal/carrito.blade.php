@@ -148,7 +148,7 @@
                                                     
                                                     <!-- Incluye una solicitud especial -->
                                                     <button type="button" 
-                                                        onclick="toggleSolicitudEspecial('note-form-{{ loop->index }}')" 
+                                                        onclick="toggleSolicitudEspecial('note-form-{{ $loop->index }}')" 
                                                         class="inline-flex items-center space-x-1.5 text-xs font-medium text-zinc-700 hover:text-blue-600 transition-colors">
                                                         <svg class="w-4 h-4 text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -196,14 +196,14 @@
                                             </div>
 
                                             <!-- Formulario Desplegable de Solicitud Especial -->
-                                            <div id="note-form-{{ loop->index }}" class="{{ $hasNote ? '' : 'hidden' }} mt-3 p-3 bg-zinc-50 border border-zinc-200 rounded-xl">
+                                            <div id="note-form-{{ $loop->index }}" class="{{ $hasNote ? '' : 'hidden' }} mt-3 p-3 bg-zinc-50 border border-zinc-200 rounded-xl">
                                                 <form action="{{ route('carrito.solicitud_especial', $itemKey) }}" method="POST">
                                                     @csrf
                                                     <label class="block text-xs font-bold text-zinc-700 mb-1">Nota o solicitud especial para este mueble:</label>
                                                     <textarea name="solicitud_especial" rows="2" placeholder="Ej: Solicitar cojines extra, especificaciones de entrega, etc."
                                                         class="w-full bg-white border border-zinc-300 rounded-lg text-xs p-2 text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500">{{ $item['solicitud_especial'] ?? '' }}</textarea>
                                                     <div class="mt-2 flex items-center justify-end space-x-2">
-                                                        <button type="button" onclick="toggleSolicitudEspecial('note-form-{{ loop->index }}')" class="text-xs text-zinc-500 hover:text-zinc-700 px-3 py-1">Cancelar</button>
+                                                        <button type="button" onclick="toggleSolicitudEspecial('note-form-{{ $loop->index }}')" class="text-xs text-zinc-500 hover:text-zinc-700 px-3 py-1">Cancelar</button>
                                                         <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-4 py-1.5 rounded-lg shadow-xs transition-colors">Guardar Nota</button>
                                                     </div>
                                                 </form>
