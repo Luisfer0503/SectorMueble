@@ -148,7 +148,7 @@
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
                         <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Salón</span>
                         <h3 class="text-2xl font-bold mt-1 group-hover:text-amber-200 transition-colors">Salón</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-semibold text-zinc-200 group-hover:translate-x-1.5 transition-transform">
+                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#4c6f4f] group-hover:text-emerald-300 group-hover:translate-x-1.5 transition-all">
                             Explorar catálogo &rarr;
                         </span>
                     </div>
@@ -161,7 +161,7 @@
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
                         <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Recámara</span>
                         <h3 class="text-2xl font-bold mt-1 group-hover:text-amber-200 transition-colors">Recámara</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-semibold text-zinc-200 group-hover:translate-x-1.5 transition-transform">
+                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#4c6f4f] group-hover:text-emerald-300 group-hover:translate-x-1.5 transition-all">
                             Explorar catálogo &rarr;
                         </span>
                     </div>
@@ -174,7 +174,7 @@
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
                         <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Comedor</span>
                         <h3 class="text-2xl font-bold mt-1 group-hover:text-amber-200 transition-colors">Comedor</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-semibold text-zinc-200 group-hover:translate-x-1.5 transition-transform">
+                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#4c6f4f] group-hover:text-emerald-300 group-hover:translate-x-1.5 transition-all">
                             Explorar catálogo &rarr;
                         </span>
                     </div>
@@ -187,7 +187,7 @@
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
                         <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Oficina</span>
                         <h3 class="text-2xl font-bold mt-1 group-hover:text-amber-200 transition-colors">Oficina</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-semibold text-zinc-200 group-hover:translate-x-1.5 transition-transform">
+                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#4c6f4f] group-hover:text-emerald-300 group-hover:translate-x-1.5 transition-all">
                             Explorar catálogo &rarr;
                         </span>
                     </div>
@@ -200,7 +200,7 @@
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
                         <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Exterior</span>
                         <h3 class="text-2xl font-bold mt-1 group-hover:text-amber-200 transition-colors">Exterior</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-semibold text-zinc-200 group-hover:translate-x-1.5 transition-transform">
+                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#4c6f4f] group-hover:text-emerald-300 group-hover:translate-x-1.5 transition-all">
                             Explorar catálogo &rarr;
                         </span>
                     </div>
