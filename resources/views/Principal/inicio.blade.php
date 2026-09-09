@@ -58,8 +58,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 
                 <!-- Envío Gratuito -->
-                <div class="hover-lift bg-[#FAF8F5] p-5 sm:p-6 rounded-2xl border border-[#88674B]/30 shadow-xs flex items-start space-x-4 group hover:border-[#88674B] transition-all duration-300">
-                    <div class="p-3.5 bg-[#74563C] text-white rounded-2xl group-hover:bg-[#88674B] transition-colors duration-300 shadow-md flex-shrink-0">
+                <div class="hover-lift bg-[#FAF8F5] p-5 sm:p-6 rounded-2xl border border-zinc-300/80 shadow-xs flex items-start space-x-4 group hover:border-[#4A4746] transition-all duration-300">
+                    <div class="p-3.5 bg-[#4A4746] text-white rounded-2xl group-hover:bg-[#383534] transition-colors duration-300 shadow-md flex-shrink-0">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002-2V8m-9 4h4"/>
                         </svg>
@@ -71,8 +71,8 @@
                 </div>
 
                 <!-- Pago Seguro -->
-                <div class="hover-lift bg-[#FAF8F5] p-5 sm:p-6 rounded-2xl border border-[#88674B]/30 shadow-xs flex items-start space-x-4 group hover:border-[#88674B] transition-all duration-300">
-                    <div class="p-3.5 bg-[#74563C] text-white rounded-2xl group-hover:bg-[#88674B] transition-colors duration-300 shadow-md flex-shrink-0">
+                <div class="hover-lift bg-[#FAF8F5] p-5 sm:p-6 rounded-2xl border border-zinc-300/80 shadow-xs flex items-start space-x-4 group hover:border-[#4A4746] transition-all duration-300">
+                    <div class="p-3.5 bg-[#4A4746] text-white rounded-2xl group-hover:bg-[#383534] transition-colors duration-300 shadow-md flex-shrink-0">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                         </svg>
