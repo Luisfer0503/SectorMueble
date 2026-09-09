@@ -226,50 +226,50 @@
             <div class="relative w-full h-[450px] sm:h-[580px] rounded-3xl overflow-hidden shadow-2xl border border-stone-300/80">
                 <img src="{{ asset('imageninicio.png') }}" alt="Sala de Exhibición Interactiva" class="w-full h-full object-cover">
 
-                <!-- Hotspot 1: Sofá Principal -->
-                <div class="absolute top-[55%] left-[32%] z-20 group">
-                    <button type="button" aria-label="Ver Sofá Modular Escandinavo" class="w-9 h-9 rounded-full bg-amber-800 text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white">
+                <!-- Hotspot 1: Cama King Duna -->
+                <div class="absolute top-[42%] left-[48%] z-20 group">
+                    <button type="button" aria-label="Ver Cama King Duna" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white">
                         +
                     </button>
                     <!-- Popover Card Clara -->
                     <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                        <span class="text-[10px] font-extrabold text-amber-900 uppercase tracking-widest">Salón</span>
-                        <h4 class="text-sm font-bold text-zinc-950 mt-1">Sofá Modular Nordik 3 Cuerpos</h4>
-                        <p class="text-xs text-amber-950 mt-1 font-mono font-extrabold">$ 24,900.00 MXN</p>
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="mt-3 block text-center bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
-                            Ver en Catálogo
+                        <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">Recámara</span>
+                        <h4 class="text-sm font-bold text-zinc-950 mt-1">Cama King Duna</h4>
+                        <p class="text-xs text-[#88674B] mt-1 font-mono font-extrabold">$ 15,461.50 MXN</p>
+                        <a href="{{ route('producto.detalle', 'duna-tapizada') }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
+                            Ver Producto
                         </a>
                     </div>
                 </div>
 
-                <!-- Hotspot 2: Mesa de Centro Madera Noble -->
-                <div class="absolute top-[68%] left-[62%] z-20 group">
-                    <button type="button" aria-label="Ver Mesa de Centro Roble" class="w-9 h-9 rounded-full bg-amber-800 text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white">
+                <!-- Hotspot 2: Burós Risotto -->
+                <div class="absolute top-[58%] left-[20%] z-20 group">
+                    <button type="button" aria-label="Ver Burós Risotto" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white">
                         +
                     </button>
                     <!-- Popover Card Clara -->
                     <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
-                        <span class="text-[10px] font-extrabold text-amber-900 uppercase tracking-widest">Salón</span>
-                        <h4 class="text-sm font-bold text-zinc-950 mt-1">Mesa de Centro Roble Macizo</h4>
-                        <p class="text-xs text-amber-950 mt-1 font-mono font-extrabold">$ 8,450.00 MXN</p>
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="mt-3 block text-center bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
-                            Ver en Catálogo
+                        <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">Recámara</span>
+                        <h4 class="text-sm font-bold text-zinc-950 mt-1">Burós Risotto</h4>
+                        <p class="text-xs text-[#88674B] mt-1 font-mono font-extrabold">$ 5,907.50 MXN</p>
+                        <a href="{{ route('producto.detalle', 'risotto-melamina') }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
+                            Ver Producto
                         </a>
                     </div>
                 </div>
 
-                <!-- Hotspot 3: Lámpara de Pie Escultural -->
-                <div class="absolute top-[35%] left-[82%] z-20 group">
-                    <button type="button" aria-label="Ver Lámpara de Pie" class="w-9 h-9 rounded-full bg-amber-800 text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white">
+                <!-- Hotspot 3: Banca Zenit -->
+                <div class="absolute top-[72%] left-[62%] z-20 group">
+                    <button type="button" aria-label="Ver Banca Zenit" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white">
                         +
                     </button>
                     <!-- Popover Card Clara -->
-                    <div class="absolute top-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 -translate-y-2">
-                        <span class="text-[10px] font-extrabold text-amber-900 uppercase tracking-widest">Iluminación</span>
-                        <h4 class="text-sm font-bold text-zinc-950 mt-1">Lámpara Escultura Arce</h4>
-                        <p class="text-xs text-amber-950 mt-1 font-mono font-extrabold">$ 5,200.00 MXN</p>
-                        <a href="{{ route('catalogo') }}" class="mt-3 block text-center bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
-                            Ver en Catálogo
+                    <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
+                        <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">Recámara</span>
+                        <h4 class="text-sm font-bold text-zinc-950 mt-1">Banca Zenit</h4>
+                        <p class="text-xs text-[#88674B] mt-1 font-mono font-extrabold">$ 8,650.00 MXN</p>
+                        <a href="{{ route('producto.detalle', 'zenit-tapizada') }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
+                            Ver Producto
                         </a>
                     </div>
                 </div>
