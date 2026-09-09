@@ -66,7 +66,7 @@
                     </div>
                     <div>
                         <h3 class="text-sm font-bold text-zinc-950">Envío Gratuito Premium</h3>
-                        <p class="mt-1 text-xs text-zinc-600 leading-relaxed">Aplica en compras desde $10,000 MXN dentro de la zona de cobertura y estados cercanos.</p>
+                        <p class="mt-1 text-xs text-zinc-600 leading-relaxed">Aplica en compras desde $10,000 MXN dentro de la zona de cobertura(Puebla Capital, San Andres Cholulas y San Pedro Choula).</p>
                     </div>
                 </div>
 

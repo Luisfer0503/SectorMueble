@@ -11,16 +11,16 @@
          onclick="cerrarModalCP()" 
          style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; background-color: rgba(8, 8, 8, 0.94); z-index: 1; opacity: 0; transition: opacity 0.3s ease;"></div>
 
-    <!-- Tarjeta del Modal con Color de Fondo Blanco #ffffff -->
+    <!-- Tarjeta del Modal con Color de Fondo Azul Media Noche #8C8EA1 -->
     <div id="sm-cp-card" 
-         style="position: relative; z-index: 10; background-color: #ffffff; border: 1px solid rgba(136, 103, 75, 0.4); color: #18181b; opacity: 0; transform: scale(0.95); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);" 
+         style="position: relative; z-index: 10; background-color: #8C8EA1; border: 1px solid rgba(255, 255, 255, 0.25); color: #ffffff; opacity: 0; transform: scale(0.95); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);" 
          class="w-full max-w-md rounded-3xl shadow-2xl p-6 sm:p-8 max-h-[92vh] overflow-y-auto my-auto ring-1 ring-black/20">
         
         <!-- Botón para cerrar -->
         <button type="button" 
                 onclick="cerrarModalCP()" 
-                style="background-color: rgba(255, 255, 255, 0.9);" 
-                class="absolute top-4 right-4 text-zinc-600 hover:text-amber-950 hover:bg-amber-100 p-2 rounded-full transition-colors focus:outline-none shadow-md z-30" 
+                style="background-color: rgba(255, 255, 255, 0.2);" 
+                class="absolute top-4 right-4 text-white hover:bg-white/30 p-2 rounded-full transition-colors focus:outline-none shadow-md z-30" 
                 aria-label="Cerrar modal">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -29,16 +29,16 @@
 
         <!-- Header del Modal -->
         <div class="text-center mb-6 relative z-10">
-            <div style="background-color: #ffffff; border: 1px solid rgba(217, 119, 6, 0.3);" class="inline-flex items-center justify-center w-14 h-14 text-amber-900 rounded-2xl mb-3 shadow-sm">
-                <svg class="w-7 h-7 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div style="background-color: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4);" class="inline-flex items-center justify-center w-14 h-14 text-white rounded-2xl mb-3 shadow-sm">
+                <svg class="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
             </div>
-            <h3 id="sm-cp-modal-title" class="text-xl sm:text-2xl font-extrabold text-amber-950 font-heading">
+            <h3 id="sm-cp-modal-title" class="text-xl sm:text-2xl font-extrabold text-white font-heading">
                 Verifica Cobertura de Envío
             </h3>
-            <p class="text-xs sm:text-sm text-zinc-600 mt-2 leading-relaxed font-medium">
+            <p class="text-xs sm:text-sm text-white/90 mt-2 leading-relaxed font-medium">
                 Ingresa tu <strong>Código Postal</strong> para verificar si tenemos envío a tu zona e informarte sobre los tiempos y cobertura en tu domicilio.
             </p>
         </div>
@@ -46,7 +46,7 @@
         <!-- Formulario de Entrada de CP -->
         <form id="sm-cp-form" onsubmit="procesarVerificacionCP(event)" class="space-y-4 relative z-10">
             <div>
-                <label for="sm-input-cp" class="block text-xs font-bold uppercase tracking-wider text-amber-900 mb-1.5 text-center">
+                <label for="sm-input-cp" class="block text-xs font-bold uppercase tracking-wider text-white mb-1.5 text-center">
                     Código Postal (5 dígitos)
                 </label>
                 <div class="relative">
@@ -67,7 +67,7 @@
                         </svg>
                     </div>
                 </div>
-                <p id="sm-cp-error" class="hidden text-xs text-rose-600 mt-1.5 font-semibold text-center"></p>
+                <p id="sm-cp-error" class="hidden text-xs text-rose-200 mt-1.5 font-semibold text-center bg-rose-900/60 p-1.5 rounded-lg border border-rose-400/40"></p>
             </div>
 
             <button type="submit" 
@@ -129,14 +129,14 @@
             <div class="flex flex-col sm:flex-row items-center gap-2 pt-2">
                 <button type="button" 
                         onclick="confirmarYGuardarCP()" 
-                        style="background-color: #78350f;" 
-                        class="w-full hover:bg-amber-900 text-white font-bold text-xs sm:text-sm py-3 px-4 rounded-2xl shadow transition-all text-center">
+                        style="background-color: #88674B;" 
+                        class="w-full hover:bg-[#74563C] text-white font-bold text-xs sm:text-sm py-3 px-4 rounded-2xl shadow transition-all text-center border border-white/20">
                     Confirmar mi Código Postal
                 </button>
                 <button type="button" 
                         onclick="resetearFormularioCP()" 
-                        style="background-color: #e4e4e7; color: #27272a;" 
-                        class="w-full hover:bg-zinc-300 font-bold text-xs py-3 px-4 rounded-2xl transition-colors text-center">
+                        style="background-color: rgba(255, 255, 255, 0.25); color: #ffffff;" 
+                        class="w-full hover:bg-white/30 font-bold text-xs py-3 px-4 rounded-2xl transition-colors text-center border border-white/20">
                     Probar otro CP
                 </button>
             </div>

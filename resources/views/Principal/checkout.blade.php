@@ -80,8 +80,8 @@
                             </div>
 
                             <!-- Mensaje Informativo de Envío a ancho completo debajo de todo el bloque de dirección -->
-                            <div class="sm:col-span-3 mt-1 p-3.5 bg-amber-50 border border-amber-200/90 rounded-2xl text-xs text-amber-950 flex items-start space-x-3 shadow-2xs">
-                                <div class="p-1.5 bg-amber-700 text-white rounded-xl shrink-0 mt-0.5 shadow-2xs">
+                            <div class="sm:col-span-3 mt-1 p-4 bg-[#8C8EA1] text-white border border-[#77798b] rounded-2xl text-xs flex items-start space-x-3 shadow-xs">
+                                <div class="p-1.5 bg-white/20 text-white rounded-xl shrink-0 mt-0.5 shadow-2xs">
                                     <svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
@@ -184,16 +184,16 @@
                         </button>
 
                         <!-- Alerta Informativa / Bloqueo por CP -->
-                        <div id="cp-bloqueo-alerta" class="mt-4 p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl text-xs text-amber-950 leading-relaxed shadow-sm">
+                        <div id="cp-bloqueo-alerta" class="mt-4 p-4 bg-[#8C8EA1] border-2 border-[#77798b] rounded-2xl text-xs text-white leading-relaxed shadow-sm">
                             <div class="flex items-start space-x-3">
-                                <div class="p-1.5 bg-amber-600 text-white rounded-full shrink-0 mt-0.5 shadow-sm">
+                                <div class="p-1.5 bg-white/20 text-white rounded-full shrink-0 mt-0.5 shadow-sm">
                                     <svg class="w-5 h-5 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
                                 <div>
-                                    <strong class="font-extrabold text-sm block text-amber-950 mb-1">¡Queremos ayudarte a coordinar tu envío de la mejor manera!</strong>
-                                    <span id="cp-bloqueo-mensaje" class="text-xs text-amber-900 leading-relaxed block font-medium">Para poder dar seguimiento a tu solicitud, haz clic en "Contactar agente de ventas" y nos comunicaremos contigo muy pronto.</span>
+                                    <strong class="font-extrabold text-sm block text-white mb-1">¡Queremos ayudarte a coordinar tu envío de la mejor manera!</strong>
+                                    <span id="cp-bloqueo-mensaje" class="text-xs text-white/95 leading-relaxed block font-medium">Para poder dar seguimiento a tu solicitud, haz clic en "Contactar agente de ventas" y nos comunicaremos contigo muy pronto.</span>
                                 </div>
                             </div>
                         </div>
