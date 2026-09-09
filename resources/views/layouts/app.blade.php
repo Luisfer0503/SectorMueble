@@ -346,11 +346,11 @@
             </div>
         </div>
 
-        <!-- Menú Móvil Desplegable -->
-        <div id="mobile-menu-drawer" class="hidden bg-white border-b border-zinc-200 px-4 pt-3 pb-6 space-y-4">
+        <!-- Menú Móvil Desplegable (Nogal Cálido #C49A6C) -->
+        <div id="mobile-menu-drawer" class="hidden bg-[#C49A6C] text-white border-b border-white/20 px-4 pt-4 pb-6 space-y-4 shadow-xl">
             <form action="{{ route('catalogo') }}" method="GET" class="relative">
-                <input type="text" name="buscar" placeholder="Buscar muebles..." class="w-full bg-zinc-50 text-xs px-4 py-2.5 pr-9 rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-700">
-                <button type="submit" class="absolute right-3 top-3 text-zinc-400">
+                <input type="text" name="buscar" placeholder="Buscar muebles de diseño..." class="w-full bg-white/95 text-zinc-900 text-xs px-4 py-2.5 pr-9 rounded-xl border border-white/30 focus:outline-none focus:ring-2 focus:ring-[#1E2440] placeholder-zinc-500">
+                <button type="submit" class="absolute right-3 top-3 text-zinc-500 hover:text-zinc-800">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                     </svg>
@@ -358,10 +358,10 @@
             </form>
 
             <div class="grid grid-cols-2 gap-2 text-center text-xs font-bold uppercase tracking-wider">
-                <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="p-3 bg-amber-50/60 rounded-xl text-amber-900 hover:bg-amber-100">Salón / Sala</a>
-                <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="p-3 bg-amber-50/60 rounded-xl text-amber-900 hover:bg-amber-100">Recámara</a>
-                <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="p-3 bg-amber-50/60 rounded-xl text-amber-900 hover:bg-amber-100">Comedor</a>
-                <a href="{{ route('catalogo') }}" class="p-3 bg-amber-800 rounded-xl text-white">Todo el Catálogo</a>
+                <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="p-3 bg-white/20 hover:bg-white/30 rounded-xl text-white border border-white/25 transition-colors">Salón / Sala</a>
+                <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="p-3 bg-white/20 hover:bg-white/30 rounded-xl text-white border border-white/25 transition-colors">Recámara</a>
+                <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="p-3 bg-white/20 hover:bg-white/30 rounded-xl text-white border border-white/25 transition-colors">Comedor</a>
+                <a href="{{ route('catalogo') }}" class="p-3 bg-[#1E2440] hover:bg-[#151a30] rounded-xl text-white shadow-md border border-white/20 transition-colors">Todo el Catálogo</a>
             </div>
 
             <!-- Botón CP Móvil (Fondo #1E2440) -->
@@ -374,14 +374,14 @@
             </button>
 
             @auth
-                <div class="pt-2 border-t border-zinc-100 flex items-center justify-between text-xs">
-                    <span class="font-medium text-zinc-700">Hola, <strong>{{ auth()->user()->name }}</strong></span>
-                    <a href="{{ route('logout') }}" class="text-rose-600 font-bold">Cerrar Sesión</a>
+                <div class="pt-2 border-t border-white/20 flex items-center justify-between text-xs text-white">
+                    <span class="font-medium">Hola, <strong class="font-extrabold">{{ auth()->user()->name }}</strong></span>
+                    <a href="{{ route('logout') }}" class="text-rose-200 hover:text-rose-100 font-bold">Cerrar Sesión</a>
                 </div>
             @else
-                <div class="pt-2 border-t border-zinc-100 flex items-center space-x-2">
-                    <a href="{{ route('login') }}" class="w-1/2 text-center py-2.5 bg-zinc-900 text-white rounded-xl font-bold text-xs">Iniciar Sesión</a>
-                    <a href="{{ route('registro') }}" class="w-1/2 text-center py-2.5 bg-amber-800 text-white rounded-xl font-bold text-xs">Registro</a>
+                <div class="pt-2 border-t border-white/20 flex items-center space-x-2">
+                    <a href="{{ route('login') }}" class="w-1/2 text-center py-2.5 bg-white text-[#C49A6C] hover:bg-zinc-100 rounded-xl font-extrabold text-xs shadow-xs transition-colors">Iniciar Sesión</a>
+                    <a href="{{ route('registro') }}" class="w-1/2 text-center py-2.5 bg-[#1E2440] hover:bg-[#151a30] text-white rounded-xl font-bold text-xs shadow-xs border border-white/20 transition-colors">Registro</a>
                 </div>
             @endauth
         </div>
@@ -710,8 +710,8 @@
     <!-- Backdrop Overlay -->
     <div class="absolute inset-0 bg-zinc-950/80 backdrop-blur-md" onclick="closeRuletaModal()"></div>
 
-    <!-- Container Card con Fondo Nogal Cálido #4A2E1B -->
-    <div class="relative bg-[#4A2E1B] border-2 border-white/20 rounded-3xl shadow-2xl max-w-md w-full p-6 text-white text-center overflow-hidden transform scale-95 transition-transform duration-300" id="ruleta-modal-card">
+    <!-- Container Card con Fondo Nogal Cálido #C49A6C -->
+    <div class="relative bg-[#C49A6C] border-2 border-white/20 rounded-3xl shadow-2xl max-w-md w-full p-6 text-white text-center overflow-hidden transform scale-95 transition-transform duration-300" id="ruleta-modal-card">
         <!-- Glow accents -->
         <div class="absolute -top-24 -left-24 w-48 h-48 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-black/40 rounded-full blur-3xl pointer-events-none"></div>
@@ -750,8 +750,8 @@
                 </div>
 
                 <!-- Centro Elegante de la Rueda (Eje Dorado Maderable) -->
-                <div class="absolute z-20 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#FAF3E0] via-[#C09A75] to-[#88674B] rounded-full shadow-lg border-2 border-[#4A2E1B] flex items-center justify-center pointer-events-none">
-                    <div class="w-4 h-4 rounded-full bg-[#4A2E1B] border border-amber-300/40 flex items-center justify-center text-[10px] text-amber-300">✨</div>
+                <div class="absolute z-20 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-[#FAF3E0] via-[#C09A75] to-[#88674B] rounded-full shadow-lg border-2 border-[#C49A6C] flex items-center justify-center pointer-events-none">
+                    <div class="w-4 h-4 rounded-full bg-[#C49A6C] border border-amber-300/40 flex items-center justify-center text-[10px] text-amber-300">✨</div>
                 </div>
             </div>
 

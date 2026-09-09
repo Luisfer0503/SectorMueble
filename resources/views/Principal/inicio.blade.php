@@ -224,7 +224,7 @@
 
             <!-- Contenedor Imagen con Hotspots -->
             <div class="relative w-full h-[450px] sm:h-[580px] rounded-3xl overflow-hidden shadow-2xl border border-stone-300/80">
-                <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1600" alt="Sala de Exhibición Interactiva" class="w-full h-full object-cover">
+                <img src="{{ asset('imageninicio.png') }}" alt="Sala de Exhibición Interactiva" class="w-full h-full object-cover">
 
                 <!-- Hotspot 1: Sofá Principal -->
                 <div class="absolute top-[55%] left-[32%] z-20 group">
@@ -442,7 +442,7 @@
     <!-- ── 8. BANNER DE PRIVILEGIOS / NEWSLETTER ── -->
     <div class="bg-[#0B0A0A] text-white py-20 sm:py-24 relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="bg-[#4A2E1B] p-8 sm:p-14 rounded-3xl border border-white/20 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8">
+            <div class="bg-[#C49A6C] p-8 sm:p-14 rounded-3xl border border-white/20 shadow-2xl flex flex-col lg:flex-row items-center justify-between gap-8">
                 <div class="max-w-xl text-center lg:text-left">
                     <span class="text-xs font-extrabold uppercase tracking-widest text-[#FAF3E0] bg-white/20 border border-white/30 px-3.5 py-1.5 rounded-full">Club de Miembros VIP</span>
                     <h2 class="serif-title text-3xl sm:text-4xl font-bold mt-3 text-white">Recibe $500 MXN en tu Primera Compra</h2>
