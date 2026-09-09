@@ -11,9 +11,9 @@
          onclick="cerrarModalCP()" 
          style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100vw; height: 100vh; background-color: rgba(8, 8, 8, 0.94); z-index: 1; opacity: 0; transition: opacity 0.3s ease;"></div>
 
-    <!-- Tarjeta del Modal con Color de Fondo Azul Media Noche #8C8EA1 -->
+    <!-- Tarjeta del Modal con Color de Fondo Azul Media Noche #1E2440 -->
     <div id="sm-cp-card" 
-         style="position: relative; z-index: 10; background-color: #8C8EA1; border: 1px solid rgba(255, 255, 255, 0.25); color: #ffffff; opacity: 0; transform: scale(0.95); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);" 
+         style="position: relative; z-index: 10; background-color: #1E2440; border: 1px solid rgba(255, 255, 255, 0.25); color: #ffffff; opacity: 0; transform: scale(0.95); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);" 
          class="w-full max-w-md rounded-3xl shadow-2xl p-6 sm:p-8 max-h-[92vh] overflow-y-auto my-auto ring-1 ring-black/20">
         
         <!-- Botón para cerrar -->

@@ -327,8 +327,8 @@
                     </a>
                 </nav>
 
-                <!-- Botón de Código Postal (CP) con Fondo Sólido #8C8EA1 -->
-                <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1.5 text-xs font-bold text-white bg-[#8C8EA1] hover:bg-[#7b7d90] border border-[#8C8EA1]/50 px-3.5 py-1.5 rounded-xl transition-all shadow-md group cursor-pointer" title="Consultar o cambiar tu Código Postal">
+                <!-- Botón de Código Postal (CP) con Fondo Azul Media Noche #1E2440 -->
+                <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1.5 text-xs font-bold text-white bg-[#1E2440] hover:bg-[#151a30] border border-white/20 px-3.5 py-2 rounded-full transition-all shadow-md group cursor-pointer" title="Consultar o cambiar tu Código Postal">
                     <svg class="w-3.5 h-3.5 text-white shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -364,8 +364,8 @@
                 <a href="{{ route('catalogo') }}" class="p-3 bg-amber-800 rounded-xl text-white">Todo el Catálogo</a>
             </div>
 
-            <!-- Botón CP Móvil (Fondo #8C8EA1) -->
-            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-[#8C8EA1] hover:bg-[#7b7d90] text-white rounded-xl border border-[#8C8EA1]/50 font-bold text-xs shadow-md">
+            <!-- Botón CP Móvil (Fondo #1E2440) -->
+            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-[#1E2440] hover:bg-[#151a30] text-white rounded-full border border-white/20 font-bold text-xs shadow-md">
                 <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>

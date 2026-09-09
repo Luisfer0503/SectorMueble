@@ -80,7 +80,7 @@
                             </div>
 
                             <!-- Mensaje Informativo de Envío a ancho completo debajo de todo el bloque de dirección -->
-                            <div class="sm:col-span-3 mt-1 p-4 bg-[#8C8EA1] text-white border border-[#77798b] rounded-2xl text-xs flex items-start space-x-3 shadow-xs">
+                            <div class="sm:col-span-3 mt-1 p-4 bg-[#1E2440] text-white border border-white/20 rounded-2xl text-xs flex items-start space-x-3 shadow-xs">
                                 <div class="p-1.5 bg-white/20 text-white rounded-xl shrink-0 mt-0.5 shadow-2xs">
                                     <svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -184,7 +184,7 @@
                         </button>
 
                         <!-- Alerta Informativa / Bloqueo por CP -->
-                        <div id="cp-bloqueo-alerta" class="mt-4 p-4 bg-[#8C8EA1] border-2 border-[#77798b] rounded-2xl text-xs text-white leading-relaxed shadow-sm">
+                        <div id="cp-bloqueo-alerta" class="mt-4 p-4 bg-[#1E2440] border-2 border-white/20 rounded-2xl text-xs text-white leading-relaxed shadow-sm">
                             <div class="flex items-start space-x-3">
                                 <div class="p-1.5 bg-white/20 text-white rounded-full shrink-0 mt-0.5 shadow-sm">
                                     <svg class="w-5 h-5 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
