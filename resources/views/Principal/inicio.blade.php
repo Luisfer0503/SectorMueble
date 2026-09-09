@@ -18,13 +18,13 @@
             
             <!-- Sub-badge Superior Centrado -->
             <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#88674B]/90 border border-[#FAF3E0]/30 text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-widest shadow-lg mb-6 backdrop-blur-md">
-                <span>✨ Colección Editorial 2026</span>
+                <span>Colección Editorial 2026</span>
                 <span class="w-1.5 h-1.5 rounded-full bg-[#FAF3E0] animate-pulse"></span>
             </div>
 
             <!-- Título Principal con Cápsula Sutil y Altamente Transparente -->
             <h1 class="serif-title text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
-                <span class="inline-block bg-[#3D271D]/30 backdrop-blur-lg px-6 sm:px-8 py-3.5 sm:py-4 rounded-3xl border border-[#FAF3E0]/25 shadow-xl">
+                <span class="inline-block bg-black/15 backdrop-blur-md px-6 sm:px-8 py-3.5 sm:py-4 rounded-3xl border border-white/20 shadow-lg">
                     La belleza de la simplicidad <span style="color: #4c6f4f;" class="font-extrabold drop-shadow-sm">en tu hogar</span>
                 </span>
             </h1>
