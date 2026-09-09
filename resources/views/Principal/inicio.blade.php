@@ -236,7 +236,7 @@
                         <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">Recámara</span>
                         <h4 class="text-sm font-bold text-zinc-950 mt-1">Cama King Duna</h4>
                         <p class="text-xs text-[#88674B] mt-1 font-mono font-extrabold">$ 15,461.50 MXN</p>
-                        <a href="{{ route('producto.detalle', 'duna-tapizada') }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
+                        <a href="{{ route('productos.detalle', 39) }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
                             Ver Producto
                         </a>
                     </div>
@@ -252,7 +252,7 @@
                         <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">Recámara</span>
                         <h4 class="text-sm font-bold text-zinc-950 mt-1">Burós Risotto</h4>
                         <p class="text-xs text-[#88674B] mt-1 font-mono font-extrabold">$ 5,907.50 MXN</p>
-                        <a href="{{ route('producto.detalle', 'risotto-melamina') }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
+                        <a href="{{ route('productos.detalle', 47) }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
                             Ver Producto
                         </a>
                     </div>
@@ -268,7 +268,7 @@
                         <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">Recámara</span>
                         <h4 class="text-sm font-bold text-zinc-950 mt-1">Banca Zenit</h4>
                         <p class="text-xs text-[#88674B] mt-1 font-mono font-extrabold">$ 8,650.00 MXN</p>
-                        <a href="{{ route('producto.detalle', 'zenit-tapizada') }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
+                        <a href="{{ route('productos.detalle', 22) }}" class="mt-3 block text-center bg-[#88674B] hover:bg-[#74563C] text-white text-xs font-bold py-2 rounded-xl transition-colors shadow-xs">
                             Ver Producto
                         </a>
                     </div>
