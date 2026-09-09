@@ -36,7 +36,7 @@
 
             <!-- Botones Principales -->
             <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="{{ route('catalogo') }}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 bg-[#88674B] hover:bg-[#74563C] text-white text-xs sm:text-sm font-bold px-9 py-4 rounded-2xl shadow-2xl hover:shadow-amber-900/50 transition-all duration-300 transform hover:-translate-y-0.5 border border-white/20">
+                <a href="{{ route('catalogo') }}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 bg-[#4c6f4f] hover:bg-[#3c583e] text-white text-xs sm:text-sm font-bold px-9 py-4 rounded-2xl shadow-2xl hover:shadow-emerald-900/50 transition-all duration-300 transform hover:-translate-y-0.5 border border-white/20">
                     <span>Explorar Catálogo</span>
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
