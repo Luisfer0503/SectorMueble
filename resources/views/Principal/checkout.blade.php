@@ -73,20 +73,20 @@
                                 @error('codigo_postal')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
-
-                                <!-- Mensaje Informativo de Envío debajo del Código Postal -->
-                                <div class="mt-2.5 p-3 bg-amber-50 border border-amber-200/90 rounded-xl text-xs text-amber-950 flex items-start space-x-2.5 shadow-2xs">
-                                    <div class="p-1 bg-amber-700 text-white rounded-md shrink-0 mt-0.5">
-                                        <svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                    </div>
-                                    <span class="leading-relaxed font-medium">¡Queremos ayudarte a coordinar tu envío de la mejor manera! Para poder dar seguimiento a tu solicitud, haz clic en "Contactar agente de ventas" y nos comunicaremos contigo muy pronto.</span>
-                                </div>
                             </div>
                             <div class="sm:col-span-3">
                                 <label for="referencias" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Referencias de entrega <span class="text-zinc-400 font-normal">(Opcional)</span></label>
                                 <input type="text" name="referencias" id="referencias" value="{{ old('referencias') }}" placeholder="Ej. Entre calle Olivos y Sauces, fachada blanca con portón de madera" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                            </div>
+
+                            <!-- Mensaje Informativo de Envío a ancho completo debajo de todo el bloque de dirección -->
+                            <div class="sm:col-span-3 mt-1 p-3.5 bg-amber-50 border border-amber-200/90 rounded-2xl text-xs text-amber-950 flex items-start space-x-3 shadow-2xs">
+                                <div class="p-1.5 bg-amber-700 text-white rounded-xl shrink-0 mt-0.5 shadow-2xs">
+                                    <svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <span class="leading-relaxed font-medium">¡Queremos ayudarte a coordinar tu envío de la mejor manera! Para poder dar seguimiento a tu solicitud, haz clic en "Contactar agente de ventas" y nos comunicaremos contigo muy pronto.</span>
                             </div>
                         </div>
                     </div>
@@ -278,12 +278,11 @@
                     }
                 } else {
                     cpValidadoEnBD = false;
-                    const msg = (data.data && data.data.mensaje) ? data.data.mensaje : 'El Código Postal ingresado no cuenta con cobertura registrada en la base de datos.';
-                    bloquearPagoCP(msg);
+                    bloquearPagoCP();
 
                     if (statusElem) {
-                        statusElem.className = 'text-xs font-semibold mt-1.5 text-amber-700 block';
-                        statusElem.innerText = `⚠️ ${msg}`;
+                        statusElem.className = 'hidden';
+                        statusElem.innerText = '';
                     }
                 }
             } catch (err) {
@@ -316,8 +315,8 @@
                 alertaBox.classList.remove('hidden');
             }
 
-            if (mensajeElem && mensaje) {
-                mensajeElem.innerText = mensaje;
+            if (mensajeElem) {
+                mensajeElem.innerText = 'Para poder dar seguimiento a tu solicitud, haz clic en "Contactar agente de ventas" y nos comunicaremos contigo muy pronto.';
             }
         }
 
