@@ -146,9 +146,9 @@
                     <img src="{{ asset('inicio2.png') }}" alt="Salón" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
-                        <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Salón</span>
-                        <h3 class="text-2xl font-bold mt-1 group-hover:text-amber-200 transition-colors">Salón</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#4c6f4f] group-hover:text-emerald-300 group-hover:translate-x-1.5 transition-all">
+                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Salón</span>
+                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Salón</h3>
+                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#FAF3E0] group-hover:text-white group-hover:translate-x-1.5 transition-all">
                             Explorar catálogo &rarr;
                         </span>
                     </div>
@@ -159,9 +159,9 @@
                     <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=700" alt="Dormitorio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
-                        <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Recámara</span>
-                        <h3 class="text-2xl font-bold mt-1 group-hover:text-amber-200 transition-colors">Recámara</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#4c6f4f] group-hover:text-emerald-300 group-hover:translate-x-1.5 transition-all">
+                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Recámara</span>
+                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Recámara</h3>
+                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#FAF3E0] group-hover:text-white group-hover:translate-x-1.5 transition-all">
                             Explorar catálogo &rarr;
                         </span>
                     </div>
@@ -172,9 +172,9 @@
                     <img src="https://images.unsplash.com/photo-1617806118233-18e1db207f62?q=80&w=700" alt="Comedor" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
-                        <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Comedor</span>
-                        <h3 class="text-2xl font-bold mt-1 group-hover:text-amber-200 transition-colors">Comedor</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#4c6f4f] group-hover:text-emerald-300 group-hover:translate-x-1.5 transition-all">
+                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Comedor</span>
+                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Comedor</h3>
+                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#FAF3E0] group-hover:text-white group-hover:translate-x-1.5 transition-all">
                             Explorar catálogo &rarr;
                         </span>
                     </div>
@@ -185,9 +185,9 @@
                     <img src="https://images.unsplash.com/photo-1505797149-43b0069ec26b?q=80&w=700" alt="Oficina" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
-                        <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Oficina</span>
-                        <h3 class="text-2xl font-bold mt-1 group-hover:text-amber-200 transition-colors">Oficina</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#4c6f4f] group-hover:text-emerald-300 group-hover:translate-x-1.5 transition-all">
+                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Oficina</span>
+                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Oficina</h3>
+                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#FAF3E0] group-hover:text-white group-hover:translate-x-1.5 transition-all">
                             Explorar catálogo &rarr;
                         </span>
                     </div>
@@ -198,9 +198,9 @@
                     <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=700" alt="Exterior" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
-                        <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Exterior</span>
-                        <h3 class="text-2xl font-bold mt-1 group-hover:text-amber-200 transition-colors">Exterior</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#4c6f4f] group-hover:text-emerald-300 group-hover:translate-x-1.5 transition-all">
+                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Exterior</span>
+                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Exterior</h3>
+                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#FAF3E0] group-hover:text-white group-hover:translate-x-1.5 transition-all">
                             Explorar catálogo &rarr;
                         </span>
                     </div>
