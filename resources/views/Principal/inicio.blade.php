@@ -8,13 +8,13 @@
         
         <!-- Imagen de Fondo Llamativa de Alta Resolución -->
         <div class="absolute inset-0 z-0">
-            <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=2000" alt="Colección de Muebles de Autor Sector Mueble" class="w-full h-full object-cover scale-105 transform transition-transform duration-1000">
-            <!-- Overlay Gradiente Oscuro de Estudio para Máxima Legibilidad -->
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0B0A0A]/95 via-[#1F0F0B]/60 to-[#0B0A0A]/50 backdrop-blur-[1px]"></div>
+            <img src="{{ asset('inicio.png') }}" alt="Colección de Muebles de Autor Sector Mueble" class="w-full h-full object-cover object-center brightness-[0.98] contrast-[1.02] transition-transform duration-1000">
+            <!-- Overlay Gradiente Suave para Máxima Visibilidad de la Imagen -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/35"></div>
         </div>
 
         <!-- Contenido Centrado Enfrente -->
-        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-32 text-center w-full">
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center w-full">
             
             <!-- Sub-badge Superior Centrado -->
             <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#88674B]/90 border border-[#FAF3E0]/30 text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-widest shadow-lg mb-6 backdrop-blur-md">
@@ -22,9 +22,11 @@
                 <span class="w-1.5 h-1.5 rounded-full bg-amber-300 animate-pulse"></span>
             </div>
 
-            <!-- Título Principal Grande Centrado Enfrente -->
-            <h1 class="serif-title text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white leading-[1.12] drop-shadow-2xl">
-                La belleza de la simplicidad <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-[#FAF3E0] to-amber-300">en tu hogar</span>
+            <!-- Título Principal con Cápsula Sutil y Altamente Transparente -->
+            <h1 class="serif-title text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+                <span class="inline-block bg-[#3D271D]/30 backdrop-blur-lg px-6 sm:px-8 py-3.5 sm:py-4 rounded-3xl border border-[#FAF3E0]/25 shadow-xl">
+                    La belleza de la simplicidad <span style="color: #4c6f4f;" class="font-extrabold drop-shadow-sm">en tu hogar</span>
+                </span>
             </h1>
 
             <!-- Subtítulo Exclusivo Centrado -->
@@ -32,7 +34,7 @@
                 Descubre nuestra colección exclusiva de muebles minimalistas de autor. Diseños concebidos para transformar tus espacios con elegancia, calidez y confort artesanal.
             </p>
 
-            <!-- Botón Principal "Explorar Catálogo" y Botón Secundario Centrados -->
+            <!-- Botones Principales -->
             <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="{{ route('catalogo') }}" class="w-full sm:w-auto inline-flex items-center justify-center space-x-2.5 bg-[#88674B] hover:bg-[#74563C] text-white text-xs sm:text-sm font-bold px-9 py-4 rounded-2xl shadow-2xl hover:shadow-amber-900/50 transition-all duration-300 transform hover:-translate-y-0.5 border border-white/20">
                     <span>Explorar Catálogo</span>
@@ -44,6 +46,7 @@
                     <span>Inspírate en la Sala</span>
                 </a>
             </div>
+
         </div>
 
     </div>
@@ -140,7 +143,7 @@
             <div class="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
                 <!-- Salón -->
                 <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
-                    <img src="https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?q=80&w=700" alt="Salón" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                    <img src="{{ asset('inicio2.png') }}" alt="Salón" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
                         <span class="text-[10px] font-bold text-amber-300 uppercase tracking-widest">Estancia Salón</span>
@@ -308,7 +311,7 @@
                         <!-- Img Container con Aspecto Proporcional -->
                         <div class="relative w-full h-72 sm:h-80 rounded-2xl bg-zinc-100 overflow-hidden">
                             <!-- Foto 1 (Principal) -->
-                            <img src="{{ $producto->imagen_url }}" alt="{{ $producto->nombre }}" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out">
+                            <img id="img-prod-dest-{{ $producto->id }}" src="{{ $producto->imagen_url }}" alt="{{ $producto->nombre }}" class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out">
                             
                             <!-- Foto 2 (Secundaria en Hover) -->
                             @if($producto->imagen_secundaria_url)
@@ -359,6 +362,32 @@
                                     <span class="text-xs font-bold text-zinc-800">{{ number_format($producto->calificacion, 1) }}</span>
                                     <span class="text-xs text-zinc-400 font-medium">(Cliente verificado)</span>
                                 </div>
+
+                                {{-- Combinaciones / Acabados disponibles --}}
+                                @php
+                                    $detallesActivos = $producto->detalles ? $producto->detalles->where('activo', true) : collect();
+                                @endphp
+                                @if($detallesActivos->count() > 0)
+                                    <div class="mt-2.5 pt-2 border-t border-zinc-100/80">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-900 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/60 inline-flex items-center gap-1">
+                                                <span>🎨</span>
+                                                <span>+{{ $detallesActivos->count() }} {{ $detallesActivos->count() === 1 ? 'combinación' : 'combinaciones' }}</span>
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
+                                            @foreach($detallesActivos as $idx => $det)
+                                                <button
+                                                    type="button"
+                                                    title="{{ $det->nombre }}"
+                                                    onclick="cambiarImagenCard(this, 'img-prod-dest-{{ $producto->id }}', '{{ $det->imagen_url }}', '{{ $det->id }}', 'form-add-dest-{{ $producto->id }}')"
+                                                    class="btn-var-thumb relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg overflow-hidden border-2 transition-all duration-200 shrink-0 focus:outline-none {{ $idx === 0 ? 'border-amber-700 ring-2 ring-amber-700/20' : 'border-zinc-200 hover:border-amber-500' }}">
+                                                    <img src="{{ $det->imagen_url }}" alt="{{ $det->nombre }}" class="w-full h-full object-cover">
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
                             
                             <!-- Precio y Botón de Carrito -->
@@ -373,12 +402,14 @@
                                 </div>
                                 
                                 <form
+                                    id="form-add-dest-{{ $producto->id }}"
                                     action="{{ route('carrito.agregar', $producto->id) }}"
                                     method="POST"
                                     data-nombre="{{ $producto->nombre }}"
                                     data-img="{{ $producto->imagen_url }}"
                                     onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
                                     @csrf
+                                    <input type="hidden" name="subarticulo_id" value="{{ $detallesActivos->first()->id ?? '' }}">
                                     <button type="submit" aria-label="Añadir {{ $producto->nombre }} al carrito" class="p-3 bg-amber-50 hover:bg-amber-800 text-amber-900 hover:text-white rounded-2xl border border-amber-200/80 hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-md">
                                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>

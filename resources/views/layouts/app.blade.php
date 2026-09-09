@@ -533,9 +533,21 @@
                 <!-- Col 3: Customer Care -->
                 <div>
                     <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Servicio al Cliente</h3>
-                    <ul class="mt-4 space-y-2 text-sm">
+                    <ul class="mt-4 space-y-2.5 text-sm">
                         <li><a href="#" class="hover:text-amber-500 transition-colors">Políticas de Envío</a></li>
                         <li><a href="#" class="hover:text-amber-500 transition-colors">Términos y Condiciones</a></li>
+                        <li class="pt-2 flex items-center space-x-2 text-xs text-zinc-300">
+                            <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h32a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM3 10a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8z"/>
+                            </svg>
+                            <a href="tel:2226702641" class="hover:text-amber-400 transition-colors font-medium">Cel: 222 670 2641</a>
+                        </li>
+                        <li class="flex items-center space-x-2 text-xs text-zinc-300">
+                            <svg class="w-4 h-4 text-amber-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                            </svg>
+                            <a href="mailto:hola@sectormueble.com.mx" class="hover:text-amber-400 transition-colors font-medium">hola@sectormueble.com.mx</a>
+                        </li>
                     </ul>
                 </div>
 
@@ -627,7 +639,7 @@
     </nav>
 
     <!-- Botón Flotante Fijo de WhatsApp (Lado Izquierdo) -->
-    <a href="https://wa.me/5215500000000?text=Hola,%20quisiera%20más%20información%20sobre%20los%20muebles%20de%20Sector%20Mueble" 
+    <a href="https://wa.me/5212226702641?text=Hola,%20quisiera%20más%20información%20sobre%20los%20muebles%20de%20Sector%20Mueble" 
        target="_blank" 
        rel="noopener noreferrer" 
        class="fixed bottom-20 md:bottom-6 left-5 sm:left-6 z-[9990] flex items-center justify-center rounded-full transition-transform duration-300 hover:scale-110 active:scale-95 group"

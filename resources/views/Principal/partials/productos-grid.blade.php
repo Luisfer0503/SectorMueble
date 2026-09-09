@@ -29,6 +29,7 @@
                     <div class="relative w-full h-44 sm:h-64 bg-zinc-100 overflow-hidden">
                         {{-- Foto 1 (Principal) --}}
                         <img
+                            id="img-prod-{{ $producto->id }}"
                             src="{{ $producto->imagen_url }}"
                             alt="{{ $producto->nombre }}"
                             loading="lazy"
@@ -94,6 +95,32 @@
                                 </div>
                                 <span class="text-xs text-zinc-500 font-bold">{{ number_format($producto->calificacion, 1) }}</span>
                             </div>
+
+                            {{-- Combinaciones / Acabados disponibles --}}
+                            @php
+                                $detallesActivos = $producto->detalles ? $producto->detalles->where('activo', true) : collect();
+                            @endphp
+                            @if($detallesActivos->count() > 0)
+                                <div class="mt-2.5 pt-2 border-t border-zinc-100/80">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <span class="text-[9px] font-extrabold uppercase tracking-wider text-amber-900 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200/60 inline-flex items-center gap-1">
+                                            <span>🎨</span>
+                                            <span>+{{ $detallesActivos->count() }} {{ $detallesActivos->count() === 1 ? 'combinación' : 'combinaciones' }}</span>
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
+                                        @foreach($detallesActivos as $idx => $det)
+                                            <button
+                                                type="button"
+                                                title="{{ $det->nombre }}"
+                                                onclick="cambiarImagenCard(this, 'img-prod-{{ $producto->id }}', '{{ $det->imagen_url }}', '{{ $det->id }}', 'form-add-{{ $producto->id }}')"
+                                                class="btn-var-thumb relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg overflow-hidden border-2 transition-all duration-200 shrink-0 focus:outline-none {{ $idx === 0 ? 'border-amber-700 ring-2 ring-amber-700/20' : 'border-zinc-200 hover:border-amber-500' }}">
+                                                <img src="{{ $det->imagen_url }}" alt="{{ $det->nombre }}" class="w-full h-full object-cover">
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                         {{-- Precio y botón Añadir --}}
@@ -117,6 +144,7 @@
 
                             @if($producto->stock > 0)
                                 <form
+                                    id="form-add-{{ $producto->id }}"
                                     action="{{ route('carrito.agregar', $producto->id) }}"
                                     method="POST"
                                     data-nombre="{{ $producto->nombre }}"
@@ -124,6 +152,7 @@
                                     class="w-full sm:w-auto"
                                     onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
                                     @csrf
+                                    <input type="hidden" name="subarticulo_id" value="{{ $detallesActivos->first()->id ?? '' }}">
                                     <button type="submit"
                                         class="w-full sm:w-auto flex items-center justify-center space-x-1.5 text-xs font-bold bg-zinc-950 hover:bg-amber-800 text-white rounded-xl px-3.5 py-2.5 transition-all duration-300 shadow active:scale-95 group/btn">
                                         <svg class="h-3.5 w-3.5 transition-transform group-hover/btn:rotate-90 duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -141,6 +170,32 @@
                 </article>
             @endforeach
         </div>
+
+        <script>
+        if (typeof window.cambiarImagenCard !== 'function') {
+            window.cambiarImagenCard = function(btn, imgId, newSrc, subId, formId) {
+                const imgEl = document.getElementById(imgId);
+                if (imgEl) {
+                    imgEl.src = newSrc;
+                }
+                const formEl = document.getElementById(formId);
+                if (formEl) {
+                    const subInput = formEl.querySelector('input[name="subarticulo_id"]');
+                    if (subInput) subInput.value = subId;
+                    formEl.setAttribute('data-img', newSrc);
+                }
+                const parent = btn.closest('.flex');
+                if (parent) {
+                    parent.querySelectorAll('.btn-var-thumb').forEach(b => {
+                        b.classList.remove('border-amber-700', 'ring-2', 'ring-amber-700/20');
+                        b.classList.add('border-zinc-200');
+                    });
+                    btn.classList.remove('border-zinc-200');
+                    btn.classList.add('border-amber-700', 'ring-2', 'ring-amber-700/20');
+                }
+            };
+        }
+        </script>
 
         {{-- Paginación --}}
         @if($productos->hasPages())

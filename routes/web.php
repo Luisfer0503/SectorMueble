@@ -19,6 +19,10 @@ Route::get('/carrito', [PrincipalController::class, 'carrito'])->name('carrito')
 Route::post('/carrito/agregar/{id}', [PrincipalController::class, 'agregarAlCarrito'])->name('carrito.agregar');
 Route::post('/carrito/actualizar/{id}', [PrincipalController::class, 'actualizarCarrito'])->name('carrito.actualizar');
 Route::get('/carrito/eliminar/{id}', [PrincipalController::class, 'eliminarDelCarrito'])->name('carrito.eliminar');
+Route::post('/carrito/guardar-despues/{id}', [PrincipalController::class, 'guardarParaDespues'])->name('carrito.guardar_despues');
+Route::post('/carrito/mover-al-carrito/{id}', [PrincipalController::class, 'moverAlCarrito'])->name('carrito.mover_al_carrito');
+Route::match(['get', 'post'], '/carrito/eliminar-guardado/{id}', [PrincipalController::class, 'eliminarGuardado'])->name('carrito.eliminar_guardado');
+Route::post('/carrito/solicitud-especial/{id}', [PrincipalController::class, 'guardarSolicitudEspecial'])->name('carrito.solicitud_especial');
 
 // Aplicación de cupones por el cliente
 Route::post('/carrito/aplicar-cupon', [PrincipalController::class, 'aplicarCupon'])->name('carrito.cupon.aplicar');

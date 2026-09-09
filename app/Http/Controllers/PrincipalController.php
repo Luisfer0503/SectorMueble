@@ -23,7 +23,9 @@ class PrincipalController extends Controller
      */
     public function inicio()
     {
-        $productosDestacados = Producto::activo()->where('destacado', true)->take(4)->get();
+        $productosDestacados = Producto::activo()->with(['detalles' => function($q) {
+            $q->where('activo', true);
+        }])->where('destacado', true)->take(4)->get();
         
         $categorias = Producto::activo()->select('categoria')
             ->distinct()
@@ -37,7 +39,9 @@ class PrincipalController extends Controller
      */
     public function catalogo(Request $request)
     {
-        $consulta = Producto::activo();
+        $consulta = Producto::activo()->with(['detalles' => function($q) {
+            $q->where('activo', true);
+        }]);
 
         // Filtro por búsqueda
         if ($request->filled('buscar')) {
@@ -139,7 +143,16 @@ class PrincipalController extends Controller
      */
     public function carrito()
     {
+        // Cargar favoritos guardados de BD si el usuario inició sesión y no los tiene en sesión
+        if (auth()->check() && !session()->has('favoritos') && !empty(auth()->user()->favoritos_guardados)) {
+            $favDb = json_decode(auth()->user()->favoritos_guardados, true);
+            if (is_array($favDb)) {
+                session()->put('favoritos', $favDb);
+            }
+        }
+
         $carrito = session()->get('carrito', []);
+        $favoritos = session()->get('favoritos', []);
         
         $subtotal = 0;
         foreach ($carrito as $item) {
@@ -163,7 +176,12 @@ class PrincipalController extends Controller
         $envio = ($subtotal >= 10000 || $subtotal == 0) ? 0 : 400.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
-        return view('Principal.carrito', compact('carrito', 'subtotal', 'envio', 'descuento', 'total', 'cuponAplicado'));
+        // Muebles frecuentemente comprados juntos / recomendados
+        $frecuentementeComprados = Producto::activo()->with(['detalles' => function($q) {
+            $q->where('activo', true);
+        }])->inRandomOrder()->take(3)->get();
+
+        return view('Principal.carrito', compact('carrito', 'favoritos', 'subtotal', 'envio', 'descuento', 'total', 'cuponAplicado', 'frecuentementeComprados'));
     }
 
     /**
@@ -323,6 +341,110 @@ class PrincipalController extends Controller
         }
 
         return redirect()->route('carrito')->with('error', 'El mueble no estaba en el carrito.');
+    }
+
+    /**
+     * Guardar un artículo para después (mover de carrito a favoritos).
+     */
+    public function guardarParaDespues(Request $request, $itemKey)
+    {
+        $carrito = session()->get('carrito', []);
+        $favoritos = session()->get('favoritos', []);
+
+        if (isset($carrito[$itemKey])) {
+            $favoritos[$itemKey] = $carrito[$itemKey];
+            unset($carrito[$itemKey]);
+
+            session()->put('carrito', $carrito);
+            session()->put('favoritos', $favoritos);
+
+            $this->sincronizarCarritoUsuario();
+            $this->sincronizarFavoritosUsuario();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Mueble guardado para después en tu lista.',
+                ]);
+            }
+
+            return redirect()->route('carrito')->with('success', 'Mueble guardado para después en tu lista.');
+        }
+
+        return redirect()->route('carrito')->with('error', 'El mueble no se encuentra en tu carrito.');
+    }
+
+    /**
+     * Mover un artículo guardado para después de vuelta al carrito.
+     */
+    public function moverAlCarrito(Request $request, $itemKey)
+    {
+        $carrito = session()->get('carrito', []);
+        $favoritos = session()->get('favoritos', []);
+
+        if (isset($favoritos[$itemKey])) {
+            $carrito[$itemKey] = $favoritos[$itemKey];
+            unset($favoritos[$itemKey]);
+
+            session()->put('carrito', $carrito);
+            session()->put('favoritos', $favoritos);
+
+            $this->sincronizarCarritoUsuario();
+            $this->sincronizarFavoritosUsuario();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => '¡Mueble añadido nuevamente a tu carrito!',
+                ]);
+            }
+
+            return redirect()->route('carrito')->with('success', '¡Mueble añadido nuevamente a tu carrito!');
+        }
+
+        return redirect()->route('carrito')->with('error', 'El mueble no se encuentra en tus guardados.');
+    }
+
+    /**
+     * Eliminar un producto de la lista de guardados/favoritos.
+     */
+    public function eliminarGuardado($itemKey)
+    {
+        $favoritos = session()->get('favoritos', []);
+
+        if (isset($favoritos[$itemKey])) {
+            unset($favoritos[$itemKey]);
+            session()->put('favoritos', $favoritos);
+            $this->sincronizarFavoritosUsuario();
+            return redirect()->route('carrito')->with('success', 'Mueble eliminado de tu lista de guardados.');
+        }
+
+        return redirect()->route('carrito')->with('error', 'El mueble no estaba en tu lista.');
+    }
+
+    /**
+     * Guardar o actualizar la solicitud especial / notas del ítem en el carrito.
+     */
+    public function guardarSolicitudEspecial(Request $request, $itemKey)
+    {
+        $carrito = session()->get('carrito', []);
+
+        if (isset($carrito[$itemKey])) {
+            $carrito[$itemKey]['solicitud_especial'] = trim($request->input('solicitud_especial', ''));
+            session()->put('carrito', $carrito);
+            $this->sincronizarCarritoUsuario();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Solicitud especial guardada correctamente.',
+                ]);
+            }
+
+            return redirect()->route('carrito')->with('success', 'Solicitud especial guardada.');
+        }
+
+        return redirect()->route('carrito')->with('error', 'No se encontró el mueble en tu carrito.');
     }
 
     /**
@@ -996,6 +1118,21 @@ class PrincipalController extends Controller
                 $carrito = session()->get('carrito', []);
                 auth()->user()->update([
                     'carrito_guardado' => !empty($carrito) ? json_encode($carrito) : null,
+                ]);
+            } catch (\Throwable $e) {}
+        }
+    }
+
+    /**
+     * Sincroniza la lista de favoritos de la sesión con la base de datos del usuario autenticado.
+     */
+    private function sincronizarFavoritosUsuario()
+    {
+        if (auth()->check()) {
+            try {
+                $favoritos = session()->get('favoritos', []);
+                auth()->user()->update([
+                    'favoritos_guardados' => !empty($favoritos) ? json_encode($favoritos) : null,
                 ]);
             } catch (\Throwable $e) {}
         }
