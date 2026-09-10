@@ -367,8 +367,8 @@
             </div>
         </div>
 
-        <!-- Menú Móvil Desplegable (Nogal Cálido #C49A6C) -->
-        <div id="mobile-menu-drawer" class="hidden bg-[#C49A6C] text-white border-b border-white/20 px-4 pt-4 pb-6 space-y-4 shadow-xl">
+        <!-- Menú Móvil Desplegable (Nogal Cálido #88674B) -->
+        <div id="mobile-menu-drawer" class="hidden bg-[#88674B] text-white border-b border-white/20 px-4 pt-4 pb-6 space-y-4 shadow-xl">
             <form action="{{ route('catalogo') }}" method="GET" class="relative">
                 <input type="text" name="buscar" placeholder="Buscar muebles de diseño..." class="w-full bg-white/95 text-zinc-900 text-xs px-4 py-2.5 pr-9 rounded-xl border border-white/30 focus:outline-none focus:ring-2 focus:ring-[#1E2440] placeholder-zinc-500">
                 <button type="submit" class="absolute right-3 top-3 text-zinc-500 hover:text-zinc-800">

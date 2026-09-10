@@ -135,7 +135,7 @@
     <div class="py-20 sm:py-28 bg-white border-b border-zinc-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto">
-                <span class="text-xs font-extrabold uppercase tracking-widest text-amber-900 bg-amber-50 border border-amber-200/90 px-4 py-1.5 rounded-full">Espacios Inspiradores</span>
+                <span class="text-xs font-extrabold uppercase tracking-widest text-[#5C4033] bg-[#F5EBE0] border border-[#D9C5B2] px-4 py-1.5 rounded-full">Espacios Inspiradores</span>
                 <h2 class="serif-title text-3xl sm:text-5xl font-bold text-zinc-950 mt-3">Inspiración por Estancias</h2>
                 <p class="mt-3 text-zinc-600 text-sm sm:text-base">Amuebla cada ambiente con piezas concebidas para coordinar perfectamente entre sí.</p>
             </div>
@@ -155,7 +155,7 @@
                 </a>
 
                 <!-- Recámaras -->
-                <a href="{{ route('catalogo', ['categoria' => 'Dormihttpstorio']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
+                <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
                     <img src="{{ asset('recamara.png') }}" alt="Recámaras" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
@@ -169,7 +169,7 @@
 
                 <!-- Comedor -->
                 <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
-                    <img src="{{ asset('comedor.png') }}" alt="Comedor" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                    <img src="{{ asset('Comedor.png') }}" alt="Comedor" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
                         <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Comedor</span>
