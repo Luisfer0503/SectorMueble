@@ -107,6 +107,7 @@
                         Copiar Cupón
                     </button>
                 </div>
+                <p class="mt-2 text-[11px] text-white/80 italic font-normal">* Aplican términos y condiciones, no acumulable con otras promociones.</p>
             </div>
 
             <!-- Ticker de Reloj / Cuenta Regresiva Claro -->

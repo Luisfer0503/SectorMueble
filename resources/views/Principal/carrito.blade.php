@@ -286,6 +286,7 @@
                                     </button>
                                 </form>
                             @endif
+                            <p class="text-[10px] text-zinc-500 mt-2 italic font-normal">* Aplican términos y condiciones, no acumulable con otras promociones.</p>
                         </div>
                     </div>
 

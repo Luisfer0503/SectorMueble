@@ -139,6 +139,9 @@
             </a>
         </div>
     </div>
+    <div class="max-w-7xl mx-auto text-center sm:text-right mt-1">
+        <span class="text-[10px] text-white/80 italic">* Aplican términos y condiciones, no acumulable con otras promociones.</span>
+    </div>
 </div>
 
 <!-- Banner Sticky de Notificación de Productos Esperando en Carrito -->
@@ -717,54 +720,56 @@
         </div>
     </footer>
 
-    <!-- Barra de Navegación Flotante Inferior para Celulares (Nogal Cálido #88674B) -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-[80] bg-[#88674B] text-white border-t border-white/20 shadow-2xl py-2 px-3 flex items-center justify-around">
-        <!-- Inicio -->
-        <a href="{{ route('inicio') }}" class="flex flex-col items-center space-y-1 text-[11px] font-bold transition-all {{ Route::is('inicio') ? 'text-white bg-white/20 px-3 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 001 1v4a1 1 0 001 1m-6 0h6"/>
-            </svg>
-            <span>Inicio</span>
-        </a>
-
-        <!-- Catálogo -->
-        <a href="{{ route('catalogo') }}" class="flex flex-col items-center space-y-1 text-[11px] font-bold transition-all {{ Route::is('catalogo') ? 'text-white bg-white/20 px-3 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/>
-            </svg>
-            <span>Catálogo</span>
-        </a>
-
-        <!-- Carrito -->
-        <a href="{{ route('carrito') }}" class="relative flex flex-col items-center space-y-1 text-[11px] font-bold transition-all {{ Route::is('carrito') ? 'text-white bg-white/20 px-3 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
-            <div class="relative">
+    <!-- Barra de Navegación Flotante Inferior para Celulares (Rectángulo Flotante Nogal Cálido #88674B) -->
+    <div class="md:hidden fixed bottom-4 inset-x-4 z-[80] max-w-xs mx-auto">
+        <nav class="bg-[#88674B] text-white rounded-2xl shadow-2xl border border-white/20 py-2.5 px-3 flex items-center justify-around">
+            <!-- Inicio -->
+            <a href="{{ route('inicio') }}" class="flex flex-col items-center space-y-0.5 text-[10px] font-bold transition-all {{ Route::is('inicio') ? 'text-white bg-white/25 px-2.5 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 001 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
-                <span id="mobile-cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} absolute -top-1.5 -right-2 bg-emerald-600 text-white text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center shadow border border-white">
-                    {{ $cantidadCarrito }}
-                </span>
-            </div>
-            <span>Carrito</span>
-        </a>
-
-        <!-- Usuario / Perfil -->
-        @auth
-            <a href="{{ route('perfil') }}" class="flex flex-col items-center space-y-1 text-[11px] font-bold transition-all {{ Route::is('perfil') ? 'text-white bg-white/20 px-3 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                </svg>
-                <span>Mi Perfil</span>
+                <span>Inicio</span>
             </a>
-        @else
-            <a href="{{ route('login') }}" class="flex flex-col items-center space-y-1 text-[11px] font-bold transition-all {{ Route::is('login') ? 'text-white bg-white/20 px-3 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
+
+            <!-- Catálogo -->
+            <a href="{{ route('catalogo') }}" class="flex flex-col items-center space-y-0.5 text-[10px] font-bold transition-all {{ Route::is('catalogo') ? 'text-white bg-white/25 px-2.5 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/>
                 </svg>
-                <span>Ingresar</span>
+                <span>Catálogo</span>
             </a>
-        @endauth
-    </nav>
+
+            <!-- Carrito -->
+            <a href="{{ route('carrito') }}" class="relative flex flex-col items-center space-y-0.5 text-[10px] font-bold transition-all {{ Route::is('carrito') ? 'text-white bg-white/25 px-2.5 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
+                <div class="relative">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                    <span id="mobile-cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} absolute -top-1.5 -right-2 bg-emerald-600 text-white text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center shadow border border-white">
+                        {{ $cantidadCarrito }}
+                    </span>
+                </div>
+                <span>Carrito</span>
+            </a>
+
+            <!-- Usuario / Perfil -->
+            @auth
+                <a href="{{ route('perfil') }}" class="flex flex-col items-center space-y-0.5 text-[10px] font-bold transition-all {{ Route::is('perfil') ? 'text-white bg-white/25 px-2.5 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span>Mi Perfil</span>
+                </a>
+            @else
+                <a href="{{ route('login') }}" class="flex flex-col items-center space-y-0.5 text-[10px] font-bold transition-all {{ Route::is('login') ? 'text-white bg-white/25 px-2.5 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span>Ingresar</span>
+                </a>
+            @endauth
+        </nav>
+    </div>
 
     <!-- Botón Flotante Fijo de WhatsApp (Lado Izquierdo) -->
     <a href="https://wa.me/5212226702641?text=Hola,%20quisiera%20más%20información%20sobre%20los%20muebles%20de%20Sector%20Mueble" 
@@ -896,6 +901,7 @@
                 <p class="text-xs text-white/90 mt-1">
                     Obtén un cupón exclusivo para tu primera compra de muebles de diseño.
                 </p>
+                <p class="text-[10px] text-white/80 italic mt-1">* Aplican términos y condiciones, no acumulable con otras promociones.</p>
             </div>
 
             <!-- Canvas contenedor de la rueda -->
@@ -939,6 +945,7 @@
             <p class="text-xs text-white/80">
                 Tienes <strong id="ruleta-result-tiempo" class="text-white">15 minutos</strong> para utilizarlo en tu carrito.
             </p>
+            <p class="text-[10px] text-white/80 italic mt-1">* Aplican términos y condiciones, no acumulable con otras promociones.</p>
 
             <form id="form-reclamar-ruleta" onsubmit="reclamarRuletaPremio(event)" class="pt-2">
                 @csrf

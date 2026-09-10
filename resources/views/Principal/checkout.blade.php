@@ -165,6 +165,7 @@
                                     <span class="font-semibold text-zinc-900 font-sans">$ {{ number_format($envio, 2, '.', ',') }}</span>
                                 @endif
                             </div>
+                            <p class="text-[10px] text-zinc-500 mt-1 italic font-normal">* Aplican términos y condiciones, no acumulable con otras promociones.</p>
                         </div>
 
                         <div class="flex justify-between items-center py-6 text-zinc-950">
