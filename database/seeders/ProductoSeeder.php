@@ -1271,7 +1271,7 @@ class ProductoSeeder extends Seeder
 CABECERA : 205CM X 1.20 CM X25 CM cm.',
                 'precio' => 16000.0,
                 'imagen_url' => '/storage/productos/mueble_sama_row40.jpg',
-                'categoria' => 'Salón',
+                'categoria' => 'Dormitorio',
                 'stock' => 24,
                 'calificacion' => 4.7,
                 'destacado' => false,

@@ -400,7 +400,7 @@
             }
 
             if (btnTexto) {
-                btnTexto.innerText = `🔒 Pagar $ ${totalCarritoCheckout} MXN (No disponible)`;
+                btnTexto.innerText = `Pagar $ ${totalCarritoCheckout} MXN (No disponible)`;
             }
 
             if (alertaBox) {

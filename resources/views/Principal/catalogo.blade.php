@@ -112,13 +112,14 @@
                                     <input type="radio" name="categoria" value="todas" class="filtro-input h-3.5 w-3.5 accent-amber-800 cursor-pointer"
                                         {{ request('categoria', 'todas') === 'todas' ? 'checked' : '' }}>
                                     <span class="text-sm text-zinc-700 group-hover:text-amber-800 font-medium transition-colors">Todas</span>
-                                    <span class="ml-auto text-[10px] text-zinc-400 font-mono">{{ $productos->total() }}</span>
+                                    <span class="ml-auto text-[10px] text-zinc-400 font-mono">{{ $totalTodos ?? $productos->total() }}</span>
                                 </label>
-                                @foreach($categorias as $cat)
+                                @foreach($categoriasConConteo as $catNombre => $count)
                                     <label class="cat-label flex items-center space-x-3 cursor-pointer rounded-lg px-2 py-1.5 hover:bg-zinc-50 transition-colors group">
-                                        <input type="radio" name="categoria" value="{{ $cat }}" class="filtro-input h-3.5 w-3.5 accent-amber-800 cursor-pointer"
-                                            {{ request('categoria') === $cat ? 'checked' : '' }}>
-                                        <span class="text-sm text-zinc-600 group-hover:text-amber-800 transition-colors">{{ $cat }}</span>
+                                        <input type="radio" name="categoria" value="{{ $catNombre }}" class="filtro-input h-3.5 w-3.5 accent-amber-800 cursor-pointer"
+                                            {{ request('categoria') === $catNombre ? 'checked' : '' }}>
+                                        <span class="text-sm text-zinc-600 group-hover:text-amber-800 transition-colors">{{ $catNombre }}</span>
+                                        <span class="ml-auto text-[10px] text-zinc-400 font-mono">{{ $count }}</span>
                                     </label>
                                 @endforeach
                             </div>

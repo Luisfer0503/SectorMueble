@@ -114,16 +114,21 @@ class PrincipalController extends Controller
 
         $productos = $consulta->paginate(9)->withQueryString();
 
-        $categorias = Producto::activo()->select('categoria')
-            ->distinct()
-            ->pluck('categoria');
+        $totalTodos = Producto::activo()->count();
+
+        $categoriasConConteo = Producto::activo()
+            ->select('categoria', DB::raw('count(*) as total'))
+            ->groupBy('categoria')
+            ->pluck('total', 'categoria');
+
+        $categorias = $categoriasConConteo->keys();
 
         // Petición AJAX → devolver solo el partial del grid
         if ($request->ajax() || $request->has('_ajax')) {
             return view('Principal.partials.productos-grid', compact('productos'));
         }
 
-        return view('Principal.catalogo', compact('productos', 'categorias'));
+        return view('Principal.catalogo', compact('productos', 'categorias', 'categoriasConConteo', 'totalTodos'));
     }
 
     /**
