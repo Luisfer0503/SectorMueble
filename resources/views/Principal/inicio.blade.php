@@ -14,7 +14,7 @@
         </div>
 
         <!-- Contenido Centrado Enfrente -->
-        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center w-full">
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 sm:py-28 text-center w-full">
             
             <!-- Sub-badge Superior Centrado -->
             <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#88674B]/80 border border-[#FAF3E0]/30 text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-widest shadow-lg mb-6 backdrop-blur-md">
@@ -214,12 +214,12 @@
                     @endphp
                     @if($prod)
                         <!-- Hotspot {{ $prod->nombre }} -->
-                        <div class="absolute z-20 group" tabindex="0" style="top: {{ $hs['top'] }}; left: {{ $hs['left'] }};">
-                            <button type="button" aria-label="Ver {{ $prod->nombre }}" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 focus:scale-125 transition-transform border-2 border-white cursor-pointer focus:outline-none">
+                        <div class="absolute z-20 group hotspot-item" style="top: {{ $hs['top'] }}; left: {{ $hs['left'] }};">
+                            <button type="button" onclick="event.stopPropagation(); window.toggleHotspotCard && window.toggleHotspotCard(this);" aria-label="Ver {{ $prod->nombre }}" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 focus:scale-125 transition-transform border-2 border-white cursor-pointer focus:outline-none">
                                 +
                             </button>
                             <!-- Popover Card Clara (Centrada en pantalla en Celular, Flotante en Desktop) -->
-                            <div class="max-sm:fixed max-sm:top-1/2 max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:-translate-y-1/2 max-sm:w-[calc(100vw-2rem)] max-sm:max-w-xs max-sm:z-50 sm:absolute sm:top-auto sm:bottom-12 sm:left-1/2 sm:-translate-x-1/2 sm:translate-y-0 sm:w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 group-focus-within:translate-y-0 translate-y-2">
+                            <div class="max-sm:fixed max-sm:top-1/2 max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:-translate-y-1/2 max-sm:w-[calc(100vw-2rem)] max-sm:max-w-xs max-sm:z-50 sm:absolute sm:top-auto sm:bottom-12 sm:left-1/2 sm:-translate-x-1/2 sm:translate-y-0 sm:w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto group-[.active]:opacity-100 group-[.active]:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 group-[.active]:translate-y-0 translate-y-2">
                                 <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">{{ $prod->categoria }}</span>
                                 <h4 class="text-sm font-bold text-zinc-950 mt-1 line-clamp-1">{{ $prod->nombre }}</h4>
                                 
@@ -242,6 +242,32 @@
             </div>
         </div>
     </div>
+
+    <script>
+    (function() {
+        window.toggleHotspotCard = function(btn) {
+            const parent = btn.closest('.hotspot-item');
+            if (!parent) return;
+            const isCurrentlyActive = parent.classList.contains('active');
+            document.querySelectorAll('.hotspot-item').forEach(el => el.classList.remove('active'));
+            if (!isCurrentlyActive) {
+                parent.classList.add('active');
+            }
+        };
+
+        // Al deslizar/scrollear la pantalla, ocultar automáticamente cualquier hotspot abierto
+        window.addEventListener('scroll', function() {
+            document.querySelectorAll('.hotspot-item').forEach(el => el.classList.remove('active'));
+        }, { passive: true });
+
+        // Al hacer clic fuera de cualquier hotspot, ocultar
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.hotspot-item')) {
+                document.querySelectorAll('.hotspot-item').forEach(el => el.classList.remove('active'));
+            }
+        });
+    })();
+    </script>
 
 
     <!-- ── 6. SHOWCASE DE PRODUCTOS DESTACADOS CON PESTAÑAS ── -->
