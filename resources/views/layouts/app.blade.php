@@ -773,7 +773,7 @@
     <a href="https://wa.me/5212226702641?text=Hola,%20quisiera%20más%20información%20sobre%20los%20muebles%20de%20Sector%20Mueble" 
        target="_blank" 
        rel="noopener noreferrer" 
-       class="fixed bottom-20 md:bottom-6 left-5 sm:left-6 z-[9990] flex items-center justify-center rounded-full transition-transform duration-300 hover:scale-110 active:scale-95 group"
+       class="fixed bottom-24 md:bottom-6 left-5 sm:left-6 z-[9990] flex items-center justify-center rounded-full transition-transform duration-300 hover:scale-110 active:scale-95 group"
        style="background-color: #25D366 !important; width: 56px; height: 56px; box-shadow: 0 10px 25px rgba(37, 211, 102, 0.45) !important;"
        title="¿Necesitas ayuda? Chatea con nosotros por WhatsApp">
         

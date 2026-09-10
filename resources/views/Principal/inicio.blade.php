@@ -218,8 +218,8 @@
                             <button type="button" aria-label="Ver {{ $prod->nombre }}" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 focus:scale-125 transition-transform border-2 border-white cursor-pointer focus:outline-none">
                                 +
                             </button>
-                            <!-- Popover Card Clara (Centrada en Celular, Flotante en Desktop) -->
-                            <div class="max-sm:fixed max-sm:bottom-6 max-sm:left-4 max-sm:right-4 max-sm:w-auto max-sm:max-w-xs max-sm:mx-auto max-sm:translate-x-0 max-sm:z-50 sm:absolute sm:bottom-12 sm:left-1/2 sm:-translate-x-1/2 sm:w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 group-focus-within:translate-y-0 translate-y-2">
+                            <!-- Popover Card Clara (Centrada en pantalla en Celular, Flotante en Desktop) -->
+                            <div class="max-sm:fixed max-sm:top-1/2 max-sm:left-1/2 max-sm:-translate-x-1/2 max-sm:-translate-y-1/2 max-sm:w-[calc(100vw-2rem)] max-sm:max-w-xs max-sm:z-50 sm:absolute sm:top-auto sm:bottom-12 sm:left-1/2 sm:-translate-x-1/2 sm:translate-y-0 sm:w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 group-focus-within:translate-y-0 translate-y-2">
                                 <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">{{ $prod->categoria }}</span>
                                 <h4 class="text-sm font-bold text-zinc-950 mt-1 line-clamp-1">{{ $prod->nombre }}</h4>
                                 
