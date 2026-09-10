@@ -1122,6 +1122,53 @@ class PrincipalController extends Controller
     }
 
     /**
+     * Muestra la vista de perfil de usuario para consultar y editar sus datos.
+     */
+    public function mostrarPerfil(Request $request)
+    {
+        $user = auth()->user();
+        return view('Principal.perfil', compact('user'));
+    }
+
+    /**
+     * Actualiza la información del perfil del usuario (excepto el correo).
+     */
+    public function actualizarPerfil(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'telefono' => 'nullable|string|max:20',
+            'codigo_postal' => 'nullable|string|max:10',
+            'password' => 'nullable|string|min:8|confirmed',
+        ], [
+            'name.required' => 'El nombre completo es obligatorio.',
+            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+        ]);
+
+        $datosActualizar = [
+            'name' => $request->name,
+            'telefono' => $request->telefono,
+            'codigo_postal' => $request->codigo_postal,
+        ];
+
+        if ($request->filled('password')) {
+            $datosActualizar['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+
+        $user->update($datosActualizar);
+
+        // Actualizar el código postal de la sesión si se editó
+        if ($request->filled('codigo_postal')) {
+            session(['codigo_postal' => $request->codigo_postal]);
+        }
+
+        return back()->with('exito', '¡Tu perfil ha sido actualizado correctamente!');
+    }
+
+    /**
      * Sincroniza el carrito actual de la sesión con la base de datos del usuario autenticado.
      */
     private function sincronizarCarritoUsuario()

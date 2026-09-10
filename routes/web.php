@@ -59,6 +59,10 @@ Route::post('/email/reenviar-verificacion', [PrincipalController::class, 'reenvi
 Route::get('/cerrar-sesion', [PrincipalController::class, 'logout'])->name('logout');
 Route::post('/cerrar-sesion', [PrincipalController::class, 'logout'])->name('logout.post');
 
+// Rutas de Perfil de Usuario
+Route::get('/perfil', [PrincipalController::class, 'mostrarPerfil'])->middleware('auth')->name('perfil');
+Route::post('/perfil', [PrincipalController::class, 'actualizarPerfil'])->middleware('auth')->name('perfil.actualizar');
+
 
 // Ruta para reclamar beneficio de la ruleta
 Route::post('/ruleta/reclamar', [PrincipalController::class, 'reclamarPremioRuleta'])->name('ruleta.reclamar');

@@ -216,6 +216,7 @@
                     @auth
                         <div class="flex items-center space-x-2 border-l border-zinc-200 pl-2 sm:pl-3">
                             <span class="text-xs font-medium text-zinc-700 hidden sm:inline">Hola, <strong class="text-[#4c6f4f] font-extrabold">{{ auth()->user()->name }}</strong></span>
+                            <a href="{{ route('perfil') }}" class="text-[11px] font-bold text-[#88674B] hover:text-[#74563C] hover:bg-amber-50 px-2 py-1 rounded-lg uppercase tracking-wider transition-colors">Mi Perfil</a>
                             @if(auth()->user()->is_admin)
                                 <a href="{{ route('admin.dashboard') }}" class="text-[10px] font-bold text-white bg-[#88674B] hover:bg-[#74563C] px-2 py-1 rounded-lg uppercase tracking-wider">Admin</a>
                             @endif
@@ -378,15 +379,125 @@
                 </button>
             </form>
 
-            <div class="grid grid-cols-2 gap-2 text-center text-xs font-bold uppercase tracking-wider">
-                <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="p-3 bg-white/20 hover:bg-white/30 rounded-xl text-white border border-white/25 transition-colors">Salón / Sala</a>
-                <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="p-3 bg-white/20 hover:bg-white/30 rounded-xl text-white border border-white/25 transition-colors">Recámara</a>
-                <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="p-3 bg-white/20 hover:bg-white/30 rounded-xl text-white border border-white/25 transition-colors">Comedor</a>
-                <a href="{{ route('catalogo') }}" class="p-3 bg-[#1E2440] hover:bg-[#151a30] rounded-xl text-white shadow-md border border-white/20 transition-colors">Todo el Catálogo</a>
+            <!-- Lista Vertical de Categorías con Acordeón Desplegable Exclusivo -->
+            <div class="space-y-2 py-1" id="mobile-accordion-group">
+                
+                <!-- 1. SALAS -->
+                <div class="border border-white/20 rounded-2xl overflow-hidden bg-black/15 transition-all">
+                    <button type="button" onclick="toggleMobileAccordion('salas')" class="w-full flex items-center justify-between p-3.5 text-xs font-extrabold uppercase tracking-wider text-white hover:bg-white/10 transition-colors cursor-pointer">
+                        <span class="flex items-center space-x-2">
+                            <span>🛋️</span>
+                            <span>Salas</span>
+                        </span>
+                        <svg id="acc-icon-salas" class="w-4 h-4 text-white/80 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="acc-content-salas" class="hidden bg-black/25 px-3 py-2 space-y-1.5 border-t border-white/10">
+                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-bold text-white bg-[#88674B]/80 hover:bg-[#88674B] rounded-xl transition-colors border border-white/20 shadow-xs">
+                            <span>Ver todo en Salas</span>
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                            <span class="text-[#FAF3E0]">•</span>
+                            <span>Sofás y salas modulares</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                            <span class="text-[#FAF3E0]">•</span>
+                            <span>Mesas de centro y laterales</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                            <span class="text-[#FAF3E0]">•</span>
+                            <span>Sillones</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                            <span class="text-[#FAF3E0]">•</span>
+                            <span>Credenzas</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2. RECÁMARAS -->
+                <div class="border border-white/20 rounded-2xl overflow-hidden bg-black/15 transition-all">
+                    <button type="button" onclick="toggleMobileAccordion('recamaras')" class="w-full flex items-center justify-between p-3.5 text-xs font-extrabold uppercase tracking-wider text-white hover:bg-white/10 transition-colors cursor-pointer">
+                        <span class="flex items-center space-x-2">
+                            <span>🛏️</span>
+                            <span>Recámaras</span>
+                        </span>
+                        <svg id="acc-icon-recamaras" class="w-4 h-4 text-white/80 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="acc-content-recamaras" class="hidden bg-black/25 px-3 py-2 space-y-1.5 border-t border-white/10">
+                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-bold text-white bg-[#88674B]/80 hover:bg-[#88674B] rounded-xl transition-colors border border-white/20 shadow-xs">
+                            <span>Ver todo en Recámaras</span>
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                            <span class="text-[#FAF3E0]">•</span>
+                            <span>Camas</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                            <span class="text-[#FAF3E0]">•</span>
+                            <span>Burós</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                            <span class="text-[#FAF3E0]">•</span>
+                            <span>Divanes</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 3. COMEDOR -->
+                <div class="border border-white/20 rounded-2xl overflow-hidden bg-black/15 transition-all">
+                    <button type="button" onclick="toggleMobileAccordion('comedor')" class="w-full flex items-center justify-between p-3.5 text-xs font-extrabold uppercase tracking-wider text-white hover:bg-white/10 transition-colors cursor-pointer">
+                        <span class="flex items-center space-x-2">
+                            <span>🪑</span>
+                            <span>Comedor</span>
+                        </span>
+                        <svg id="acc-icon-comedor" class="w-4 h-4 text-white/80 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div id="acc-content-comedor" class="hidden bg-black/25 px-3 py-2 space-y-1.5 border-t border-white/10">
+                        <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-bold text-white bg-[#88674B]/80 hover:bg-[#88674B] rounded-xl transition-colors border border-white/20 shadow-xs">
+                            <span>Ver todo en Comedor</span>
+                            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                            <span class="text-[#FAF3E0]">•</span>
+                            <span>Sillas</span>
+                        </a>
+                        <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                            <span class="text-[#FAF3E0]">•</span>
+                            <span>Mesas</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 4. CATÁLOGO COMPLETO -->
+                <div class="border border-white/20 rounded-2xl overflow-hidden bg-black/15 transition-all">
+                    <a href="{{ route('catalogo') }}" class="flex items-center justify-between p-3.5 text-xs font-extrabold uppercase tracking-wider text-white hover:bg-white/10 transition-colors">
+                        <span class="flex items-center space-x-2">
+                            <span>✨</span>
+                            <span>Catálogo Completo</span>
+                        </span>
+                        <svg class="w-4 h-4 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                </div>
+
             </div>
 
             <!-- Botón CP Móvil (Fondo Transparente) -->
-            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-[#1E2440]/80 hover:bg-[#1E2440] backdrop-blur-md text-white rounded-full border border-white/20 font-bold text-xs shadow-md">
+            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-[#1E2440]/80 hover:bg-[#1E2440] backdrop-blur-md text-white rounded-full border border-white/20 font-bold text-xs shadow-md cursor-pointer">
                 <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -396,7 +507,10 @@
 
             @auth
                 <div class="pt-2 border-t border-white/20 flex items-center justify-between text-xs text-white">
-                    <span class="font-medium">Hola, <strong class="font-extrabold">{{ auth()->user()->name }}</strong></span>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-medium">Hola, <strong class="font-extrabold">{{ auth()->user()->name }}</strong></span>
+                        <a href="{{ route('perfil') }}" class="text-xs font-extrabold text-[#FAF3E0] underline hover:text-white">Mi Perfil</a>
+                    </div>
                     <a href="{{ route('logout') }}" class="text-rose-200 hover:text-rose-100 font-bold">Cerrar Sesión</a>
                 </div>
             @else
@@ -415,6 +529,29 @@
         if (drawer) {
             drawer.classList.toggle('hidden');
         }
+    }
+
+    function toggleMobileAccordion(key) {
+        const keys = ['salas', 'recamaras', 'comedor'];
+        keys.forEach(k => {
+            const content = document.getElementById('acc-content-' + k);
+            const icon = document.getElementById('acc-icon-' + k);
+            if (k === key) {
+                if (content) {
+                    const isHidden = content.classList.contains('hidden');
+                    if (isHidden) {
+                        content.classList.remove('hidden');
+                        if (icon) icon.classList.add('rotate-180');
+                    } else {
+                        content.classList.add('hidden');
+                        if (icon) icon.classList.remove('rotate-180');
+                    }
+                }
+            } else {
+                if (content) content.classList.add('hidden');
+                if (icon) icon.classList.remove('rotate-180');
+            }
+        });
     }
 
     function switchSubnav(category) {
@@ -580,51 +717,51 @@
         </div>
     </footer>
 
-    <!-- Barra de Navegación Flotante Inferior para Celulares (Mobile App-Like Experience) -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-[80] bg-white/95 backdrop-blur-lg border-t border-zinc-200/90 shadow-2xl py-2 px-3 flex items-center justify-around">
+    <!-- Barra de Navegación Flotante Inferior para Celulares (Nogal Cálido #88674B) -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-[80] bg-[#88674B] text-white border-t border-white/20 shadow-2xl py-2 px-3 flex items-center justify-around">
         <!-- Inicio -->
-        <a href="{{ route('inicio') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('inicio') ? 'text-[#4c6f4f] font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+        <a href="{{ route('inicio') }}" class="flex flex-col items-center space-y-1 text-[11px] font-bold transition-all {{ Route::is('inicio') ? 'text-white bg-white/20 px-3 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 001 1v4a1 1 0 001 1m-6 0h6"/>
             </svg>
-            <span class="text-[10px]">Inicio</span>
+            <span>Inicio</span>
         </a>
 
         <!-- Catálogo -->
-        <a href="{{ route('catalogo') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('catalogo') ? 'text-[#4c6f4f] font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+        <a href="{{ route('catalogo') }}" class="flex flex-col items-center space-y-1 text-[11px] font-bold transition-all {{ Route::is('catalogo') ? 'text-white bg-white/20 px-3 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/>
             </svg>
-            <span class="text-[10px]">Catálogo</span>
+            <span>Catálogo</span>
         </a>
 
         <!-- Carrito -->
-        <a href="{{ route('carrito') }}" class="relative flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('carrito') ? 'text-[#4c6f4f] font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+        <a href="{{ route('carrito') }}" class="relative flex flex-col items-center space-y-1 text-[11px] font-bold transition-all {{ Route::is('carrito') ? 'text-white bg-white/20 px-3 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
             <div class="relative">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                 </svg>
-                <span id="mobile-cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} absolute -top-1.5 -right-2.5 bg-[#4c6f4f] text-white text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center shadow">
+                <span id="mobile-cart-badge" class="{{ $cantidadCarrito > 0 ? '' : 'hidden' }} absolute -top-1.5 -right-2 bg-emerald-600 text-white text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center shadow border border-white">
                     {{ $cantidadCarrito }}
                 </span>
             </div>
-            <span class="text-[10px]">Carrito</span>
+            <span>Carrito</span>
         </a>
 
         <!-- Usuario / Perfil -->
         @auth
-            <a href="{{ route('logout') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold text-rose-600">
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                </svg>
-                <span class="text-[10px]">Salir</span>
-            </a>
-        @else
-            <a href="{{ route('login') }}" class="flex flex-col items-center space-y-0.5 text-xs font-semibold {{ Route::is('login') ? 'text-[#4c6f4f] font-bold' : 'text-zinc-500 hover:text-zinc-900' }}">
+            <a href="{{ route('perfil') }}" class="flex flex-col items-center space-y-1 text-[11px] font-bold transition-all {{ Route::is('perfil') ? 'text-white bg-white/20 px-3 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                 </svg>
-                <span class="text-[10px]">Ingresar</span>
+                <span>Mi Perfil</span>
+            </a>
+        @else
+            <a href="{{ route('login') }}" class="flex flex-col items-center space-y-1 text-[11px] font-bold transition-all {{ Route::is('login') ? 'text-white bg-white/20 px-3 py-1 rounded-xl shadow-xs scale-105' : 'text-white/80 hover:text-white' }}">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                <span>Ingresar</span>
             </a>
         @endauth
     </nav>
