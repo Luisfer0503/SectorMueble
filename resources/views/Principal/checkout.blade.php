@@ -79,7 +79,7 @@
                                 <input type="text" name="referencias" id="referencias" value="{{ old('referencias') }}" placeholder="Ej. Entre calle Olivos y Sauces, fachada blanca con portón de madera" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                             </div>
 
-                            <!-- Mensaje Informativo de Envío a ancho completo debajo de todo el bloque de dirección -->
+                    <!-- Mensaje Informativo de Envío a ancho completo debajo de todo el bloque de dirección -->
                             <div class="sm:col-span-3 mt-1 p-4 bg-[#1E2440] text-white border border-white/20 rounded-2xl text-xs flex items-start space-x-3 shadow-xs">
                                 <div class="p-1.5 bg-white/20 text-white rounded-xl shrink-0 mt-0.5 shadow-2xs">
                                     <svg class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -91,10 +91,74 @@
                         </div>
                     </div>
 
-                    <!-- Paso 3: Método de Pago (Stripe) -->
+                    <!-- Paso 3: Facturación Electrónica SAT (FastAPI) -->
+                    <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span class="bg-[#4c6f4f] text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
+                            <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Facturación Electrónica (SAT CFDI 4.0)</h2>
+                        </div>
+
+                        <div class="mt-3 pt-3 border-t border-zinc-100">
+                            <label class="flex items-center space-x-3 cursor-pointer select-none">
+                                <input type="checkbox" id="requiere_factura" name="requiere_factura" value="1" onchange="toggleFacturaSection()" class="h-4.5 w-4.5 text-[#4c6f4f] border-zinc-300 rounded focus:ring-[#4c6f4f]">
+                                <span class="text-xs font-bold text-zinc-900">¿Requieres Factura Electrónica para esta compra?</span>
+                            </label>
+
+                            <div id="factura-fields" class="hidden mt-4 space-y-4 pt-4 border-t border-zinc-150">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-zinc-700 mb-1">RFC del Receptor *</label>
+                                        <input type="text" id="rfc_receptor" name="rfc_receptor" placeholder="Ej. XAXX010101000" maxlength="13" class="w-full bg-zinc-50 text-xs px-3.5 py-2.5 rounded-xl border border-zinc-200 uppercase font-mono focus:ring-2 focus:ring-[#4c6f4f]/30">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-zinc-700 mb-1">Razón Social / Nombre Fiscal *</label>
+                                        <input type="text" id="razon_social" name="razon_social" placeholder="Nombre completo o Empresa" class="w-full bg-zinc-50 text-xs px-3.5 py-2.5 rounded-xl border border-zinc-200 uppercase focus:ring-2 focus:ring-[#4c6f4f]/30">
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-zinc-700 mb-1">Régimen Fiscal (SAT) *</label>
+                                        <select id="regimen_fiscal" name="regimen_fiscal" class="w-full bg-zinc-50 text-xs px-3.5 py-2.5 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-[#4c6f4f]/30">
+                                            <option value="601">601 - General de Ley Personas Morales</option>
+                                            <option value="605">605 - Sueldos y Salarios e Ingresos Asimilados</option>
+                                            <option value="606">606 - Arrendamiento</option>
+                                            <option value="612">612 - Personas Físicas con Actividades Empresariales</option>
+                                            <option value="616" selected>616 - Sin obligaciones fiscales</option>
+                                            <option value="625">625 - Actividades Empresariales con Plataformas Tecnológicas</option>
+                                            <option value="626">626 - Régimen Simplificado de Confianza (RESICO)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-zinc-700 mb-1">Uso de CFDI *</label>
+                                        <select id="uso_cfdi" name="uso_cfdi" class="w-full bg-zinc-50 text-xs px-3.5 py-2.5 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-[#4c6f4f]/30">
+                                            <option value="G01">G01 - Adquisición de mercancías</option>
+                                            <option value="G03" selected>G03 - Gastos en general</option>
+                                            <option value="S01">S01 - Sin efectos fiscales</option>
+                                            <option value="CP01">CP01 - Pagos</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-bold text-zinc-700 mb-1">Código Postal Fiscal *</label>
+                                        <input type="text" id="codigo_postal_fiscal" name="codigo_postal_fiscal" placeholder="CP Fiscal" maxlength="5" class="w-full bg-zinc-50 text-xs px-3.5 py-2.5 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-[#4c6f4f]/30 font-mono">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-bold text-zinc-700 mb-1">Correo de Facturación *</label>
+                                        <input type="email" id="correo_facturacion" name="correo_facturacion" value="{{ old('correo_cliente', auth()->user()->email ?? '') }}" placeholder="facturacion@correo.com" class="w-full bg-zinc-50 text-xs px-3.5 py-2.5 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-[#4c6f4f]/30">
+                                    </div>
+                                </div>
+                                <p class="text-[11px] text-zinc-500 italic">⚡ Tu comprobante fiscal será timbrado automáticamente a través de nuestra API FastAPI y enviado a tu correo.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paso 4: Método de Pago (Stripe) -->
                     <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                         <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-                            <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
+                            <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">4</span>
                             <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Método de Pago Seguro</h2>
                         </div>
 
@@ -489,6 +553,26 @@
                 alert("Error al conectar con la pasarela de pagos: " + (err.message || 'Inténtalo de nuevo.'));
                 if (btn) btn.disabled = false;
                 if (btnTexto) btnTexto.innerText = 'Reintentar Pago con Stripe';
+            }
+        }
+
+        function toggleFacturaSection() {
+            const check = document.getElementById('requiere_factura');
+            const fields = document.getElementById('factura-fields');
+            if (check && fields) {
+                if (check.checked) {
+                    fields.classList.remove('hidden');
+                    document.getElementById('rfc_receptor')?.setAttribute('required', 'required');
+                    document.getElementById('razon_social')?.setAttribute('required', 'required');
+                    document.getElementById('codigo_postal_fiscal')?.setAttribute('required', 'required');
+                    document.getElementById('correo_facturacion')?.setAttribute('required', 'required');
+                } else {
+                    fields.classList.add('hidden');
+                    document.getElementById('rfc_receptor')?.removeAttribute('required');
+                    document.getElementById('razon_social')?.removeAttribute('required');
+                    document.getElementById('codigo_postal_fiscal')?.removeAttribute('required');
+                    document.getElementById('correo_facturacion')?.removeAttribute('required');
+                }
             }
         }
 

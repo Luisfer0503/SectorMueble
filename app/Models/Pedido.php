@@ -20,6 +20,22 @@ class Pedido extends Model
         'cupon_codigo',
         'descuento',
         'estado',
+        'requiere_factura',
+        'rfc_receptor',
+        'razon_social',
+        'regimen_fiscal',
+        'uso_cfdi',
+        'codigo_postal_fiscal',
+        'correo_facturacion',
+        'factura_estado',
+        'factura_uuid',
+        'factura_pdf_url',
+        'factura_xml_url',
+        'factura_error',
+    ];
+
+    protected $casts = [
+        'requiere_factura' => 'boolean',
     ];
 
     public function detalles()

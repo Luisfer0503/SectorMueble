@@ -676,6 +676,7 @@
                     <ul class="mt-4 space-y-2.5 text-sm">
                         <li><a href="#" class="hover:text-[#FAF3E0] transition-colors">Políticas de Envío</a></li>
                         <li><a href="{{ route('terminos') }}" class="hover:text-[#FAF3E0] transition-colors">Términos y Condiciones</a></li>
+                        <li><a href="{{ route('facturacion.index') }}" class="text-[#FAF3E0] hover:underline font-bold transition-colors">Facturación Electrónica SAT</a></li>
                         <li class="pt-2">
                             <a href="https://wa.me/5212226702641?text=Hola,%20quisiera%20más%20información%20sobre%20los%20muebles%20de%20Sector%20Mueble" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2 text-xs text-zinc-300 hover:text-[#FAF3E0] transition-colors group">
                                 <svg class="w-4 h-4 text-[#C49A6C] group-hover:text-[#FAF3E0] shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">

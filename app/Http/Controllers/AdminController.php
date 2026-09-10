@@ -604,6 +604,41 @@ class AdminController extends Controller
     }
 
     /**
+     * Emite o reintenta el timbrado de factura de un pedido desde el panel de administración usando FastAPI.
+     */
+    public function pedidosEmitirFacturaFastApi(Request $request, $id)
+    {
+        $pedido = Pedido::findOrFail($id);
+
+        if (!$pedido->requiere_factura && !$request->has('rfc_receptor')) {
+            return redirect()->back()->with('error', 'El pedido no tiene marcados datos de facturación.');
+        }
+
+        // Si el admin envió datos de facturación actualizados en la petición
+        if ($request->filled('rfc_receptor')) {
+            $pedido->update([
+                'requiere_factura'     => true,
+                'rfc_receptor'         => strtoupper(trim($request->input('rfc_receptor'))),
+                'razon_social'        => mb_strtoupper(trim($request->input('razon_social'))),
+                'regimen_fiscal'      => $request->input('regimen_fiscal', '601'),
+                'uso_cfdi'            => $request->input('uso_cfdi', 'G03'),
+                'codigo_postal_fiscal' => trim($request->input('codigo_postal_fiscal', $pedido->codigo_postal)),
+                'correo_facturacion'  => trim($request->input('correo_facturacion', $pedido->correo_cliente)),
+                'factura_estado'       => 'pendiente',
+            ]);
+        }
+
+        $facturacionService = app(\App\Services\FacturacionFastApiService::class);
+        $resultado = $facturacionService->generarFactura($pedido);
+
+        if ($resultado['success']) {
+            return redirect()->back()->with('success', 'Factura emitidamente timbrada en FastAPI. Folio Fiscal UUID: ' . ($resultado['uuid'] ?? 'Generado'));
+        } else {
+            return redirect()->back()->with('error', 'Inconveniente al facturar vía FastAPI: ' . ($resultado['message'] ?? 'Error desconocido'));
+        }
+    }
+
+    /**
      * Mostrar vista de edición de Términos y Condiciones.
      */
     public function terminosIndex()

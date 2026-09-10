@@ -97,6 +97,33 @@
                         <span class="text-base font-bold font-sans">$ {{ number_format($pedido->total ?? 0, 2, '.', ',') }}</span>
                     </div>
                 </div>
+
+                <!-- Bloque de Facturación Electrónica SAT (FastAPI) -->
+                <div class="pt-4 border-t border-zinc-150">
+                    <div class="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-zinc-500 block">Facturación Electrónica SAT (CFDI 4.0)</span>
+                            @if(($pedido->factura_estado ?? '') === 'facturado')
+                                <span class="text-xs font-extrabold text-emerald-700 mt-0.5 block">¡Factura emitida correctamente (vía FastAPI)!</span>
+                                <span class="text-[11px] font-mono text-zinc-600 block">UUID: {{ $pedido->factura_uuid }}</span>
+                            @elseif(($pedido->factura_estado ?? '') === 'pendiente')
+                                <span class="text-xs font-bold text-amber-700 mt-0.5 block">Factura en proceso de timbrado...</span>
+                            @else
+                                <span class="text-xs text-zinc-600 mt-0.5 block">¿Requieres comprobante fiscal digital para esta compra?</span>
+                            @endif
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            @if(($pedido->factura_estado ?? '') === 'facturado')
+                                <a href="{{ route('facturacion.descargar.pdf', $pedido->id) }}" target="_blank" class="px-3 py-1.5 bg-emerald-700 text-white rounded-lg text-xs font-bold hover:bg-emerald-800 shadow-xs">Descargar PDF</a>
+                                <a href="{{ route('facturacion.descargar.xml', $pedido->id) }}" target="_blank" class="px-3 py-1.5 bg-zinc-800 text-white rounded-lg text-xs font-bold hover:bg-zinc-900 shadow-xs">Descargar XML</a>
+                            @else
+                                <a href="{{ route('facturacion.index', ['pedido_id' => $pedido->id ?? '', 'correo' => $pedido->correo_cliente ?? '']) }}" class="px-4 py-2 bg-[#4c6f4f] text-white rounded-xl text-xs font-bold hover:bg-[#3c583e] shadow-xs">
+                                    Solicitar / Generar Factura
+                                </a>
+                            @endif
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

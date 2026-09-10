@@ -94,6 +94,92 @@
                 </div>
             </div>
 
+            <!-- Gestión de Facturación Electrónica SAT (FastAPI) -->
+            <div class="bg-white border border-zinc-200 rounded p-6 shadow-sm">
+                <div class="flex items-center justify-between pb-3 border-b border-zinc-100 mb-4">
+                    <h2 class="serif-title text-lg font-bold text-zinc-950">Facturación Electrónica SAT (FastAPI)</h2>
+                    @if($pedido->factura_estado === 'facturado')
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">Facturado</span>
+                    @elseif($pedido->factura_estado === 'error')
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300">Error en Timbrado</span>
+                    @elseif($pedido->factura_estado === 'pendiente')
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">Pendiente</span>
+                    @else
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-zinc-100 text-zinc-600 border border-zinc-200">No Solicitada</span>
+                    @endif
+                </div>
+
+                @if($pedido->factura_estado === 'facturado')
+                    <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl space-y-2 text-xs text-emerald-900 font-mono">
+                        <p><strong>Folio Fiscal (UUID):</strong> {{ $pedido->factura_uuid }}</p>
+                        <p><strong>RFC Receptor:</strong> {{ $pedido->rfc_receptor }}</p>
+                        <p><strong>Razón Social:</strong> {{ $pedido->razon_social }}</p>
+                        <div class="pt-2 flex gap-3">
+                            <a href="{{ route('facturacion.descargar.pdf', $pedido->id) }}" target="_blank" class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-sans font-bold rounded shadow-xs">Ver PDF</a>
+                            <a href="{{ route('facturacion.descargar.xml', $pedido->id) }}" target="_blank" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-900 text-white font-sans font-bold rounded shadow-xs">Ver XML</a>
+                        </div>
+                    </div>
+                @else
+                    <form action="{{ route('admin.pedidos.facturar', $pedido->id) }}" method="POST" class="space-y-4 text-xs">
+                        @csrf
+                        @if($pedido->factura_error)
+                            <div class="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded font-mono">
+                                <strong>Error FastAPI:</strong> {{ $pedido->factura_error }}
+                            </div>
+                        @endif
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold text-zinc-700 mb-1">RFC Receptor</label>
+                                <input type="text" name="rfc_receptor" value="{{ old('rfc_receptor', $pedido->rfc_receptor) }}" placeholder="XAXX010101000" maxlength="13" class="w-full bg-zinc-50 border border-zinc-200 rounded px-3 py-2 uppercase font-mono">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-zinc-700 mb-1">Razón Social</label>
+                                <input type="text" name="razon_social" value="{{ old('razon_social', $pedido->razon_social) }}" placeholder="Nombre o Razón Social" class="w-full bg-zinc-50 border border-zinc-200 rounded px-3 py-2 uppercase">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold text-zinc-700 mb-1">Régimen Fiscal</label>
+                                <select name="regimen_fiscal" class="w-full bg-zinc-50 border border-zinc-200 rounded px-3 py-2">
+                                    <option value="601" {{ $pedido->regimen_fiscal === '601' ? 'selected' : '' }}>601 - General de Ley Personas Morales</option>
+                                    <option value="605" {{ $pedido->regimen_fiscal === '605' ? 'selected' : '' }}>605 - Sueldos y Salarios</option>
+                                    <option value="606" {{ $pedido->regimen_fiscal === '606' ? 'selected' : '' }}>606 - Arrendamiento</option>
+                                    <option value="612" {{ $pedido->regimen_fiscal === '612' ? 'selected' : '' }}>612 - Personas Físicas Act. Empresariales</option>
+                                    <option value="616" {{ ($pedido->regimen_fiscal ?? '616') === '616' ? 'selected' : '' }}>616 - Sin obligaciones fiscales</option>
+                                    <option value="626" {{ $pedido->regimen_fiscal === '626' ? 'selected' : '' }}>626 - RESICO</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-zinc-700 mb-1">Uso de CFDI</label>
+                                <select name="uso_cfdi" class="w-full bg-zinc-50 border border-zinc-200 rounded px-3 py-2">
+                                    <option value="G01" {{ $pedido->uso_cfdi === 'G01' ? 'selected' : '' }}>G01 - Adquisición de mercancías</option>
+                                    <option value="G03" {{ ($pedido->uso_cfdi ?? 'G03') === 'G03' ? 'selected' : '' }}>G03 - Gastos en general</option>
+                                    <option value="S01" {{ $pedido->uso_cfdi === 'S01' ? 'selected' : '' }}>S01 - Sin efectos fiscales</option>
+                                    <option value="CP01" {{ $pedido->uso_cfdi === 'CP01' ? 'selected' : '' }}>CP01 - Pagos</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold text-zinc-700 mb-1">CP Fiscal</label>
+                                <input type="text" name="codigo_postal_fiscal" value="{{ old('codigo_postal_fiscal', $pedido->codigo_postal_fiscal ?? $pedido->codigo_postal) }}" maxlength="5" class="w-full bg-zinc-50 border border-zinc-200 rounded px-3 py-2 font-mono">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-zinc-700 mb-1">Correo Envío</label>
+                                <input type="email" name="correo_facturacion" value="{{ old('correo_facturacion', $pedido->correo_facturacion ?? $pedido->correo_cliente) }}" class="w-full bg-zinc-50 border border-zinc-200 rounded px-3 py-2">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-[#4c6f4f] hover:bg-[#3c583e] text-white font-bold text-xs uppercase tracking-wider py-3 rounded transition-colors shadow">
+                            ⚡ Emitir Factura SAT vía FastAPI
+                        </button>
+                    </form>
+                @endif
+            </div>
+
         </div>
 
         <!-- Estado y Gestión (Derecha - Col 1) -->

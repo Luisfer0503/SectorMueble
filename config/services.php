@@ -51,5 +51,11 @@ return [
         'api_url' => env('WHATSAPP_API_URL'),
     ],
 
+    'fastapi_facturacion' => [
+        'url' => env('FASTAPI_FACTURACION_URL', 'http://127.0.0.1:8000'),
+        'key' => env('FASTAPI_FACTURACION_API_KEY', ''),
+        'timeout' => (int) env('FASTAPI_FACTURACION_TIMEOUT', 30),
+    ],
+
 ];
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Producto;
+use App\Models\ProductoDetalle;
 use App\Models\Pedido;
 use App\Models\DetallePedido;
 use App\Models\User;
@@ -515,6 +516,17 @@ class PrincipalController extends Controller
             'codigo_postal' => 'required|string|max:10',
         ]);
 
+        if ($request->has('requiere_factura') && $request->requiere_factura) {
+            $request->validate([
+                'rfc_receptor'         => 'required|string|min:12|max:13',
+                'razon_social'        => 'required|string|max:255',
+                'regimen_fiscal'      => 'required|string',
+                'uso_cfdi'            => 'required|string',
+                'codigo_postal_fiscal' => 'required|string|max:10',
+                'correo_facturacion'  => 'required|email|max:255',
+            ]);
+        }
+
         $cpValido = CatalogoCodigoPostal::where('codigo_postal', trim($request->codigo_postal))->where('activo', true)->exists();
         if (!$cpValido) {
             return redirect()->back()->with('error', 'El Código Postal ' . $request->codigo_postal . ' no cuenta con cobertura para pago en línea. Por favor contacta a un agente de ventas.')->withInput();
@@ -548,19 +560,29 @@ class PrincipalController extends Controller
         try {
             DB::beginTransaction();
 
-            // 1. Crear Pedido
+            $requiereFactura = (bool) $request->has('requiere_factura');
+
+            // 1. Crear Pedido con campos fiscales si requiere factura
             $pedido = Pedido::create([
-                'usuario_id' => auth()->id(), // Se asocia con el usuario autenticado
-                'nombre_cliente' => $request->nombre_cliente,
-                'correo_cliente' => $request->correo_cliente,
-                'telefono_cliente' => $request->telefono_cliente,
-                'direccion_envio' => $request->direccion_envio,
-                'ciudad' => $request->ciudad,
-                'codigo_postal' => $request->codigo_postal,
-                'total' => $total,
-                'cupon_codigo' => $cuponCodigo,
-                'descuento' => $descuento,
-                'estado' => 'pendiente',
+                'usuario_id'           => auth()->id(), // Se asocia con el usuario autenticado
+                'nombre_cliente'       => $request->nombre_cliente,
+                'correo_cliente'       => $request->correo_cliente,
+                'telefono_cliente'     => $request->telefono_cliente,
+                'direccion_envio'      => $request->direccion_envio,
+                'ciudad'               => $request->ciudad,
+                'codigo_postal'        => $request->codigo_postal,
+                'total'                => $total,
+                'cupon_codigo'         => $cuponCodigo,
+                'descuento'            => $descuento,
+                'estado'               => 'pendiente',
+                'requiere_factura'     => $requiereFactura,
+                'rfc_receptor'         => $requiereFactura ? strtoupper(trim($request->rfc_receptor)) : null,
+                'razon_social'        => $requiereFactura ? mb_strtoupper(trim($request->razon_social)) : null,
+                'regimen_fiscal'      => $requiereFactura ? $request->regimen_fiscal : null,
+                'uso_cfdi'            => $requiereFactura ? $request->uso_cfdi : null,
+                'codigo_postal_fiscal' => $requiereFactura ? trim($request->codigo_postal_fiscal) : null,
+                'correo_facturacion'  => $requiereFactura ? trim($request->correo_facturacion) : null,
+                'factura_estado'       => $requiereFactura ? 'pendiente' : 'no_solicitada',
             ]);
 
             // 2. Crear Detalles y reducir Stock
@@ -587,6 +609,13 @@ class PrincipalController extends Controller
                         $det->decrement('stock', $item['cantidad']);
                     }
                 }
+            }
+
+            DB::commit();
+
+            // 3. Emitir Factura vía FastAPI si fue solicitada
+            if ($pedido->requiere_factura) {
+                app(\App\Services\FacturacionFastApiService::class)->generarFactura($pedido);
             }
 
             // Vaciar carrito y cupón en sesión y base de datos
@@ -618,6 +647,17 @@ class PrincipalController extends Controller
             'codigo_postal'    => 'required|string|max:10',
         ]);
 
+        if ($request->has('requiere_factura') && $request->requiere_factura) {
+            $request->validate([
+                'rfc_receptor'         => 'required|string|min:12|max:13',
+                'razon_social'        => 'required|string|max:255',
+                'regimen_fiscal'      => 'required|string',
+                'uso_cfdi'            => 'required|string',
+                'codigo_postal_fiscal' => 'required|string|max:10',
+                'correo_facturacion'  => 'required|email|max:255',
+            ]);
+        }
+
         $cpValido = CatalogoCodigoPostal::where('codigo_postal', trim($request->codigo_postal))->where('activo', true)->exists();
         if (!$cpValido) {
             return response()->json([
@@ -635,14 +675,21 @@ class PrincipalController extends Controller
             ], 422);
         }
 
-        // Almacenar datos temporales de entrega en sesión
+        // Almacenar datos temporales de entrega y facturación en sesión
         session()->put('datos_envio_checkout', [
-            'nombre_cliente'   => $request->nombre_cliente,
-            'correo_cliente'   => $request->correo_cliente,
-            'telefono_cliente' => $request->telefono_cliente,
-            'direccion_envio'  => $request->direccion_envio,
-            'ciudad'           => $request->ciudad,
-            'codigo_postal'    => $request->codigo_postal,
+            'nombre_cliente'       => $request->nombre_cliente,
+            'correo_cliente'       => $request->correo_cliente,
+            'telefono_cliente'     => $request->telefono_cliente,
+            'direccion_envio'      => $request->direccion_envio,
+            'ciudad'               => $request->ciudad,
+            'codigo_postal'        => $request->codigo_postal,
+            'requiere_factura'     => (bool) $request->has('requiere_factura'),
+            'rfc_receptor'         => $request->has('requiere_factura') ? strtoupper(trim($request->rfc_receptor)) : null,
+            'razon_social'        => $request->has('requiere_factura') ? mb_strtoupper(trim($request->razon_social)) : null,
+            'regimen_fiscal'      => $request->has('requiere_factura') ? $request->regimen_fiscal : null,
+            'uso_cfdi'            => $request->has('requiere_factura') ? $request->uso_cfdi : null,
+            'codigo_postal_fiscal' => $request->has('requiere_factura') ? trim($request->codigo_postal_fiscal) : null,
+            'correo_facturacion'  => $request->has('requiere_factura') ? trim($request->correo_facturacion) : null,
         ]);
 
         $stripeSecret = config('services.stripe.secret');
@@ -755,18 +802,28 @@ class PrincipalController extends Controller
             $envio = ($subtotal >= 10000) ? 0 : 400.00;
             $total = max(0, $subtotal - $descuento) + $envio;
 
+            $requiereFactura = !empty($datosEnvio['requiere_factura']);
+
             $pedido = Pedido::create([
-                'usuario_id'       => auth()->id(),
-                'nombre_cliente'   => $datosEnvio['nombre_cliente'] ?? auth()->user()->name,
-                'correo_cliente'   => $datosEnvio['correo_cliente'] ?? auth()->user()->email,
-                'telefono_cliente' => $datosEnvio['telefono_cliente'] ?? '0000000000',
-                'direccion_envio'  => $datosEnvio['direccion_envio'] ?? 'Dirección registrada',
-                'ciudad'           => $datosEnvio['ciudad'] ?? 'Puebla',
-                'codigo_postal'    => $datosEnvio['codigo_postal'] ?? (auth()->user()->codigo_postal ?? '72000'),
-                'total'            => $total,
-                'cupon_codigo'     => $cuponCodigo,
-                'descuento'        => $descuento,
-                'estado'           => 'completado',
+                'usuario_id'           => auth()->id(),
+                'nombre_cliente'       => $datosEnvio['nombre_cliente'] ?? auth()->user()->name,
+                'correo_cliente'       => $datosEnvio['correo_cliente'] ?? auth()->user()->email,
+                'telefono_cliente'     => $datosEnvio['telefono_cliente'] ?? '0000000000',
+                'direccion_envio'      => $datosEnvio['direccion_envio'] ?? 'Dirección registrada',
+                'ciudad'               => $datosEnvio['ciudad'] ?? 'Puebla',
+                'codigo_postal'        => $datosEnvio['codigo_postal'] ?? (auth()->user()->codigo_postal ?? '72000'),
+                'total'                => $total,
+                'cupon_codigo'         => $cuponCodigo,
+                'descuento'            => $descuento,
+                'estado'               => 'completado',
+                'requiere_factura'     => $requiereFactura,
+                'rfc_receptor'         => $requiereFactura ? ($datosEnvio['rfc_receptor'] ?? null) : null,
+                'razon_social'        => $requiereFactura ? ($datosEnvio['razon_social'] ?? null) : null,
+                'regimen_fiscal'      => $requiereFactura ? ($datosEnvio['regimen_fiscal'] ?? null) : null,
+                'uso_cfdi'            => $requiereFactura ? ($datosEnvio['uso_cfdi'] ?? null) : null,
+                'codigo_postal_fiscal' => $requiereFactura ? ($datosEnvio['codigo_postal_fiscal'] ?? null) : null,
+                'correo_facturacion'  => $requiereFactura ? ($datosEnvio['correo_facturacion'] ?? null) : null,
+                'factura_estado'       => $requiereFactura ? 'pendiente' : 'no_solicitada',
             ]);
 
             foreach ($carrito as $id => $item) {
@@ -795,6 +852,11 @@ class PrincipalController extends Controller
             }
 
             DB::commit();
+
+            // Emitir Factura vía FastAPI si fue solicitada
+            if ($pedido->requiere_factura) {
+                app(\App\Services\FacturacionFastApiService::class)->generarFactura($pedido);
+            }
 
             // Vaciar carrito en sesión y base de datos
             session()->forget('carrito');

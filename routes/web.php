@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\FacturacionController;
 use Illuminate\Support\Facades\Route;
 
 // Ruta de Inicio
@@ -73,6 +74,13 @@ Route::post('/verificar-cobertura-cp', [PrincipalController::class, 'verificarCo
 // Ruta para enviar solicitud de atención a ventas por API
 Route::post('/carrito/contactar-agente', [PrincipalController::class, 'contactarAgenteVentasApi'])->name('carrito.contactar_agente');
 
+// Rutas del Portal de Facturación Electrónica SAT (FastAPI)
+Route::get('/facturacion', [FacturacionController::class, 'mostrarFormulario'])->name('facturacion.index');
+Route::post('/facturacion/buscar', [FacturacionController::class, 'buscarPedido'])->name('facturacion.buscar');
+Route::post('/facturacion/solicitar', [FacturacionController::class, 'solicitarFactura'])->name('facturacion.solicitar');
+Route::get('/facturacion/descargar-pdf/{id}', [FacturacionController::class, 'descargarPdf'])->name('facturacion.descargar.pdf');
+Route::get('/facturacion/descargar-xml/{id}', [FacturacionController::class, 'descargarXml'])->name('facturacion.descargar.xml');
+
 
 
 // --- RUTAS DE ADMINISTRACIÓN (Protegidas por verificación de rol de administrador) ---
@@ -114,10 +122,11 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::post('/zapatos/actualizar/{id}', [AdminController::class, 'zapatosActualizar'])->name('admin.zapatos.actualizar');
     Route::get('/zapatos/eliminar/{id}', [AdminController::class, 'zapatosEliminar'])->name('admin.zapatos.eliminar');
 
-    // Gestión y Seguimiento de Pedidos
+    // Gestión y Seguimiento de Pedidos y Facturación FastAPI
     Route::get('/pedidos', [AdminController::class, 'pedidosIndex'])->name('admin.pedidos');
     Route::get('/pedidos/detalle/{id}', [AdminController::class, 'pedidosDetalle'])->name('admin.pedidos.detalle');
     Route::post('/pedidos/actualizar-estado/{id}', [AdminController::class, 'pedidosActualizarEstado'])->name('admin.pedidos.actualizar_estado');
+    Route::post('/pedidos/facturar/{id}', [AdminController::class, 'pedidosEmitirFacturaFastApi'])->name('admin.pedidos.facturar');
 
     // Edición de Términos y Condiciones
     Route::get('/terminos', [AdminController::class, 'terminosIndex'])->name('admin.terminos');
