@@ -89,7 +89,7 @@
 
 
     <!-- ── 3. BANNER DE OFERTA FLASH ── -->
-    <div class="bg-[#C85A32] py-12 sm:py-16 text-white border-y border-white/20 relative overflow-hidden shadow-lg">
+    <div class="bg-[#88432A] py-12 sm:py-16 text-white border-y border-white/20 relative overflow-hidden shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
             
             <div class="text-center lg:text-left max-w-xl">
@@ -107,23 +107,23 @@
                         Copiar Cupón
                     </button>
                 </div>
-                <p class="mt-2 text-[11px] text-white/80 italic font-normal">* Aplican términos y condiciones, no acumulable con otras promociones.</p>
+                <p class="mt-2 text-[11px] text-white/80 italic font-normal">* Aplican Términos y Condiciones, no acumulable con otras promociones.</p>
             </div>
 
             <!-- Ticker de Reloj / Cuenta Regresiva Claro -->
             <div class="flex items-center space-x-3 sm:space-x-4 text-center">
                 <div class="bg-white/95 border border-white/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
-                    <span id="flash-hours" class="block text-2xl sm:text-4xl font-extrabold text-[#C85A32] font-mono">08</span>
+                    <span id="flash-hours" class="block text-2xl sm:text-4xl font-extrabold text-[#88432A] font-mono">08</span>
                     <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600">Horas</span>
                 </div>
                 <span class="text-2xl sm:text-4xl font-bold text-white animate-pulse">:</span>
                 <div class="bg-white/95 border border-white/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
-                    <span id="flash-minutes" class="block text-2xl sm:text-4xl font-extrabold text-[#C85A32] font-mono">42</span>
+                    <span id="flash-minutes" class="block text-2xl sm:text-4xl font-extrabold text-[#88432A] font-mono">42</span>
                     <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600">Minutos</span>
                 </div>
                 <span class="text-2xl sm:text-4xl font-bold text-white animate-pulse">:</span>
                 <div class="bg-white/95 border border-white/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
-                    <span id="flash-seconds" class="block text-2xl sm:text-4xl font-extrabold text-[#C85A32] font-mono">19</span>
+                    <span id="flash-seconds" class="block text-2xl sm:text-4xl font-extrabold text-[#88432A] font-mono">19</span>
                     <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600">Segundos</span>
                 </div>
             </div>
@@ -144,7 +144,7 @@
             <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Salas -->
                 <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
-                    <img src="{{ asset('inicio2.png') }}" alt="Salas" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                    <img src="{{ asset('SALAS.png') }}" alt="Salas" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
                         <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Salas</span>
@@ -214,12 +214,12 @@
                     @endphp
                     @if($prod)
                         <!-- Hotspot {{ $prod->nombre }} -->
-                        <div class="absolute z-20 group" style="top: {{ $hs['top'] }}; left: {{ $hs['left'] }};">
-                            <button type="button" aria-label="Ver {{ $prod->nombre }}" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 transition-transform border-2 border-white cursor-pointer">
+                        <div class="absolute z-20 group" tabindex="0" style="top: {{ $hs['top'] }}; left: {{ $hs['left'] }};">
+                            <button type="button" aria-label="Ver {{ $prod->nombre }}" class="w-9 h-9 rounded-full bg-[#88674B] text-white flex items-center justify-center font-bold text-lg shadow-2xl animate-pulse hover:scale-125 focus:scale-125 transition-transform border-2 border-white cursor-pointer focus:outline-none">
                                 +
                             </button>
-                            <!-- Popover Card Clara -->
-                            <div class="absolute bottom-12 left-1/2 -translate-x-1/2 w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 translate-y-2">
+                            <!-- Popover Card Clara (Centrada en Celular, Flotante en Desktop) -->
+                            <div class="max-sm:fixed max-sm:bottom-6 max-sm:left-4 max-sm:right-4 max-sm:w-auto max-sm:max-w-xs max-sm:mx-auto max-sm:translate-x-0 max-sm:z-50 sm:absolute sm:bottom-12 sm:left-1/2 sm:-translate-x-1/2 sm:w-64 bg-white/95 backdrop-blur-md border border-amber-900/15 p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-all duration-300 transform group-hover:translate-y-0 group-focus-within:translate-y-0 translate-y-2">
                                 <span class="text-[10px] font-extrabold text-[#88674B] uppercase tracking-widest">{{ $prod->categoria }}</span>
                                 <h4 class="text-sm font-bold text-zinc-950 mt-1 line-clamp-1">{{ $prod->nombre }}</h4>
                                 

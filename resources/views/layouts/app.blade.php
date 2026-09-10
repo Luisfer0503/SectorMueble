@@ -259,7 +259,7 @@
                         </a>
                         
                         <!-- Submenú flotante compacto -->
-                        <div class="absolute top-full left-0 mt-1.5 w-64 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                        <div class="absolute top-full left-0 mt-1.5 w-64 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2 before:absolute before:-top-3 before:left-0 before:w-full before:h-3 before:content-['']">
                             <!-- Opción para Ver Todos los productos de esta categoría -->
                             <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-extrabold text-white bg-[#88674B]/60 hover:bg-[#88674B] rounded-xl transition-colors mb-2 border border-[#88674B] shadow-xs">
                                 <span>Ver todo en Sala</span>
@@ -295,7 +295,7 @@
                             </svg>
                         </a>
 
-                        <div class="absolute top-full left-0 mt-1.5 w-60 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                        <div class="absolute top-full left-0 mt-1.5 w-60 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2 before:absolute before:-top-3 before:left-0 before:w-full before:h-3 before:content-['']">
                             <!-- Opción para Ver Todos los productos de esta categoría -->
                             <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-extrabold text-white bg-[#88674B]/60 hover:bg-[#88674B] rounded-xl transition-colors mb-2 border border-[#88674B] shadow-xs">
                                 <span>Ver todo en Recámara</span>
@@ -327,7 +327,7 @@
                             </svg>
                         </a>
 
-                        <div class="absolute top-full left-0 mt-1.5 w-56 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                        <div class="absolute top-full left-0 mt-1.5 w-56 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2 before:absolute before:-top-3 before:left-0 before:w-full before:h-3 before:content-['']">
                             <!-- Opción para Ver Todos los productos de esta categoría -->
                             <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-extrabold text-white bg-[#88674B]/60 hover:bg-[#88674B] rounded-xl transition-colors mb-2 border border-[#88674B] shadow-xs">
                                 <span>Ver todo en Comedor</span>
@@ -388,10 +388,7 @@
                 <!-- 1. SALAS -->
                 <div class="border border-white/20 rounded-2xl overflow-hidden bg-black/15 transition-all">
                     <button type="button" onclick="toggleMobileAccordion('salas')" class="w-full flex items-center justify-between p-3.5 text-xs font-extrabold uppercase tracking-wider text-white hover:bg-white/10 transition-colors cursor-pointer">
-                        <span class="flex items-center space-x-2">
-                            <span>🛋️</span>
-                            <span>Salas</span>
-                        </span>
+                        <span>Salas</span>
                         <svg id="acc-icon-salas" class="w-4 h-4 text-white/80 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -425,10 +422,7 @@
                 <!-- 2. RECÁMARAS -->
                 <div class="border border-white/20 rounded-2xl overflow-hidden bg-black/15 transition-all">
                     <button type="button" onclick="toggleMobileAccordion('recamaras')" class="w-full flex items-center justify-between p-3.5 text-xs font-extrabold uppercase tracking-wider text-white hover:bg-white/10 transition-colors cursor-pointer">
-                        <span class="flex items-center space-x-2">
-                            <span>🛏️</span>
-                            <span>Recámaras</span>
-                        </span>
+                        <span>Recámaras</span>
                         <svg id="acc-icon-recamaras" class="w-4 h-4 text-white/80 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -458,10 +452,7 @@
                 <!-- 3. COMEDOR -->
                 <div class="border border-white/20 rounded-2xl overflow-hidden bg-black/15 transition-all">
                     <button type="button" onclick="toggleMobileAccordion('comedor')" class="w-full flex items-center justify-between p-3.5 text-xs font-extrabold uppercase tracking-wider text-white hover:bg-white/10 transition-colors cursor-pointer">
-                        <span class="flex items-center space-x-2">
-                            <span>🪑</span>
-                            <span>Comedor</span>
-                        </span>
+                        <span>Comedor</span>
                         <svg id="acc-icon-comedor" class="w-4 h-4 text-white/80 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -487,10 +478,7 @@
                 <!-- 4. CATÁLOGO COMPLETO -->
                 <div class="border border-white/20 rounded-2xl overflow-hidden bg-black/15 transition-all">
                     <a href="{{ route('catalogo') }}" class="flex items-center justify-between p-3.5 text-xs font-extrabold uppercase tracking-wider text-white hover:bg-white/10 transition-colors">
-                        <span class="flex items-center space-x-2">
-                            <span>✨</span>
-                            <span>Catálogo Completo</span>
-                        </span>
+                        <span>Catálogo Completo</span>
                         <svg class="w-4 h-4 text-white/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                         </svg>
