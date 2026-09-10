@@ -223,16 +223,16 @@
                         </div>
                     @else
                         <div class="flex items-center space-x-1.5 sm:space-x-2 border-l border-zinc-200 pl-2 sm:pl-3">
-                            <!-- Botón Iniciar Sesión -->
-                            <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-amber-950 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 px-2.5 sm:px-3.5 py-1.5 rounded-xl transition-all shadow-xs whitespace-nowrap">
-                                <svg class="w-3.5 h-3.5 text-[#88674B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <!-- Botón Iniciar Sesión (Beige) -->
+                            <a href="{{ route('login') }}" class="flex items-center space-x-1 text-xs font-bold text-[#5C4033] bg-[#F5EBE0] hover:bg-[#E8DCCF] border border-[#D9C5B2] px-2.5 sm:px-3.5 py-1.5 rounded-xl transition-all shadow-xs whitespace-nowrap">
+                                <svg class="w-3.5 h-3.5 text-[#5C4033]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                                 <span>Iniciar Sesión</span>
                             </a>
 
-                            <!-- Botón Registro (Taupe #88674B) -->
-                            <a href="{{ route('registro') }}" class="inline-flex items-center justify-center text-xs font-bold text-white bg-[#88674B] hover:bg-[#74563C] px-3.5 py-1.5 rounded-xl transition-all shadow-xs hover:shadow whitespace-nowrap border border-white/20">
+                            <!-- Botón Registro (Verde Bosque #4c6f4f como Carrito) -->
+                            <a href="{{ route('registro') }}" class="inline-flex items-center justify-center text-xs font-bold text-white bg-[#4c6f4f] hover:bg-[#3c583e] px-3.5 py-1.5 rounded-xl transition-all shadow-xs hover:shadow whitespace-nowrap border border-white/20">
                                 <span>Registro</span>
                             </a>
                         </div>
@@ -247,15 +247,22 @@
                 <nav class="flex items-center space-x-8">
                     <!-- SALA con Submenú Desplegable Estilo Marca -->
                     <div class="relative group">
-                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
+                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
                             <span>Sala</span>
                             <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#88674B] transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
-                        </button>
+                        </a>
                         
                         <!-- Submenú flotante compacto -->
                         <div class="absolute top-full left-0 mt-1.5 w-64 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                            <!-- Opción para Ver Todos los productos de esta categoría -->
+                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-extrabold text-white bg-[#88674B]/60 hover:bg-[#88674B] rounded-xl transition-colors mb-2 border border-[#88674B] shadow-xs">
+                                <span>Ver todo en Sala</span>
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </a>
                             <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
                                 <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Sofás y salas modulares</span>
@@ -277,14 +284,21 @@
 
                     <!-- RECÁMARA con Submenú Desplegable Estilo Marca -->
                     <div class="relative group">
-                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
+                        <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
                             <span>Recámara</span>
                             <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#88674B] transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
-                        </button>
+                        </a>
 
                         <div class="absolute top-full left-0 mt-1.5 w-60 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                            <!-- Opción para Ver Todos los productos de esta categoría -->
+                            <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-extrabold text-white bg-[#88674B]/60 hover:bg-[#88674B] rounded-xl transition-colors mb-2 border border-[#88674B] shadow-xs">
+                                <span>Ver todo en Recámara</span>
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </a>
                             <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
                                 <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Camas</span>
@@ -302,14 +316,21 @@
 
                     <!-- COMEDOR con Submenú Desplegable Estilo Marca -->
                     <div class="relative group">
-                        <button class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
+                        <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
                             <span>Comedor</span>
                             <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#88674B] transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
-                        </button>
+                        </a>
 
                         <div class="absolute top-full left-0 mt-1.5 w-56 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2">
+                            <!-- Opción para Ver Todos los productos de esta categoría -->
+                            <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-extrabold text-white bg-[#88674B]/60 hover:bg-[#88674B] rounded-xl transition-colors mb-2 border border-[#88674B] shadow-xs">
+                                <span>Ver todo en Comedor</span>
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </a>
                             <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
                                 <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Sillas</span>
@@ -327,8 +348,8 @@
                     </a>
                 </nav>
 
-                <!-- Botón de Código Postal (CP) con Fondo Azul Media Noche #1E2440 -->
-                <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1.5 text-xs font-bold text-white bg-[#1E2440] hover:bg-[#151a30] border border-white/20 px-3.5 py-2 rounded-full transition-all shadow-md group cursor-pointer" title="Consultar o cambiar tu Código Postal">
+                <!-- Botón de Código Postal (CP) con Fondo Azul Media Noche Semi-transparente #1E2440 -->
+                <button type="button" onclick="abrirModalCP()" class="inline-flex items-center space-x-1.5 text-xs font-bold text-white bg-[#1E2440]/80 hover:bg-[#1E2440] backdrop-blur-md border border-white/20 px-3.5 py-2 rounded-full transition-all shadow-md group cursor-pointer" title="Consultar o cambiar tu Código Postal">
                     <svg class="w-3.5 h-3.5 text-white shrink-0 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -364,8 +385,8 @@
                 <a href="{{ route('catalogo') }}" class="p-3 bg-[#1E2440] hover:bg-[#151a30] rounded-xl text-white shadow-md border border-white/20 transition-colors">Todo el Catálogo</a>
             </div>
 
-            <!-- Botón CP Móvil (Fondo #1E2440) -->
-            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-[#1E2440] hover:bg-[#151a30] text-white rounded-full border border-white/20 font-bold text-xs shadow-md">
+            <!-- Botón CP Móvil (Fondo Transparente) -->
+            <button type="button" onclick="toggleMobileMenu(); abrirModalCP();" class="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-[#1E2440]/80 hover:bg-[#1E2440] backdrop-blur-md text-white rounded-full border border-white/20 font-bold text-xs shadow-md">
                 <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -380,8 +401,8 @@
                 </div>
             @else
                 <div class="pt-2 border-t border-white/20 flex items-center space-x-2">
-                    <a href="{{ route('login') }}" class="w-1/2 text-center py-2.5 bg-white text-[#C49A6C] hover:bg-zinc-100 rounded-xl font-extrabold text-xs shadow-xs transition-colors">Iniciar Sesión</a>
-                    <a href="{{ route('registro') }}" class="w-1/2 text-center py-2.5 bg-[#1E2440] hover:bg-[#151a30] text-white rounded-xl font-bold text-xs shadow-xs border border-white/20 transition-colors">Registro</a>
+                    <a href="{{ route('login') }}" class="w-1/2 text-center py-2.5 bg-[#F5EBE0] text-[#5C4033] hover:bg-[#E8DCCF] border border-[#D9C5B2] rounded-xl font-extrabold text-xs shadow-xs transition-colors">Iniciar Sesión</a>
+                    <a href="{{ route('registro') }}" class="w-1/2 text-center py-2.5 bg-[#4c6f4f] hover:bg-[#3c583e] text-white rounded-xl font-bold text-xs shadow-xs border border-white/20 transition-colors">Registro</a>
                 </div>
             @endauth
         </div>
@@ -501,12 +522,11 @@
                 <!-- Col 2: Categories -->
                 <div>
                     <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Categorías</h3>
-                    <ul class="mt-4 space-y-2 text-sm">
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-[#FAF3E0] transition-colors">Salón y Estancia</a></li>
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-[#FAF3E0] transition-colors">Dormitorio y Cunas</a></li>
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="hover:text-[#FAF3E0] transition-colors">Comedor y Cocina</a></li>
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Oficina']) }}" class="hover:text-[#FAF3E0] transition-colors">Oficina y Despacho</a></li>
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Exterior']) }}" class="hover:text-[#FAF3E0] transition-colors">Jardín y Exterior</a></li>
+                    <ul class="mt-4 space-y-2.5 text-sm">
+                        <li><a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-[#FAF3E0] transition-colors">Salas</a></li>
+                        <li><a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-[#FAF3E0] transition-colors">Recámaras</a></li>
+                        <li><a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="hover:text-[#FAF3E0] transition-colors">Comedor</a></li>
+                        <li class="pt-1.5"><a href="{{ route('catalogo') }}" class="text-[#C49A6C] hover:text-white font-bold transition-colors">Ver Todo el Catálogo &rarr;</a></li>
                     </ul>
                 </div>
 

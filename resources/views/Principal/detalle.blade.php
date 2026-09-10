@@ -59,7 +59,7 @@
                 <div class="flex items-center space-x-3 pt-1">
                     <button type="button" 
                             onclick="setMainProductPhoto('{{ $producto->imagen_url }}', this)" 
-                            class="photo-thumb-btn border-2 border-amber-800 rounded-xl p-1.5 w-16 h-16 bg-zinc-50 flex items-center justify-center shadow-sm overflow-hidden focus:outline-none transition-all cursor-pointer hover:scale-105"
+                            class="photo-thumb-btn border-2 border-[#5C4033] rounded-xl p-1.5 w-16 h-16 bg-zinc-50 flex items-center justify-center shadow-sm overflow-hidden focus:outline-none transition-all cursor-pointer hover:scale-105"
                             title="Foto Principal">
                         <img src="{{ $producto->imagen_url }}" alt="Foto Principal" class="max-w-full max-h-full object-contain">
                     </button>
@@ -75,7 +75,7 @@
 
                     <button type="button" 
                             onclick="openDimensionModal(document.getElementById('main-product-image').src, '{{ $producto->nombre }}')" 
-                            class="text-xs font-bold text-amber-850 hover:text-amber-700 flex items-center space-x-1.5 border border-amber-200 bg-amber-50/80 px-3.5 py-2.5 rounded-xl transition-colors cursor-pointer ml-auto">
+                            class="text-xs font-bold text-[#5C4033] hover:text-[#4A382A] flex items-center space-x-1.5 border border-[#D9C5B2] bg-[#F5EBE0] hover:bg-[#E8DCCF] px-3.5 py-2.5 rounded-xl transition-colors cursor-pointer ml-auto">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
                         </svg>
@@ -94,7 +94,7 @@
                             <span class="text-sm">📦</span>
                             <span class="text-xs font-bold uppercase tracking-wider text-zinc-700">Subartículos y Acabados</span>
                         </div>
-                        <span id="selected-color-label" class="text-xs font-bold text-amber-900 bg-amber-50 border border-amber-200/80 px-2.5 py-0.5 rounded-full">
+                        <span id="selected-color-label" class="text-xs font-bold text-[#5C4033] bg-[#F5EBE0] border border-[#D9C5B2] px-2.5 py-0.5 rounded-full">
                             {{ $primerDetalle->nombre ?? 'Original / Natural' }}
                         </span>
                     </div>
@@ -109,17 +109,17 @@
                                     data-stock="{{ $det->stock }}"
                                     data-precio="{{ $det->precio ?? $producto->precio }}"
                                     onclick="switchSubArticulo('{{ $det->id }}')" 
-                                    class="subarticulo-btn flex flex-col items-center p-2.5 rounded-xl border-2 {{ $idx === 0 ? 'border-amber-800 bg-amber-50/80 ring-2 ring-amber-800/30' : 'border-zinc-200 bg-white' }} transition-all cursor-pointer hover:shadow-md group">
+                                    class="subarticulo-btn flex flex-col items-center p-2.5 rounded-xl border-2 {{ $idx === 0 ? 'border-[#5C4033] bg-[#F5EBE0] ring-2 ring-[#88674B]/30' : 'border-zinc-200 bg-white' }} transition-all cursor-pointer hover:shadow-md group">
                                 
                                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg shadow-sm border border-zinc-200 overflow-hidden bg-zinc-100 group-hover:scale-105 transition-transform flex items-center justify-center">
                                     @if(!empty($det->imagen))
                                         <img src="{{ $det->imagen_url }}" alt="{{ $det->nombre }}" class="w-full h-full object-cover">
                                     @else
-                                        <span class="text-xs font-bold text-amber-850">🪵</span>
+                                        <span class="text-xs font-bold text-[#5C4033]">🪵</span>
                                     @endif
                                 </div>
                                 <span class="text-[11px] font-bold text-zinc-900 mt-1.5 truncate max-w-full text-center leading-tight">{{ $det->nombre }}</span>
-                                <span class="text-[9px] font-extrabold text-amber-900 mt-0.5 font-sans">$ {{ number_format((float)($det->precio ?? $producto->precio), 2, '.', ',') }}</span>
+                                <span class="text-[9px] font-extrabold text-[#5C4033] mt-0.5 font-sans">$ {{ number_format((float)($det->precio ?? $producto->precio), 2, '.', ',') }}</span>
                             </button>
                         @endforeach
                     </div>
@@ -136,7 +136,7 @@
                     <!-- Subartículo Seleccionado (Información de producto_detalles) -->
                     <div class="mt-2.5 flex items-center space-x-2">
                         <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Subartículo:</span>
-                        <span id="selected-subarticulo-nombre" class="text-xs font-extrabold text-amber-900 bg-amber-50 border border-amber-200/80 px-3 py-1 rounded-full shadow-2xs">
+                        <span id="selected-subarticulo-nombre" class="text-xs font-extrabold text-[#5C4033] bg-[#F5EBE0] border border-[#D9C5B2] px-3 py-1 rounded-full shadow-2xs">
                             {{ $primerDetalle->nombre ?? $producto->nombre }}
                         </span>
                     </div>
@@ -328,21 +328,7 @@
                     @endif
                 </div>
 
-                <!-- Small Trust Features -->
-                <div class="mt-8 grid grid-cols-2 gap-4 border-t border-zinc-200 pt-6 text-center text-[10px] text-zinc-500 font-semibold uppercase tracking-wider">
-                    <div class="flex flex-col items-center">
-                        <svg class="h-5 w-5 text-amber-800 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <span>Garantía de 3 años</span>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <svg class="h-5 w-5 text-amber-800 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
-                        <span>100% Protegido</span>
-                    </div>
-                </div>
+
 
             </div>
         </div>
@@ -438,11 +424,11 @@
             }
             if (btn) {
                 document.querySelectorAll('.photo-thumb-btn').forEach(b => {
-                    b.classList.remove('border-amber-800', 'ring-2', 'ring-amber-800/30');
+                    b.classList.remove('border-amber-800', 'border-[#5C4033]', 'ring-2', 'ring-amber-800/30', 'ring-[#88674B]/30');
                     b.classList.add('border-zinc-200');
                 });
                 btn.classList.remove('border-zinc-200');
-                btn.classList.add('border-amber-800', 'ring-2', 'ring-amber-800/30');
+                btn.classList.add('border-[#5C4033]', 'ring-2', 'ring-[#88674B]/30');
             }
         }
 
@@ -558,12 +544,12 @@
 
             // Actualizar apariencia visual de botones de subartículos
             document.querySelectorAll('.subarticulo-btn').forEach(b => {
-                b.classList.remove('border-amber-800', 'bg-amber-50/80', 'ring-2', 'ring-amber-800/30');
+                b.classList.remove('border-amber-800', 'bg-amber-50/80', 'border-[#5C4033]', 'bg-[#F5EBE0]', 'ring-2', 'ring-amber-800/30', 'ring-[#88674B]/30');
                 b.classList.add('border-zinc-200', 'bg-white');
             });
 
             btn.classList.remove('border-zinc-200', 'bg-white');
-            btn.classList.add('border-amber-800', 'bg-amber-50/80', 'ring-2', 'ring-amber-800/30');
+            btn.classList.add('border-[#5C4033]', 'bg-[#F5EBE0]', 'ring-2', 'ring-[#88674B]/30');
         }
 
         function switchProductAcabado(key) {
@@ -604,12 +590,12 @@
 
             // Actualizar apariencia visual de botones de acabado
             document.querySelectorAll('.color-swatch-btn').forEach(b => {
-                b.classList.remove('border-amber-800', 'bg-amber-50/80', 'ring-2', 'ring-amber-800/30');
+                b.classList.remove('border-amber-800', 'bg-amber-50/80', 'border-[#5C4033]', 'bg-[#F5EBE0]', 'ring-2', 'ring-amber-800/30', 'ring-[#88674B]/30');
                 b.classList.add('border-zinc-200', 'bg-white');
             });
 
             btn.classList.remove('border-zinc-200', 'bg-white');
-            btn.classList.add('border-amber-800', 'bg-amber-50/80', 'ring-2', 'ring-amber-800/30');
+            btn.classList.add('border-[#5C4033]', 'bg-[#F5EBE0]', 'ring-2', 'ring-[#88674B]/30');
         }
 
         // Retrocompatibilidad

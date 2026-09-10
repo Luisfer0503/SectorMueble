@@ -140,72 +140,45 @@
                 <p class="mt-3 text-zinc-600 text-sm sm:text-base">Amuebla cada ambiente con piezas concebidas para coordinar perfectamente entre sí.</p>
             </div>
 
-            <div class="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                <!-- Salón -->
+            <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Salas -->
                 <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
-                    <img src="{{ asset('inicio2.png') }}" alt="Salón" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                    <img src="{{ asset('inicio2.png') }}" alt="Salas" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
-                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Salón</span>
-                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Salón</h3>
+                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Salas</span>
+                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Salas</h3>
                         <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#FAF3E0] group-hover:text-white group-hover:translate-x-1.5 transition-all">
-                            Explorar catálogo &rarr;
+                            Explorar salas &rarr;
                         </span>
                     </div>
                 </a>
 
-                <!-- Recámara -->
-                <a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
-                    <img src="https://images.unsplash.com/photo-1540518614846-7eded433c457?q=80&w=700" alt="Dormitorio" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                <!-- Recámaras -->
+                <a href="{{ route('catalogo', ['categoria' => 'Dormihttpstorio']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
+                    <img src="{{ asset('recamara.png') }}" alt="Recámaras" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
-                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Recámara</span>
-                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Recámara</h3>
+                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Recámaras</span>
+                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Recámaras</h3>
                         <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#FAF3E0] group-hover:text-white group-hover:translate-x-1.5 transition-all">
-                            Explorar catálogo &rarr;
+                            Explorar recámaras &rarr;
                         </span>
                     </div>
                 </a>
 
                 <!-- Comedor -->
                 <a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
-                    <img src="https://images.unsplash.com/photo-1617806118233-18e1db207f62?q=80&w=700" alt="Comedor" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                    <img src="{{ asset('comedor.png') }}" alt="Comedor" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
                         <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Comedor</span>
                         <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Comedor</h3>
                         <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#FAF3E0] group-hover:text-white group-hover:translate-x-1.5 transition-all">
-                            Explorar catálogo &rarr;
+                            Explorar comedor &rarr;
                         </span>
                     </div>
                 </a>
-
-                <!-- Oficina -->
-                <a href="{{ route('catalogo', ['categoria' => 'Oficina']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
-                    <img src="https://images.unsplash.com/photo-1505797149-43b0069ec26b?q=80&w=700" alt="Oficina" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
-                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Oficina</span>
-                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Oficina</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#FAF3E0] group-hover:text-white group-hover:translate-x-1.5 transition-all">
-                            Explorar catálogo &rarr;
-                        </span>
-                    </div>
-                </a>
-
-                <!-- Exterior -->
-                <a href="{{ route('catalogo', ['categoria' => 'Exterior']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
-                    <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=700" alt="Exterior" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
-                    <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
-                        <span class="text-[10px] font-bold text-[#FAF3E0] uppercase tracking-widest">Estancia Exterior</span>
-                        <h3 class="text-2xl font-bold mt-1 text-white group-hover:text-[#FAF3E0] transition-colors">Exterior</h3>
-                        <span class="mt-2 inline-flex items-center text-xs font-extrabold text-[#FAF3E0] group-hover:text-white group-hover:translate-x-1.5 transition-all">
-                            Explorar catálogo &rarr;
-                        </span>
-                    </div>
-                </a>
-
             </div>
         </div>
     </div>
@@ -281,16 +254,20 @@
                     <p class="mt-1 text-zinc-500 text-sm">Nuestras piezas más aclamadas por arquitectos e interioristas.</p>
                 </div>
                 
-                <!-- Pestañas de Filtrado Rápido -->
+                <!-- Pestañas de Filtrado Rápido (Categorías Principales: Salas, Recámaras, Comedor) -->
                 <div class="flex flex-wrap gap-2">
                     <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-[#88674B] text-white shadow-md" data-category="todos">
                         Todos
                     </button>
-                    @foreach($categorias as $cat)
-                        <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-zinc-100 hover:bg-[#FAF3E0] text-zinc-700 hover:text-[#74563C] border border-zinc-200/80" data-category="{{ $cat }}">
-                            {{ $cat }}
-                        </button>
-                    @endforeach
+                    <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-zinc-100 hover:bg-[#FAF3E0] text-zinc-700 hover:text-[#74563C] border border-zinc-200/80" data-category="Salón">
+                        Salas
+                    </button>
+                    <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-zinc-100 hover:bg-[#FAF3E0] text-zinc-700 hover:text-[#74563C] border border-zinc-200/80" data-category="Dormitorio">
+                        Recámaras
+                    </button>
+                    <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-zinc-100 hover:bg-[#FAF3E0] text-zinc-700 hover:text-[#74563C] border border-zinc-200/80" data-category="Comedor">
+                        Comedor
+                    </button>
                 </div>
             </div>
 
@@ -531,7 +508,13 @@
 
                     productItems.forEach(item => {
                         const itemCat = item.getAttribute('data-cat');
-                        if (category === 'todos' || itemCat === category) {
+                        const isMatch = (category === 'todos') ||
+                                        (category === itemCat) ||
+                                        (category === 'Salón' && (itemCat === 'Salas' || itemCat === 'Salón')) ||
+                                        (category === 'Dormitorio' && (itemCat === 'Recámaras' || itemCat === 'Dormitorio')) ||
+                                        (category === 'Comedor' && itemCat === 'Comedor');
+
+                        if (isMatch) {
                             item.style.display = 'flex';
                         } else {
                             item.style.display = 'none';
