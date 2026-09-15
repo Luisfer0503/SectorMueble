@@ -28,9 +28,9 @@
             border: 1px solid #EAE5DC;
         }
         .header {
-            background: linear-gradient(135deg, #2D1F18 0%, #5C4033 60%, #88674B 100%);
-            color: #FAF3E0;
-            padding: 36px 24px;
+            background-color: #FAF8F5;
+            border-bottom: 1px solid #EAE5DC;
+            padding: 32px 24px;
             text-align: center;
         }
         .header-logo {
@@ -45,17 +45,16 @@
             font-size: 24px;
             font-weight: 800;
             letter-spacing: 1.5px;
-            color: #FFFFFF;
+            color: #88674B; /* Nogal Cálido */
             text-transform: uppercase;
             display: inline-block;
             vertical-align: middle;
         }
         .header p {
-            margin: 8px 0 0;
+            margin: 6px 0 0;
             font-size: 13px;
-            color: #FAF3E0;
-            opacity: 0.9;
-            font-weight: 400;
+            color: #74563C;
+            font-weight: 500;
         }
         .content {
             padding: 40px 32px;
@@ -146,10 +145,10 @@
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
                     <tr>
                         <td style="vertical-align: middle; padding-right: 10px;">
-                            <img src="{{ asset('logo.png') }}" alt="Sector Mueble Logo" class="header-logo">
+                            <img src="{{ asset('logo2.png') }}" alt="Sector Mueble Logo" class="header-logo">
                         </td>
                         <td style="vertical-align: middle;">
-                            <h1>SECTOR MUEBLE</h1>
+                            <h1 style="color: #88674B; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;">SECTOR MUEBLE</h1>
                         </td>
                     </tr>
                 </table>
