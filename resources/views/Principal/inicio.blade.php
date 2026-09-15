@@ -330,9 +330,9 @@
                             </div>
 
                             <!-- Botón de Vista Rápida en Hover -->
-                            <div class="absolute inset-0 bg-zinc-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
-                                <a href="{{ route('productos.detalle', $producto->id) }}" class="bg-white/95 text-zinc-950 text-xs font-bold px-5 py-3 rounded-xl shadow-xl hover:bg-[#88674B] hover:text-white transition-all transform group-hover:scale-100 scale-95">
-                                    Ver Ficha Técnica
+                            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
+                                <a href="{{ route('productos.detalle', $producto->id) }}" class="bg-white/40 backdrop-blur-md text-zinc-950 border border-white/60 text-xs font-bold px-5 py-3 rounded-xl shadow-xl hover:bg-[#88674B] hover:text-white hover:border-[#88674B] transition-all transform group-hover:scale-100 scale-95">
+                                    Ver Detalles
                                 </a>
                             </div>
                         </div>
@@ -365,7 +365,10 @@
                             <div class="flex items-center justify-between mt-5 pt-3 border-t border-zinc-100">
                                 <div class="flex flex-col">
                                     @if($producto->tieneDescuento())
-                                        <span class="text-xs text-zinc-400 line-through font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }}</span>
+                                        <div class="flex items-center space-x-1.5 leading-tight">
+                                            <span class="text-xs text-zinc-400 line-through font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }}</span>
+                                            <span class="text-xs font-bold text-rose-600 font-sans">(-{{ $producto->porcentaje_descuento }}%)</span>
+                                        </div>
                                         <span class="text-lg font-extrabold text-[#74563C] font-sans">$ {{ number_format($producto->precio_descuento, 2, '.', ',') }} <span class="text-xs font-normal text-zinc-500">MXN</span></span>
                                     @else
                                         <span class="text-lg font-extrabold text-zinc-950 font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }} <span class="text-xs font-normal text-zinc-500">MXN</span></span>

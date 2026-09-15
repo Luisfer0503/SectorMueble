@@ -355,8 +355,8 @@
                                     @endif
                                 </div>
 
-                                <div class="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                                    <a href="{{ route('productos.detalle', $rel->id) }}" class="bg-white text-zinc-950 text-xs font-semibold px-4 py-2 rounded shadow hover:bg-amber-800 hover:text-white transition-colors duration-300">
+                                <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                                    <a href="{{ route('productos.detalle', $rel->id) }}" class="bg-white/40 backdrop-blur-md text-zinc-950 border border-white/60 text-xs font-bold px-4 py-2 rounded-full shadow-lg hover:bg-amber-800 hover:text-white hover:border-amber-800 transition-all duration-300">
                                         Ver Detalles
                                     </a>
                                 </div>

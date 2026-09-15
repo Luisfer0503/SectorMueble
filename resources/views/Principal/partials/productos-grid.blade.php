@@ -69,7 +69,7 @@
                         {{-- Hover overlay con botón Ver Detalles --}}
                         <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                             <a href="{{ route('productos.detalle', $producto->id) }}"
-                               class="bg-white text-zinc-900 text-xs font-bold px-4 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-lg hover:bg-amber-800 hover:text-white transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                               class="bg-white/40 backdrop-blur-md text-zinc-950 border border-white/60 text-xs font-bold px-4 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-lg hover:bg-amber-800 hover:text-white hover:border-amber-800 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
                                 Ver Detalles
                             </a>
                         </div>
@@ -128,12 +128,16 @@
                         <div class="flex flex-col sm:flex-row sm:items-end justify-between mt-3 sm:mt-4 pt-3 border-t border-zinc-100 gap-2.5 sm:gap-0">
                             <div class="flex flex-col">
                                 @if($producto->tieneDescuento())
-                                    <span class="text-xs text-zinc-400 line-through font-sans leading-tight">
-                                        $ {{ number_format($producto->precio, 2, '.', ',') }}
-                                    </span>
+                                    <div class="flex items-center space-x-1.5 leading-tight">
+                                        <span class="text-xs text-zinc-400 line-through font-sans">
+                                            $ {{ number_format($producto->precio, 2, '.', ',') }}
+                                        </span>
+                                        <span class="text-xs font-bold text-rose-600 font-sans">
+                                            (-{{ $producto->porcentaje_descuento }}%)
+                                        </span>
+                                    </div>
                                     <span class="text-sm sm:text-base font-extrabold text-emerald-800 font-sans leading-tight">
                                         $ {{ number_format($producto->precio_descuento, 2, '.', ',') }}
-                                        <span class="text-xs font-bold text-rose-600">(-{{ $producto->porcentaje_descuento }}%)</span>
                                     </span>
                                 @else
                                     <span class="text-sm sm:text-base font-extrabold text-zinc-950 font-sans">

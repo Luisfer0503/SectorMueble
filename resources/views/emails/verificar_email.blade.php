@@ -6,150 +6,192 @@
     <title>Confirma tu dirección de correo electrónico - Sector Mueble</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #ffffff;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: #FAF8F5;
             margin: 0;
             padding: 0;
-            color: #1F2937;
+            color: #18181B;
             -webkit-font-smoothing: antialiased;
+        }
+        .wrapper {
+            width: 100%;
+            background-color: #FAF8F5;
+            padding: 40px 12px;
         }
         .container {
             max-width: 600px;
-            margin: 30px auto;
+            margin: 0 auto;
             background-color: #FFFFFF;
-            border-radius: 12px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            border: 1px solid #E5E7EB;
+            box-shadow: 0 15px 35px rgba(136, 103, 75, 0.10);
+            border: 1px solid #EAE5DC;
         }
         .header {
-            background: linear-gradient(135deg, #451A03 0%, #78350F 50%, #92400E 100%);
-            color: #FEF3C7;
-            padding: 32px 24px;
+            background: linear-gradient(135deg, #2D1F18 0%, #5C4033 60%, #88674B 100%);
+            color: #FAF3E0;
+            padding: 36px 24px;
             text-align: center;
+        }
+        .header-logo {
+            height: 38px;
+            width: auto;
+            max-height: 42px;
+            vertical-align: middle;
+            display: inline-block;
         }
         .header h1 {
             margin: 0;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: 1px;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #FFFFFF;
             text-transform: uppercase;
+            display: inline-block;
+            vertical-align: middle;
         }
         .header p {
-            margin: 6px 0 0;
+            margin: 8px 0 0;
             font-size: 13px;
-            color: #FDE68A;
+            color: #FAF3E0;
             opacity: 0.9;
+            font-weight: 400;
         }
         .content {
-            padding: 36px 30px;
+            padding: 40px 32px;
             line-height: 1.6;
         }
         .greeting {
-            font-size: 20px;
-            font-weight: 600;
-            color: #78350F;
+            font-size: 22px;
+            font-weight: 700;
+            color: #5C4033;
             margin-top: 0;
             margin-bottom: 16px;
         }
         .text {
             font-size: 15px;
-            color: #4B5563;
+            color: #52525B;
             margin-bottom: 24px;
+            line-height: 1.65;
         }
         .button-wrapper {
             text-align: center;
-            margin: 32px 0;
+            margin: 36px 0;
         }
         .btn-confirm {
             display: inline-block;
-            background-color: #92400E;
+            background-color: #4c6f4f;
             color: #FFFFFF !important;
-            font-weight: 600;
-            font-size: 16px;
-            padding: 14px 32px;
+            font-weight: 700;
+            font-size: 15px;
+            padding: 16px 36px;
             text-decoration: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(146, 64, 14, 0.3);
-            transition: background-color 0.2s ease;
+            border-radius: 14px;
+            box-shadow: 0 6px 20px rgba(76, 111, 79, 0.3);
+            transition: all 0.2s ease;
         }
         .btn-confirm:hover {
-            background-color: #78350F;
+            background-color: #3c583e;
         }
         .info-box {
-            background-color: #FEF3C7;
-            border-left: 4px solid #D97706;
-            padding: 16px;
-            border-radius: 4px;
+            background-color: #F5EBE0;
+            border: 1px solid #D9C5B2;
+            padding: 14px 24px;
+            border-radius: 50px;
             font-size: 13px;
-            color: #92400E;
-            margin-bottom: 24px;
+            font-weight: 600;
+            color: #5C4033;
+            text-align: center;
+            margin-bottom: 28px;
+            box-shadow: 0 2px 8px rgba(92, 64, 51, 0.05);
         }
         .url-fallback {
             font-size: 12px;
-            color: #6B7280;
+            color: #71717A;
             word-break: break-all;
-            background-color: #F9FAFB;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #F3F4F6;
+            background-color: #FAF8F5;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid #EAE5DC;
+            margin-top: 8px;
         }
         .url-fallback a {
-            color: #92400E;
+            color: #4c6f4f;
+            font-weight: 600;
             text-decoration: underline;
         }
         .footer {
-            background-color: #F9FAFB;
-            padding: 20px 30px;
+            background-color: #FAF8F5;
+            padding: 24px 30px;
             text-align: center;
             font-size: 12px;
-            color: #9CA3AF;
-            border-top: 1px solid #E5E7EB;
+            color: #71717A;
+            border-top: 1px solid #EAE5DC;
+            line-height: 1.5;
+        }
+        .footer-logo {
+            height: 24px;
+            width: auto;
+            margin-bottom: 8px;
+            opacity: 0.8;
+            display: inline-block;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Encabezado con Identidad Sector Mueble -->
-        <div class="header">
-            <h1>🪑 SECTOR MUEBLE</h1>
-            <p>E-commerce de Muebles de Diseño & Decoración</p>
-        </div>
-
-        <!-- Contenido Principal -->
-        <div class="content">
-            <h2 class="greeting">¡Hola, {{ $user->name }}!</h2>
-            <p class="text">
-                Gracias por registrarte en <strong>Sector Mueble</strong>. Para asegurar que la cuenta te pertenece y comenzar a disfrutar de nuestras colecciones exclusivas de muebles y beneficios, por favor confirma tu correo electrónico haciendo clic en el siguiente botón:
-            </p>
-
-            <div class="button-wrapper">
-                <a href="{{ $url }}" class="btn-confirm" target="_blank">
-                    Confirmar mi Correo Electrónico
-                </a>
+    <div class="wrapper">
+        <div class="container">
+            <!-- Encabezado con Identidad Sector Mueble -->
+            <div class="header">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+                    <tr>
+                        <td style="vertical-align: middle; padding-right: 10px;">
+                            <img src="{{ asset('logo.png') }}" alt="Sector Mueble Logo" class="header-logo">
+                        </td>
+                        <td style="vertical-align: middle;">
+                            <h1>SECTOR MUEBLE</h1>
+                        </td>
+                    </tr>
+                </table>
+                <p>E-commerce de Muebles de Diseño & Decoración</p>
             </div>
 
-            <div class="info-box">
-                ⏱️ Este enlace de verificación expira en <strong>60 minutos</strong> por razones de seguridad.
+            <!-- Contenido Principal -->
+            <div class="content">
+                <h2 class="greeting">¡Hola, {{ $user->name }}! 👋</h2>
+                <p class="text">
+                    Gracias por registrarte en <strong>Sector Mueble</strong>. Para verificar tu dirección de correo electrónico y comenzar a disfrutar de nuestras colecciones exclusivas de muebles de diseño, haz clic en el siguiente botón:
+                </p>
+
+                <div class="button-wrapper">
+                    <a href="{{ $url }}" class="btn-confirm" target="_blank">
+                        Confirmar Mi Correo Electrónico
+                    </a>
+                </div>
+
+                <div class="info-box">
+                    ⏱️ Este enlace de verificación expira en <strong>60 minutos</strong> por razones de seguridad.
+                </div>
+
+                <p class="text" style="font-size: 13px; color: #71717A; margin-bottom: 4px;">
+                    Si el botón no funciona, copia y pega la siguiente dirección URL en la barra de tu navegador web:
+                </p>
+
+                <div class="url-fallback">
+                    <a href="{{ $url }}" target="_blank">{{ $url }}</a>
+                </div>
+
+                <p class="text" style="font-size: 12px; color: #A1A1AA; margin-top: 28px; margin-bottom: 0;">
+                    Si no creaste una cuenta en Sector Mueble, no se requiere ninguna acción adicional.
+                </p>
             </div>
 
-            <p class="text" style="font-size: 13px; color: #6B7280;">
-                Si el botón no funciona, copia y pega la siguiente dirección URL en la barra de tu navegador web:
-            </p>
-
-            <div class="url-fallback">
-                <a href="{{ $url }}" target="_blank">{{ $url }}</a>
+            <!-- Pie de página -->
+            <div class="footer">
+                <img src="{{ asset('logo.png') }}" alt="Sector Mueble Logo" class="footer-logo"><br>
+                &copy; {{ date('Y') }} Sector Mueble. Todos los derechos reservados.<br>
+                Este es un correo automático, por favor no respondas a este mensaje.
             </div>
-
-            <p class="text" style="font-size: 13px; color: #9CA3AF; margin-top: 24px;">
-                Si no creaste una cuenta en Sector Mueble, no se requiere ninguna acción adicional.
-            </p>
-        </div>
-
-        <!-- Pie de página -->
-        <div class="footer">
-            &copy; {{ date('Y') }} Sector Mueble. Todos los derechos reservados.<br>
-            Este es un correo automático, por favor no respondas a este mensaje.
         </div>
     </div>
 </body>
