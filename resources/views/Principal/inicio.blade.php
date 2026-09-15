@@ -88,47 +88,90 @@
     </div>
 
 
-    <!-- ── 3. BANNER DE OFERTA FLASH ── -->
-    <div class="bg-[#88432A] py-12 sm:py-16 text-white border-y border-white/20 relative overflow-hidden shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+    <!-- ── 3. BANNER DE OFERTA FLASH CON TELÓN CINE A PANTALLA COMPLETA ── -->
+    <div id="telon-promo-section" class="relative w-full overflow-hidden bg-zinc-950 min-h-[450px] sm:min-h-[550px] lg:min-h-[650px] flex items-center justify-center border-y border-white/20 shadow-2xl">
+        
+        <!-- ── 1. FONDO CON LA IMAGEN PROMO.PNG COMPLETA SIN RECORTAR ── -->
+        <div class="absolute inset-0 z-0 flex items-center justify-center bg-zinc-950 w-full h-full overflow-hidden">
+            <!-- Imagen Promo Grande Completa con zoom progresivo sutil -->
+            <img id="promo-img-bg" src="{{ asset('promo.png') }}" alt="Promoción Especial de Septiembre" class="w-full h-full object-contain object-center filter brightness-[1.02] contrast-[1.02] transform scale-105 transition-transform duration-[3200ms] ease-out">
             
-            <div class="text-center lg:text-left max-w-xl">
-                <span class="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-white bg-white/20 border border-white/30 px-4 py-1.5 rounded-full mb-3 shadow-xs">
-                    <span class="w-2 h-2 rounded-full bg-white animate-ping"></span>
-                    <span>Venta Especial Flash 2026</span>
+            <!-- Shadow Overlay sutil para potenciar el contraste -->
+            <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
+        </div>
+
+        <!-- ── 2. TICKER CONTADOR DE SEPTIEMBRE (POSICIONADO A 1/4 DE ABAJO HACIA ARRIBA EN LA DERECHA) ── -->
+        <div class="absolute right-3 sm:right-8 lg:right-12 bottom-[18%] sm:bottom-[22%] z-20 pointer-events-auto">
+            <div class="flex flex-col items-center lg:items-end bg-black/80 backdrop-blur-md p-4 sm:p-5 rounded-3xl border border-amber-200/40 shadow-[0_10px_35px_rgba(0,0,0,0.6)] hover:border-amber-300 transition-colors duration-500">
+                <span class="text-[11px] sm:text-xs font-extrabold uppercase tracking-widest text-amber-200 mb-2.5 text-center lg:text-right drop-shadow">
+                    ⏳ La oferta termina al finalizar Septiembre:
                 </span>
-                <h2 class="serif-title text-3xl sm:text-5xl font-bold leading-tight text-white">Últimas Horas: Colección Escandinava</h2>
-                <p class="mt-2 text-white/95 text-sm sm:text-base font-normal">Obtén un <strong class="text-white font-extrabold underline decoration-white/60">15% EXTRA</strong> en tu carrito aplicando el código exclusivo de temporada.</p>
                 
-                <!-- Botón Copiar Cupón (Gris Topo #4A4746) -->
-                <div class="mt-5 inline-flex items-center space-x-2 bg-white/95 p-1.5 pl-4 rounded-2xl border border-white/30 shadow-md">
-                    <span class="text-xs font-mono font-extrabold tracking-widest text-[#4A4746]" id="coupon-code-val">SECTOR2026</span>
-                    <button type="button" onclick="copyCouponCode()" id="copy-coupon-btn" class="bg-[#4A4746] hover:bg-[#383534] text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-xs">
-                        Copiar Cupón
+                <div class="flex items-center space-x-1.5 sm:space-x-2.5 text-center">
+                    <div class="bg-white/95 border border-white/40 p-2.5 sm:p-3 rounded-2xl w-14 sm:w-18 shadow-2xl backdrop-blur-md">
+                        <span id="flash-days" class="block text-lg sm:text-2xl font-extrabold text-[#88432A] font-mono">15</span>
+                        <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-700">Días</span>
+                    </div>
+                    <span class="text-lg sm:text-2xl font-bold text-amber-200 animate-pulse">:</span>
+                    <div class="bg-white/95 border border-white/40 p-2.5 sm:p-3 rounded-2xl w-14 sm:w-18 shadow-2xl backdrop-blur-md">
+                        <span id="flash-hours" class="block text-lg sm:text-2xl font-extrabold text-[#88432A] font-mono">11</span>
+                        <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-700">Horas</span>
+                    </div>
+                    <span class="text-lg sm:text-2xl font-bold text-amber-200 animate-pulse">:</span>
+                    <div class="bg-white/95 border border-white/40 p-2.5 sm:p-3 rounded-2xl w-14 sm:w-18 shadow-2xl backdrop-blur-md">
+                        <span id="flash-minutes" class="block text-lg sm:text-2xl font-extrabold text-[#88432A] font-mono">41</span>
+                        <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-700">Minutos</span>
+                    </div>
+                    <span class="text-lg sm:text-2xl font-bold text-amber-200 animate-pulse">:</span>
+                    <div class="bg-white/95 border border-white/40 p-2.5 sm:p-3 rounded-2xl w-14 sm:w-18 shadow-2xl backdrop-blur-md">
+                        <span id="flash-seconds" class="block text-lg sm:text-2xl font-extrabold text-[#88432A] font-mono">57</span>
+                        <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-700">Segundos</span>
+                    </div>
+                </div>
+                
+                <div class="mt-3 flex items-center gap-3">
+                    <span class="text-[10px] text-white/90 font-semibold bg-black/50 px-2.5 py-0.5 rounded-full border border-white/20">Válido hasta el 30 de Septiembre</span>
+                    <button type="button" onclick="cerrarTelonSplit()" class="text-xs font-bold text-amber-200 hover:text-white underline cursor-pointer flex items-center gap-1">
+                        <span>Cerrar Telón</span> 🎭
                     </button>
                 </div>
-                <p class="mt-2 text-[11px] text-white/80 italic font-normal">* Aplican Términos y Condiciones, no acumulable con otras promociones.</p>
             </div>
-
-            <!-- Ticker de Reloj / Cuenta Regresiva Claro -->
-            <div class="flex items-center space-x-3 sm:space-x-4 text-center">
-                <div class="bg-white/95 border border-white/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
-                    <span id="flash-hours" class="block text-2xl sm:text-4xl font-extrabold text-[#88432A] font-mono">08</span>
-                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600">Horas</span>
-                </div>
-                <span class="text-2xl sm:text-4xl font-bold text-white animate-pulse">:</span>
-                <div class="bg-white/95 border border-white/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
-                    <span id="flash-minutes" class="block text-2xl sm:text-4xl font-extrabold text-[#88432A] font-mono">42</span>
-                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600">Minutos</span>
-                </div>
-                <span class="text-2xl sm:text-4xl font-bold text-white animate-pulse">:</span>
-                <div class="bg-white/95 border border-white/30 p-3.5 sm:p-4 rounded-2xl w-18 sm:w-22 shadow-lg">
-                    <span id="flash-seconds" class="block text-2xl sm:text-4xl font-extrabold text-[#88432A] font-mono">19</span>
-                    <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-zinc-600">Segundos</span>
-                </div>
-            </div>
-
         </div>
+
+        <!-- ── 3. TELÓN SPLIT CON TRANSICIÓN TEATRAL MAJESTUOSA Y LENTA (3.2 SEGUNDOS) ── -->
+        <div id="telon-curtain-left" class="absolute inset-y-0 left-0 w-1/2 bg-[#88432A] border-r-4 border-amber-300 shadow-[10px_0_50px_rgba(251,191,36,0.35)] z-30 transition-transform duration-[3200ms] ease-[cubic-bezier(0.16,1,0.3,1)]" style="background: linear-gradient(90deg, #3B1B10 0%, #88432A 35%, #582818 70%, #A85032 100%);">
+            <div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_25px,rgba(0,0,0,0.18)_25px,rgba(0,0,0,0.18)_50px)] pointer-events-none"></div>
+            <!-- Filamento de Luz Dorada Teatral -->
+            <div class="absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-amber-100 via-amber-300 to-amber-500 shadow-[0_0_15px_#fde047]"></div>
+        </div>
+
+        <div id="telon-curtain-right" class="absolute inset-y-0 right-0 w-1/2 bg-[#88432A] border-l-4 border-amber-300 shadow-[-10px_0_50px_rgba(251,191,36,0.35)] z-30 transition-transform duration-[3200ms] ease-[cubic-bezier(0.16,1,0.3,1)]" style="background: linear-gradient(270deg, #3B1B10 0%, #88432A 35%, #582818 70%, #A85032 100%);">
+            <div class="absolute inset-0 bg-[repeating-linear-gradient(270deg,transparent,transparent_25px,rgba(0,0,0,0.18)_25px,rgba(0,0,0,0.18)_50px)] pointer-events-none"></div>
+            <!-- Filamento de Luz Dorada Teatral -->
+            <div class="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-amber-100 via-amber-300 to-amber-500 shadow-[0_0_15px_#fde047]"></div>
+        </div>
+
+        <!-- ── BOTÓN Y TEXTO EN EL CENTRO DEL TELÓN CERRADO ── -->
+        <div id="telon-trigger-wrapper" class="absolute inset-0 z-40 flex flex-col items-center justify-center p-4 transition-all duration-700 ease-out">
+            <div class="text-center bg-[#88432A]/95 p-6 sm:p-12 rounded-3xl border-2 border-amber-200/50 shadow-2xl backdrop-blur-md max-w-2xl mx-auto transform hover:scale-102 transition-transform">
+                <span class="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-white bg-white/20 border border-white/30 px-4 py-1.5 rounded-full mb-4 shadow-md">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-300 animate-ping"></span>
+                    <span>Venta Especial de Septiembre 2026</span>
+                </span>
+
+                <h2 class="serif-title text-3xl sm:text-5xl font-bold leading-tight text-white drop-shadow-md">
+                    Desliza hacia abajo o da clic para descubrir la promoción
+                </h2>
+                <p class="mt-3 text-white/95 text-sm sm:text-base font-medium max-w-md mx-auto leading-relaxed">
+                    Al desplazarte por la página, el telón se abrirá automáticamente para mostrar nuestra oferta exclusiva a pantalla completa.
+                </p>
+
+                <button type="button" onclick="abrirTelonSplit()" class="mt-8 inline-flex items-center space-x-3 bg-white text-[#88432A] hover:bg-[#FAF3E0] hover:scale-108 text-base font-extrabold px-9 py-4 sm:py-4.5 rounded-2xl shadow-2xl transition-all duration-300 transform active:scale-95 border-2 border-amber-200/80 cursor-pointer group">
+                    <span>Abrir Telón y Descubrir Oferta</span>
+                </button>
+            </div>
+        </div>
+
     </div>
 
 
@@ -495,29 +538,91 @@
             startAutoplay();
 
 
-            // ── 2. Flash Sale Countdown Timer ──
+            // ── 2. Flash Sale Split Telón Curtain Reveal & September Countdown ──
+            let telonAbiertoPorScroll = false;
+
+            window.abrirTelonSplit = function() {
+                const leftCurtain = document.getElementById('telon-curtain-left');
+                const rightCurtain = document.getElementById('telon-curtain-right');
+                const triggerWrapper = document.getElementById('telon-trigger-wrapper');
+                const promoImgBg = document.getElementById('promo-img-bg');
+
+                if (leftCurtain && rightCurtain && triggerWrapper) {
+                    leftCurtain.style.transform = 'translateX(-100%)';
+                    rightCurtain.style.transform = 'translateX(100%)';
+                    triggerWrapper.style.opacity = '0';
+                    triggerWrapper.style.pointerEvents = 'none';
+                    triggerWrapper.style.transform = 'scale(0.9)';
+                    telonAbiertoPorScroll = true;
+
+                    if (promoImgBg) {
+                        promoImgBg.classList.remove('scale-105');
+                        promoImgBg.classList.add('scale-100');
+                    }
+                }
+            };
+
+            window.cerrarTelonSplit = function() {
+                const leftCurtain = document.getElementById('telon-curtain-left');
+                const rightCurtain = document.getElementById('telon-curtain-right');
+                const triggerWrapper = document.getElementById('telon-trigger-wrapper');
+                const promoImgBg = document.getElementById('promo-img-bg');
+
+                if (leftCurtain && rightCurtain && triggerWrapper) {
+                    leftCurtain.style.transform = 'translateX(0)';
+                    rightCurtain.style.transform = 'translateX(0)';
+                    triggerWrapper.style.opacity = '1';
+                    triggerWrapper.style.pointerEvents = 'auto';
+                    triggerWrapper.style.transform = 'scale(1)';
+
+                    if (promoImgBg) {
+                        promoImgBg.classList.remove('scale-100');
+                        promoImgBg.classList.add('scale-105');
+                    }
+                }
+            };
+
+            // Apertura automática del telón conforme el usuario va bajando en la página (Scroll Trigger)
+            const telonSection = document.getElementById('telon-promo-section');
+            if (telonSection && 'IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && !telonAbiertoPorScroll) {
+                            window.abrirTelonSplit();
+                        }
+                    });
+                }, { threshold: 0.25 });
+
+                observer.observe(telonSection);
+            }
+
+            const targetSeptDate = new Date('2026-09-30T23:59:59').getTime();
+            const daysEl = document.getElementById('flash-days');
             const hoursEl = document.getElementById('flash-hours');
             const minsEl = document.getElementById('flash-minutes');
             const secsEl = document.getElementById('flash-seconds');
 
-            let totalSeconds = (8 * 3600) + (42 * 60) + 19;
-
             function updateFlashClock() {
-                if (totalSeconds <= 0) {
-                    totalSeconds = 8 * 3600; // Reset loop for demo
+                const now = new Date().getTime();
+                let distance = targetSeptDate - now;
+
+                if (distance <= 0) {
+                    distance = 15 * 24 * 3600 * 1000; // Reciclar para demostración
                 }
-                totalSeconds--;
 
-                const h = Math.floor(totalSeconds / 3600);
-                const m = Math.floor((totalSeconds % 3600) / 60);
-                const s = totalSeconds % 60;
+                const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((distance % (1000 * 60)) / 1000);
 
+                if (daysEl) daysEl.textContent = String(d).padStart(2, '0');
                 if (hoursEl) hoursEl.textContent = String(h).padStart(2, '0');
                 if (minsEl) minsEl.textContent = String(m).padStart(2, '0');
                 if (secsEl) secsEl.textContent = String(s).padStart(2, '0');
             }
 
             setInterval(updateFlashClock, 1000);
+            updateFlashClock();
 
 
             // ── 3. Category Tab Filtering ──
