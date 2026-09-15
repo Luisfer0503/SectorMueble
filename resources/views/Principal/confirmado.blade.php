@@ -129,10 +129,18 @@
 
         <!-- Acciones Fin -->
         <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="{{ route('catalogo') }}" class="w-full sm:w-auto text-center bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider px-8 py-4 rounded transition-colors shadow">
+            @if(isset($pedido->id))
+                <a href="{{ route('pedido.contactar_agente', $pedido->id) }}" target="_blank" class="w-full sm:w-auto text-center bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-xl transition-all shadow-md flex items-center justify-center space-x-2">
+                    <svg class="w-4 h-4 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <span>Contactar Agente de Ventas</span>
+                </a>
+            @endif
+            <a href="{{ route('catalogo') }}" class="w-full sm:w-auto text-center bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-xl transition-colors shadow">
                 Seguir Comprando Muebles
             </a>
-            <a href="{{ route('inicio') }}" class="w-full sm:w-auto text-center border border-zinc-200 hover:bg-zinc-50 text-zinc-700 text-xs font-bold uppercase tracking-wider px-8 py-4 rounded transition-colors">
+            <a href="{{ route('inicio') }}" class="w-full sm:w-auto text-center border border-zinc-200 hover:bg-zinc-50 text-zinc-700 text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-xl transition-colors">
                 Volver a la Página Principal
             </a>
         </div>

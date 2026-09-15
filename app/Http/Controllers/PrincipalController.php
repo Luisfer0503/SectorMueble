@@ -1537,5 +1537,44 @@ class PrincipalController extends Controller
             'enviado_api' => $enviadoPorApi,
         ]);
     }
+
+    /**
+     * Actualiza el estatus del pedido a 'contacto_agente' (Contacto a Agente de Ventas)
+     * cuando un cliente contacta al agente de ventas y notifica al correo verificado.
+     */
+    public function contactarAgentePedido(Request $request, $id)
+    {
+        $pedido = Pedido::findOrFail($id);
+
+        $estadoAnterior = $pedido->estado;
+        $pedido->update(['estado' => 'contacto_agente']);
+
+        // Notificar por correo al cliente verificado
+        if ($estadoAnterior !== 'contacto_agente') {
+            try {
+                $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
+                if ($correoDestino) {
+                    \Illuminate\Support\Facades\Notification::route('mail', $correoDestino)
+                        ->notify(new \App\Notifications\EstadoPedidoNotificacion($pedido, 'contacto_agente'));
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error al notificar contacto de agente para pedido #{$pedido->id}: " . $e->getMessage());
+            }
+        }
+
+        $numPedido = str_pad($pedido->id, 5, '0', STR_PAD_LEFT);
+        $mensajeWhatsapp = rawurlencode("Hola, quisiera solicitar atención de un agente de ventas sobre mi pedido #{$numPedido} a nombre de {$pedido->nombre_cliente}.");
+        $whatsappUrl = "https://wa.me/522225722219?text={$mensajeWhatsapp}";
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'El estatus de tu pedido ha sido actualizado a "Contacto a Agente de Ventas".',
+                'whatsapp_url' => $whatsappUrl,
+            ]);
+        }
+
+        return redirect()->away($whatsappUrl);
+    }
 }
 

@@ -192,12 +192,14 @@
                     <span class="text-xs text-zinc-500">Estado actual:</span>
                     @if($pedido->estado === 'pendiente')
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">Pendiente</span>
-                    @elseif($pedido->estado === 'procesado')
+                    @elseif($pedido->estado === 'procesado' || $pedido->estado === 'completado')
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">Procesado</span>
                     @elseif($pedido->estado === 'enviado')
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">Enviado</span>
-                    @elseif($pedido->estado === 'entregado')
+                    @elseif($pedido->estado === 'entregado' || $pedido->estado === 'recibido')
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">Entregado</span>
+                    @elseif($pedido->estado === 'contacto_agente')
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200">Contacto a Agente</span>
                     @else
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200">Cancelado</span>
                     @endif
@@ -209,15 +211,19 @@
                         <label for="estado" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Actualizar Estado</label>
                         <select name="estado" id="estado" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                             <option value="pendiente" {{ $pedido->estado === 'pendiente' ? 'selected' : '' }}>Pendiente (Recibido)</option>
-                            <option value="procesado" {{ $pedido->estado === 'procesado' ? 'selected' : '' }}>Procesado (Pagado/Empacado)</option>
-                            <option value="enviado" {{ $pedido->estado === 'enviado' ? 'selected' : '' }}>Enviado (En camino)</option>
-                            <option value="entregado" {{ $pedido->estado === 'entregado' ? 'selected' : '' }}>Entregado (Finalizado)</option>
+                            <option value="procesado" {{ ($pedido->estado === 'procesado' || $pedido->estado === 'completado') ? 'selected' : '' }}>Procesado (Pagado/Empacado)</option>
+                            <option value="contacto_agente" {{ $pedido->estado === 'contacto_agente' ? 'selected' : '' }}>💬 Contacto a Agente de Ventas</option>
+                            <option value="enviado" {{ $pedido->estado === 'enviado' ? 'selected' : '' }}>📦 Enviado (En camino - Notifica por Correo)</option>
+                            <option value="entregado" {{ ($pedido->estado === 'entregado' || $pedido->estado === 'recibido') ? 'selected' : '' }}>🎉 Entregado / Recibido (Notifica por Correo)</option>
                             <option value="cancelado" {{ $pedido->estado === 'cancelado' ? 'selected' : '' }}>Cancelado</option>
                         </select>
+                        <p class="text-[11px] text-zinc-400 mt-1.5 leading-tight">
+                            📧 Al seleccionar <strong>Enviado</strong> o <strong>Entregado</strong>, se enviará un correo automático a <strong>{{ $pedido->correo_cliente }}</strong>.
+                        </p>
                     </div>
 
                     <button type="submit" class="w-full bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold uppercase tracking-wider py-3 rounded transition-colors shadow">
-                        Actualizar Estado
+                        Actualizar Estado y Notificar
                     </button>
                 </form>
 

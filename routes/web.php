@@ -41,9 +41,10 @@ Route::post('/checkout/crear-sesion-pago', [PrincipalController::class, 'crearSe
 Route::get('/checkout/pago-exito', [PrincipalController::class, 'confirmarPagoStripe'])->name('checkout.stripe.exito')->middleware(['auth', 'verified']);
 Route::get('/checkout/pago-cancelado', [PrincipalController::class, 'cancelarPagoStripe'])->name('checkout.stripe.cancelado')->middleware(['auth', 'verified']);
 
-// Página de éxito del Pedido
+// Página de éxito del Pedido y Contactar Agente
 Route::get('/pedido-confirmado/{id?}', [PrincipalController::class, 'pedidoConfirmado'])->name('pedido.confirmado');
 Route::get('/pedido-confirmado', [PrincipalController::class, 'pedidoConfirmado']);
+Route::match(['get', 'post'], '/pedido/{id}/contactar-agente', [PrincipalController::class, 'contactarAgentePedido'])->name('pedido.contactar_agente');
 
 // Rutas de Autenticación
 Route::get('/iniciar-sesion', [PrincipalController::class, 'mostrarLogin'])->name('login');

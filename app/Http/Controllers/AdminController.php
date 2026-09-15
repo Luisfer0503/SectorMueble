@@ -594,13 +594,32 @@ class AdminController extends Controller
         $pedido = Pedido::findOrFail($id);
 
         $request->validate([
-            'estado' => 'required|in:pendiente,procesado,enviado,entregado,cancelado',
-        ]);
-                    $pedido->update([
-            'estado' => $request->estado,
+            'estado' => 'required|in:pendiente,procesado,enviado,entregado,cancelado,contacto_agente',
         ]);
 
-        return redirect()->back()->with('success', 'Estado del pedido #' . $pedido->id . ' actualizado correctamente.');
+        $estadoAnterior = $pedido->estado;
+        $nuevoEstado = $request->estado;
+
+        $pedido->update([
+            'estado' => $nuevoEstado,
+        ]);
+
+        // Enviar correo de notificación al cliente cuando cambia el estatus a enviado, entregado o contacto_agente
+        $correoEnviadoMsg = '';
+        if ($estadoAnterior !== $nuevoEstado && in_array($nuevoEstado, ['enviado', 'entregado', 'recibido', 'contacto_agente'])) {
+            try {
+                $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
+                if ($correoDestino) {
+                    \Illuminate\Support\Facades\Notification::route('mail', $correoDestino)
+                        ->notify(new \App\Notifications\EstadoPedidoNotificacion($pedido, $nuevoEstado));
+                    $correoEnviadoMsg = ' Se ha enviado una notificación por correo al cliente (' . $correoDestino . ').';
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error al enviar correo de notificación del pedido #{$pedido->id}: " . $e->getMessage());
+            }
+        }
+
+        return redirect()->back()->with('success', 'Estado del pedido #' . $pedido->id . ' actualizado correctamente a "' . strtoupper($nuevoEstado) . '".' . $correoEnviadoMsg);
     }
 
     /**
