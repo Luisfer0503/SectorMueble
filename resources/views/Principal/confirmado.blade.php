@@ -98,13 +98,13 @@
                     </div>
                 </div>
 
-                <!-- Bloque de Facturación Electrónica SAT (FastAPI) -->
-                <div class="pt-4 border-t border-zinc-150">
+                <!-- Bloque de Facturación Electrónica SAT (Oculto temporalmente) -->
+                <div class="hidden pt-4 border-t border-zinc-150">
                     <div class="p-4 rounded-2xl bg-zinc-50 border border-zinc-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
                             <span class="text-xs font-bold uppercase tracking-wider text-zinc-500 block">Facturación Electrónica SAT (CFDI 4.0)</span>
                             @if(($pedido->factura_estado ?? '') === 'facturado')
-                                <span class="text-xs font-extrabold text-emerald-700 mt-0.5 block">¡Factura emitida correctamente (vía FastAPI)!</span>
+                                <span class="text-xs font-extrabold text-emerald-700 mt-0.5 block">¡Factura emitida correctamente!</span>
                                 <span class="text-[11px] font-mono text-zinc-600 block">UUID: {{ $pedido->factura_uuid }}</span>
                             @elseif(($pedido->factura_estado ?? '') === 'pendiente')
                                 <span class="text-xs font-bold text-amber-700 mt-0.5 block">Factura en proceso de timbrado...</span>

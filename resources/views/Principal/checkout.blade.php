@@ -91,8 +91,8 @@
                         </div>
                     </div>
 
-                    <!-- Paso 3: Facturación Electrónica SAT (FastAPI) -->
-                    <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                    <!-- Paso 3: Facturación Electrónica SAT (Oculto temporalmente) -->
+                    <div class="hidden bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                         <div class="flex items-center space-x-3 mb-2">
                             <span class="bg-[#4c6f4f] text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
                             <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Facturación Electrónica (SAT CFDI 4.0)</h2>
@@ -150,15 +150,15 @@
                                         <input type="email" id="correo_facturacion" name="correo_facturacion" value="{{ old('correo_cliente', auth()->user()->email ?? '') }}" placeholder="facturacion@correo.com" class="w-full bg-zinc-50 text-xs px-3.5 py-2.5 rounded-xl border border-zinc-200 focus:ring-2 focus:ring-[#4c6f4f]/30">
                                     </div>
                                 </div>
-                                <p class="text-[11px] text-zinc-500 italic">⚡ Tu comprobante fiscal será timbrado automáticamente a través de nuestra API FastAPI y enviado a tu correo.</p>
+                                <p class="text-[11px] text-zinc-500 italic">Tu comprobante fiscal será timbrado automáticamente y enviado a tu correo.</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Paso 4: Método de Pago (Stripe) -->
+                    <!-- Paso 3: Método de Pago (Stripe) -->
                     <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                         <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-                            <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">4</span>
+                            <span class="bg-[#4c6f4f] text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
                             <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Método de Pago Seguro</h2>
                         </div>
 
