@@ -54,11 +54,21 @@ class EstadoPedidoNotificacion extends Notification
 
             case 'entregado':
             case 'recibido':
-                $asunto = "🎉 ¡Tu pedido #{$numPedido} ha sido Entregado con éxito! - Sector Mueble";
+                $asunto = "¡Tu pedido de Sector Mueble ya está en casa! 🛋️✨ / Entrega exitosa del pedido #{$numPedido}";
                 break;
 
             case 'contacto_agente':
-                $asunto = "💬 Tu pedido #{$numPedido} está en Atención por un Agente de Ventas - Sector Mueble";
+                $asunto = "Recibimos tu mensaje en Sector Mueble 🛋️ / Un asesor te contactará pronto";
+                break;
+
+            case 'pagado':
+            case 'completado':
+            case 'procesando':
+            case 'recibido_pago':
+            case 'confirmado':
+            case 'pago_recibido':
+            case 'pendiente':
+                $asunto = "¡Confirmamos tu pedido en Sector Mueble! 🎉 / Pedido #{$numPedido} recibido";
                 break;
 
             default:

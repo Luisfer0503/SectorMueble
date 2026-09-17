@@ -618,7 +618,18 @@ class PrincipalController extends Controller
 
             DB::commit();
 
-            // 3. Emitir Factura vía FastAPI si fue solicitada
+            // 3. Notificar por correo la confirmación del pedido
+            try {
+                $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
+                if ($correoDestino) {
+                    \Illuminate\Support\Facades\Notification::route('mail', $correoDestino)
+                        ->notify(new \App\Notifications\EstadoPedidoNotificacion($pedido, 'pagado'));
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error al enviar correo de confirmación del pedido #{$pedido->id}: " . $e->getMessage());
+            }
+
+            // 4. Emitir Factura vía FastAPI si fue solicitada
             if ($pedido->requiere_factura) {
                 app(\App\Services\FacturacionFastApiService::class)->generarFactura($pedido);
             }
@@ -857,6 +868,17 @@ class PrincipalController extends Controller
             }
 
             DB::commit();
+
+            // Notificar por correo la confirmación de pago del pedido
+            try {
+                $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
+                if ($correoDestino) {
+                    \Illuminate\Support\Facades\Notification::route('mail', $correoDestino)
+                        ->notify(new \App\Notifications\EstadoPedidoNotificacion($pedido, 'pagado'));
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error al enviar correo de confirmación de pago de Stripe del pedido #{$pedido->id}: " . $e->getMessage());
+            }
 
             // Emitir Factura vía FastAPI si fue solicitada
             if ($pedido->requiere_factura) {

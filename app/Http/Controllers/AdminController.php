@@ -604,9 +604,9 @@ class AdminController extends Controller
             'estado' => $nuevoEstado,
         ]);
 
-        // Enviar correo de notificación al cliente cuando cambia el estatus a enviado, entregado o contacto_agente
+        // Enviar correo de notificación al cliente cuando cambia el estatus a enviado, entregado, contacto_agente o confirmado/pagado
         $correoEnviadoMsg = '';
-        if ($estadoAnterior !== $nuevoEstado && in_array($nuevoEstado, ['enviado', 'entregado', 'recibido', 'contacto_agente'])) {
+        if ($estadoAnterior !== $nuevoEstado && in_array($nuevoEstado, ['enviado', 'entregado', 'recibido', 'contacto_agente', 'pagado', 'completado', 'procesando', 'confirmado', 'recibido_pago', 'pago_recibido', 'pendiente'])) {
             try {
                 $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
                 if ($correoDestino) {
