@@ -48,6 +48,24 @@ class PrincipalController extends Controller
             $q->where('activo', true);
         }]);
 
+        // Categorías oficiales según Admin/productos/crear.blade.php
+        $oficialesMap = [
+            'Salas'            => ['Salas', 'Salón', 'Salon', 'Muebles Auxiliares', 'Auxiliares'],
+            'Dormitorio'       => ['Dormitorio', 'Dormitorios', 'Recámaras', 'Recamaras', 'Recámara', 'Recamara'],
+            'Comedor'          => ['Comedor', 'Comedores'],
+            'Sillas y Bancos'  => ['Sillas y Bancos', 'Sillas', 'Bancos', 'Silla', 'Banco'],
+            'Oficina'          => ['Oficina', 'Oficinas'],
+            'Exterior'         => ['Exterior', 'Exteriores', 'Jardín', 'Jardin'],
+        ];
+
+        // Mapeo inverso de alias a nombres oficiales
+        $catAliasMap = [];
+        foreach ($oficialesMap as $oficial => $variaciones) {
+            foreach ($variaciones as $var) {
+                $catAliasMap[mb_strtolower($var)] = $oficial;
+            }
+        }
+
         // Filtro por búsqueda
         if ($request->filled('buscar')) {
             $buscar = $request->buscar;
@@ -57,34 +75,19 @@ class PrincipalController extends Controller
             });
         }
 
-        // Filtro por categoría con normalización de alias (Salas, Recámaras, etc.)
+        // Filtro por categoría con normalización de alias
         $categoriaReq = $request->input('categoria');
         $categoriaSeleccionada = 'todas';
 
         if (!empty($categoriaReq) && $categoriaReq !== 'todas') {
-            $catMap = [
-                'salón'              => 'Salas',
-                'salon'              => 'Salas',
-                'salas'              => 'Salas',
-                'sala'               => 'Salas',
-                'dormitorio'         => 'Dormitorio',
-                'recámaras'          => 'Dormitorio',
-                'recamaras'          => 'Dormitorio',
-                'recámara'           => 'Dormitorio',
-                'recamara'           => 'Dormitorio',
-                'comedor'            => 'Comedor',
-                'comedores'          => 'Comedor',
-                'sillas y bancos'    => 'Sillas y Bancos',
-                'sillas'             => 'Sillas y Bancos',
-                'bancos'             => 'Sillas y Bancos',
-                'muebles auxiliares' => 'Salas',
-                'auxiliares'         => 'Salas',
-            ];
-
             $catKey = mb_strtolower(trim($categoriaReq));
-            $categoriaSeleccionada = $catMap[$catKey] ?? $categoriaReq;
+            $categoriaSeleccionada = $catAliasMap[$catKey] ?? $categoriaReq;
 
-            $consulta->where('categoria', $categoriaSeleccionada);
+            if (isset($oficialesMap[$categoriaSeleccionada])) {
+                $consulta->whereIn('categoria', $oficialesMap[$categoriaSeleccionada]);
+            } else {
+                $consulta->where('categoria', $categoriaSeleccionada);
+            }
         }
 
         // Filtro por precio mínimo (respeta precio con descuento)
@@ -141,10 +144,25 @@ class PrincipalController extends Controller
 
         $totalTodos = Producto::activo()->count();
 
-        $categoriasConConteo = Producto::activo()
+        // Conteo por categoría oficial (respetando las 6 categorías fijas)
+        $rawCounts = Producto::activo()
             ->select('categoria', DB::raw('count(*) as total'))
             ->groupBy('categoria')
             ->pluck('total', 'categoria');
+
+        $categoriasConConteo = collect();
+        foreach ($oficialesMap as $nombreOficial => $variaciones) {
+            $total = 0;
+            foreach ($rawCounts as $rawCat => $count) {
+                foreach ($variaciones as $v) {
+                    if (mb_strtolower(trim($rawCat)) === mb_strtolower(trim($v))) {
+                        $total += $count;
+                        break;
+                    }
+                }
+            }
+            $categoriasConConteo->put($nombreOficial, $total);
+        }
 
         $categorias = $categoriasConConteo->keys();
 

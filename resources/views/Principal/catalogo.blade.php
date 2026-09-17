@@ -109,17 +109,19 @@
                             </span>
                             <div class="space-y-1">
                                 @php
-                                    $catActiva = $categoriaSeleccionada ?? request('categoria', 'todas');
+                                    $catActivaRaw = $categoriaSeleccionada ?? request('categoria', 'todas');
+                                    $catActivaNorm = mb_strtolower(trim($catActivaRaw));
+                                    $isTodas = ($catActivaNorm === 'todas' || empty($catActivaNorm));
                                 @endphp
-                                <label class="cat-label flex items-center space-x-3 cursor-pointer rounded-lg px-2 py-1.5 transition-colors group {{ ($catActiva === 'todas' || empty($catActiva)) ? 'bg-amber-50 border border-amber-200/80' : 'hover:bg-zinc-50' }}">
+                                <label class="cat-label flex items-center space-x-3 cursor-pointer rounded-lg px-2 py-1.5 transition-colors group {{ $isTodas ? 'bg-amber-50 border border-amber-200/80' : 'hover:bg-zinc-50' }}">
                                     <input type="radio" name="categoria" value="todas" class="filtro-input h-3.5 w-3.5 accent-amber-800 cursor-pointer"
-                                        {{ ($catActiva === 'todas' || empty($catActiva)) ? 'checked' : '' }}>
-                                    <span class="text-sm transition-colors {{ ($catActiva === 'todas' || empty($catActiva)) ? 'font-bold text-amber-900' : 'text-zinc-700 group-hover:text-amber-800' }}">Todas</span>
+                                        {{ $isTodas ? 'checked' : '' }}>
+                                    <span class="text-sm transition-colors {{ $isTodas ? 'font-bold text-amber-900' : 'text-zinc-700 group-hover:text-amber-800' }}">Todas</span>
                                     <span class="ml-auto text-[10px] text-zinc-400 font-mono">{{ $totalTodos ?? $productos->total() }}</span>
                                 </label>
                                 @foreach($categoriasConConteo as $catNombre => $count)
                                     @php
-                                        $isCatChecked = ($catActiva === $catNombre);
+                                        $isCatChecked = (!$isTodas && $catActivaNorm === mb_strtolower(trim($catNombre)));
                                     @endphp
                                     <label class="cat-label flex items-center space-x-3 cursor-pointer rounded-lg px-2 py-1.5 transition-colors group {{ $isCatChecked ? 'bg-amber-50 border border-amber-200/80' : 'hover:bg-zinc-50' }}">
                                         <input type="radio" name="categoria" value="{{ $catNombre }}" class="filtro-input h-3.5 w-3.5 accent-amber-800 cursor-pointer"
