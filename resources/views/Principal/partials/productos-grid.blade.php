@@ -66,13 +66,14 @@
                             @endif
                         </div>
 
-                        {{-- Hover overlay con botón Ver Detalles --}}
-                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <a href="{{ route('productos.detalle', $producto->id) }}"
-                               class="bg-white/40 backdrop-blur-md text-zinc-950 border border-white/60 text-xs font-bold px-4 sm:px-5 py-2 sm:py-2.5 rounded-full shadow-lg hover:bg-amber-800 hover:text-white hover:border-amber-800 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                                Ver Detalles
-                            </a>
-                        </div>
+                        {{-- Botón Ver Detalles (Arriba a la Derecha) --}}
+                        <a href="{{ route('productos.detalle', $producto->id) }}"
+                           class="absolute top-2 right-2 sm:top-3 sm:right-3 z-20 bg-white/90 hover:bg-amber-800 text-zinc-900 hover:text-white backdrop-blur-md border border-white/70 text-[10px] sm:text-[11px] font-bold px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-full shadow-md transition-all duration-300 flex items-center space-x-1 hover:scale-105">
+                            <span>Ver Detalles</span>
+                            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
                     </div>
 
                     {{-- Info del producto --}}

@@ -372,12 +372,13 @@
                                 @endif
                             </div>
 
-                            <!-- Botón de Vista Rápida en Hover -->
-                            <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
-                                <a href="{{ route('productos.detalle', $producto->id) }}" class="bg-white/40 backdrop-blur-md text-zinc-950 border border-white/60 text-xs font-bold px-5 py-3 rounded-xl shadow-xl hover:bg-[#88674B] hover:text-white hover:border-[#88674B] transition-all transform group-hover:scale-100 scale-95">
-                                    Ver Detalles
-                                </a>
-                            </div>
+                            <!-- Botón Ver Detalles (Arriba a la Derecha) -->
+                            <a href="{{ route('productos.detalle', $producto->id) }}" class="absolute top-3 right-3 z-20 bg-white/90 hover:bg-[#88674B] text-zinc-900 hover:text-white backdrop-blur-md border border-white/70 text-[11px] font-bold px-3.5 py-1.5 rounded-full shadow-lg transition-all duration-300 flex items-center space-x-1 hover:scale-105">
+                                <span>Ver Detalles</span>
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </a>
                         </div>
 
                         <!-- Información del producto -->
