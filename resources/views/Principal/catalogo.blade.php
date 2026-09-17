@@ -108,17 +108,23 @@
                                 <span>Categoría</span>
                             </span>
                             <div class="space-y-1">
-                                <label class="cat-label flex items-center space-x-3 cursor-pointer rounded-lg px-2 py-1.5 hover:bg-zinc-50 transition-colors group">
+                                @php
+                                    $catActiva = $categoriaSeleccionada ?? request('categoria', 'todas');
+                                @endphp
+                                <label class="cat-label flex items-center space-x-3 cursor-pointer rounded-lg px-2 py-1.5 transition-colors group {{ ($catActiva === 'todas' || empty($catActiva)) ? 'bg-amber-50 border border-amber-200/80' : 'hover:bg-zinc-50' }}">
                                     <input type="radio" name="categoria" value="todas" class="filtro-input h-3.5 w-3.5 accent-amber-800 cursor-pointer"
-                                        {{ request('categoria', 'todas') === 'todas' ? 'checked' : '' }}>
-                                    <span class="text-sm text-zinc-700 group-hover:text-amber-800 font-medium transition-colors">Todas</span>
+                                        {{ ($catActiva === 'todas' || empty($catActiva)) ? 'checked' : '' }}>
+                                    <span class="text-sm transition-colors {{ ($catActiva === 'todas' || empty($catActiva)) ? 'font-bold text-amber-900' : 'text-zinc-700 group-hover:text-amber-800' }}">Todas</span>
                                     <span class="ml-auto text-[10px] text-zinc-400 font-mono">{{ $totalTodos ?? $productos->total() }}</span>
                                 </label>
                                 @foreach($categoriasConConteo as $catNombre => $count)
-                                    <label class="cat-label flex items-center space-x-3 cursor-pointer rounded-lg px-2 py-1.5 hover:bg-zinc-50 transition-colors group">
+                                    @php
+                                        $isCatChecked = ($catActiva === $catNombre);
+                                    @endphp
+                                    <label class="cat-label flex items-center space-x-3 cursor-pointer rounded-lg px-2 py-1.5 transition-colors group {{ $isCatChecked ? 'bg-amber-50 border border-amber-200/80' : 'hover:bg-zinc-50' }}">
                                         <input type="radio" name="categoria" value="{{ $catNombre }}" class="filtro-input h-3.5 w-3.5 accent-amber-800 cursor-pointer"
-                                            {{ request('categoria') === $catNombre ? 'checked' : '' }}>
-                                        <span class="text-sm text-zinc-600 group-hover:text-amber-800 transition-colors">{{ $catNombre }}</span>
+                                            {{ $isCatChecked ? 'checked' : '' }}>
+                                        <span class="text-sm transition-colors {{ $isCatChecked ? 'font-bold text-amber-900' : 'text-zinc-600 group-hover:text-amber-800' }}">{{ $catNombre }}</span>
                                         <span class="ml-auto text-[10px] text-zinc-400 font-mono">{{ $count }}</span>
                                     </label>
                                 @endforeach
@@ -332,6 +338,7 @@
 
                 actualizarChips();
                 actualizarOrdenLabels();
+                actualizarCategoriaLabels();
             })
             .catch(() => {
                 wrapper.style.opacity = '1';
@@ -339,6 +346,68 @@
                 spinner.classList.add('hidden');
                 badge.classList.add('hidden');
                 badge.classList.remove('flex');
+            });
+        }
+
+        // ─── Interceptar clics en paginación para mantener los filtros AJAX ────────
+        document.addEventListener('click', function(e) {
+            const pageLink = e.target.closest('#productos-wrapper nav a, #productos-wrapper .pagination a');
+            if (pageLink && pageLink.href) {
+                e.preventDefault();
+                const url = new URL(pageLink.href);
+                const page = url.searchParams.get('page');
+                
+                const params = new URLSearchParams(new FormData(form));
+                for (const [k, v] of [...params.entries()]) {
+                    if (!v || v === 'todas') params.delete(k);
+                }
+                if (page) params.set('page', page);
+
+                // Forzar la URL completa con la página
+                triggerFetchFromParams(params);
+            }
+        });
+
+        function triggerFetchFromParams(params) {
+            const newUrl = params.toString() ? `${baseUrl}?${params}` : baseUrl;
+            history.replaceState(null, '', newUrl);
+
+            wrapper.style.opacity = '0.35';
+            wrapper.style.pointerEvents = 'none';
+            spinner.classList.remove('hidden');
+            badge.classList.remove('hidden');
+            badge.classList.add('flex');
+
+            fetch(`${baseUrl}?${params}&_ajax=1`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                const parser  = new DOMParser();
+                const doc     = parser.parseFromString(html, 'text/html');
+                const newGrid = doc.getElementById('productos-wrapper');
+                const newTotal= doc.getElementById('span-total');
+
+                if (newGrid) {
+                    wrapper.innerHTML = newGrid.innerHTML;
+                    wrapper.style.opacity = '1';
+                    wrapper.style.pointerEvents = '';
+                }
+                if (newTotal) {
+                    const t = newTotal.textContent;
+                    spanTotal.textContent = t;
+                    numRes.textContent    = t;
+                }
+
+                spinner.classList.add('hidden');
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+
+                actualizarChips();
+                actualizarOrdenLabels();
+                actualizarCategoriaLabels();
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         }
 
@@ -384,10 +453,12 @@
                 b.classList.add('border-zinc-200','text-zinc-500');
             });
             clearBuscar.classList.add('hidden');
+            actualizarCategoriaLabels();
             triggerFetch();
         };
         window.resetCategoria = function() {
             document.querySelector('[name="categoria"][value="todas"]').checked = true;
+            actualizarCategoriaLabels();
             triggerFetch();
         };
         window.clearPrecios = function() {
@@ -403,6 +474,24 @@
             document.getElementById('oferta').checked = false;
             triggerFetch();
         };
+
+        // ─── Resaltar radio activo de categorías ──────────────────────────────
+        function actualizarCategoriaLabels() {
+            document.querySelectorAll('[name="categoria"]').forEach(r => {
+                const lbl = r.closest('label');
+                if (!lbl) return;
+                const span = lbl.querySelector('span');
+                if (r.checked) {
+                    lbl.classList.add('bg-amber-50', 'border', 'border-amber-200/80');
+                    lbl.classList.remove('hover:bg-zinc-50');
+                    if (span) { span.classList.add('font-bold', 'text-amber-900'); span.classList.remove('text-zinc-600', 'text-zinc-700'); }
+                } else {
+                    lbl.classList.remove('bg-amber-50', 'border', 'border-amber-200/80');
+                    lbl.classList.add('hover:bg-zinc-50');
+                    if (span) { span.classList.remove('font-bold', 'text-amber-900'); span.classList.add('text-zinc-600'); }
+                }
+            });
+        }
 
         // ─── Resaltar radio activo de ordenar ─────────────────────────────────
         function actualizarOrdenLabels() {
@@ -435,6 +524,7 @@
         // Inicializar chips al cargar si vienen filtros de URL
         actualizarChips();
         actualizarOrdenLabels();
+        actualizarCategoriaLabels();
     })();
     </script>
 @endsection

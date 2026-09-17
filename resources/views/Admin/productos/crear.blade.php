@@ -34,11 +34,10 @@
                     <label for="categoria" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Categoría</label>
                     <select name="categoria" id="categoria" required class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
                         <option value="" disabled selected>Selecciona una categoría</option>
-                        <option value="Salón" {{ old('categoria') === 'Salón' ? 'selected' : '' }}>Salón</option>
+                        <option value="Salas" {{ old('categoria') === 'Salas' ? 'selected' : '' }}>Salas</option>
                         <option value="Dormitorio" {{ old('categoria') === 'Dormitorio' ? 'selected' : '' }}>Dormitorio</option>
                         <option value="Comedor" {{ old('categoria') === 'Comedor' ? 'selected' : '' }}>Comedor</option>
                         <option value="Sillas y Bancos" {{ old('categoria') === 'Sillas y Bancos' ? 'selected' : '' }}>Sillas y Bancos</option>
-                        <option value="Muebles Auxiliares" {{ old('categoria') === 'Muebles Auxiliares' ? 'selected' : '' }}>Muebles Auxiliares</option>
                         <option value="Oficina" {{ old('categoria') === 'Oficina' ? 'selected' : '' }}>Oficina</option>
                         <option value="Exterior" {{ old('categoria') === 'Exterior' ? 'selected' : '' }}>Exterior</option>
                     </select>

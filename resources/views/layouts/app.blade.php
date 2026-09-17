@@ -251,7 +251,7 @@
                 <nav class="flex items-center space-x-8">
                     <!-- SALA con Submenú Desplegable Estilo Marca -->
                     <div class="relative group">
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
+                        <a href="{{ route('catalogo', ['categoria' => 'Salas']) }}" class="flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-zinc-800 hover:text-[#88674B] py-1 transition-colors cursor-pointer">
                             <span>Sala</span>
                             <svg class="w-3.5 h-3.5 text-zinc-500 group-hover:text-[#88674B] transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -261,25 +261,25 @@
                         <!-- Submenú flotante compacto -->
                         <div class="absolute top-full left-0 mt-1.5 w-64 bg-[#2B241A] text-[#FAF3E0] rounded-2xl shadow-2xl border border-[#88674B]/40 p-3 space-y-1 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 transform group-hover:translate-y-0 translate-y-2 before:absolute before:-top-3 before:left-0 before:w-full before:h-3 before:content-['']">
                             <!-- Opción para Ver Todos los productos de esta categoría -->
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-extrabold text-white bg-[#88674B]/60 hover:bg-[#88674B] rounded-xl transition-colors mb-2 border border-[#88674B] shadow-xs">
+                            <a href="{{ route('catalogo', ['categoria' => 'Salas']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-extrabold text-white bg-[#88674B]/60 hover:bg-[#88674B] rounded-xl transition-colors mb-2 border border-[#88674B] shadow-xs">
                                 <span>Ver todo en Sala</span>
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                 </svg>
                             </a>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón', 'buscar' => 'Sofá']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                            <a href="{{ route('catalogo', ['categoria' => 'Salas', 'buscar' => 'Sofá']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
                                 <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Sofás y salas modulares</span>
                             </a>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón', 'buscar' => 'Mesa']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                            <a href="{{ route('catalogo', ['categoria' => 'Salas', 'buscar' => 'Mesa']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
                                 <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Mesas de centro y laterales</span>
                             </a>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón', 'buscar' => 'Sillón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                            <a href="{{ route('catalogo', ['categoria' => 'Salas', 'buscar' => 'Sillón']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
                                 <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Sillones</span>
                             </a>
-                            <a href="{{ route('catalogo', ['categoria' => 'Salón', 'buscar' => 'Credenza']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
+                            <a href="{{ route('catalogo', ['categoria' => 'Salas', 'buscar' => 'Credenza']) }}" class="flex items-center space-x-2 px-3 py-2 text-xs font-semibold rounded-xl hover:bg-[#88674B]/40 hover:text-[#FAF3E0] transition-colors">
                                 <span class="text-[#C49A6C] font-bold">•</span>
                                 <span>Credenzas</span>
                             </a>
@@ -394,25 +394,25 @@
                         </svg>
                     </button>
                     <div id="acc-content-salas" class="hidden bg-black/25 px-3 py-2 space-y-1.5 border-t border-white/10">
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-bold text-white bg-[#88674B]/80 hover:bg-[#88674B] rounded-xl transition-colors border border-white/20 shadow-xs">
+                        <a href="{{ route('catalogo', ['categoria' => 'Salas']) }}" class="flex items-center justify-between px-3 py-2 text-xs font-bold text-white bg-[#88674B]/80 hover:bg-[#88674B] rounded-xl transition-colors border border-white/20 shadow-xs">
                             <span>Ver todo en Salas</span>
                             <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         </a>
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón', 'buscar' => 'Sofá']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                        <a href="{{ route('catalogo', ['categoria' => 'Salas', 'buscar' => 'Sofá']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
                             <span class="text-[#FAF3E0]">•</span>
                             <span>Sofás y salas modulares</span>
                         </a>
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón', 'buscar' => 'Mesa']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                        <a href="{{ route('catalogo', ['categoria' => 'Salas', 'buscar' => 'Mesa']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
                             <span class="text-[#FAF3E0]">•</span>
                             <span>Mesas de centro y laterales</span>
                         </a>
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón', 'buscar' => 'Sillón']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                        <a href="{{ route('catalogo', ['categoria' => 'Salas', 'buscar' => 'Sillón']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
                             <span class="text-[#FAF3E0]">•</span>
                             <span>Sillones</span>
                         </a>
-                        <a href="{{ route('catalogo', ['categoria' => 'Salón', 'buscar' => 'Credenza']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
+                        <a href="{{ route('catalogo', ['categoria' => 'Salas', 'buscar' => 'Credenza']) }}" class="flex items-center space-x-2 px-3 py-1.5 text-xs text-white/90 hover:text-white transition-colors">
                             <span class="text-[#FAF3E0]">•</span>
                             <span>Credenzas</span>
                         </a>
@@ -651,7 +651,7 @@
                 <div>
                     <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Categorías</h3>
                     <ul class="mt-4 space-y-2.5 text-sm">
-                        <li><a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="hover:text-[#FAF3E0] transition-colors">Salas</a></li>
+                        <li><a href="{{ route('catalogo', ['categoria' => 'Salas']) }}" class="hover:text-[#FAF3E0] transition-colors">Salas</a></li>
                         <li><a href="{{ route('catalogo', ['categoria' => 'Dormitorio']) }}" class="hover:text-[#FAF3E0] transition-colors">Recámaras</a></li>
                         <li><a href="{{ route('catalogo', ['categoria' => 'Comedor']) }}" class="hover:text-[#FAF3E0] transition-colors">Comedor</a></li>
                         <li class="pt-1.5"><a href="{{ route('catalogo') }}" class="text-[#C49A6C] hover:text-white font-bold transition-colors">Ver Todo el Catálogo &rarr;</a></li>

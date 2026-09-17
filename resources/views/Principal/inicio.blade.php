@@ -186,7 +186,7 @@
 
             <div class="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Salas -->
-                <a href="{{ route('catalogo', ['categoria' => 'Salón']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
+                <a href="{{ route('catalogo', ['categoria' => 'Salas']) }}" class="group relative h-84 rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-1.5">
                     <img src="{{ asset('SALAS.png') }}" alt="Salas" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent"></div>
                     <div class="absolute bottom-6 left-6 right-6 text-white flex flex-col justify-end">
@@ -329,7 +329,7 @@
                     <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-[#88674B] text-white shadow-md" data-category="todos">
                         Todos
                     </button>
-                    <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-zinc-100 hover:bg-[#FAF3E0] text-zinc-700 hover:text-[#74563C] border border-zinc-200/80" data-category="Salón">
+                    <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-zinc-100 hover:bg-[#FAF3E0] text-zinc-700 hover:text-[#74563C] border border-zinc-200/80" data-category="Salas">
                         Salas
                     </button>
                     <button type="button" class="tab-btn px-4 py-2 rounded-xl text-xs font-bold transition-all bg-zinc-100 hover:bg-[#FAF3E0] text-zinc-700 hover:text-[#74563C] border border-zinc-200/80" data-category="Dormitorio">
@@ -645,7 +645,7 @@
                         const itemCat = item.getAttribute('data-cat');
                         const isMatch = (category === 'todos') ||
                                         (category === itemCat) ||
-                                        (category === 'Salón' && (itemCat === 'Salas' || itemCat === 'Salón')) ||
+                                        (category === 'Salas' && itemCat === 'Salas') ||
                                         (category === 'Dormitorio' && (itemCat === 'Recámaras' || itemCat === 'Dormitorio')) ||
                                         (category === 'Comedor' && itemCat === 'Comedor');
 

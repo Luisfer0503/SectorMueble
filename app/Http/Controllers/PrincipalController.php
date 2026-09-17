@@ -57,9 +57,34 @@ class PrincipalController extends Controller
             });
         }
 
-        // Filtro por categoría
-        if ($request->filled('categoria') && $request->categoria !== 'todas') {
-            $consulta->where('categoria', $request->categoria);
+        // Filtro por categoría con normalización de alias (Salas, Recámaras, etc.)
+        $categoriaReq = $request->input('categoria');
+        $categoriaSeleccionada = 'todas';
+
+        if (!empty($categoriaReq) && $categoriaReq !== 'todas') {
+            $catMap = [
+                'salón'              => 'Salas',
+                'salon'              => 'Salas',
+                'salas'              => 'Salas',
+                'sala'               => 'Salas',
+                'dormitorio'         => 'Dormitorio',
+                'recámaras'          => 'Dormitorio',
+                'recamaras'          => 'Dormitorio',
+                'recámara'           => 'Dormitorio',
+                'recamara'           => 'Dormitorio',
+                'comedor'            => 'Comedor',
+                'comedores'          => 'Comedor',
+                'sillas y bancos'    => 'Sillas y Bancos',
+                'sillas'             => 'Sillas y Bancos',
+                'bancos'             => 'Sillas y Bancos',
+                'muebles auxiliares' => 'Salas',
+                'auxiliares'         => 'Salas',
+            ];
+
+            $catKey = mb_strtolower(trim($categoriaReq));
+            $categoriaSeleccionada = $catMap[$catKey] ?? $categoriaReq;
+
+            $consulta->where('categoria', $categoriaSeleccionada);
         }
 
         // Filtro por precio mínimo (respeta precio con descuento)
@@ -125,10 +150,10 @@ class PrincipalController extends Controller
 
         // Petición AJAX → devolver solo el partial del grid
         if ($request->ajax() || $request->has('_ajax')) {
-            return view('Principal.partials.productos-grid', compact('productos'));
+            return view('Principal.partials.productos-grid', compact('productos', 'categoriaSeleccionada'));
         }
 
-        return view('Principal.catalogo', compact('productos', 'categorias', 'categoriasConConteo', 'totalTodos'));
+        return view('Principal.catalogo', compact('productos', 'categorias', 'categoriasConConteo', 'totalTodos', 'categoriaSeleccionada'));
     }
 
     /**
