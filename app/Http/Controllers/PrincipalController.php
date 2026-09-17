@@ -1534,27 +1534,34 @@ class PrincipalController extends Controller
         $mensajeVentas .= "💰 *Total Estimado:* \${$totalFmt} MXN\n\n";
         $mensajeVentas .= "💬 *HAZ CLIC AQUÍ PARA RESPONDER AL CLIENTE POR WHATSAPP:*\n{$linkRespuestaCliente}";
 
-        $numeroVentas = config('services.whatsapp.ventas_number', '522225722219');
+        $numeroVentasRaw = config('services.whatsapp.ventas_number', '522226702641');
+        $numeroVentas = preg_replace('/[^0-9]/', '', $numeroVentasRaw);
+        if (strlen($numeroVentas) === 10) {
+            $numeroVentas = '52' . $numeroVentas;
+        }
+
         $apiUrl = config('services.whatsapp.api_url');
         $apiToken = config('services.whatsapp.api_token');
 
         // Registro de respaldo en logs
-        \Illuminate\Support\Facades\Log::info("SOLICITUD DE ATENCIÓN A VENTAS POR WHATSAPP:\n" . $mensajeVentas);
+        \Illuminate\Support\Facades\Log::info("SOLICITUD DE ATENCIÓN A VENTAS POR WHATSAPP (A {$numeroVentas}):\n" . $mensajeVentas);
 
-        // Despacho vía API (Soporta CallMeBot, UltraMsg, Meta Cloud API o Webhook)
+        // Despacho vía API (Meta WhatsApp Cloud API, CallMeBot, Green API o Webhook Universal)
         $enviadoPorApi = false;
 
         if (!empty($apiToken) && empty($apiUrl)) {
             // Pasarela Gratuita CallMeBot
             try {
                 $urlCallMeBot = "https://api.callmebot.com/whatsapp.php?phone={$numeroVentas}&text=" . urlencode($mensajeVentas) . "&apikey={$apiToken}";
-                \Illuminate\Support\Facades\Http::timeout(10)->get($urlCallMeBot);
-                $enviadoPorApi = true;
+                $respCallMeBot = \Illuminate\Support\Facades\Http::timeout(10)->get($urlCallMeBot);
+                if ($respCallMeBot->successful()) {
+                    $enviadoPorApi = true;
+                }
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error("Error al enviar WhatsApp por CallMeBot: " . $e->getMessage());
             }
         } elseif (!empty($apiUrl)) {
-            // Pasarela UltraMsg, Meta WhatsApp Cloud API, Green API o Webhook Universal
+            // Pasarela Meta WhatsApp Cloud API / Green API / Webhook Universal
             try {
                 if (str_contains($apiUrl, 'graph.facebook.com')) {
                     // Meta WhatsApp Cloud API oficial
@@ -1568,16 +1575,26 @@ class PrincipalController extends Controller
                             'body'        => $mensajeVentas,
                         ],
                     ]);
+
                     \Illuminate\Support\Facades\Log::info("Meta WhatsApp API Response status=" . $responseMeta->status() . " body=" . $responseMeta->body());
+
+                    if ($responseMeta->successful()) {
+                        $enviadoPorApi = true;
+                    } else {
+                        \Illuminate\Support\Facades\Log::error("Error al enviar WhatsApp por Meta API: [" . $responseMeta->status() . "] " . $responseMeta->body());
+                    }
                 } elseif (str_contains($apiUrl, 'green-api.com')) {
                     // Green API
-                    \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(10)->post($apiUrl, [
+                    $respGreen = \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(10)->post($apiUrl, [
                         'chatId'  => $numeroVentas . '@c.us',
                         'message' => $mensajeVentas,
                     ]);
+                    if ($respGreen->successful()) {
+                        $enviadoPorApi = true;
+                    }
                 } else {
                     // UltraMsg / Evolution API / Custom Webhook Universal
-                    \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(10)->withHeaders([
+                    $respWeb = \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(10)->withHeaders([
                         'Authorization' => 'Bearer ' . $apiToken,
                         'Content-Type'  => 'application/json',
                     ])->post($apiUrl, [
@@ -1588,8 +1605,10 @@ class PrincipalController extends Controller
                         'token'     => $apiToken,
                         'token_key' => $apiToken,
                     ]);
+                    if ($respWeb->successful()) {
+                        $enviadoPorApi = true;
+                    }
                 }
-                $enviadoPorApi = true;
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error("Error al enviar WhatsApp por API: " . $e->getMessage());
             }
