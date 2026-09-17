@@ -658,28 +658,45 @@ class AdminController extends Controller
     }
 
     /**
-     * Mostrar vista de edición de Términos y Condiciones.
+     * Mostrar vista de edición de Términos y Condiciones por Secciones.
      */
     public function terminosIndex()
     {
+        $secciones = TerminoCondicion::obtenerSecciones();
         $contenido = TerminoCondicion::obtenerContenido();
-        return view('Admin.terminos.index', compact('contenido'));
+        return view('Admin.terminos.index', compact('secciones', 'contenido'));
     }
 
     /**
-     * Guardar/Actualizar los Términos y Condiciones.
+     * Guardar/Actualizar los Términos y Condiciones por Secciones.
      */
     public function terminosActualizar(Request $request)
     {
-        $request->validate([
-            'contenido' => 'required|string',
-        ]);
-
         $terminos = TerminoCondicion::firstOrNew(['id' => 1]);
-        $terminos->contenido = trim($request->input('contenido'));
+
+        if ($request->has('secciones') && is_array($request->input('secciones'))) {
+            $seccionesValidas = [];
+            foreach ($request->input('secciones') as $sec) {
+                $titulo = trim($sec['titulo'] ?? '');
+                $cont = trim($sec['contenido'] ?? '');
+                if (!empty($titulo) || !empty($cont)) {
+                    $seccionesValidas[] = [
+                        'titulo' => $titulo,
+                        'contenido' => $cont,
+                    ];
+                }
+            }
+            $terminos->contenido = json_encode($seccionesValidas, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        } else {
+            $request->validate([
+                'contenido' => 'required|string',
+            ]);
+            $terminos->contenido = trim($request->input('contenido'));
+        }
+
         $terminos->save();
 
-        return redirect()->route('admin.terminos')->with('success', '¡Términos y Condiciones actualizados con éxito!');
+        return redirect()->route('admin.terminos')->with('success', '¡Términos y Condiciones actualizados con éxito por secciones!');
     }
 
     // --- GESTIÓN DE RULETA DE PREMIOS ---

@@ -505,8 +505,9 @@ class PrincipalController extends Controller
      */
     public function terminosCondiciones()
     {
-        $contenido = TerminoCondicion::obtenerContenido();
-        return view('Principal.terminos', compact('contenido'));
+        $secciones = TerminoCondicion::obtenerSecciones();
+        $contenidoText = TerminoCondicion::obtenerContenido();
+        return view('Principal.terminos', compact('secciones', 'contenidoText'));
     }
 
     /**
