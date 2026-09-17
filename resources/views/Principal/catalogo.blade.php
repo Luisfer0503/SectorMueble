@@ -123,12 +123,14 @@
                                     @php
                                         $isCatChecked = (!$isTodas && $catActivaNorm === mb_strtolower(trim($catNombre)));
                                     @endphp
-                                    <label class="cat-label flex items-center space-x-3 cursor-pointer rounded-lg px-2 py-1.5 transition-colors group {{ $isCatChecked ? 'bg-amber-50 border border-amber-200/80' : 'hover:bg-zinc-50' }}">
-                                        <input type="radio" name="categoria" value="{{ $catNombre }}" class="filtro-input h-3.5 w-3.5 accent-amber-800 cursor-pointer"
-                                            {{ $isCatChecked ? 'checked' : '' }}>
-                                        <span class="text-sm transition-colors {{ $isCatChecked ? 'font-bold text-amber-900' : 'text-zinc-600 group-hover:text-amber-800' }}">{{ $catNombre }}</span>
-                                        <span class="ml-auto text-[10px] text-zinc-400 font-mono">{{ $count }}</span>
-                                    </label>
+                                    @if($count > 0 || $isCatChecked)
+                                        <label class="cat-label flex items-center space-x-3 cursor-pointer rounded-lg px-2 py-1.5 transition-colors group {{ $isCatChecked ? 'bg-amber-50 border border-amber-200/80' : 'hover:bg-zinc-50' }}">
+                                            <input type="radio" name="categoria" value="{{ $catNombre }}" class="filtro-input h-3.5 w-3.5 accent-amber-800 cursor-pointer"
+                                                {{ $isCatChecked ? 'checked' : '' }}>
+                                            <span class="text-sm transition-colors {{ $isCatChecked ? 'font-bold text-amber-900' : 'text-zinc-600 group-hover:text-amber-800' }}">{{ $catNombre }}</span>
+                                            <span class="ml-auto text-[10px] text-zinc-400 font-mono">{{ $count }}</span>
+                                        </label>
+                                    @endif
                                 @endforeach
                             </div>
                         </div>
