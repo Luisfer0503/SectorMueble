@@ -108,6 +108,7 @@
                                     data-imagen="{{ $det->imagen_url }}"
                                     data-stock="{{ $det->stock }}"
                                     data-precio="{{ $det->precio ?? $producto->precio }}"
+                                    data-descuento-pct="{{ $det->porcentaje_descuento ?? $producto->porcentaje_descuento ?? 0 }}"
                                     onclick="switchSubArticulo('{{ $det->id }}')" 
                                     class="subarticulo-btn flex flex-col items-center p-2.5 rounded-xl border-2 {{ $idx === 0 ? 'border-[#5C4033] bg-[#F5EBE0] ring-2 ring-[#88674B]/30' : 'border-zinc-200 bg-white' }} transition-all cursor-pointer hover:shadow-md group">
                                 
@@ -156,23 +157,20 @@
                     <!-- Price -->
                     @php
                         $precioInicialSub = (float)($primerDetalle->precio ?? $producto->precio);
-                        $tieneDescSub = $producto->tieneDescuento();
-                        $descPctSub = (float)($producto->porcentaje_descuento ?? 0);
-                        $precioDescInicialSub = $tieneDescSub ? ($precioInicialSub * (1 - $descPctSub / 100)) : $precioInicialSub;
+                        $descPctSub = (float)($primerDetalle->porcentaje_descuento ?? $producto->porcentaje_descuento ?? 0);
+                        $tieneDescSub = $descPctSub > 0;
+                        $precioDescInicialSub = $tieneDescSub ? round($precioInicialSub * (1 - $descPctSub / 100), 2) : $precioInicialSub;
                     @endphp
                     <div class="mt-6" id="price-container" data-descuento-pct="{{ $descPctSub }}">
-                        @if($tieneDescSub)
-                            <div class="flex items-center space-x-3">
-                                <span id="price-discounted-display" class="text-2xl font-bold text-emerald-700 font-sans">$ {{ number_format($precioDescInicialSub, 2, '.', ',') }} MXN</span>
-                                <span id="price-original-display" class="text-base text-zinc-400 line-through font-sans">$ {{ number_format($precioInicialSub, 2, '.', ',') }}</span>
-                                <span class="bg-rose-600 text-white text-xs font-bold px-2.5 py-1 rounded">-{{ $producto->porcentaje_descuento }}%</span>
-                            </div>
-                            <p class="text-xs text-emerald-600 font-semibold mt-1">
-                                Ahorras <span id="price-savings-display">$ {{ number_format($precioInicialSub - $precioDescInicialSub, 2, '.', ',') }} MXN</span>
-                            </p>
-                        @else
-                            <span id="price-main-display" class="text-2xl font-bold text-zinc-950 font-sans">$ {{ number_format($precioInicialSub, 2, '.', ',') }} MXN</span>
-                        @endif
+                        <div class="flex items-center space-x-3 {{ $tieneDescSub ? '' : 'hidden' }}" id="price-discount-wrapper">
+                            <span id="price-discounted-display" class="text-2xl font-bold text-emerald-700 font-sans">$ {{ number_format($precioDescInicialSub, 2, '.', ',') }} MXN</span>
+                            <span id="price-original-display" class="text-base text-zinc-400 line-through font-sans">$ {{ number_format($precioInicialSub, 2, '.', ',') }}</span>
+                            <span id="price-badge-display" class="bg-rose-600 text-white text-xs font-bold px-2.5 py-1 rounded">-{{ (int)$descPctSub }}%</span>
+                        </div>
+                        <span id="price-main-display" class="text-2xl font-bold text-zinc-950 font-sans {{ $tieneDescSub ? 'hidden' : '' }}">$ {{ number_format($precioInicialSub, 2, '.', ',') }} MXN</span>
+                        <p class="text-xs text-emerald-600 font-semibold mt-1 {{ $tieneDescSub ? '' : 'hidden' }}" id="price-savings-container">
+                            Ahorras <span id="price-savings-display">$ {{ number_format($precioInicialSub - $precioDescInicialSub, 2, '.', ',') }} MXN</span>
+                        </p>
                         <p class="text-xs text-zinc-400 mt-1">IVA incluido. Envío estimado en 3-5 días laborables.</p>
                     </div>
 
@@ -518,27 +516,39 @@
 
             // Actualizar Precio Dinámicamente
             if (precioRaw > 0) {
-                const priceContainer = document.getElementById('price-container');
-                const descPct = parseFloat(priceContainer?.dataset?.descuentoPct || 0);
+                const descPct = parseFloat(btn.dataset.descuentoPct || 0);
 
                 const priceMainDisplay = document.getElementById('price-main-display');
                 const priceOriginalDisplay = document.getElementById('price-original-display');
                 const priceDiscountedDisplay = document.getElementById('price-discounted-display');
                 const priceSavingsDisplay = document.getElementById('price-savings-display');
+                const priceBadgeDisplay = document.getElementById('price-badge-display');
+                const priceDiscountWrapper = document.getElementById('price-discount-wrapper');
+                const priceSavingsContainer = document.getElementById('price-savings-container');
 
                 const formatMoney = (amount) => {
                     return amount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 };
 
                 if (descPct > 0) {
-                    const discountedPrice = precioRaw * (1 - descPct / 100);
+                    const discountedPrice = Math.round(precioRaw * (1 - descPct / 100) * 100) / 100;
                     const savings = precioRaw - discountedPrice;
 
                     if (priceDiscountedDisplay) priceDiscountedDisplay.textContent = `$ ${formatMoney(discountedPrice)} MXN`;
                     if (priceOriginalDisplay) priceOriginalDisplay.textContent = `$ ${formatMoney(precioRaw)}`;
                     if (priceSavingsDisplay) priceSavingsDisplay.textContent = `$ ${formatMoney(savings)} MXN`;
+                    if (priceBadgeDisplay) priceBadgeDisplay.textContent = `-${Math.round(descPct)}%`;
+
+                    if (priceMainDisplay) priceMainDisplay.classList.add('hidden');
+                    if (priceDiscountWrapper) priceDiscountWrapper.classList.remove('hidden');
+                    if (priceSavingsContainer) priceSavingsContainer.classList.remove('hidden');
                 } else {
-                    if (priceMainDisplay) priceMainDisplay.textContent = `$ ${formatMoney(precioRaw)} MXN`;
+                    if (priceMainDisplay) {
+                        priceMainDisplay.textContent = `$ ${formatMoney(precioRaw)} MXN`;
+                        priceMainDisplay.classList.remove('hidden');
+                    }
+                    if (priceDiscountWrapper) priceDiscountWrapper.classList.add('hidden');
+                    if (priceSavingsContainer) priceSavingsContainer.classList.add('hidden');
                 }
             }
 

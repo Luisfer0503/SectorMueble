@@ -314,30 +314,49 @@ class AdminController extends Controller
                 $precio = (isset($acabado['precio']) && $acabado['precio'] !== null) ? (float) $acabado['precio'] : (float) $producto->precio;
                 $stock  = (isset($acabado['stock']) && $acabado['stock'] !== null) ? (int) $acabado['stock'] : (int) $producto->stock;
                 $activoSub = isset($acabado['activo']) ? (bool) $acabado['activo'] : true;
+                $pctDesc = isset($acabado['porcentaje_descuento']) && $acabado['porcentaje_descuento'] !== null ? (int) $acabado['porcentaje_descuento'] : 0;
+                $precioDesc = ($pctDesc > 0 && $precio > 0) ? round($precio * (1 - ($pctDesc / 100)), 2) : null;
                 
                 $defaultSku = Producto::generarSkuFormateado($producto, $nombre);
                 $rawSku = !empty($acabado['sku']) ? trim($acabado['sku']) : '';
                 $sku = (!empty($rawSku) && !str_contains($rawSku, 'AUTO') && !str_starts_with($rawSku, 'SKU-0')) ? $rawSku : $defaultSku;
 
                 ProductoDetalle::create([
-                    'producto_id'     => $producto->id,
-                    'sku'             => $sku,
-                    'nombre'          => $nombre,
-                    'imagen'          => $imagen,
-                    'material_imagen' => $matImg,
-                    'precio'          => $precio,
-                    'stock'           => $stock,
-                    'activo'          => $activoSub,
+                    'producto_id'          => $producto->id,
+                    'sku'                  => $sku,
+                    'nombre'               => $nombre,
+                    'imagen'               => $imagen,
+                    'material_imagen'      => $matImg,
+                    'precio'               => $precio,
+                    'stock'                => $stock,
+                    'activo'               => $activoSub,
+                    'porcentaje_descuento' => $pctDesc > 0 ? $pctDesc : null,
+                    'precio_descuento'     => $precioDesc,
                 ]);
             }
         } else {
+            $pctDescPadre = (int) ($producto->porcentaje_descuento ?? 0);
+            $pPrecio = (float) $producto->precio;
+            $pPrecioDesc = ($pctDescPadre > 0 && $pPrecio > 0) ? round($pPrecio * (1 - ($pctDescPadre / 100)), 2) : null;
+
             ProductoDetalle::create([
-                'producto_id' => $producto->id,
-                'sku'         => Producto::generarSkuFormateado($producto, 'Original'),
-                'nombre'      => $producto->nombre . ' (Original / Natural)',
-                'imagen'      => $producto->getRawOriginal('imagen_url'),
-                'precio'      => (float) $producto->precio,
-                'stock'       => (int) $producto->stock,
+                'producto_id'          => $producto->id,
+                'sku'                  => Producto::generarSkuFormateado($producto, 'Original'),
+                'nombre'               => $producto->nombre . ' (Original / Natural)',
+                'imagen'               => $producto->getRawOriginal('imagen_url'),
+                'precio'               => $pPrecio,
+                'stock'                => (int) $producto->stock,
+                'porcentaje_descuento' => $pctDescPadre > 0 ? $pctDescPadre : null,
+                'precio_descuento'     => $pPrecioDesc,
+            ]);
+        }
+
+        // Sincronizar el descuento del producto padre con el del primer subartículo activo
+        $primerDetalle = $producto->detalles()->where('activo', true)->first() ?? $producto->detalles()->first();
+        if ($primerDetalle) {
+            $producto->update([
+                'porcentaje_descuento' => $primerDetalle->porcentaje_descuento,
+                'precio_descuento'     => $primerDetalle->precio_descuento,
             ]);
         }
     }
@@ -355,10 +374,11 @@ class AdminController extends Controller
 
         // Si se reciben nuevos acabados estructurados (material + nombre + foto mueble)
         if ($request->has('acabados_nombres') || $request->has('colores_nombres')) {
-            $nombres = $request->input('acabados_nombres', $request->input('colores_nombres', []));
-            $precios = $request->input('acabados_precios', []);
-            $stocks  = $request->input('acabados_stocks', []);
-            $skus    = $request->input('acabados_skus', []);
+            $nombres    = $request->input('acabados_nombres', $request->input('colores_nombres', []));
+            $precios    = $request->input('acabados_precios', []);
+            $descuentos = $request->input('acabados_descuentos', []);
+            $stocks     = $request->input('acabados_stocks', []);
+            $skus       = $request->input('acabados_skus', []);
             $matExistentes = $request->input('acabados_materiales_existentes', []);
             $muebleExistentes = $request->input('acabados_muebles_existentes', $request->input('colores_imagenes_existentes', []));
             $activosInput = $request->input('acabados_activos', []);
@@ -369,6 +389,7 @@ class AdminController extends Controller
                 $materialPath = $matExistentes[$i] ?? null;
                 $mueblePath = $muebleExistentes[$i] ?? null;
                 $precioVal = isset($precios[$i]) && $precios[$i] !== '' ? (float) $precios[$i] : null;
+                $descuentoVal = isset($descuentos[$i]) && $descuentos[$i] !== '' ? (int) $descuentos[$i] : 0;
                 $stockVal = isset($stocks[$i]) && $stocks[$i] !== '' ? (int) $stocks[$i] : null;
                 $skuVal = isset($skus[$i]) && $skus[$i] !== '' ? trim($skus[$i]) : null;
                 $activoVal = isset($activosInput[$i]) ? (bool) $activosInput[$i] : true;
@@ -407,13 +428,14 @@ class AdminController extends Controller
                 }
 
                 $acabados[] = [
-                    'nombre'          => trim($nombre),
-                    'material_imagen' => $materialPath,
-                    'mueble_imagen'   => $mueblePath,
-                    'precio'          => $precioVal,
-                    'stock'           => $stockVal,
-                    'sku'             => $skuVal,
-                    'activo'          => $activoVal,
+                    'nombre'               => trim($nombre),
+                    'material_imagen'      => $materialPath,
+                    'mueble_imagen'        => $mueblePath,
+                    'precio'               => $precioVal,
+                    'porcentaje_descuento' => $descuentoVal,
+                    'stock'                => $stockVal,
+                    'sku'                  => $skuVal,
+                    'activo'               => $activoVal,
                 ];
             }
         }
@@ -482,7 +504,7 @@ class AdminController extends Controller
      */
     public function productosAplicarDescuento(Request $request, $id)
     {
-        $producto = Producto::findOrFail($id);
+        $producto = Producto::with('detalles')->findOrFail($id);
 
         // Si se quiere quitar el descuento
         if ($request->has('quitar_descuento')) {
@@ -490,6 +512,12 @@ class AdminController extends Controller
                 'porcentaje_descuento' => null,
                 'precio_descuento'     => null,
             ]);
+            foreach ($producto->detalles as $detalle) {
+                $detalle->update([
+                    'porcentaje_descuento' => null,
+                    'precio_descuento'     => null,
+                ]);
+            }
             return redirect()->route('admin.productos')
                 ->with('success', "Descuento quitado del mueble \"{$producto->nombre}\".");
         }
@@ -506,8 +534,17 @@ class AdminController extends Controller
             'precio_descuento'     => $precioConDescuento,
         ]);
 
+        foreach ($producto->detalles as $detalle) {
+            $precioSub = (float) ($detalle->precio ?? $producto->precio);
+            $precioSubDesc = ($precioSub > 0 && $porcentaje > 0) ? round($precioSub * (1 - ($porcentaje / 100)), 2) : null;
+            $detalle->update([
+                'porcentaje_descuento' => $porcentaje,
+                'precio_descuento'     => $precioSubDesc,
+            ]);
+        }
+
         return redirect()->route('admin.productos')
-            ->with('success', "Descuento del {$porcentaje}% aplicado a \"{$producto->nombre}\". Precio final: \${$precioConDescuento}.");
+            ->with('success', "Descuento del {$porcentaje}% aplicado a \"{$producto->nombre}\" y a sus subartículos. Precio final base: \${$precioConDescuento}.");
     }
 
     // --- CRUD DE CUPONES (DESCUENTOS) ---

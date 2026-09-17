@@ -315,9 +315,9 @@ class PrincipalController extends Controller
             }
             $carrito[$itemKey]['cantidad'] = $nuevaCantidad;
         } else {
-            $tieneDesc = $producto->tieneDescuento();
-            $descPct = (float)($producto->porcentaje_descuento ?? 0);
-            $precioEf = $tieneDesc ? ($precioUnitario * (1 - $descPct / 100)) : $precioUnitario;
+            $tieneDesc = ($detalle && $detalle->tieneDescuento()) ? true : $producto->tieneDescuento();
+            $descPct = ($detalle && $detalle->porcentaje_descuento !== null) ? (float)$detalle->porcentaje_descuento : (float)($producto->porcentaje_descuento ?? 0);
+            $precioEf = $tieneDesc ? round($precioUnitario * (1 - $descPct / 100), 2) : $precioUnitario;
 
             $carrito[$itemKey] = [
                 'producto_id'       => $producto->id,

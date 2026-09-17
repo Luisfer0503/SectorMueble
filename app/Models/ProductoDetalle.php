@@ -21,13 +21,36 @@ class ProductoDetalle extends Model
         'precio',
         'stock',
         'activo',
+        'porcentaje_descuento',
+        'precio_descuento',
     ];
 
     protected $casts = [
-        'precio' => 'float',
-        'stock'  => 'integer',
-        'activo' => 'boolean',
+        'precio'               => 'float',
+        'stock'                => 'integer',
+        'activo'               => 'boolean',
+        'porcentaje_descuento' => 'integer',
+        'precio_descuento'     => 'decimal:2',
     ];
+
+    /**
+     * Indica si el subartículo tiene descuento directo activo.
+     */
+    public function tieneDescuento(): bool
+    {
+        return !is_null($this->porcentaje_descuento) && $this->porcentaje_descuento > 0;
+    }
+
+    /**
+     * Retorna el precio final efectivo del subartículo.
+     */
+    public function precioEfectivo(): float
+    {
+        if ($this->tieneDescuento() && $this->precio_descuento !== null) {
+            return (float) $this->precio_descuento;
+        }
+        return (float) $this->precio;
+    }
 
     /**
      * Scope para filtrar únicamente subartículos activos.

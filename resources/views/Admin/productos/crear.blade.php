@@ -250,7 +250,7 @@
                         <div class="acabado-row p-4 bg-zinc-50/90 border border-zinc-200 rounded-2xl space-y-3">
                             <input type="hidden" name="acabados_skus[]" value="SKU-AUTO-01">
 
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-6 gap-3 items-end">
                                 <!-- 1. SKU (No editable) -->
                                 <div>
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
@@ -275,18 +275,26 @@
                                     <input type="number" step="0.01" min="0" name="acabados_precios[]" required placeholder="Precio Mueble" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 </div>
 
-                                <!-- 4. Stock -->
+                                <!-- 4. % Descuento -->
                                 <div>
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-                                        4. Stock
+                                        4. % Descuento
+                                    </label>
+                                    <input type="number" min="0" max="99" name="acabados_descuentos[]" value="0" placeholder="0" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700 font-semibold text-rose-700">
+                                </div>
+
+                                <!-- 5. Stock -->
+                                <div>
+                                    <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                                        5. Stock
                                     </label>
                                     <input type="number" min="0" name="acabados_stocks[]" required placeholder="Stock" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
                                 </div>
 
-                                <!-- 5. Visibilidad (Activo / Inactivo) -->
+                                <!-- 6. Visibilidad (Activo / Inactivo) -->
                                 <div>
                                     <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-                                        5. Estado
+                                        6. Estado
                                     </label>
                                     <select name="acabados_activos[]" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700 font-semibold">
                                         <option value="1" selected>Activo</option>
@@ -383,10 +391,12 @@
             const firstPrice = document.querySelector('input[name="acabados_precios[]"]')?.value || '0.00';
             const firstStock = document.querySelector('input[name="acabados_stocks[]"]')?.value || '10';
 
+            const firstDesc = document.querySelector('input[name="acabados_descuentos[]"]')?.value || '0';
+
             row.innerHTML = `
                 <input type="hidden" name="acabados_skus[]" value="${generatedSku}">
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 items-end">
+                <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-6 gap-3 items-end">
                     <div>
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400 mb-1">
                             1. SKU (Auto)
@@ -407,13 +417,19 @@
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-                            4. Stock
+                            4. % Descuento
+                        </label>
+                        <input type="number" min="0" max="99" name="acabados_descuentos[]" value="${firstDesc}" placeholder="0" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700 font-semibold text-rose-700">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
+                            5. Stock
                         </label>
                         <input type="number" min="0" name="acabados_stocks[]" required value="${firstStock}" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2.5 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700">
                     </div>
                     <div>
                         <label class="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-                            5. Estado
+                            6. Estado
                         </label>
                         <select name="acabados_activos[]" class="w-full bg-white border border-zinc-200 rounded-lg text-xs px-2 py-2 focus:outline-none focus:ring-1 focus:ring-amber-700 font-semibold">
                             <option value="1" selected>Activo</option>
