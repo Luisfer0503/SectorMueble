@@ -46,35 +46,14 @@
                         </h2>
                     </div>
 
-                    <!-- Cuerpo de la Sección con Formateo Especial de Viñetas -->
+                    <!-- Cuerpo de la Sección (Puro Texto) -->
                     <div class="space-y-3 text-xs sm:text-sm text-zinc-700 leading-relaxed font-normal">
-                        @php
-                            $lineas = explode("\n", $sec['contenido'] ?? '');
-                        @endphp
-
-                        @foreach($lineas as $linea)
+                        @foreach(explode("\n", $sec['contenido'] ?? '') as $linea)
                             @php
                                 $trimmed = trim($linea);
                             @endphp
-
-                            @if(empty($trimmed))
-                                <div class="h-2"></div>
-                            @elseif(str_starts_with($trimmed, '•') || str_starts_with($trimmed, '-') || str_starts_with($trimmed, '✓'))
-                                @php
-                                    $textoPunto = ltrim($trimmed, '•-✓ ');
-                                @endphp
-                                <div class="flex items-start space-x-3 bg-[#FAF8F4] p-3.5 sm:p-4 rounded-2xl border border-stone-200/80 my-2 hover:border-[#88674B]/40 transition-colors">
-                                    <div class="w-5 h-5 rounded-full bg-[#FAF3E0] border border-[#E6D7C3] text-[#74563C] flex items-center justify-center shrink-0 mt-0.5 shadow-2xs font-extrabold text-xs">
-                                        ✓
-                                    </div>
-                                    <div class="text-xs sm:text-sm text-zinc-800 font-medium">
-                                        {!! nl2br(e($textoPunto)) !!}
-                                    </div>
-                                </div>
-                            @else
-                                <p class="text-zinc-700 leading-relaxed">
-                                    {!! nl2br(e($trimmed)) !!}
-                                </p>
+                            @if(!empty($trimmed))
+                                <p class="text-zinc-700 leading-relaxed">{{ $trimmed }}</p>
                             @endif
                         @endforeach
                     </div>
