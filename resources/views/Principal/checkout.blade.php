@@ -440,6 +440,9 @@
             const cpInput = document.getElementById('codigo_postal')?.value || '';
             const nombreInput = document.getElementById('nombre_cliente')?.value || '';
             const telInput = document.getElementById('telefono_cliente');
+            const direccionInput = document.getElementById('direccion_envio')?.value || '';
+            const ciudadInput = document.getElementById('ciudad')?.value || '';
+            const referenciasInput = document.getElementById('referencias')?.value || '';
             const btnAgente = document.getElementById('btn-contactar-agente');
 
             const telefonoVal = telInput ? telInput.value.trim() : '';
@@ -473,7 +476,10 @@
                     body: JSON.stringify({
                         nombre_cliente: nombreInput,
                         telefono_cliente: telefonoVal,
-                        codigo_postal: cpInput
+                        codigo_postal: cpInput,
+                        direccion_envio: direccionInput,
+                        ciudad: ciudadInput,
+                        referencias: referenciasInput
                     })
                 });
 

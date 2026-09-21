@@ -3,6 +3,7 @@
 use App\Http\Controllers\PrincipalController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\FacturacionController;
+use App\Http\Controllers\FeedController;
 use Illuminate\Support\Facades\Route;
 
 // Ruta de Inicio
@@ -11,6 +12,11 @@ Route::redirect('/inicio', '/');
 
 // Catálogo y filtros
 Route::get('/catalogo', [PrincipalController::class, 'catalogo'])->name('catalogo');
+
+// Feed XML de Productos para Marketing (Meta / Facebook Catalog, Google Shopping, TikTok)
+Route::get('/feed/productos.xml', [FeedController::class, 'xml'])->name('feed.productos');
+Route::get('/feed/google-shopping.xml', [FeedController::class, 'xml']);
+Route::get('/feed/facebook-catalog.xml', [FeedController::class, 'xml']);
 
 // Términos y Condiciones
 Route::get('/terminos-y-condiciones', [PrincipalController::class, 'terminosCondiciones'])->name('terminos');

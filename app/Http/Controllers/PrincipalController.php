@@ -1494,6 +1494,17 @@ class PrincipalController extends Controller
         $telefonoBruto = trim($request->input('telefono_cliente'));
         $cp = trim($request->input('codigo_postal')) ?: session('codigo_postal', 'Sin especificar');
 
+        // Dirección completa de entrega
+        $direccionEnvio = trim($request->input('direccion_envio')) ?: '';
+        $ciudad = trim($request->input('ciudad')) ?: '';
+        $referencias = trim($request->input('referencias')) ?: '';
+
+        $partesDireccion = array_filter([$direccionEnvio, $ciudad, "C.P. {$cp}"]);
+        if (!empty($referencias)) {
+            $partesDireccion[] = "(Ref: {$referencias})";
+        }
+        $direccionCompleta = !empty($partesDireccion) ? implode(', ', $partesDireccion) : "C.P. {$cp}";
+
         // Limpiar número del cliente a dígitos
         $digitosTel = preg_replace('/[^0-9]/', '', $telefonoBruto);
         if (strlen($digitosTel) === 10) {
@@ -1523,15 +1534,15 @@ class PrincipalController extends Controller
         $totalFmt = number_format($total, 2, '.', ',');
 
         // Enlace interactivo para que el agente responda directamente al WhatsApp del cliente
-        $mensajeRespuestaAgente = rawurlencode("Hola {$nombre}, un gusto saludarte. Recibimos tu solicitud en Sector Mueble para tu pedido con CP {$cp}. ¿En qué podemos ayudarte?");
+        $mensajeRespuestaAgente = rawurlencode("Hola {$nombre}, un gusto saludarte. Recibimos tu solicitud en Sector Mueble para tu pedido con dirección: {$direccionCompleta}. ¿En qué podemos ayudarte?");
         $linkRespuestaCliente = "https://wa.me/{$digitosTel}?text={$mensajeRespuestaAgente}";
 
-        // Construir mensaje estructurado para la API de Ventas
+        // Construir mensaje estructurado para la API de Ventas (Texto plano o CallMeBot)
         $mensajeVentas = "📥 *NUEVA SOLICITUD DE ATENCIÓN DE VENTAS*\n\n";
         $mensajeVentas .= "👤 *Cliente:* {$nombre}\n";
         $mensajeVentas .= "📞 *Teléfono:* +{$digitosTel}\n";
-        $mensajeVentas .= "📍 *Código Postal:* {$cp}\n\n";
-        $mensajeVentas .= "🛋️ *RESUMEN DEL CARRITO:*\n{$itemsTexto}\n";
+        $mensajeVentas .= "📍 *Dirección / CP:* {$direccionCompleta}\n\n";
+        $mensajeVentas .= "🛋️ *ARTÍCULOS EN EL CARRITO:*\n{$itemsTexto}\n";
         $mensajeVentas .= "💰 *Total Estimado:* \${$totalFmt} MXN\n\n";
         $mensajeVentas .= "💬 *HAZ CLIC AQUÍ PARA RESPONDER AL CLIENTE POR WHATSAPP:*\n{$linkRespuestaCliente}";
 
@@ -1566,23 +1577,64 @@ class PrincipalController extends Controller
             try {
                 if (str_contains($apiUrl, 'graph.facebook.com')) {
                     // Meta WhatsApp Cloud API oficial
-                    $responseMeta = \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(10)->withToken($apiToken)->post($apiUrl, [
+                    $templateName = config('services.whatsapp.template', env('WHATSAPP_TEMPLATE_NAME', 'aviso_nuevo_contacto'));
+
+                    $payloadMeta = [
                         'messaging_product' => 'whatsapp',
                         'recipient_type'    => 'individual',
                         'to'                => $numeroVentas,
-                        'type'              => 'text',
-                        'text'              => [
+                    ];
+
+                    if (!empty($templateName)) {
+                        $payloadMeta['type'] = 'template';
+                        $payloadMeta['template'] = [
+                            'name'     => $templateName,
+                            'language' => [
+                                'code' => 'es'
+                            ],
+                            'components' => [
+                                [
+                                    'type'       => 'body',
+                                    'parameters' => [
+                                        ['type' => 'text', 'text' => (string) $nombre],
+                                        ['type' => 'text', 'text' => '+' . (string) $digitosTel],
+                                        ['type' => 'text', 'text' => (string) $direccionCompleta],
+                                        ['type' => 'text', 'text' => (string) trim($itemsTexto)],
+                                        ['type' => 'text', 'text' => '$' . (string) $totalFmt . ' MXN'],
+                                    ]
+                                ]
+                            ]
+                        ];
+                    } else {
+                        $payloadMeta['type'] = 'text';
+                        $payloadMeta['text'] = [
                             'preview_url' => true,
                             'body'        => $mensajeVentas,
-                        ],
-                    ]);
+                        ];
+                    }
+
+                    $responseMeta = \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(10)->withToken($apiToken)->post($apiUrl, $payloadMeta);
 
                     \Illuminate\Support\Facades\Log::info("Meta WhatsApp API Response status=" . $responseMeta->status() . " body=" . $responseMeta->body());
 
                     if ($responseMeta->successful()) {
                         $enviadoPorApi = true;
                     } else {
-                        \Illuminate\Support\Facades\Log::error("Error al enviar WhatsApp por Meta API: [" . $responseMeta->status() . "] " . $responseMeta->body());
+                        \Illuminate\Support\Facades\Log::error("Error al enviar WhatsApp por Meta API (Template): [" . $responseMeta->status() . "] " . $responseMeta->body() . ". Reintentando con texto plano...");
+                        // Reintento de respaldo con texto plano por si la plantilla aún no está aprobada
+                        $responseMetaText = \Illuminate\Support\Facades\Http::withoutVerifying()->timeout(10)->withToken($apiToken)->post($apiUrl, [
+                            'messaging_product' => 'whatsapp',
+                            'recipient_type'    => 'individual',
+                            'to'                => $numeroVentas,
+                            'type'              => 'text',
+                            'text'              => [
+                                'preview_url' => true,
+                                'body'        => $mensajeVentas,
+                            ],
+                        ]);
+                        if ($responseMetaText->successful()) {
+                            $enviadoPorApi = true;
+                        }
                     }
                 } elseif (str_contains($apiUrl, 'green-api.com')) {
                     // Green API

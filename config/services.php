@@ -49,6 +49,7 @@ return [
         'ventas_number' => env('WHATSAPP_VENTAS_NUMBER', '522226702641'),
         'api_token' => env('WHATSAPP_API_TOKEN'),
         'api_url' => env('WHATSAPP_API_URL'),
+        'template' => env('WHATSAPP_TEMPLATE_NAME', 'aviso_nuevo_contacto'),
     ],
 
     'fastapi_facturacion' => [

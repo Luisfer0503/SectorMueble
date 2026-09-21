@@ -8,6 +8,12 @@
             <p class="text-zinc-500 text-sm mt-1">Gestiona el catálogo completo de productos visibles en la tienda.</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
+            <button type="button" onclick="openFeedModal()" class="bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded shadow transition-colors flex items-center space-x-2 cursor-pointer">
+                <svg class="w-4 h-4 text-indigo-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z"/>
+                </svg>
+                <span>📡 Feed XML Marketing</span>
+            </button>
             <a href="{{ route('admin.productos.excel') }}" class="bg-emerald-750 hover:bg-emerald-800 text-white text-xs font-bold uppercase tracking-wider px-5 py-3 rounded shadow transition-colors flex items-center space-x-2">
                 <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -286,15 +292,117 @@
                     const nextRow = rows[i + 1] && rows[i + 1].classList.contains('bg-zinc-50/60') ? rows[i + 1] : null;
                     const text = (row.textContent + ' ' + (nextRow ? nextRow.textContent : '')).toLowerCase();
                     
-                    if (term === '' || text.includes(term)) {
-                        row.style.display = '';
-                        if (nextRow) nextRow.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                        if (nextRow) nextRow.style.display = 'none';
-                    }
                 }
             });
         });
+
+        function openFeedModal() {
+            document.getElementById('feed-xml-modal').classList.remove('hidden');
+        }
+
+        function closeFeedModal() {
+            document.getElementById('feed-xml-modal').classList.add('hidden');
+        }
+
+        function copyFeedUrl(inputContainerId, btnId) {
+            const input = document.getElementById(inputContainerId);
+            if (!input) return;
+            navigator.clipboard.writeText(input.value).then(() => {
+                const btn = document.getElementById(btnId);
+                const originalText = btn.innerText;
+                btn.innerText = '✓ ¡Copiado!';
+                btn.classList.add('bg-emerald-600', 'text-white');
+                setTimeout(() => {
+                    btn.innerText = originalText;
+                    btn.classList.remove('bg-emerald-600', 'text-white');
+                }, 2000);
+            }).catch(err => {
+                alert('URL copiada: ' + input.value);
+            });
+        }
     </script>
+
+    <!-- Modal: URL de Feeds XML para Marketing y Redes Sociales -->
+    <div id="feed-xml-modal" class="fixed inset-0 bg-zinc-950/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-xl w-full shadow-2xl border border-zinc-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <div class="bg-gradient-to-r from-indigo-900 to-zinc-900 p-6 text-white flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center border border-indigo-400/30">
+                        <svg class="w-5 h-5 text-indigo-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-lg text-white">Feeds XML para Marketing</h3>
+                        <p class="text-xs text-indigo-200">Conecta tu catálogo con Meta, Google Shopping, TikTok y Pinterest</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeFeedModal()" class="text-indigo-200 hover:text-white transition-colors p-1.5 rounded-lg hover:bg-white/10 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="p-6 space-y-5">
+                <p class="text-xs text-zinc-600 leading-relaxed">
+                    Utiliza cualquiera de estas URLs públicas en los administradores de catálogo (ej. <strong>Meta Commerce Manager</strong>, <strong>Google Merchant Center</strong>, <strong>TikTok Ads Manager</strong>) para sincronizar automáticamente todos los productos y variantes activos de la tienda.
+                </p>
+
+                <!-- URL Principal XML -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center justify-between">
+                        <span>📡 URL de Feed Principal (Universal RSS 2.0 XML)</span>
+                        <span class="text-[10px] text-emerald-600 font-bold">Meta / Google / TikTok</span>
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="feed-url-main" readonly value="{{ url('/feed/productos.xml') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3.5 py-2.5 text-xs text-zinc-800 font-mono focus:outline-none select-all">
+                        <button type="button" id="btn-copy-main" onclick="copyFeedUrl('feed-url-main', 'btn-copy-main')" class="bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shrink-0 cursor-pointer">
+                            Copiar URL
+                        </button>
+                        <a href="{{ url('/feed/productos.xml') }}" target="_blank" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-2.5 rounded-xl transition-all shrink-0 flex items-center space-x-1" title="Abrir XML en nueva pestaña">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- URL Alias Facebook / Meta -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center justify-between">
+                        <span>🔵 Facebook & Instagram Catalog URL</span>
+                        <span class="text-[10px] text-zinc-400">Meta Commerce</span>
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="feed-url-fb" readonly value="{{ url('/feed/facebook-catalog.xml') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3.5 py-2.5 text-xs text-zinc-800 font-mono focus:outline-none select-all">
+                        <button type="button" id="btn-copy-fb" onclick="copyFeedUrl('feed-url-fb', 'btn-copy-fb')" class="bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shrink-0 cursor-pointer">
+                            Copiar URL
+                        </button>
+                    </div>
+                </div>
+
+                <!-- URL Alias Google Shopping -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center justify-between">
+                        <span>🔴 Google Merchant Center URL</span>
+                        <span class="text-[10px] text-zinc-400">Google Shopping</span>
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="feed-url-google" readonly value="{{ url('/feed/google-shopping.xml') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-3.5 py-2.5 text-xs text-zinc-800 font-mono focus:outline-none select-all">
+                        <button type="button" id="btn-copy-google" onclick="copyFeedUrl('feed-url-google', 'btn-copy-google')" class="bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shrink-0 cursor-pointer">
+                            Copiar URL
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-zinc-50 px-6 py-4 border-t border-zinc-200 flex justify-end">
+                <button type="button" onclick="closeFeedModal()" class="bg-zinc-200 hover:bg-zinc-300 text-zinc-800 font-bold text-xs px-5 py-2.5 rounded-xl transition-all cursor-pointer">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
 @endsection
+
