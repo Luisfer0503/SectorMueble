@@ -156,6 +156,20 @@
                     Términos y Condiciones
                 </a>
 
+                <a href="{{ route('admin.privacidad') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.privacidad') || Route::is('admin.privacidad.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    Aviso de Privacidad
+                </a>
+
+                <a href="{{ route('admin.politicas_envio') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.politicas_envio') || Route::is('admin.politicas_envio.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"/>
+                    </svg>
+                    Políticas de Envío
+                </a>
+
                 <div class="pt-4 mt-4 border-t border-zinc-800">
                     <a href="{{ route('inicio') }}" class="flex items-center px-4 py-3 text-xs font-semibold text-zinc-400 hover:text-white rounded-lg uppercase tracking-wider transition-colors">
                         <svg class="mr-3 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

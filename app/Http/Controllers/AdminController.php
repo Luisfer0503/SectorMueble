@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\RuletaOpcion;
 use App\Models\Zapato;
 use App\Models\TerminoCondicion;
+use App\Models\AvisoPrivacidad;
+use App\Models\PoliticaEnvio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
@@ -734,6 +736,90 @@ class AdminController extends Controller
         $terminos->save();
 
         return redirect()->route('admin.terminos')->with('success', '¡Términos y Condiciones actualizados con éxito por secciones!');
+    }
+
+    /**
+     * Mostrar vista de edición de Aviso de Privacidad por Secciones.
+     */
+    public function privacidadIndex()
+    {
+        $secciones = AvisoPrivacidad::obtenerSecciones();
+        $contenido = AvisoPrivacidad::obtenerContenido();
+        return view('Admin.privacidad.index', compact('secciones', 'contenido'));
+    }
+
+    /**
+     * Guardar/Actualizar el Aviso de Privacidad por Secciones.
+     */
+    public function privacidadActualizar(Request $request)
+    {
+        $privacidad = AvisoPrivacidad::firstOrNew(['id' => 1]);
+
+        if ($request->has('secciones') && is_array($request->input('secciones'))) {
+            $seccionesValidas = [];
+            foreach ($request->input('secciones') as $sec) {
+                $titulo = trim($sec['titulo'] ?? '');
+                $cont = trim($sec['contenido'] ?? '');
+                if (!empty($titulo) || !empty($cont)) {
+                    $seccionesValidas[] = [
+                        'titulo' => $titulo,
+                        'contenido' => $cont,
+                    ];
+                }
+            }
+            $privacidad->contenido = json_encode($seccionesValidas, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        } else {
+            $request->validate([
+                'contenido' => 'required|string',
+            ]);
+            $privacidad->contenido = trim($request->input('contenido'));
+        }
+
+        $privacidad->save();
+
+        return redirect()->route('admin.privacidad')->with('success', '¡Aviso de Privacidad actualizado con éxito por secciones!');
+    }
+
+    /**
+     * Mostrar vista de edición de Políticas de Envío por Secciones.
+     */
+    public function politicasEnvioIndex()
+    {
+        $secciones = PoliticaEnvio::obtenerSecciones();
+        $contenido = PoliticaEnvio::obtenerContenido();
+        return view('Admin.politicas_envio.index', compact('secciones', 'contenido'));
+    }
+
+    /**
+     * Guardar/Actualizar las Políticas de Envío por Secciones.
+     */
+    public function politicasEnvioActualizar(Request $request)
+    {
+        $politicas = PoliticaEnvio::firstOrNew(['id' => 1]);
+
+        if ($request->has('secciones') && is_array($request->input('secciones'))) {
+            $seccionesValidas = [];
+            foreach ($request->input('secciones') as $sec) {
+                $titulo = trim($sec['titulo'] ?? '');
+                $cont = trim($sec['contenido'] ?? '');
+                if (!empty($titulo) || !empty($cont)) {
+                    $seccionesValidas[] = [
+                        'titulo' => $titulo,
+                        'contenido' => $cont,
+                    ];
+                }
+            }
+            $politicas->contenido = json_encode($seccionesValidas, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+        } else {
+            $request->validate([
+                'contenido' => 'required|string',
+            ]);
+            $politicas->contenido = trim($request->input('contenido'));
+        }
+
+        $politicas->save();
+
+        return redirect()->route('admin.politicas_envio')->with('success', '¡Políticas de Envío actualizadas con éxito por secciones!');
     }
 
     // --- GESTIÓN DE RULETA DE PREMIOS ---

@@ -11,6 +11,8 @@ use App\Models\Cupon;
 use App\Models\RuletaOpcion;
 use App\Models\CatalogoCodigoPostal;
 use App\Models\TerminoCondicion;
+use App\Models\AvisoPrivacidad;
+use App\Models\PoliticaEnvio;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Auth\Events\Registered;
@@ -511,6 +513,26 @@ class PrincipalController extends Controller
     }
 
     /**
+     * Mostrar la página pública de Aviso de Privacidad.
+     */
+    public function avisoPrivacidad()
+    {
+        $secciones = AvisoPrivacidad::obtenerSecciones();
+        $contenidoText = AvisoPrivacidad::obtenerContenido();
+        return view('Principal.privacidad', compact('secciones', 'contenidoText'));
+    }
+
+    /**
+     * Mostrar la página pública de Políticas de Envío.
+     */
+    public function politicasEnvio()
+    {
+        $secciones = PoliticaEnvio::obtenerSecciones();
+        $contenidoText = PoliticaEnvio::obtenerContenido();
+        return view('Principal.politicas_envio', compact('secciones', 'contenidoText'));
+    }
+
+    /**
      * Mostrar la vista para finalizar compra (Checkout).
      */
     public function finalizarCompra()
@@ -838,6 +860,25 @@ class PrincipalController extends Controller
 
         if (empty($carrito)) {
             return redirect()->route('inicio')->with('info', 'Tu pedido ya ha sido registrado.');
+        }
+
+        if (empty($sessionId)) {
+            return redirect()->route('checkout')->with('error', 'Sesión de pago no encontrada.');
+        }
+
+        $stripeSecret = config('services.stripe.secret');
+        if (!empty($stripeSecret)) {
+            try {
+                $stripe = new \Stripe\StripeClient($stripeSecret);
+                $checkoutSession = $stripe->checkout->sessions->retrieve($sessionId);
+
+                if ($checkoutSession->payment_status !== 'paid') {
+                    return redirect()->route('checkout')->with('error', 'El pago no ha sido completado en Stripe. Por favor intenta nuevamente.');
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error al consultar la sesión de Stripe {$sessionId}: " . $e->getMessage());
+                return redirect()->route('checkout')->with('error', 'No se pudo verificar el pago con Stripe. Si tu pago ya se descontó, contacta a un asesor.');
+            }
         }
 
         try {

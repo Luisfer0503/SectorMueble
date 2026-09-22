@@ -18,8 +18,10 @@ Route::get('/feed/productos.xml', [FeedController::class, 'xml'])->name('feed.pr
 Route::get('/feed/google-shopping.xml', [FeedController::class, 'xml']);
 Route::get('/feed/facebook-catalog.xml', [FeedController::class, 'xml']);
 
-// Términos y Condiciones
+// Términos, Privacidad y Políticas de Envío
 Route::get('/terminos-y-condiciones', [PrincipalController::class, 'terminosCondiciones'])->name('terminos');
+Route::get('/aviso-de-privacidad', [PrincipalController::class, 'avisoPrivacidad'])->name('privacidad');
+Route::get('/politicas-de-envio', [PrincipalController::class, 'politicasEnvio'])->name('politicas-envio');
 
 // Ficha de detalle de producto
 Route::get('/productos/{id}', [PrincipalController::class, 'detalle'])->name('productos.detalle');
@@ -135,7 +137,13 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::post('/pedidos/actualizar-estado/{id}', [AdminController::class, 'pedidosActualizarEstado'])->name('admin.pedidos.actualizar_estado');
     Route::post('/pedidos/facturar/{id}', [AdminController::class, 'pedidosEmitirFacturaFastApi'])->name('admin.pedidos.facturar');
 
-    // Edición de Términos y Condiciones
+    // Edición de Términos, Privacidad y Políticas de Envío
     Route::get('/terminos', [AdminController::class, 'terminosIndex'])->name('admin.terminos');
     Route::post('/terminos/actualizar', [AdminController::class, 'terminosActualizar'])->name('admin.terminos.actualizar');
+
+    Route::get('/privacidad', [AdminController::class, 'privacidadIndex'])->name('admin.privacidad');
+    Route::post('/privacidad/actualizar', [AdminController::class, 'privacidadActualizar'])->name('admin.privacidad.actualizar');
+
+    Route::get('/politicas-envio', [AdminController::class, 'politicasEnvioIndex'])->name('admin.politicas_envio');
+    Route::post('/politicas-envio/actualizar', [AdminController::class, 'politicasEnvioActualizar'])->name('admin.politicas_envio.actualizar');
 });
