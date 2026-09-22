@@ -1119,7 +1119,7 @@ class AdminController extends Controller
     public function zapatosExportarExcel()
     {
         if ($res = $this->verificarAccesoZapatos()) return $res;
-        $zapatos = Zapato::latest()->get();
+        $zapatos = Zapato::orderBy('id', 'asc')->get();
         $fileName = 'Inventario_Zapatos_' . date('Y-m-d_H-i') . '.csv';
 
         $headers = [
