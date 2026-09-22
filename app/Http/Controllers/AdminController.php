@@ -1114,7 +1114,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Exporta el inventario completo de zapatos a un archivo nativo de Excel (.xls) con las columnas exactas requeridas.
+     * Exporta el inventario completo de zapatos a un archivo .xls nativo sin librerías externas.
      */
     public function zapatosExportarExcel()
     {
@@ -1122,42 +1122,50 @@ class AdminController extends Controller
         $zapatos = Zapato::orderBy('id', 'asc')->get();
         $fileName = 'Inventario_Zapatos_' . date('Y-m-d_H-i') . '.xls';
 
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Inventario Zapatos');
+        $headers = [
+            "Content-Type"        => "application/vnd.ms-excel; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=\"$fileName\"",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
 
-        // Encabezados exactos
-        $sheet->setCellValue('A1', 'CLAVE ALTERNA');
-        $sheet->setCellValue('B1', 'DESCRIPCION');
-        $sheet->setCellValue('C1', 'PRECIO 1');
-        $sheet->setCellValue('D1', 'EXIST.');
+        $callback = function() use ($zapatos) {
+            $file = fopen('php://output', 'w');
 
-        // Llenar datos con tipo de celda explícito
-        $row = 2;
-        foreach ($zapatos as $z) {
-            $sheet->setCellValueExplicit('A' . $row, (string) $z->clave_alterna, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $sheet->setCellValueExplicit('B' . $row, (string) $z->descripcion_completa, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
-            $sheet->setCellValue('C' . $row, (float) $z->precio);
-            $sheet->setCellValue('D' . $row, (int) $z->cantidad);
-            $row++;
-        }
+            // Encabezado XML/HTML nativo reconocido por Excel y SICAR como .xls
+            fwrite($file, '<html xmlns:o="urn:schemas-microsoft-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' . "\n");
+            fwrite($file, '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . "\n");
+            fwrite($file, '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Zapatos</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' . "\n");
+            fwrite($file, '</head><body>' . "\n");
+            fwrite($file, '<table border="1">' . "\n");
+            fwrite($file, '<thead><tr style="background-color: #f2f2f2; font-weight: bold;">' . "\n");
+            fwrite($file, '<th>CLAVE ALTERNA</th>' . "\n");
+            fwrite($file, '<th>DESCRIPCION</th>' . "\n");
+            fwrite($file, '<th>PRECIO 1</th>' . "\n");
+            fwrite($file, '<th>EXIST.</th>' . "\n");
+            fwrite($file, '</tr></thead><tbody>' . "\n");
 
-        // Formato numérico para el precio (2 decimales)
-        if ($row > 2) {
-            $sheet->getStyle('C2:C' . ($row - 1))
-                  ->getNumberFormat()
-                  ->setFormatCode('0.00');
-        }
+            foreach ($zapatos as $z) {
+                $clave  = htmlspecialchars($z->clave_alterna, ENT_QUOTES, 'UTF-8');
+                $desc   = htmlspecialchars($z->descripcion_completa, ENT_QUOTES, 'UTF-8');
+                $precio = number_format((float)$z->precio, 2, '.', '');
+                $cant   = (int)$z->cantidad;
 
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+                fwrite($file, '<tr>' . "\n");
+                // mso-number-format:\@ exige que Excel trate la clave como texto
+                fwrite($file, '<td style="mso-number-format:\@;">' . $clave . '</td>' . "\n");
+                fwrite($file, '<td>' . $desc . '</td>' . "\n");
+                fwrite($file, '<td style="mso-number-format:\'0.00\';">' . $precio . '</td>' . "\n");
+                fwrite($file, '<td>' . $cant . '</td>' . "\n");
+                fwrite($file, '</tr>' . "\n");
+            }
 
-        return response()->streamDownload(function() use ($writer) {
-            $writer->save('php://output');
-        }, $fileName, [
-            'Content-Type' => 'application/vnd.ms-excel',
-            'Cache-Control' => 'max-age=0, must-revalidate',
-            'Pragma' => 'public',
-        ]);
+            fwrite($file, '</tbody></table></body></html>' . "\n");
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
