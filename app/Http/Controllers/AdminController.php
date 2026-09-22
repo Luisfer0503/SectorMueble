@@ -1114,43 +1114,50 @@ class AdminController extends Controller
     }
 
     /**
-     * Exporta el inventario completo de zapatos a un archivo Excel (.csv) con las columnas exactas requeridas.
+     * Exporta el inventario completo de zapatos a un archivo nativo de Excel (.xls) con las columnas exactas requeridas.
      */
     public function zapatosExportarExcel()
     {
         if ($res = $this->verificarAccesoZapatos()) return $res;
         $zapatos = Zapato::orderBy('id', 'asc')->get();
-        $fileName = 'Inventario_Zapatos_' . date('Y-m-d_H-i') . '.csv';
+        $fileName = 'Inventario_Zapatos_' . date('Y-m-d_H-i') . '.xls';
 
-        $headers = [
-            "Content-Type"        => "text/csv; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=\"$fileName\"",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        ];
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Inventario Zapatos');
 
-        $callback = function() use ($zapatos) {
-            $file = fopen('php://output', 'w');
-            // Incluir BOM UTF-8 para que Excel lo abra con formato nativo y caracteres correctos
-            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            
-            // Encabezados exactos según los 4 requeridos
-            fputcsv($file, ['CLAVE ALTERNA', 'DESCRIPCION', 'PRECIO 1', 'EXIST.']);
+        // Encabezados exactos
+        $sheet->setCellValue('A1', 'CLAVE ALTERNA');
+        $sheet->setCellValue('B1', 'DESCRIPCION');
+        $sheet->setCellValue('C1', 'PRECIO 1');
+        $sheet->setCellValue('D1', 'EXIST.');
 
-            foreach ($zapatos as $z) {
-                fputcsv($file, [
-                    $z->clave_alterna,
-                    $z->descripcion_completa,
-                    number_format((float)$z->precio, 2, '.', ''),
-                    $z->cantidad,
-                ]);
-            }
+        // Llenar datos con tipo de celda explícito
+        $row = 2;
+        foreach ($zapatos as $z) {
+            $sheet->setCellValueExplicit('A' . $row, (string) $z->clave_alterna, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('B' . $row, (string) $z->descripcion_completa, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValue('C' . $row, (float) $z->precio);
+            $sheet->setCellValue('D' . $row, (int) $z->cantidad);
+            $row++;
+        }
 
-            fclose($file);
-        };
+        // Formato numérico para el precio (2 decimales)
+        if ($row > 2) {
+            $sheet->getStyle('C2:C' . ($row - 1))
+                  ->getNumberFormat()
+                  ->setFormatCode('0.00');
+        }
 
-        return response()->stream($callback, 200, $headers);
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
+
+        return response()->streamDownload(function() use ($writer) {
+            $writer->save('php://output');
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Cache-Control' => 'max-age=0, must-revalidate',
+            'Pragma' => 'public',
+        ]);
     }
 
     /**
