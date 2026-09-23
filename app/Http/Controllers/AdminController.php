@@ -9,6 +9,7 @@ use App\Models\Cupon;
 use App\Models\User;
 use App\Models\RuletaOpcion;
 use App\Models\Zapato;
+use App\Models\ZapatoCategoria;
 use App\Models\TerminoCondicion;
 use App\Models\AvisoPrivacidad;
 use App\Models\PoliticaEnvio;
@@ -912,13 +913,24 @@ class AdminController extends Controller
     }
 
     /**
-     * Muestra la lista de zapatos escaneados en el inventario.
+     * Muestra la lista de zapatos escaneados en el inventario filtrados por categoría activa.
      */
     public function zapatosIndex(Request $request)
     {
         if ($res = $this->verificarAccesoZapatos()) return $res;
 
-        $query = Zapato::query();
+        // Obtener lista completa de categorías únicas registradas
+        $catDb = ZapatoCategoria::orderBy('nombre', 'asc')->pluck('nombre')->toArray();
+        $catZapatos = Zapato::select('categoria')->distinct()->whereNotNull('categoria')->pluck('categoria')->toArray();
+        $categorias = array_values(array_unique(array_filter(array_merge(['ZAPATO ESCOLAR'], $catDb, $catZapatos))));
+
+        // Determinar la categoría activa (por defecto ZAPATO ESCOLAR)
+        $categoriaActiva = strtoupper(trim((string)$request->input('categoria', 'ZAPATO ESCOLAR')));
+        if (!in_array($categoriaActiva, $categorias)) {
+            $categoriaActiva = $categorias[0] ?? 'ZAPATO ESCOLAR';
+        }
+
+        $query = Zapato::query()->where('categoria', $categoriaActiva);
 
         if ($request->filled('search')) {
             $search = $request->input('search');
@@ -932,14 +944,33 @@ class AdminController extends Controller
 
         $zapatos = $query->orderBy('created_at', 'desc')->paginate(12);
 
-        // Métricas de inventario
-        $totalModelos = Zapato::count();
-        $totalPares = Zapato::sum('cantidad');
-        $valorTotalInventario = Zapato::all()->sum(function ($z) {
+        // Métricas de inventario filtradas exclusivamente por la categoría activa
+        $totalModelos = Zapato::where('categoria', $categoriaActiva)->count();
+        $totalPares = Zapato::where('categoria', $categoriaActiva)->sum('cantidad');
+        $valorTotalInventario = Zapato::where('categoria', $categoriaActiva)->get()->sum(function ($z) {
             return $z->cantidad * $z->precio;
         });
 
-        return view('Admin.zapatos.index', compact('zapatos', 'totalModelos', 'totalPares', 'valorTotalInventario'));
+        return view('Admin.zapatos.index', compact('zapatos', 'totalModelos', 'totalPares', 'valorTotalInventario', 'categorias', 'categoriaActiva'));
+    }
+
+    /**
+     * Registra una nueva categoría de zapatos en el sistema.
+     */
+    public function zapatosCategoriaGuardar(Request $request)
+    {
+        if ($res = $this->verificarAccesoZapatos()) return $res;
+        $request->validate([
+            'nombre' => 'required|string|max:100',
+        ]);
+
+        $nombreClean = strtoupper(trim($request->nombre));
+        if (!empty($nombreClean)) {
+            ZapatoCategoria::firstOrCreate(['nombre' => $nombreClean]);
+        }
+
+        return redirect()->route('admin.zapatos', ['categoria' => $nombreClean])
+                         ->with('success', "✅ Categoría '{$nombreClean}' creada y seleccionada.");
     }
 
     /**
@@ -1116,11 +1147,18 @@ class AdminController extends Controller
     /**
      * Exporta el inventario completo de zapatos a un archivo .xls nativo sin librerías externas.
      */
-    public function zapatosExportarExcel()
+    /**
+     * Exporta los zapatos de la categoría activa a un archivo .xls nativo sin librerías externas.
+     */
+    public function zapatosExportarExcel(Request $request)
     {
         if ($res = $this->verificarAccesoZapatos()) return $res;
-        $zapatos = Zapato::orderBy('id', 'asc')->get();
-        $fileName = 'Inventario_Zapatos_' . date('Y-m-d_H-i') . '.xls';
+        $categoriaActiva = strtoupper(trim((string)$request->input('categoria', 'ZAPATO ESCOLAR')));
+        if (empty($categoriaActiva)) $categoriaActiva = 'ZAPATO ESCOLAR';
+
+        $zapatos = Zapato::where('categoria', $categoriaActiva)->orderBy('id', 'asc')->get();
+        $slugCat = Str::slug($categoriaActiva, '_');
+        $fileName = 'Inventario_' . ($slugCat ?: 'Zapatos') . '_' . date('Y-m-d_H-i') . '.xls';
 
         $headers = [
             "Content-Type"        => "application/vnd.ms-excel; charset=UTF-8",
@@ -1130,13 +1168,13 @@ class AdminController extends Controller
             "Expires"             => "0"
         ];
 
-        $callback = function() use ($zapatos) {
+        $callback = function() use ($zapatos, $categoriaActiva) {
             $file = fopen('php://output', 'w');
 
             // Encabezado XML/HTML nativo reconocido por Excel y SICAR como .xls
             fwrite($file, '<html xmlns:o="urn:schemas-microsoft-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' . "\n");
             fwrite($file, '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . "\n");
-            fwrite($file, '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Zapatos</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' . "\n");
+            fwrite($file, '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>' . htmlspecialchars($categoriaActiva, ENT_QUOTES, 'UTF-8') . '</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' . "\n");
             fwrite($file, '</head><body>' . "\n");
             fwrite($file, '<table border="1">' . "\n");
             fwrite($file, '<thead><tr style="background-color: #f2f2f2; font-weight: bold;">' . "\n");
@@ -1169,13 +1207,17 @@ class AdminController extends Controller
     }
 
     /**
-     * Guarda el registro de zapato escaneado en el inventario con cantidad, precio y bordado.
-     * Valida si la Clave Alterna ya existe para sumar la cantidad al registro previo y evitar duplicados.
+     * Guarda el registro de zapato escaneado en la categoría activa del inventario.
+     * Valida si la Clave Alterna ya existe dentro de la misma categoría para sumar la cantidad al registro previo.
      */
     public function zapatosGuardar(Request $request)
     {
         if ($res = $this->verificarAccesoZapatos()) return $res;
         try {
+            $categoria = strtoupper(trim((string) $request->input('categoria', 'ZAPATO ESCOLAR')));
+            if (empty($categoria)) $categoria = 'ZAPATO ESCOLAR';
+            ZapatoCategoria::firstOrCreate(['nombre' => $categoria]);
+
             $estilo   = trim((string) $request->input('estilo', 'GENERICO'));
             $color    = trim((string) $request->input('color', 'NEGRO'));
             $material = trim((string) $request->input('material', 'SINTETICO'));
@@ -1231,8 +1273,8 @@ class AdminController extends Controller
                 // Generar la Clave Alterna para esta talla específica
                 $claveBuscada = Zapato::generarClaveAlterna($estilo, $material, $color, $bordado, $numero);
 
-                // Buscar si existe un registro con la misma Clave Alterna (sin importar mayúsculas/minúsculas o espacios)
-                $zapatoExistente = Zapato::all()->first(function ($z) use ($claveBuscada) {
+                // Buscar si existe un registro con la misma Clave Alterna DENTRO DE LA MISMA CATEGORÍA
+                $zapatoExistente = Zapato::where('categoria', $categoria)->get()->first(function ($z) use ($claveBuscada) {
                     return strtoupper(trim($z->clave_alterna)) === strtoupper(trim($claveBuscada));
                 });
 
@@ -1243,9 +1285,10 @@ class AdminController extends Controller
                         'cantidad' => $nuevoStock,
                         'precio'   => $precio > 0 ? $precio : $zapatoExistente->precio,
                     ]);
-                    $registrosProcesados[] = "⚠️ Talla {$numero} (Clave {$claveBuscada} YA EXISTÍA): Se sumaron +{$cantidad} pares al registro previo (Nuevo Stock Total: {$nuevoStock} pares).";
+                    $registrosProcesados[] = "⚠️ Talla {$numero} (Clave {$claveBuscada} YA EXISTÍA en {$categoria}): Se sumaron +{$cantidad} pares al registro previo (Nuevo Stock Total: {$nuevoStock} pares).";
                 } else {
                     $zapatoNuevo = Zapato::create([
+                        'categoria'   => $categoria,
                         'estilo'      => $estilo,
                         'numero'      => $numero,
                         'color'       => $color,
@@ -1256,15 +1299,15 @@ class AdminController extends Controller
                         'imagen_url'  => $imagenPath,
                         'detalles_ia' => $request->input('detalles_ia', null),
                     ]);
-                    $registrosProcesados[] = "✅ Talla {$numero} (Clave Nueva: {$zapatoNuevo->clave_alterna}): Registro nuevo creado con {$cantidad} pares.";
+                    $registrosProcesados[] = "✅ Talla {$numero} (Clave Nueva: {$zapatoNuevo->clave_alterna}): Registro nuevo creado en categoría '{$categoria}' con {$cantidad} pares.";
                 }
                 $totalGuardados++;
             }
 
             if ($huboDuplicados) {
-                $mensajeFinal = "⚠️ ATENCIÓN: ¡Se detectó Clave Alterna ya existente en el inventario!\n\nPara evitar registros duplicados, los pares se sumaron al stock actual del producto:\n• " . implode("\n• ", $registrosProcesados);
+                $mensajeFinal = "⚠️ ATENCIÓN: ¡Se detectó Clave Alterna ya existente en la categoría {$categoria}!\n\nPara evitar registros duplicados, los pares se sumaron al stock actual del producto:\n• " . implode("\n• ", $registrosProcesados);
             } else {
-                $mensajeFinal = "✅ ¡Se registraron {$totalGuardados} talla(s) correctamente en el inventario!\n• " . implode("\n• ", $registrosProcesados);
+                $mensajeFinal = "✅ ¡Se registraron {$totalGuardados} talla(s) correctamente en la categoría '{$categoria}'!\n• " . implode("\n• ", $registrosProcesados);
             }
 
             if ($request->wantsJson() || $request->ajax()) {
@@ -1272,11 +1315,12 @@ class AdminController extends Controller
                     'success'        => true,
                     'duplicado'      => $huboDuplicados,
                     'mensaje'        => $mensajeFinal,
-                    'total'          => $totalGuardados
+                    'total'          => $totalGuardados,
+                    'categoria'      => $categoria
                 ]);
             }
 
-            return redirect()->route('admin.zapatos')->with('success', $mensajeFinal);
+            return redirect()->route('admin.zapatos', ['categoria' => $categoria])->with('success', $mensajeFinal);
 
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error("Error guardando zapato: " . $e->getMessage());
@@ -1331,7 +1375,7 @@ class AdminController extends Controller
                 $zapato->delete();
 
                 $msgDup = "⚠️ ¡Clave Alterna ya existente! (Clave: {$nuevaClave}). Se fusionaron los datos con el registro existente #{$otroExistente->id} y se actualizaron los pares (Nuevo Stock Total: {$nuevoStock} pares).";
-                return redirect()->route('admin.zapatos')->with('success', $msgDup);
+                return redirect()->route('admin.zapatos', ['categoria' => $zapato->categoria])->with('success', $msgDup);
             }
 
             $zapato->update([
@@ -1344,7 +1388,7 @@ class AdminController extends Controller
                 'precio'   => $precio,
             ]);
 
-            return redirect()->route('admin.zapatos')->with('success', "✅ Zapato #{$zapato->id} actualizado correctamente (Clave Alterna: {$nuevaClave}).");
+            return redirect()->route('admin.zapatos', ['categoria' => $zapato->categoria])->with('success', "✅ Zapato #{$zapato->id} actualizado correctamente (Clave Alterna: {$nuevaClave}).");
         } catch (\Throwable $e) {
             return redirect()->route('admin.zapatos')->with('error', "Error al actualizar: " . $e->getMessage());
         }
@@ -1357,6 +1401,7 @@ class AdminController extends Controller
     {
         if ($res = $this->verificarAccesoZapatos()) return $res;
         $zapato = Zapato::findOrFail($id);
+        $catRedirect = $zapato->categoria;
         
         // Borrar imagen si existe en storage
         if (!empty($zapato->imagen_url)) {
@@ -1368,7 +1413,7 @@ class AdminController extends Controller
 
         $zapato->delete();
 
-        return redirect()->route('admin.zapatos')->with('success', 'Calzado eliminado del inventario.');
+        return redirect()->route('admin.zapatos', ['categoria' => $catRedirect])->with('success', 'Calzado eliminado del inventario.');
     }
 }
 

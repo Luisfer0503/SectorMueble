@@ -12,6 +12,7 @@ class Zapato extends Model
     protected $table = 'zapatos';
 
     protected $fillable = [
+        'categoria',
         'estilo',
         'numero',
         'color',

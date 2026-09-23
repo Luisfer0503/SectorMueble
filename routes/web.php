@@ -130,6 +130,7 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::post('/zapatos/guardar-apikey', [AdminController::class, 'zapatosGuardarApiKey'])->name('admin.zapatos.apikey');
     Route::post('/zapatos/actualizar/{id}', [AdminController::class, 'zapatosActualizar'])->name('admin.zapatos.actualizar');
     Route::get('/zapatos/eliminar/{id}', [AdminController::class, 'zapatosEliminar'])->name('admin.zapatos.eliminar');
+    Route::post('/zapatos/categorias/guardar', [AdminController::class, 'zapatosCategoriaGuardar'])->name('admin.zapatos.categorias.guardar');
 
     // Gestión y Seguimiento de Pedidos y Facturación FastAPI
     Route::get('/pedidos', [AdminController::class, 'pedidosIndex'])->name('admin.pedidos');

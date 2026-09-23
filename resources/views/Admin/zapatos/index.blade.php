@@ -37,7 +37,7 @@
                 </button>
 
                 <!-- Botón Descargar Excel -->
-                <a href="{{ route('admin.zapatos.excel') }}" class="inline-flex items-center justify-center px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm hover:shadow transition-all space-x-2">
+                <a href="{{ route('admin.zapatos.excel', ['categoria' => $categoriaActiva]) }}" class="inline-flex items-center justify-center px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm hover:shadow transition-all space-x-2">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
@@ -60,6 +60,41 @@
                     <span>Clave API IA</span>
                 </button>
             </div>
+        </div>
+
+        <!-- Barra de Gestión y Selección Única de Categorías de Calzado -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 overflow-x-auto pb-2 md:pb-0 scrollbar-thin">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400 whitespace-nowrap flex items-center space-x-1">
+                    <svg class="w-4 h-4 text-amber-600 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M13 7h7M13 11h7M13 15h7M3 7h2v10H3z"/>
+                    </svg>
+                    <span>Categoría Abierta:</span>
+                </span>
+                
+                <div class="flex items-center space-x-2">
+                    @foreach($categorias as $cat)
+                        @php
+                            $esActiva = (strtoupper(trim($cat)) === strtoupper(trim($categoriaActiva)));
+                        @endphp
+                        <a href="{{ route('admin.zapatos', ['categoria' => $cat]) }}" 
+                           class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap flex items-center space-x-1.5 {{ $esActiva ? 'bg-amber-950 text-amber-300 shadow-md ring-2 ring-amber-800' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' }}">
+                            <span>{{ $cat }}</span>
+                            @if($esActiva)
+                                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                            @endif
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Botón Crear Nueva Categoría -->
+            <button onclick="abrirModalNuevaCategoria()" class="inline-flex items-center justify-center px-4 py-2.5 bg-slate-900 hover:bg-black text-white font-extrabold text-xs rounded-xl shadow transition-all space-x-2 whitespace-nowrap cursor-pointer">
+                <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                <span>+ Nueva Categoría</span>
+            </button>
         </div>
 
         <!-- Tarjetas de Métricas de Inventario Minimalistas -->
@@ -111,6 +146,7 @@
                 </div>
                 
                 <form action="{{ route('admin.zapatos') }}" method="GET" class="w-full sm:w-80 flex items-center space-x-2">
+                    <input type="hidden" name="categoria" value="{{ $categoriaActiva }}">
                     <div class="relative w-full">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar clave, estilo, talla, color..." class="w-full pl-9 pr-4 py-2.5 text-xs font-semibold border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-slate-900 outline-none">
                         <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -325,6 +361,7 @@
             </div>
 
             <form id="formGuardarZapato" onsubmit="guardarZapatoInventario(event)">
+                <input type="hidden" name="categoria" value="{{ $categoriaActiva }}">
                 <input type="hidden" id="confImagenPath" name="imagen_path">
 
                 <!-- Preview de Foto + Atributos Modelo -->
@@ -495,6 +532,7 @@
             </div>
 
             <form id="formAgregarTalla" onsubmit="guardarNuevaTallaZapato(event)">
+                <input type="hidden" name="categoria" value="{{ $categoriaActiva }}">
                 <input type="hidden" id="tallaImagenPath" name="imagen_path">
                 <input type="hidden" id="tallaEstilo" name="estilo">
                 <input type="hidden" id="tallaColor" name="color">
@@ -612,8 +650,59 @@
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- MODAL 5: CREAR NUEVA CATEGORÍA DE ZAPATOS  -->
+    <!-- ========================================== -->
+    <div id="modalNuevaCategoria" class="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 sm:p-8 border border-slate-200">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+                <div class="flex items-center space-x-3">
+                    <span class="p-2.5 bg-amber-100 text-amber-950 rounded-2xl">
+                        <svg class="w-6 h-6 text-amber-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M13 7h7M13 11h7M13 15h7M3 7h2v10H3z"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <h3 class="serif-title text-lg font-extrabold text-slate-900">Nueva Categoría de Calzado</h3>
+                        <p class="text-xs text-slate-500">Registra un nuevo nombre de categoría</p>
+                    </div>
+                </div>
+                <button onclick="cerrarModalNuevaCategoria()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <form action="{{ route('admin.zapatos.categorias.guardar') }}" method="POST">
+                @csrf
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-900 uppercase mb-1">Nombre de la Categoría <span class="text-rose-600">*</span></label>
+                        <input type="text" name="nombre" required placeholder="Ej. ZAPATO DEPORTIVO, BOTA, SANDALIA" class="w-full px-3.5 py-2.5 text-sm font-extrabold bg-white border border-slate-300 rounded-xl focus:ring-2 focus:ring-slate-900 outline-none uppercase">
+                    </div>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">
+                        Al crear la categoría, se abrirá inmediatamente como la <strong>categoría activa</strong> para que puedas comenzar a registrarle calzado.
+                    </p>
+                </div>
+
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" onclick="cerrarModalNuevaCategoria()" class="px-4 py-2 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl">Cancelar</button>
+                    <button type="submit" class="px-5 py-2.5 bg-amber-950 hover:bg-amber-900 text-amber-100 text-xs font-extrabold rounded-xl shadow border border-amber-800 cursor-pointer">Crear Categoría</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Scripts JavaScript Integrados -->
     <script>
+        function abrirModalNuevaCategoria() {
+            document.getElementById('modalNuevaCategoria').classList.remove('hidden');
+        }
+
+        function cerrarModalNuevaCategoria() {
+            document.getElementById('modalNuevaCategoria').classList.add('hidden');
+        }
         function abrirModalEscaner() {
             document.getElementById('modalEscaner').classList.remove('hidden');
         }
