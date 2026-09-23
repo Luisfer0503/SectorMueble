@@ -227,8 +227,8 @@ class PrincipalController extends Controller
             }
         }
 
-        // Envío gratis si alcanza o supera los $10,000 MXN, si no, $400 MXN de coste de envío
-        $envio = ($subtotal >= 10000 || $subtotal == 0) ? 0 : 400.00;
+        // Envío gratis si alcanza o supera los $10,000 MXN, si no, $600 MXN de coste de envío
+        $envio = ($subtotal >= 10000 || $subtotal == 0) ? 0 : 600.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
         // Muebles frecuentemente comprados juntos / recomendados
@@ -561,7 +561,7 @@ class PrincipalController extends Controller
             }
         }
 
-        $envio = ($subtotal >= 10000) ? 0 : 400.00;
+        $envio = ($subtotal >= 10000) ? 0 : 600.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
         return view('Principal.checkout', compact('carrito', 'subtotal', 'envio', 'descuento', 'total', 'cuponAplicado'));
@@ -625,7 +625,7 @@ class PrincipalController extends Controller
             }
         }
 
-        $envio = ($subtotal >= 10000) ? 0 : 400.00;
+        $envio = ($subtotal >= 10000) ? 0 : 600.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
         try {
@@ -813,7 +813,7 @@ class PrincipalController extends Controller
                     $descuento = $cupon->calcularDescuento($subtotal);
                 }
             }
-            $envio = ($subtotal >= 10000) ? 0 : 400.00;
+            $envio = ($subtotal >= 10000) ? 0 : 600.00;
 
             if ($envio > 0) {
                 $lineItems[] = [
@@ -900,7 +900,7 @@ class PrincipalController extends Controller
                 }
             }
 
-            $envio = ($subtotal >= 10000) ? 0 : 400.00;
+            $envio = ($subtotal >= 10000) ? 0 : 600.00;
             $total = max(0, $subtotal - $descuento) + $envio;
 
             $requiereFactura = !empty($datosEnvio['requiere_factura']);
@@ -1570,7 +1570,7 @@ class PrincipalController extends Controller
                 $descuento = $cupon->calcularDescuento($subtotal);
             }
         }
-        $envio = ($subtotal >= 10000) ? 0 : 400.00;
+        $envio = ($subtotal >= 10000) ? 0 : 600.00;
         $total = max(0, $subtotal - $descuento) + $envio;
         $totalFmt = number_format($total, 2, '.', ',');
 
