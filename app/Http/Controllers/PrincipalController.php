@@ -1627,11 +1627,15 @@ class PrincipalController extends Controller
                     ];
 
                     if (!empty($templateName)) {
+                        $templateLang = config('services.whatsapp.language', 'es');
+                        $itemsTextoLimpio = str_replace(["\r\n", "\r", "\n"], ' | ', trim($itemsTexto));
+                        $itemsTextoLimpio = preg_replace('/\s*\|\s*\|\s*/', ' | ', $itemsTextoLimpio);
+
                         $payloadMeta['type'] = 'template';
                         $payloadMeta['template'] = [
                             'name'     => $templateName,
                             'language' => [
-                                'code' => 'es'
+                                'code' => $templateLang
                             ],
                             'components' => [
                                 [
@@ -1640,7 +1644,7 @@ class PrincipalController extends Controller
                                         ['type' => 'text', 'text' => (string) $nombre],
                                         ['type' => 'text', 'text' => '+' . (string) $digitosTel],
                                         ['type' => 'text', 'text' => (string) $direccionCompleta],
-                                        ['type' => 'text', 'text' => (string) trim($itemsTexto)],
+                                        ['type' => 'text', 'text' => (string) $itemsTextoLimpio],
                                         ['type' => 'text', 'text' => '$' . (string) $totalFmt . ' MXN'],
                                     ]
                                 ]

@@ -50,6 +50,7 @@ return [
         'api_token' => env('WHATSAPP_API_TOKEN'),
         'api_url' => env('WHATSAPP_API_URL'),
         'template' => env('WHATSAPP_TEMPLATE_NAME', 'aviso_nuevo_contacto'),
+        'language' => env('WHATSAPP_TEMPLATE_LANG', 'es'),
     ],
 
     'fastapi_facturacion' => [

@@ -8,10 +8,11 @@ $apiUrl = config('services.whatsapp.api_url');
 $apiToken = config('services.whatsapp.api_token');
 $numeroVentas = config('services.whatsapp.ventas_number');
 $templateName = config('services.whatsapp.template', env('WHATSAPP_TEMPLATE_NAME', 'aviso_nuevo_contacto'));
+$templateLang = config('services.whatsapp.language', env('WHATSAPP_TEMPLATE_LANG', 'es'));
 
 echo "API URL: {$apiUrl}\n";
 echo "NUMERO VENTAS: {$numeroVentas}\n";
-echo "TEMPLATE: {$templateName}\n\n";
+echo "TEMPLATE: {$templateName} ({$templateLang})\n\n";
 
 $payload = [
     'messaging_product' => 'whatsapp',
@@ -21,7 +22,7 @@ $payload = [
     'template'          => [
         'name'     => $templateName,
         'language' => [
-            'code' => 'es'
+            'code' => $templateLang
         ],
         'components' => [
             [
@@ -30,7 +31,7 @@ $payload = [
                     ['type' => 'text', 'text' => 'Juan Pérez'],
                     ['type' => 'text', 'text' => '+522226702641'],
                     ['type' => 'text', 'text' => 'Calle Lago de Chapala 105, San Pedro Cholula, C.P. 72760'],
-                    ['type' => 'text', 'text' => "• 1x Sala Chesterfield ($24,500.00 MXN)\n• 2x Cojín Decorativo ($800.00 MXN)"],
+                    ['type' => 'text', 'text' => '• 1x Sala Chesterfield ($24,500.00 MXN) | • 2x Cojín Decorativo ($800.00 MXN)'],
                     ['type' => 'text', 'text' => '$25,300.00 MXN'],
                 ]
             ]
