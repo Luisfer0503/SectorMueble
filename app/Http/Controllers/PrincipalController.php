@@ -227,8 +227,8 @@ class PrincipalController extends Controller
             }
         }
 
-        // Envío gratis si alcanza o supera los $10,000 MXN, si no, $2 MXN de coste de envío temporal
-        $envio = ($subtotal >= 10000 || $subtotal == 0) ? 0 : 2.00;
+        // Envío gratis si alcanza o supera los $10,000 MXN, si no, $600 MXN de costo de envío dentro del radar de cobertura
+        $envio = ($subtotal >= 10000 || $subtotal == 0) ? 0 : 600.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
         // Muebles frecuentemente comprados juntos / recomendados
@@ -561,7 +561,7 @@ class PrincipalController extends Controller
             }
         }
 
-        $envio = ($subtotal >= 10000) ? 0 : 2.00;
+        $envio = ($subtotal >= 10000) ? 0 : 600.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
         return view('Principal.checkout', compact('carrito', 'subtotal', 'envio', 'descuento', 'total', 'cuponAplicado'));
@@ -625,7 +625,7 @@ class PrincipalController extends Controller
             }
         }
 
-        $envio = ($subtotal >= 10000) ? 0 : 2.00;
+        $envio = ($subtotal >= 10000) ? 0 : 600.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
         try {
@@ -784,8 +784,69 @@ class PrincipalController extends Controller
         }
 
         try {
-            $stripe = new \Stripe\StripeClient($stripeSecret);
+            DB::beginTransaction();
 
+            $subtotal = 0;
+            foreach ($carrito as $item) {
+                $subtotal += $item['precio'] * $item['cantidad'];
+            }
+            $descuento = 0.00;
+            $cuponCodigo = null;
+            $cuponAplicado = session()->get('cupon');
+            if ($cuponAplicado) {
+                $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
+                if ($cupon) {
+                    $descuento = $cupon->calcularDescuento($subtotal);
+                    $cuponCodigo = $cupon->codigo;
+                }
+            }
+            $envio = ($subtotal >= 10000) ? 0 : 600.00;
+            $total = max(0, $subtotal - $descuento) + $envio;
+
+            $requiereFactura = (bool) $request->has('requiere_factura');
+
+            // 1. Crear el Pedido en estado 'procesando' (Pagado/En preparación)
+            $pedido = Pedido::create([
+                'usuario_id'           => auth()->id(),
+                'nombre_cliente'       => $request->nombre_cliente,
+                'correo_cliente'       => $request->correo_cliente,
+                'telefono_cliente'     => $request->telefono_cliente,
+                'direccion_envio'      => $request->direccion_envio,
+                'ciudad'               => $request->ciudad,
+                'codigo_postal'        => $request->codigo_postal,
+                'total'                => $total,
+                'cupon_codigo'         => $cuponCodigo,
+                'descuento'            => $descuento,
+                'estado'               => 'procesando',
+                'requiere_factura'     => $requiereFactura,
+                'rfc_receptor'         => $requiereFactura ? strtoupper(trim($request->rfc_receptor)) : null,
+                'razon_social'        => $requiereFactura ? mb_strtoupper(trim($request->razon_social)) : null,
+                'regimen_fiscal'      => $requiereFactura ? $request->regimen_fiscal : null,
+                'uso_cfdi'            => $requiereFactura ? $request->uso_cfdi : null,
+                'codigo_postal_fiscal' => $requiereFactura ? trim($request->codigo_postal_fiscal) : null,
+                'correo_facturacion'  => $requiereFactura ? trim($request->correo_facturacion) : null,
+                'factura_estado'       => $requiereFactura ? 'pendiente' : 'no_solicitada',
+            ]);
+
+            // 2. Crear detalles del pedido
+            foreach ($carrito as $id => $item) {
+                $producto = Producto::find($id);
+                if ($producto) {
+                    DetallePedido::create([
+                        'pedido_id'       => $pedido->id,
+                        'producto_id'     => $producto->id,
+                        'nombre_producto' => $item['nombre'],
+                        'precio'          => $item['precio'],
+                        'cantidad'        => $item['cantidad'],
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            session()->put('ultimo_pedido_id', $pedido->id);
+
+            // 3. Crear sesión en Stripe con los ítems
             $lineItems = [];
             foreach ($carrito as $item) {
                 $lineItems[] = [
@@ -799,21 +860,6 @@ class PrincipalController extends Controller
                     'quantity' => $item['cantidad'],
                 ];
             }
-
-            // Calcular cupón de descuento y envío si aplica
-            $subtotal = 0;
-            foreach ($carrito as $item) {
-                $subtotal += $item['precio'] * $item['cantidad'];
-            }
-            $descuento = 0.00;
-            $cuponAplicado = session()->get('cupon');
-            if ($cuponAplicado) {
-                $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
-                if ($cupon) {
-                    $descuento = $cupon->calcularDescuento($subtotal);
-                }
-            }
-            $envio = ($subtotal >= 10000) ? 0 : 2.00;
 
             if ($envio > 0) {
                 $lineItems[] = [
@@ -832,6 +878,9 @@ class PrincipalController extends Controller
                 'line_items'     => $lineItems,
                 'mode'           => 'payment',
                 'customer_email' => $request->correo_cliente,
+                'metadata'       => [
+                    'pedido_id'  => $pedido->id,
+                ],
                 'success_url'    => route('checkout.stripe.exito') . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url'     => route('checkout.stripe.cancelado'),
             ]);
@@ -842,6 +891,7 @@ class PrincipalController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Error al conectar con Stripe: ' . $e->getMessage(),
@@ -855,19 +905,10 @@ class PrincipalController extends Controller
     public function confirmarPagoStripe(Request $request)
     {
         $sessionId = $request->query('session_id');
-        $datosEnvio = session()->get('datos_envio_checkout');
-        $carrito = session()->get('carrito', []);
-
-        if (empty($carrito)) {
-            return redirect()->route('inicio')->with('info', 'Tu pedido ya ha sido registrado.');
-        }
-
-        if (empty($sessionId)) {
-            return redirect()->route('checkout')->with('error', 'Sesión de pago no encontrada.');
-        }
+        $pedidoId = session()->get('ultimo_pedido_id');
 
         $stripeSecret = config('services.stripe.secret');
-        if (!empty($stripeSecret)) {
+        if (!empty($sessionId) && !empty($stripeSecret)) {
             try {
                 $stripe = new \Stripe\StripeClient($stripeSecret);
                 $checkoutSession = $stripe->checkout->sessions->retrieve($sessionId);
@@ -875,115 +916,68 @@ class PrincipalController extends Controller
                 if ($checkoutSession->payment_status !== 'paid') {
                     return redirect()->route('checkout')->with('error', 'El pago no ha sido completado en Stripe. Por favor intenta nuevamente.');
                 }
+
+                if (empty($pedidoId) && isset($checkoutSession->metadata->pedido_id)) {
+                    $pedidoId = $checkoutSession->metadata->pedido_id;
+                }
             } catch (\Exception $e) {
                 \Illuminate\Support\Facades\Log::error("Error al consultar la sesión de Stripe {$sessionId}: " . $e->getMessage());
-                return redirect()->route('checkout')->with('error', 'No se pudo verificar el pago con Stripe. Si tu pago ya se descontó, contacta a un asesor.');
             }
         }
 
+        $pedido = null;
+        if (!empty($pedidoId)) {
+            $pedido = Pedido::with('detalles')->find($pedidoId);
+        }
+
+        if (!$pedido && auth()->check()) {
+            $pedido = Pedido::where('usuario_id', auth()->id())->latest()->first();
+        }
+
+        if (!$pedido) {
+            return redirect()->route('inicio')->with('info', 'Tu pedido ya ha sido registrado.');
+        }
+
+        // Marcar el estado como procesando (Pagado)
+        $pedido->update(['estado' => 'procesando']);
+
+        // Descontar inventario
+        foreach ($pedido->detalles as $detItem) {
+            $producto = Producto::find($detItem->producto_id);
+            if ($producto) {
+                $det = $producto->detalles->first();
+                if ($det && $det->stock >= $detItem->cantidad) {
+                    $det->decrement('stock', $detItem->cantidad);
+                }
+            }
+        }
+
+        // Enviar correo electrónico de compra exitosa
         try {
-            DB::beginTransaction();
-
-            $subtotal = 0;
-            foreach ($carrito as $item) {
-                $subtotal += $item['precio'] * $item['cantidad'];
+            $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
+            if ($correoDestino) {
+                \Illuminate\Support\Facades\Notification::route('mail', $correoDestino)
+                    ->notify(new \App\Notifications\EstadoPedidoNotificacion($pedido, 'procesando'));
             }
-
-            $descuento = 0.00;
-            $cuponCodigo = null;
-            $cuponAplicado = session()->get('cupon');
-            if ($cuponAplicado) {
-                $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
-                if ($cupon) {
-                    $descuento = $cupon->calcularDescuento($subtotal);
-                    $cuponCodigo = $cupon->codigo;
-                }
-            }
-
-            $envio = ($subtotal >= 10000) ? 0 : 2.00;
-            $total = max(0, $subtotal - $descuento) + $envio;
-
-            $requiereFactura = !empty($datosEnvio['requiere_factura']);
-
-            $pedido = Pedido::create([
-                'usuario_id'           => auth()->id(),
-                'nombre_cliente'       => $datosEnvio['nombre_cliente'] ?? auth()->user()->name,
-                'correo_cliente'       => $datosEnvio['correo_cliente'] ?? auth()->user()->email,
-                'telefono_cliente'     => $datosEnvio['telefono_cliente'] ?? '0000000000',
-                'direccion_envio'      => $datosEnvio['direccion_envio'] ?? 'Dirección registrada',
-                'ciudad'               => $datosEnvio['ciudad'] ?? 'Puebla',
-                'codigo_postal'        => $datosEnvio['codigo_postal'] ?? (auth()->user()->codigo_postal ?? '72000'),
-                'total'                => $total,
-                'cupon_codigo'         => $cuponCodigo,
-                'descuento'            => $descuento,
-                'estado'               => 'completado',
-                'requiere_factura'     => $requiereFactura,
-                'rfc_receptor'         => $requiereFactura ? ($datosEnvio['rfc_receptor'] ?? null) : null,
-                'razon_social'        => $requiereFactura ? ($datosEnvio['razon_social'] ?? null) : null,
-                'regimen_fiscal'      => $requiereFactura ? ($datosEnvio['regimen_fiscal'] ?? null) : null,
-                'uso_cfdi'            => $requiereFactura ? ($datosEnvio['uso_cfdi'] ?? null) : null,
-                'codigo_postal_fiscal' => $requiereFactura ? ($datosEnvio['codigo_postal_fiscal'] ?? null) : null,
-                'correo_facturacion'  => $requiereFactura ? ($datosEnvio['correo_facturacion'] ?? null) : null,
-                'factura_estado'       => $requiereFactura ? 'pendiente' : 'no_solicitada',
-            ]);
-
-            foreach ($carrito as $id => $item) {
-                $producto = Producto::find($id);
-                if ($producto) {
-                    DetallePedido::create([
-                        'pedido_id'       => $pedido->id,
-                        'producto_id'     => $producto->id,
-                        'nombre_producto' => $item['nombre'],
-                        'precio'          => $item['precio'],
-                        'cantidad'        => $item['cantidad'],
-                    ]);
-                    // Descontar stock del subartículo / acabado específico
-                    if (!empty($item['subarticulo_id'])) {
-                        $det = ProductoDetalle::find($item['subarticulo_id']);
-                        if ($det) {
-                            $det->decrement('stock', $item['cantidad']);
-                        }
-                    } else {
-                        $det = $producto->detalles->first();
-                        if ($det) {
-                            $det->decrement('stock', $item['cantidad']);
-                        }
-                    }
-                }
-            }
-
-            DB::commit();
-
-            // Notificar por correo la confirmación de pago del pedido
-            try {
-                $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
-                if ($correoDestino) {
-                    \Illuminate\Support\Facades\Notification::route('mail', $correoDestino)
-                        ->notify(new \App\Notifications\EstadoPedidoNotificacion($pedido, 'pagado'));
-                }
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Error al enviar correo de confirmación de pago de Stripe del pedido #{$pedido->id}: " . $e->getMessage());
-            }
-
-            // Emitir Factura vía FastAPI si fue solicitada
-            if ($pedido->requiere_factura) {
-                app(\App\Services\FacturacionFastApiService::class)->generarFactura($pedido);
-            }
-
-            // Vaciar carrito en sesión y base de datos
-            session()->forget('carrito');
-            session()->forget('cupon');
-            session()->forget('datos_envio_checkout');
-            if (auth()->check()) {
-                auth()->user()->update(['carrito_guardado' => null]);
-            }
-
-            return redirect()->route('pedido.confirmado', $pedido->id)->with('success', '¡Pago procesado con éxito en Stripe! Tu pedido ha sido confirmado.');
-
         } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->route('checkout')->with('error', 'Ocurrió un error al procesar el pago: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error("Error al enviar correo de confirmación del pedido #{$pedido->id}: " . $e->getMessage());
         }
+
+        // Emitir Factura vía FastAPI si fue solicitada y no se ha timbrado
+        if ($pedido->requiere_factura && $pedido->factura_estado !== 'facturado') {
+            app(\App\Services\FacturacionFastApiService::class)->generarFactura($pedido);
+        }
+
+        // Vaciar carrito en sesión y base de datos
+        session()->forget('carrito');
+        session()->forget('cupon');
+        session()->forget('datos_envio_checkout');
+        session()->forget('ultimo_pedido_id');
+        if (auth()->check()) {
+            auth()->user()->update(['carrito_guardado' => null]);
+        }
+
+        return redirect()->route('pedido.confirmado', $pedido->id)->with('success', '¡Pago procesado con éxito en Stripe! Tu pedido ha sido confirmado.');
     }
 
     /**
@@ -991,6 +985,15 @@ class PrincipalController extends Controller
      */
     public function cancelarPagoStripe()
     {
+        $pedidoId = session()->get('ultimo_pedido_id');
+        if ($pedidoId) {
+            $pedido = Pedido::find($pedidoId);
+            if ($pedido && $pedido->estado === 'procesando') {
+                $pedido->update(['estado' => 'cancelado']);
+            }
+            session()->forget('ultimo_pedido_id');
+        }
+
         return redirect()->route('checkout')->with('info', 'El proceso de pago en Stripe fue cancelado. Tus productos siguen guardados en tu carrito.');
     }
 
@@ -1296,12 +1299,22 @@ class PrincipalController extends Controller
     }
 
     /**
-     * Muestra la vista de perfil de usuario para consultar y editar sus datos.
+     * Muestra la vista de perfil de usuario para consultar y editar sus datos, junto con su historial de compras/pedidos.
      */
     public function mostrarPerfil(Request $request)
     {
         $user = auth()->user();
-        return view('Principal.perfil', compact('user'));
+
+        // Obtener historial de pedidos del usuario por usuario_id o por su correo electrónico registrado
+        $pedidos = Pedido::with('detalles.producto')
+            ->where(function ($query) use ($user) {
+                $query->where('usuario_id', $user->id)
+                      ->orWhere('correo_cliente', $user->email);
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('Principal.perfil', compact('user', 'pedidos'));
     }
 
     /**
@@ -1570,7 +1583,7 @@ class PrincipalController extends Controller
                 $descuento = $cupon->calcularDescuento($subtotal);
             }
         }
-        $envio = ($subtotal >= 10000) ? 0 : 2.00;
+        $envio = ($subtotal >= 10000) ? 0 : 600.00;
         $total = max(0, $subtotal - $descuento) + $envio;
         $totalFmt = number_format($total, 2, '.', ',');
 
@@ -1759,4 +1772,6 @@ class PrincipalController extends Controller
         return redirect()->away($whatsappUrl);
     }
 }
+
+
 

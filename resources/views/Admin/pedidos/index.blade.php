@@ -65,25 +65,25 @@
                                 
                                 <!-- Estado -->
                                 <td class="p-4">
-                                    @if($pedido->estado === 'pendiente')
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                                            Pendiente
+                                    @if($pedido->estado === 'pagado' || $pedido->estado === 'procesando' || $pedido->estado === 'completado' || $pedido->estado === 'procesado')
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">
+                                            ✓ Pagado / Procesando
                                         </span>
-                                    @elseif($pedido->estado === 'procesado' || $pedido->estado === 'completado')
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">
-                                            Procesado
+                                    @elseif($pedido->estado === 'pendiente')
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                                            Pendiente de Pago
                                         </span>
                                     @elseif($pedido->estado === 'enviado')
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200">
-                                            Enviado
+                                            📦 Enviado
                                         </span>
                                     @elseif($pedido->estado === 'entregado' || $pedido->estado === 'recibido')
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                            Entregado
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">
+                                            🎉 Entregado
                                         </span>
                                     @elseif($pedido->estado === 'contacto_agente')
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-800 border border-purple-200">
-                                            Contacto a Agente
+                                            💬 Contacto Agente
                                         </span>
                                     @else
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200">

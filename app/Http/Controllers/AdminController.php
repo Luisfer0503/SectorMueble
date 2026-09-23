@@ -634,7 +634,7 @@ class AdminController extends Controller
         $pedido = Pedido::findOrFail($id);
 
         $request->validate([
-            'estado' => 'required|in:pendiente,procesado,enviado,entregado,cancelado,contacto_agente',
+            'estado' => 'required|in:pendiente,procesando,procesado,completado,pagado,enviado,entregado,cancelado,contacto_agente',
         ]);
 
         $estadoAnterior = $pedido->estado;

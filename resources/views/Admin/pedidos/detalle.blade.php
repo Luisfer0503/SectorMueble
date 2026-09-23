@@ -190,16 +190,16 @@
                 
                 <div class="mb-6 flex items-center justify-between">
                     <span class="text-xs text-zinc-500">Estado actual:</span>
-                    @if($pedido->estado === 'pendiente')
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">Pendiente</span>
-                    @elseif($pedido->estado === 'procesado' || $pedido->estado === 'completado')
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">Procesado</span>
+                    @if(in_array($pedido->estado, ['pagado', 'procesando', 'completado', 'procesado']))
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300">✓ Pagado / Procesando</span>
+                    @elseif($pedido->estado === 'pendiente')
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">Pendiente de Pago</span>
                     @elseif($pedido->estado === 'enviado')
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">Enviado</span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">📦 Enviado</span>
                     @elseif($pedido->estado === 'entregado' || $pedido->estado === 'recibido')
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">Entregado</span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">🎉 Entregado</span>
                     @elseif($pedido->estado === 'contacto_agente')
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200">Contacto a Agente</span>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-800 border border-purple-200">💬 Contacto Agente</span>
                     @else
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-800 border border-rose-200">Cancelado</span>
                     @endif
@@ -210,8 +210,8 @@
                     <div>
                         <label for="estado" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-2">Actualizar Estado</label>
                         <select name="estado" id="estado" class="w-full bg-zinc-50 border border-zinc-200 rounded text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
-                            <option value="pendiente" {{ $pedido->estado === 'pendiente' ? 'selected' : '' }}>Pendiente (Recibido)</option>
-                            <option value="procesado" {{ ($pedido->estado === 'procesado' || $pedido->estado === 'completado') ? 'selected' : '' }}>Procesado (Pagado/Empacado)</option>
+                            <option value="procesando" {{ in_array($pedido->estado, ['procesando', 'pagado', 'completado', 'procesado']) ? 'selected' : '' }}>✓ Pagado / Procesando Compra</option>
+                            <option value="pendiente" {{ $pedido->estado === 'pendiente' ? 'selected' : '' }}>Pendiente de Pago</option>
                             <option value="contacto_agente" {{ $pedido->estado === 'contacto_agente' ? 'selected' : '' }}>💬 Contacto a Agente de Ventas</option>
                             <option value="enviado" {{ $pedido->estado === 'enviado' ? 'selected' : '' }}>📦 Enviado (En camino - Notifica por Correo)</option>
                             <option value="entregado" {{ ($pedido->estado === 'entregado' || $pedido->estado === 'recibido') ? 'selected' : '' }}>🎉 Entregado / Recibido (Notifica por Correo)</option>
