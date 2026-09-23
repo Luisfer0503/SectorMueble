@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('titulo', 'Sector Mueble | E-commerce de Muebles de Diseño')</title>
     <meta name="description" content="Encuentra los mejores muebles de diseño escandinavo, industrial y moderno para tu hogar u oficina en Sector Mueble. Envíos a todo el país.">
-    
+
+    <!-- Favicon / Ícono de la pestaña del navegador (logo2.png) -->
+    <link rel="icon" type="image/png" href="{{ asset('logo2.png') }}">
+    <link rel="shortcut icon" href="{{ asset('logo2.png') }}" type="image/png">
+    <link rel="apple-touch-icon" href="{{ asset('logo2.png') }}">
+
     <!-- Google Fonts CDN para Máxima Legibilidad en Todos los Dispositivos Móviles -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
