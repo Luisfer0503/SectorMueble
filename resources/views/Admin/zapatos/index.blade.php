@@ -99,10 +99,15 @@
                         <span>✖ Cerrar Categoría</span>
                     </a>
                 @else
-                    <span class="px-3 py-2 bg-amber-100 text-amber-900 text-xs font-black rounded-xl border border-amber-300 flex items-center space-x-1.5">
-                        <span class="w-2 h-2 rounded-full bg-amber-600"></span>
-                        <span>🔴 Categorías Cerradas</span>
-                    </span>
+                    <!-- Selector Rápido para Reabrir Categoría -->
+                    <div class="flex items-center space-x-1.5">
+                        <select onchange="if(this.value) window.location.href=this.value;" class="bg-amber-100 text-amber-950 border border-amber-300 text-xs font-black rounded-xl px-3 py-2 focus:ring-2 focus:ring-amber-500">
+                            <option value="">📂 Reabrir Categoría...</option>
+                            @foreach($categorias as $catOpt)
+                                <option value="{{ route('admin.zapatos', ['categoria' => $catOpt]) }}">Reabrir: {{ $catOpt }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 @endif
 
                 <!-- Botón Crear Nueva Categoría -->
@@ -120,15 +125,15 @@
             <div class="bg-amber-50/80 border-2 border-dashed border-amber-300 rounded-3xl p-6 sm:p-8 text-center my-6 shadow-sm">
                 <div class="w-16 h-16 bg-amber-100 text-amber-950 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner border border-amber-300">
                     <svg class="w-8 h-8 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
                     </svg>
                 </div>
                 <h3 class="serif-title text-xl font-black text-slate-900">Categoría Cerrada</h3>
                 <p class="text-slate-600 text-xs md:text-sm max-w-lg mx-auto mt-1">
-                    Solo la categoría abierta muestra sus productos y permite guardar calzado en ella. Selecciona una categoría a continuación para abrirla.
+                    Las categorías están cerradas. Haz clic en <strong>"📂 Reabrir Categoría"</strong> o selecciona una categoría a continuación para volver a abrirla y gestionar su inventario.
                 </p>
 
-                <!-- Grid de Tarjetas de Categorías Disponibles para Abrir -->
+                <!-- Grid de Tarjetas de Categorías Disponibles para Abrir / Reabrir -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 text-left">
                     @foreach($resumenCategorias as $catKey => $resCat)
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
@@ -146,7 +151,7 @@
                                 </div>
                             </div>
                             <a href="{{ route('admin.zapatos', ['categoria' => $resCat['nombre']]) }}" class="mt-4 w-full py-2.5 bg-slate-900 hover:bg-black text-amber-300 text-xs font-bold rounded-xl text-center shadow transition-all block">
-                                📂 Abrir esta Categoría
+                                📂 Reabrir / Abrir esta Categoría
                             </a>
                         </div>
                     @endforeach

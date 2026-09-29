@@ -1918,6 +1918,7 @@ class AdminController extends Controller
             fwrite($file, '<table border="1">' . "\n");
             fwrite($file, '<thead><tr style="background-color: #f2f2f2; font-weight: bold;">' . "\n");
             fwrite($file, '<th>CLAVE ALTERNA</th>' . "\n");
+            fwrite($file, '<th>CODIGO DE BARRAS</th>' . "\n");
             fwrite($file, '<th>DESCRIPCION</th>' . "\n");
             fwrite($file, '<th>MARCA</th>' . "\n");
             fwrite($file, '<th>TALLA</th>' . "\n");
@@ -1926,15 +1927,17 @@ class AdminController extends Controller
             fwrite($file, '</tr></thead><tbody>' . "\n");
 
             foreach ($ropas as $r) {
-                $clave  = htmlspecialchars($r->clave_alterna, ENT_QUOTES, 'UTF-8');
-                $desc   = htmlspecialchars($r->descripcion_completa, ENT_QUOTES, 'UTF-8');
-                $marca  = htmlspecialchars($r->marca, ENT_QUOTES, 'UTF-8');
-                $talla  = htmlspecialchars($r->talla, ENT_QUOTES, 'UTF-8');
-                $precio = number_format((float)$r->precio, 2, '.', '');
-                $cant   = (int)$r->cantidad;
+                $clave   = htmlspecialchars($r->clave_alterna, ENT_QUOTES, 'UTF-8');
+                $barcode = htmlspecialchars($r->codigo_barras ?? '', ENT_QUOTES, 'UTF-8');
+                $desc    = htmlspecialchars($r->descripcion_completa, ENT_QUOTES, 'UTF-8');
+                $marca   = htmlspecialchars($r->marca, ENT_QUOTES, 'UTF-8');
+                $talla   = htmlspecialchars($r->talla, ENT_QUOTES, 'UTF-8');
+                $precio  = number_format((float)$r->precio, 2, '.', '');
+                $cant    = (int)$r->cantidad;
 
                 fwrite($file, '<tr>' . "\n");
                 fwrite($file, '<td style="mso-number-format:\@;">' . $clave . '</td>' . "\n");
+                fwrite($file, '<td style="mso-number-format:\@;">' . $barcode . '</td>' . "\n");
                 fwrite($file, '<td>' . $desc . '</td>' . "\n");
                 fwrite($file, '<td>' . $marca . '</td>' . "\n");
                 fwrite($file, '<td>' . $talla . '</td>' . "\n");
@@ -2022,7 +2025,7 @@ class AdminController extends Controller
                 $talla = $tItem['talla'];
                 $cantidad = $tItem['cantidad'];
 
-                $claveBuscada = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $codigo, $talla);
+                $claveBuscada = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $talla);
 
                 $ropaExistente = Ropa::where('categoria', $categoria)->get()->first(function ($r) use ($claveBuscada) {
                     return strtoupper(trim($r->clave_alterna)) === strtoupper(trim($claveBuscada));
@@ -2032,8 +2035,9 @@ class AdminController extends Controller
                     $huboDuplicados = true;
                     $nuevoStock = $ropaExistente->cantidad + $cantidad;
                     $ropaExistente->update([
-                        'cantidad' => $nuevoStock,
-                        'precio'   => $precio > 0 ? $precio : $ropaExistente->precio,
+                        'cantidad'      => $nuevoStock,
+                        'precio'        => $precio > 0 ? $precio : $ropaExistente->precio,
+                        'codigo_barras' => !empty($codigo) ? $codigo : $ropaExistente->codigo_barras,
                     ]);
                     $registrosProcesados[] = "⚠️ Talla {$talla} (Clave {$claveBuscada} YA EXISTÍA en {$categoria}): Se sumaron +{$cantidad} prendas al registro previo (Nuevo Stock Total: {$nuevoStock} prendas).";
                 } else {
@@ -2112,7 +2116,7 @@ class AdminController extends Controller
             $precioRaw = $request->input('precio');
             $precio   = (is_numeric($precioRaw) && (float)$precioRaw >= 0) ? (float)$precioRaw : $ropa->precio;
 
-            $nuevaClave = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $codigo, $talla);
+            $nuevaClave = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $talla);
 
             $otroExistente = Ropa::all()->first(function ($r) use ($nuevaClave, $ropa) {
                 return $r->id !== $ropa->id && strtoupper(trim($r->clave_alterna)) === strtoupper(trim($nuevaClave));
@@ -2121,8 +2125,9 @@ class AdminController extends Controller
             if ($otroExistente) {
                 $nuevoStock = $otroExistente->cantidad + $cantidad;
                 $otroExistente->update([
-                    'cantidad' => $nuevoStock,
-                    'precio'   => $precio > 0 ? $precio : $otroExistente->precio,
+                    'cantidad'      => $nuevoStock,
+                    'precio'        => $precio > 0 ? $precio : $otroExistente->precio,
+                    'codigo_barras' => !empty($codigo) ? $codigo : $otroExistente->codigo_barras,
                 ]);
 
                 $ropa->delete();

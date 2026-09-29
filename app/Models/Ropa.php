@@ -32,8 +32,8 @@ class Ropa extends Model
     ];
 
     /**
-     * Genera la Clave Alterna según la fórmula para Ropa: R(Marca)(Estilo)(Art)(Color)[CodigoBarras]T(Talla)
-     * Ejemplo: RNIKEPOLO102NEGRO123456TCH
+     * Genera la Clave Alterna según la fórmula para Ropa: R(Marca)(Estilo)(Art)(Color)T(Talla)
+     * Ejemplo: RNIKEPOLO102NEGROTCH
      */
     public function getClaveAlternaAttribute(): string
     {
@@ -42,21 +42,19 @@ class Ropa extends Model
             $this->estilo,
             $this->art,
             $this->color,
-            $this->codigo_barras,
             $this->talla
         );
     }
 
     /**
-     * Genera la Clave Alterna a partir de los valores recibidos.
+     * Genera la Clave Alterna a partir de los valores recibidos sin incluir el código de barras.
      */
-    public static function generarClaveAlterna($marca, $estilo, $art, $color, $codigo_barras, $talla): string
+    public static function generarClaveAlterna($marca, $estilo, $art, $color, $talla): string
     {
         $cleanMarca  = strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], ['A','E','I','O','U','A','E','I','O','U','N','N'], preg_replace('/[^A-Za-z0-9]/', '', $marca ?? '')));
         $cleanEstilo = !empty($estilo) ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $estilo)) : '';
         $cleanArt    = !empty($art) ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $art)) : '';
         $cleanColor  = !empty($color) ? strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], ['A','E','I','O','U','A','E','I','O','U','N','N'], preg_replace('/[^A-Za-z0-9]/', '', $color))) : '';
-        $cleanBar    = !empty($codigo_barras) ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $codigo_barras)) : '';
         
         $tallaStr = trim((string)($talla ?? ''));
         if (!str_starts_with(strtolower($tallaStr), 't')) {
@@ -65,7 +63,7 @@ class Ropa extends Model
             $tallaStr = strtoupper($tallaStr);
         }
 
-        return "R{$cleanMarca}{$cleanEstilo}{$cleanArt}{$cleanColor}{$cleanBar}{$tallaStr}";
+        return "R{$cleanMarca}{$cleanEstilo}{$cleanArt}{$cleanColor}{$tallaStr}";
     }
 
     /**
@@ -82,9 +80,6 @@ class Ropa extends Model
         }
         if (!empty($this->color)) {
             $desc .= " COLOR {$this->color}";
-        }
-        if (!empty($this->codigo_barras)) {
-            $desc .= " BARCODE {$this->codigo_barras}";
         }
         $desc .= " TALLA {$this->talla}";
         return strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú'], ['A','E','I','O','U','A','E','I','O','U'], $desc));
