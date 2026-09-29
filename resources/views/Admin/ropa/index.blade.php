@@ -762,10 +762,13 @@
 
                 <!-- Header de Vista Previa de la Prenda Original -->
                 <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex items-center space-x-3">
-                    <img id="dupRopaImagenPreview" src="" class="w-12 h-12 object-cover rounded-xl border border-slate-200 bg-white" alt="Vista Previa">
-                    <div class="text-xs">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Copiando desde el registro:</span>
-                        <span id="dupLblOriginalClave" class="font-mono font-black text-indigo-950"></span>
+                    <img id="dupRopaImagenPreview" src="{{ asset('storage/ropa/default.png') }}" class="w-12 h-12 object-cover rounded-xl border border-slate-200 bg-white" alt="Vista Previa">
+                    <div class="text-xs space-y-0.5">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Copiando datos desde:</span>
+                        <span id="dupLblOriginalClave" class="font-mono font-black text-indigo-950 block"></span>
+                        <span class="inline-flex items-center text-[10px] font-extrabold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                            📷 Foto: No se guardará la foto original
+                        </span>
                     </div>
                 </div>
 
@@ -775,13 +778,6 @@
                             Marca <span class="text-rose-600">* (Obligatorio)</span>
                         </label>
                         <input type="text" id="dupRopaMarca" name="marca" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-extrabold text-slate-900 mb-1">
-                            Talla <span class="text-rose-600">* (Obligatorio)</span>
-                        </label>
-                        <input type="text" id="dupRopaTalla" name="talla" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
                     </div>
 
                     <div>
@@ -805,13 +801,35 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Cantidad (Stock)</label>
-                        <input type="number" id="dupRopaCantidad" name="cantidad" min="1" value="1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500">
-                    </div>
-
-                    <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Precio Unitario ($)</label>
                         <input type="number" step="0.01" id="dupRopaPrecio" name="precio" placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <!-- Sección de Tallas Dinámicas (+ Talla) para Duplicado -->
+                <div class="bg-indigo-50/70 p-4 rounded-2xl border border-indigo-200/80 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-extrabold text-slate-900 block">Tallas y Cantidades a Registrar <span class="text-rose-600">*</span></span>
+                            <span class="text-[11px] text-slate-500">Puedes duplicar este artículo creando una o varias tallas a la vez.</span>
+                        </div>
+                        <button type="button" onclick="agregarFilaTallaDuplicarRopa()" class="px-3 py-1.5 bg-indigo-200 hover:bg-indigo-300 text-indigo-950 font-black text-xs rounded-lg transition-all cursor-pointer shrink-0">
+                            + Agregar Otra Talla
+                        </button>
+                    </div>
+
+                    <div id="contenedorFilasTallasDuplicarRopa" class="space-y-2">
+                        <div class="flex items-center space-x-3 fila-talla-duplicar-ropa">
+                            <div class="flex-1">
+                                <input type="text" id="dupRopaTalla" name="tallas[0][talla]" required placeholder="Talla (Ej. CH, M, G, XL, 30, 32)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div class="w-32">
+                                <input type="number" id="dupRopaCantidad" name="tallas[0][cantidad]" min="1" value="1" required placeholder="Cant." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800">
+                            </div>
+                            <button type="button" onclick="eliminarFilaTallaDuplicarRopa(this)" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg hidden text-xs font-bold">
+                                &times;
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1184,22 +1202,84 @@
             document.getElementById('modalEditarRopa').classList.add('hidden');
         }
 
-        // Duplicar Prenda (Copiar y modificar campos)
+        // Duplicar Prenda (Copiar y modificar campos + Múltiples Tallas)
+        let contadorFilasTallasDuplicarRopa = 1;
+
+        function agregarFilaTallaDuplicarRopa() {
+            const contenedor = document.getElementById('contenedorFilasTallasDuplicarRopa');
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-3 fila-talla-duplicar-ropa animate-fade-in';
+            div.innerHTML = `
+                <div class="flex-1">
+                    <input type="text" name="tallas[${contadorFilasTallasDuplicarRopa}][talla]" required placeholder="Talla (Ej. CH, M, G, XL)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div class="w-32">
+                    <input type="number" name="tallas[${contadorFilasTallasDuplicarRopa}][cantidad]" min="1" value="1" required placeholder="Cant." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800">
+                </div>
+                <button type="button" onclick="eliminarFilaTallaDuplicarRopa(this)" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg text-xs font-bold">
+                    &times;
+                </button>
+            `;
+            contenedor.appendChild(div);
+            contadorFilasTallasDuplicarRopa++;
+            actualizarBotonesEliminarTallaDuplicarRopa();
+        }
+
+        function eliminarFilaTallaDuplicarRopa(btn) {
+            btn.closest('.fila-talla-duplicar-ropa').remove();
+            actualizarBotonesEliminarTallaDuplicarRopa();
+        }
+
+        function actualizarBotonesEliminarTallaDuplicarRopa() {
+            const filas = document.querySelectorAll('#contenedorFilasTallasDuplicarRopa .fila-talla-duplicar-ropa');
+            filas.forEach((f) => {
+                const btn = f.querySelector('button');
+                if (filas.length === 1) {
+                    btn.classList.add('hidden');
+                } else {
+                    btn.classList.remove('hidden');
+                }
+            });
+        }
+
+        function limpiarFilasTallasDuplicarRopa() {
+            const contenedor = document.getElementById('contenedorFilasTallasDuplicarRopa');
+            if (!contenedor) return;
+            contenedor.innerHTML = `
+                <div class="flex items-center space-x-3 fila-talla-duplicar-ropa">
+                    <div class="flex-1">
+                        <input type="text" id="dupRopaTalla" name="tallas[0][talla]" required placeholder="Talla (Ej. CH, M, G, XL, 30, 32)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="w-32">
+                        <input type="number" id="dupRopaCantidad" name="tallas[0][cantidad]" min="1" value="1" required placeholder="Cant." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800">
+                    </div>
+                    <button type="button" onclick="eliminarFilaTallaDuplicarRopa(this)" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg hidden text-xs font-bold">
+                        &times;
+                    </button>
+                </div>
+            `;
+            contadorFilasTallasDuplicarRopa = 1;
+        }
+
         function abrirModalDuplicarRopa(ropaObj) {
+            limpiarFilasTallasDuplicarRopa();
+
             document.getElementById('dupRopaMarca').value = ropaObj.marca || '';
             document.getElementById('dupRopaTalla').value = ropaObj.talla || '';
+            document.getElementById('dupRopaCantidad').value = ropaObj.cantidad || 1;
             document.getElementById('dupRopaEstilo').value = ropaObj.estilo || '';
             document.getElementById('dupRopaColor').value = ropaObj.color || '';
             document.getElementById('dupRopaCodigo').value = ropaObj.codigo_barras || '';
             document.getElementById('dupRopaArt').value = ropaObj.art || '';
-            document.getElementById('dupRopaCantidad').value = ropaObj.cantidad || 1;
             document.getElementById('dupRopaPrecio').value = ropaObj.precio || '0.00';
-            document.getElementById('dupRopaImagenPath').value = ropaObj.imagen_url || '';
+            
+            // Al duplicar NO se copia la foto del registro original (se deja limpia/default)
+            document.getElementById('dupRopaImagenPath').value = '';
 
             const claveLbl = ropaObj.clave_alterna || 'S/C';
             const descLbl = `${ropaObj.marca || ''} ${ropaObj.talla || ''}`.trim();
             document.getElementById('dupLblOriginalClave').innerText = `${claveLbl} (${descLbl})`;
-            document.getElementById('dupRopaImagenPreview').src = ropaObj.imagen_url || '/storage/ropa/default.png';
+            document.getElementById('dupRopaImagenPreview').src = "{{ asset('storage/ropa/default.png') }}";
 
             document.getElementById('modalDuplicarRopa').classList.remove('hidden');
         }
