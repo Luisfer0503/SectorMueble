@@ -131,6 +131,19 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::post('/zapatos/actualizar/{id}', [AdminController::class, 'zapatosActualizar'])->name('admin.zapatos.actualizar');
     Route::get('/zapatos/eliminar/{id}', [AdminController::class, 'zapatosEliminar'])->name('admin.zapatos.eliminar');
     Route::post('/zapatos/categorias/guardar', [AdminController::class, 'zapatosCategoriaGuardar'])->name('admin.zapatos.categorias.guardar');
+    Route::post('/zapatos/mover-categoria', [AdminController::class, 'zapatosMoverCategoria'])->name('admin.zapatos.mover_categoria');
+
+    // Inventario de Ropa con Escáner IA de Foto
+    Route::get('/ropa', [AdminController::class, 'ropaIndex'])->name('admin.ropa');
+    Route::get('/ropa/exportar-excel', [AdminController::class, 'ropaExportarExcel'])->name('admin.ropa.excel');
+    Route::post('/ropa/analizar-foto', [AdminController::class, 'ropaAnalizarFoto'])->name('admin.ropa.analizar');
+    Route::post('/ropa/guardar', [AdminController::class, 'ropaGuardar'])->name('admin.ropa.guardar');
+    Route::post('/ropa/guardar-apikey', [AdminController::class, 'zapatosGuardarApiKey'])->name('admin.ropa.apikey');
+    Route::post('/ropa/actualizar/{id}', [AdminController::class, 'ropaActualizar'])->name('admin.ropa.actualizar');
+    Route::get('/ropa/eliminar/{id}', [AdminController::class, 'ropaEliminar'])->name('admin.ropa.eliminar');
+    Route::post('/ropa/categorias/guardar', [AdminController::class, 'ropaCategoriaGuardar'])->name('admin.ropa.categorias.guardar');
+    Route::post('/ropa/mover-categoria', [AdminController::class, 'ropaMoverCategoria'])->name('admin.ropa.mover_categoria');
+
 
     // Gestión y Seguimiento de Pedidos y Facturación FastAPI
     Route::get('/pedidos', [AdminController::class, 'pedidosIndex'])->name('admin.pedidos');

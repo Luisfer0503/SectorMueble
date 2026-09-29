@@ -63,198 +63,298 @@
         </div>
 
         <!-- Barra de Gestión y Selección Única de Categorías de Calzado -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center space-x-3 overflow-x-auto pb-2 md:pb-0 scrollbar-thin">
-                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400 whitespace-nowrap flex items-center space-x-1">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-2 overflow-x-auto pb-2 xl:pb-0 scrollbar-thin">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-slate-400 whitespace-nowrap flex items-center space-x-1 mr-1">
                     <svg class="w-4 h-4 text-amber-600 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 11h.01M7 15h.01M13 7h7M13 11h7M13 15h7M3 7h2v10H3z"/>
                     </svg>
-                    <span>Categoría Abierta:</span>
+                    <span>Categorías:</span>
                 </span>
                 
-                <div class="flex items-center space-x-2">
-                    @foreach($categorias as $cat)
-                        @php
-                            $esActiva = (strtoupper(trim($cat)) === strtoupper(trim($categoriaActiva)));
-                        @endphp
-                        <a href="{{ route('admin.zapatos', ['categoria' => $cat]) }}" 
-                           class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap flex items-center space-x-1.5 {{ $esActiva ? 'bg-amber-950 text-amber-300 shadow-md ring-2 ring-amber-800' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' }}">
-                            <span>{{ $cat }}</span>
-                            @if($esActiva)
-                                <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                            @endif
-                        </a>
+                @foreach($categorias as $cat)
+                    @php
+                        $esActiva = ($categoriaActiva && strtoupper(trim($cat)) === strtoupper(trim($categoriaActiva)));
+                    @endphp
+                    <a href="{{ route('admin.zapatos', ['categoria' => $cat]) }}" 
+                       class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap flex items-center space-x-1.5 {{ $esActiva ? 'bg-amber-950 text-amber-300 shadow-md ring-2 ring-amber-800' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' }}">
+                        <span>{{ $cat }}</span>
+                        @if($esActiva)
+                            <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse" title="Categoría abierta"></span>
+                        @endif
+                    </a>
+                @endforeach
+            </div>
+
+            <!-- Botones de Acción de Categoría (Cerrar Categoría y + Nueva Categoría) -->
+            <div class="flex items-center space-x-2 shrink-0">
+                @if($categoriaActiva)
+                    <!-- Botón para CERRAR la categoría abierta actual -->
+                    <a href="{{ route('admin.zapatos', ['categoria' => '']) }}" 
+                       class="inline-flex items-center justify-center px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-800 font-extrabold text-xs rounded-xl border border-rose-300 shadow-sm transition-all space-x-1.5 whitespace-nowrap cursor-pointer"
+                       title="Cerrar la categoría abierta actual">
+                        <svg class="w-4 h-4 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        <span>✖ Cerrar Categoría</span>
+                    </a>
+                @else
+                    <span class="px-3 py-2 bg-amber-100 text-amber-900 text-xs font-black rounded-xl border border-amber-300 flex items-center space-x-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-600"></span>
+                        <span>🔴 Categorías Cerradas</span>
+                    </span>
+                @endif
+
+                <!-- Botón Crear Nueva Categoría -->
+                <button onclick="abrirModalNuevaCategoria()" class="inline-flex items-center justify-center px-4 py-2.5 bg-slate-900 hover:bg-black text-white font-extrabold text-xs rounded-xl shadow transition-all space-x-2 whitespace-nowrap cursor-pointer">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <span>+ Nueva Categoría</span>
+                </button>
+            </div>
+        </div>
+
+        @if(!$categoriaActiva)
+            <!-- Despliegue Informativo cuando todas las categorías están cerradas -->
+            <div class="bg-amber-50/80 border-2 border-dashed border-amber-300 rounded-3xl p-6 sm:p-8 text-center my-6 shadow-sm">
+                <div class="w-16 h-16 bg-amber-100 text-amber-950 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-inner border border-amber-300">
+                    <svg class="w-8 h-8 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                </div>
+                <h3 class="serif-title text-xl font-black text-slate-900">Categoría Cerrada</h3>
+                <p class="text-slate-600 text-xs md:text-sm max-w-lg mx-auto mt-1">
+                    Solo la categoría abierta muestra sus productos y permite guardar calzado en ella. Selecciona una categoría a continuación para abrirla.
+                </p>
+
+                <!-- Grid de Tarjetas de Categorías Disponibles para Abrir -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 text-left">
+                    @foreach($resumenCategorias as $catKey => $resCat)
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-mono font-black text-amber-950 bg-amber-100 px-3 py-1 rounded-lg border border-amber-300 text-xs">
+                                        {{ $resCat['nombre'] }}
+                                    </span>
+                                    <span class="text-[10px] uppercase font-bold text-slate-400">Cerrada</span>
+                                </div>
+                                <div class="space-y-1 text-xs text-slate-600 mt-3">
+                                    <p class="flex justify-between"><span>Modelos:</span> <strong class="text-slate-900">{{ $resCat['modelos'] }}</strong></p>
+                                    <p class="flex justify-between"><span>Total Pares (Exist.):</span> <strong class="text-emerald-700">{{ number_format($resCat['pares']) }}</strong></p>
+                                    <p class="flex justify-between"><span>Valor Total:</span> <strong class="text-slate-900">$ {{ number_format($resCat['valor'], 2, '.', ',') }}</strong></p>
+                                </div>
+                            </div>
+                            <a href="{{ route('admin.zapatos', ['categoria' => $resCat['nombre']]) }}" class="mt-4 w-full py-2.5 bg-slate-900 hover:bg-black text-amber-300 text-xs font-bold rounded-xl text-center shadow transition-all block">
+                                📂 Abrir esta Categoría
+                            </a>
+                        </div>
                     @endforeach
                 </div>
             </div>
-
-            <!-- Botón Crear Nueva Categoría -->
-            <button onclick="abrirModalNuevaCategoria()" class="inline-flex items-center justify-center px-4 py-2.5 bg-slate-900 hover:bg-black text-white font-extrabold text-xs rounded-xl shadow transition-all space-x-2 whitespace-nowrap cursor-pointer">
-                <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                <span>+ Nueva Categoría</span>
-            </button>
-        </div>
-
-        <!-- Tarjetas de Métricas de Inventario Minimalistas -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Modelos Registrados</span>
-                    <span class="text-3xl font-extrabold text-slate-900 block mt-1 font-sans">{{ $totalModelos }}</span>
-                </div>
-                <div class="w-12 h-12 bg-slate-100 text-slate-800 rounded-xl flex items-center justify-center border border-slate-200">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
-                    </svg>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Pares en Stock (EXIST.)</span>
-                    <span class="text-3xl font-extrabold text-emerald-700 block mt-1 font-sans">{{ number_format($totalPares) }}</span>
-                </div>
-                <div class="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-xl flex items-center justify-center border border-emerald-200">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                    </svg>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
-                <div>
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Valor Total Inventario</span>
-                    <span class="text-3xl font-extrabold text-slate-900 block mt-1 font-sans">$ {{ number_format($valorTotalInventario, 2, '.', ',') }}</span>
-                </div>
-                <div class="w-12 h-12 bg-amber-50 text-amber-800 rounded-xl flex items-center justify-center border border-amber-200">
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sección de Tabla de Inventario -->
-        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
-            <!-- Barra de Búsqueda de Inventario -->
-            <div class="p-6 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div>
-                    <h2 class="serif-title text-xl font-bold text-slate-900">Catálogo de Zapatos Registrados</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Listado ordenado por Clave Alterna, Descripción, Precio y Stock.</p>
-                </div>
-                
-                <form action="{{ route('admin.zapatos') }}" method="GET" class="w-full sm:w-80 flex items-center space-x-2">
-                    <input type="hidden" name="categoria" value="{{ $categoriaActiva }}">
-                    <div class="relative w-full">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar clave, estilo, talla, color..." class="w-full pl-9 pr-4 py-2.5 text-xs font-semibold border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-slate-900 outline-none">
-                        <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        @else
+            <!-- Tarjetas de Métricas de Inventario de la Categoría Abierta -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Modelos en {{ $categoriaActiva }}</span>
+                        <span class="text-3xl font-extrabold text-slate-900 block mt-1 font-sans">{{ $totalModelos }}</span>
+                    </div>
+                    <div class="w-12 h-12 bg-slate-100 text-slate-800 rounded-xl flex items-center justify-center border border-slate-200">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
                         </svg>
                     </div>
-                    @if(request('search'))
-                        <a href="{{ route('admin.zapatos') }}" class="text-xs text-slate-500 hover:text-slate-800 font-bold underline">Limpiar</a>
-                    @endif
-                </form>
-            </div>
+                </div>
 
-            @if($zapatos->isEmpty())
-                <div class="text-center py-16 px-4">
-                    <div class="w-20 h-20 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-200">
-                        <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Total Pares (EXIST. {{ $categoriaActiva }})</span>
+                        <span class="text-3xl font-extrabold text-emerald-700 block mt-1 font-sans">{{ number_format($totalPares) }}</span>
+                    </div>
+                    <div class="w-12 h-12 bg-emerald-50 text-emerald-700 rounded-xl flex items-center justify-center border border-emerald-200">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                         </svg>
                     </div>
-                    <h3 class="serif-title text-lg font-bold text-slate-900">No hay zapatos registrados en inventario</h3>
-                    <p class="text-slate-500 text-xs mt-1 max-w-md mx-auto">Toma una foto de tu calzado para que la Inteligencia Artificial analice la etiqueta e ingrese la clave automáticamente.</p>
-                    <button onclick="abrirModalEscaner()" class="mt-5 inline-flex items-center px-5 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-black transition-all space-x-2">
-                        <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Valor Inventario {{ $categoriaActiva }}</span>
+                        <span class="text-3xl font-extrabold text-slate-900 block mt-1 font-sans">$ {{ number_format($valorTotalInventario, 2, '.', ',') }}</span>
+                    </div>
+                    <div class="w-12 h-12 bg-amber-50 text-amber-800 rounded-xl flex items-center justify-center border border-amber-200">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <span>Escanear Primer Zapato</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barra Flotante de Acciones Masivas (Aparece al seleccionar con Checklist) -->
+            <div id="barraAccionesMasivas" class="hidden bg-slate-900 text-white p-4 sm:p-5 rounded-2xl shadow-xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 mb-6 transition-all animate-fade-in">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-amber-400 text-amber-950 rounded-xl flex items-center justify-center font-black text-base shadow-inner shrink-0">
+                        <span id="cantSeleccionadosCount">0</span>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-xs md:text-sm text-white">Zapato(s) seleccionado(s)</h4>
+                        <p class="text-[11px] text-slate-400">Traspasa los zapatos seleccionados a otra categoría existente. No se crearán duplicados.</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <span class="text-xs font-bold text-slate-300 whitespace-nowrap">Pasar a Categoría:</span>
+                    <select id="selectCategoriaDestino" class="px-3.5 py-2.5 bg-slate-800 text-amber-200 border border-slate-700 rounded-xl text-xs font-extrabold focus:ring-2 focus:ring-amber-400 outline-none">
+                        <option value="">-- Seleccionar Categoría Existente --</option>
+                        @foreach($categorias as $cDest)
+                            @if(strtoupper(trim($cDest)) !== strtoupper(trim($categoriaActiva)))
+                                <option value="{{ $cDest }}">{{ $cDest }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+
+                    <button type="button" onclick="ejecutarMoverZapatosMasivo()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-1.5 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                        </svg>
+                        <span>📦 Mover Zapatos</span>
+                    </button>
+
+                    <button type="button" onclick="deseleccionarTodosZapatos()" class="px-3 py-2.5 text-slate-400 hover:text-white text-xs font-bold transition-colors">
+                        Cancelar
                     </button>
                 </div>
-            @else
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-slate-900 text-slate-100 text-[11px] font-bold uppercase tracking-wider border-b border-slate-800">
-                                <th class="py-4 px-4 text-center w-12">NO.</th>
-                                <th class="py-4 px-5">CLAVE ALTERNA</th>
-                                <th class="py-4 px-5">DESCRIPCION</th>
-                                <th class="py-4 px-5 text-right">PRECIO 1</th>
-                                <th class="py-4 px-5 text-center">EXIST.</th>
-                                <th class="py-4 px-5 text-center">ACCIONES</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-200 text-xs bg-white">
-                            @foreach($zapatos as $zapato)
-                                <tr class="hover:bg-amber-50/40 transition-colors">
-                                    <td class="py-4 px-4 text-center font-mono font-extrabold text-slate-400 text-xs">
-                                        {{ $loop->iteration + ($zapatos->currentPage() - 1) * $zapatos->perPage() }}
-                                    </td>
-                                    <td class="py-4 px-5">
-                                        <div class="flex items-center space-x-3">
-                                            <img src="{{ $zapato->imagen_url }}" alt="{{ $zapato->estilo }}" class="w-12 h-12 object-cover rounded-xl border border-slate-200 shadow-sm bg-slate-100 flex-shrink-0">
-                                            <span class="font-mono font-bold text-amber-950 bg-amber-100/90 px-3 py-1.5 rounded-lg border border-amber-300 inline-block shadow-sm text-xs">
-                                                {{ $zapato->clave_alterna }}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-5">
-                                        <span class="font-extrabold text-slate-900 uppercase block text-xs tracking-tight">{{ $zapato->descripcion_completa }}</span>
-                                        <div class="flex flex-wrap items-center gap-2 text-[10px] text-slate-500 mt-1">
-                                            <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Estilo: <strong>{{ $zapato->estilo }}</strong></span>
-                                            <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Material: <strong>{{ $zapato->material }}</strong></span>
-                                            <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Color: <strong>{{ $zapato->color }}</strong></span>
-                                            @if($zapato->bordado)
-                                                <span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300 font-bold">Bordado: {{ $zapato->bordado }}</span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td class="py-4 px-5 text-right font-extrabold text-slate-900 font-sans text-sm">
-                                        $ {{ number_format($zapato->precio, 2, '.', ',') }}
-                                    </td>
-                                    <td class="py-4 px-5 text-center">
-                                        @if($zapato->cantidad > 5)
-                                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300">{{ $zapato->cantidad }}</span>
-                                        @elseif($zapato->cantidad > 0)
-                                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-900 border border-amber-300">{{ $zapato->cantidad }}</span>
-                                        @else
-                                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-rose-100 text-rose-900 border border-rose-300">0</span>
-                                        @endif
-                                    </td>
-                                    <td class="py-4 px-5 text-center">
-                                        <div class="flex items-center justify-center space-x-1.5">
-                                            <button onclick="abrirModalAgregarTalla({{ json_encode($zapato) }})" class="px-2.5 py-1.5 text-amber-950 hover:text-white bg-amber-200/90 hover:bg-amber-800 rounded-xl border border-amber-400/60 transition-all font-black text-xs flex items-center space-x-1 shadow-sm cursor-pointer" title="Agregar nuevo número / talla (+ Talla) para este modelo">
-                                                <span class="text-sm font-black">+</span>
-                                                <span class="hidden sm:inline text-[10px] uppercase font-extrabold">Talla</span>
-                                            </button>
-                                            <button onclick="abrirModalEditar({{ json_encode($zapato) }})" class="p-2 text-slate-700 hover:text-amber-900 bg-slate-100 hover:bg-amber-100 rounded-xl border border-slate-200 transition-colors cursor-pointer" title="Editar zapato">
-                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                                </svg>
-                                            </button>
-                                            <a href="{{ route('admin.zapatos.eliminar', $zapato->id) }}" onclick="return confirm('¿Estás seguro de eliminar este zapato del inventario?')" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200 transition-colors" title="Eliminar zapato">
-                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            </div>
+
+            <!-- Sección de Tabla de Inventario -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                <!-- Barra de Búsqueda de Inventario -->
+                <div class="p-6 border-b border-slate-200 bg-slate-50/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h2 class="serif-title text-xl font-bold text-slate-900">Catálogo de Zapatos en <span class="text-amber-900 underline">{{ $categoriaActiva }}</span></h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Listado ordenado por Clave Alterna, Descripción, Precio y Stock.</p>
+                    </div>
+                    
+                    <form action="{{ route('admin.zapatos') }}" method="GET" class="w-full sm:w-80 flex items-center space-x-2">
+                        <input type="hidden" name="categoria" value="{{ $categoriaActiva }}">
+                        <div class="relative w-full">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar clave, estilo, talla, color..." class="w-full pl-9 pr-4 py-2.5 text-xs font-semibold border border-slate-300 rounded-xl bg-white focus:ring-2 focus:ring-slate-900 outline-none">
+                            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                        @if(request('search'))
+                            <a href="{{ route('admin.zapatos', ['categoria' => $categoriaActiva]) }}" class="text-xs text-slate-500 hover:text-slate-800 font-bold underline">Limpiar</a>
+                        @endif
+                    </form>
                 </div>
 
-                <!-- Paginación -->
-                <div class="p-5 border-t border-slate-200 bg-slate-50/50">
-                    {{ $zapatos->withQueryString()->links() }}
-                </div>
-            @endif
-        </div>
+                @if($zapatos->isEmpty())
+                    <div class="text-center py-16 px-4">
+                        <div class="w-20 h-20 bg-slate-100 text-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-200">
+                            <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                            </svg>
+                        </div>
+                        <h3 class="serif-title text-lg font-bold text-slate-900">No hay zapatos registrados en la categoría '{{ $categoriaActiva }}'</h3>
+                        <p class="text-slate-500 text-xs mt-1 max-w-md mx-auto">Toma una foto de tu calzado para que la Inteligencia Artificial analice la etiqueta e ingrese la clave automáticamente.</p>
+                        <button onclick="abrirModalEscaner()" class="mt-5 inline-flex items-center px-5 py-2.5 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-black transition-all space-x-2">
+                            <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                            </svg>
+                            <span>Escanear Primer Zapato</span>
+                        </button>
+                    </div>
+                @else
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-900 text-slate-100 text-[11px] font-bold uppercase tracking-wider border-b border-slate-800">
+                                    <th class="py-4 px-3 text-center w-10">
+                                        <input type="checkbox" id="selectAllZapatos" onchange="toggleSelectAllZapatos(this)" class="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 cursor-pointer" title="Seleccionar todos los zapatos visibles">
+                                    </th>
+                                    <th class="py-4 px-4 text-center w-12">NO.</th>
+                                    <th class="py-4 px-5">CLAVE ALTERNA</th>
+                                    <th class="py-4 px-5">DESCRIPCION</th>
+                                    <th class="py-4 px-5 text-right">PRECIO 1</th>
+                                    <th class="py-4 px-5 text-center">EXIST.</th>
+                                    <th class="py-4 px-5 text-center">ACCIONES</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200 text-xs bg-white">
+                                @foreach($zapatos as $zapato)
+                                    <tr class="hover:bg-amber-50/40 transition-colors">
+                                        <td class="py-4 px-3 text-center">
+                                            <input type="checkbox" class="zapato-checkbox w-4 h-4 rounded text-amber-600 focus:ring-amber-500 cursor-pointer" value="{{ $zapato->id }}" onchange="actualizarBarraAccionMasiva()">
+                                        </td>
+                                        <td class="py-4 px-4 text-center font-mono font-extrabold text-slate-400 text-xs">
+                                            {{ $loop->iteration + ($zapatos->currentPage() - 1) * $zapatos->perPage() }}
+                                        </td>
+                                        <td class="py-4 px-5">
+                                            <div class="flex items-center space-x-3">
+                                                <img src="{{ $zapato->imagen_url }}" alt="{{ $zapato->estilo }}" class="w-12 h-12 object-cover rounded-xl border border-slate-200 shadow-sm bg-slate-100 flex-shrink-0">
+                                                <span class="font-mono font-bold text-amber-950 bg-amber-100/90 px-3 py-1.5 rounded-lg border border-amber-300 inline-block shadow-sm text-xs">
+                                                    {{ $zapato->clave_alterna }}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-5">
+                                            <span class="font-extrabold text-slate-900 uppercase block text-xs tracking-tight">{{ $zapato->descripcion_completa }}</span>
+                                            <div class="flex flex-wrap items-center gap-2 text-[10px] text-slate-500 mt-1">
+                                                <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Estilo: <strong>{{ $zapato->estilo }}</strong></span>
+                                                <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Material: <strong>{{ $zapato->material }}</strong></span>
+                                                <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Color: <strong>{{ $zapato->color }}</strong></span>
+                                                @if($zapato->bordado)
+                                                    <span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300 font-bold">Bordado: {{ $zapato->bordado }}</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-5 text-right font-extrabold text-slate-900 font-sans text-sm">
+                                            $ {{ number_format($zapato->precio, 2, '.', ',') }}
+                                        </td>
+                                        <td class="py-4 px-5 text-center">
+                                            @if($zapato->cantidad > 5)
+                                                <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-300">{{ $zapato->cantidad }}</span>
+                                            @elseif($zapato->cantidad > 0)
+                                                <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-900 border border-amber-300">{{ $zapato->cantidad }}</span>
+                                            @else
+                                                <span class="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-rose-100 text-rose-900 border border-rose-300">0</span>
+                                            @endif
+                                        </td>
+                                        <td class="py-4 px-5 text-center">
+                                            <div class="flex items-center justify-center space-x-1.5">
+                                                <button onclick="abrirModalAgregarTalla({{ json_encode($zapato) }})" class="px-2.5 py-1.5 text-amber-950 hover:text-white bg-amber-200/90 hover:bg-amber-800 rounded-xl border border-amber-400/60 transition-all font-black text-xs flex items-center space-x-1 shadow-sm cursor-pointer" title="Agregar nuevo número / talla (+ Talla) para este modelo">
+                                                    <span class="text-sm font-black">+</span>
+                                                    <span class="hidden sm:inline text-[10px] uppercase font-extrabold">Talla</span>
+                                                </button>
+                                                <button onclick="abrirModalEditar({{ json_encode($zapato) }})" class="p-2 text-slate-700 hover:text-amber-900 bg-slate-100 hover:bg-amber-100 rounded-xl border border-slate-200 transition-colors cursor-pointer" title="Editar zapato">
+                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                                    </svg>
+                                                </button>
+                                                <a href="{{ route('admin.zapatos.eliminar', $zapato->id) }}" onclick="return confirm('¿Estás seguro de eliminar este zapato del inventario?')" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl border border-slate-200 transition-colors" title="Eliminar zapato">
+                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                    </svg>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    <div class="p-5 border-t border-slate-200 bg-slate-50/50">
+                        {{ $zapatos->withQueryString()->links() }}
+                    </div>
+                @endif
+            </div>
+        @endif
+
     </div>
 
     <!-- ========================================== -->
@@ -696,6 +796,8 @@
 
     <!-- Scripts JavaScript Integrados -->
     <script>
+        const categoriaActivaGlobal = "{{ $categoriaActiva }}";
+
         function abrirModalNuevaCategoria() {
             document.getElementById('modalNuevaCategoria').classList.remove('hidden');
         }
@@ -703,7 +805,12 @@
         function cerrarModalNuevaCategoria() {
             document.getElementById('modalNuevaCategoria').classList.add('hidden');
         }
+
         function abrirModalEscaner() {
+            if (!categoriaActivaGlobal) {
+                alert("Por favor abre primero una categoría para poder registrar calzado en ella.");
+                return;
+            }
             document.getElementById('modalEscaner').classList.remove('hidden');
         }
 
@@ -711,6 +818,88 @@
             detenerCamara();
             document.getElementById('modalEscaner').classList.add('hidden');
         }
+
+        // ==========================================
+        // FUNCIONES DE SELECCIÓN Y TRASPASO MASIVO (CHECKLIST)
+        // ==========================================
+        function toggleSelectAllZapatos(master) {
+            const checkboxes = document.querySelectorAll('.zapato-checkbox');
+            checkboxes.forEach(cb => cb.checked = master.checked);
+            actualizarBarraAccionMasiva();
+        }
+
+        function actualizarBarraAccionMasiva() {
+            const checked = document.querySelectorAll('.zapato-checkbox:checked');
+            const barra = document.getElementById('barraAccionesMasivas');
+            const countSpan = document.getElementById('cantSeleccionadosCount');
+            const masterCb = document.getElementById('selectAllZapatos');
+
+            if (checked.length > 0) {
+                if (countSpan) countSpan.innerText = checked.length;
+                if (barra) barra.classList.remove('hidden');
+            } else {
+                if (barra) barra.classList.add('hidden');
+                if (masterCb) masterCb.checked = false;
+            }
+        }
+
+        function deseleccionarTodosZapatos() {
+            const checkboxes = document.querySelectorAll('.zapato-checkbox');
+            checkboxes.forEach(cb => cb.checked = false);
+            const masterCb = document.getElementById('selectAllZapatos');
+            if (masterCb) masterCb.checked = false;
+            actualizarBarraAccionMasiva();
+        }
+
+        function ejecutarMoverZapatosMasivo() {
+            const checked = document.querySelectorAll('.zapato-checkbox:checked');
+            if (checked.length === 0) {
+                alert("Selecciona al menos un zapato del inventario.");
+                return;
+            }
+
+            const selectDest = document.getElementById('selectCategoriaDestino');
+            const destino = selectDest ? selectDest.value : '';
+            if (!destino) {
+                alert("Por favor selecciona la categoría de destino a donde deseas mover los zapatos.");
+                return;
+            }
+
+            const ids = Array.from(checked).map(cb => cb.value);
+
+            if (!confirm(`¿Estás seguro de mover ${ids.length} zapato(s) a la categoría '${destino}'?\n\nSi ya existen zapatos con la misma Clave Alterna en '${destino}', sus existencias se sumarán automáticamente para evitar registros duplicados.`)) {
+                return;
+            }
+
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch("{{ route('admin.zapatos.mover_categoria') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    zapato_ids: ids,
+                    categoria_destino: destino
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.mensaje);
+                    window.location.href = "{{ route('admin.zapatos') }}?categoria=" + encodeURIComponent(destino);
+                } else {
+                    alert(data.error || "Ocurrió un error al mover los zapatos.");
+                }
+            })
+            .catch(err => {
+                console.error("Error al mover zapatos:", err);
+                alert("Error al procesar la solicitud: " + err.message);
+            });
+        }
+
 
         let videoStream = null;
 
@@ -914,6 +1103,10 @@
         }
 
         function abrirCapturaManual() {
+            if (!categoriaActivaGlobal) {
+                alert("Por favor abre primero una categoría para poder registrar calzado en ella.");
+                return;
+            }
             cerrarModalEscaner();
             mostrarModalConfirmacion({
                 imagen_url: "{{ asset('storage/zapatos/default.png') }}",
@@ -925,6 +1118,7 @@
                 bordado: ''
             });
         }
+
 
         let contadorTallasExtraConf = 1;
 

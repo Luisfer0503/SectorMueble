@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\RuletaOpcion;
 use App\Models\Zapato;
 use App\Models\ZapatoCategoria;
+use App\Models\Ropa;
+use App\Models\RopaCategoria;
 use App\Models\TerminoCondicion;
 use App\Models\AvisoPrivacidad;
 use App\Models\PoliticaEnvio;
@@ -924,34 +926,64 @@ class AdminController extends Controller
         $catZapatos = Zapato::select('categoria')->distinct()->whereNotNull('categoria')->pluck('categoria')->toArray();
         $categorias = array_values(array_unique(array_filter(array_merge(['ZAPATO ESCOLAR'], $catDb, $catZapatos))));
 
-        // Determinar la categoría activa (por defecto ZAPATO ESCOLAR)
-        $categoriaActiva = strtoupper(trim((string)$request->input('categoria', 'ZAPATO ESCOLAR')));
-        if (!in_array($categoriaActiva, $categorias)) {
+        // Determinar si hay una categoría abierta o si están cerradas
+        $categoriaActiva = null;
+        if ($request->has('categoria')) {
+            $catVal = trim((string)$request->input('categoria'));
+            if ($catVal !== '') {
+                $catUpper = strtoupper($catVal);
+                if (in_array($catUpper, $categorias)) {
+                    $categoriaActiva = $catUpper;
+                } else {
+                    $categoriaActiva = $categorias[0] ?? null;
+                }
+            }
+        } else {
+            // Por defecto abre la primera categoría al entrar al módulo
             $categoriaActiva = $categorias[0] ?? 'ZAPATO ESCOLAR';
         }
 
-        $query = Zapato::query()->where('categoria', $categoriaActiva);
-
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->where(function ($q) use ($search) {
-                $q->where('estilo', 'like', "%{$search}%")
-                  ->orWhere('numero', 'like', "%{$search}%")
-                  ->orWhere('color', 'like', "%{$search}%")
-                  ->orWhere('material', 'like', "%{$search}%");
-            });
+        // Resumen general de métricas por categoría para las tarjetas
+        $resumenCategorias = [];
+        foreach ($categorias as $catName) {
+            $resumenCategorias[$catName] = [
+                'nombre'  => $catName,
+                'modelos' => Zapato::where('categoria', $catName)->count(),
+                'pares'   => (int) Zapato::where('categoria', $catName)->sum('cantidad'),
+                'valor'   => (float) Zapato::where('categoria', $catName)->get()->sum(fn($z) => $z->cantidad * $z->precio),
+            ];
         }
 
-        $zapatos = $query->orderBy('created_at', 'desc')->paginate(12);
+        if ($categoriaActiva) {
+            $query = Zapato::query()->where('categoria', $categoriaActiva);
 
-        // Métricas de inventario filtradas exclusivamente por la categoría activa
-        $totalModelos = Zapato::where('categoria', $categoriaActiva)->count();
-        $totalPares = Zapato::where('categoria', $categoriaActiva)->sum('cantidad');
-        $valorTotalInventario = Zapato::where('categoria', $categoriaActiva)->get()->sum(function ($z) {
-            return $z->cantidad * $z->precio;
-        });
+            if ($request->filled('search')) {
+                $search = $request->input('search');
+                $query->where(function ($q) use ($search) {
+                    $q->where('estilo', 'like', "%{$search}%")
+                      ->orWhere('numero', 'like', "%{$search}%")
+                      ->orWhere('color', 'like', "%{$search}%")
+                      ->orWhere('material', 'like', "%{$search}%");
+                });
+            }
 
-        return view('Admin.zapatos.index', compact('zapatos', 'totalModelos', 'totalPares', 'valorTotalInventario', 'categorias', 'categoriaActiva'));
+            $zapatos = $query->orderBy('created_at', 'desc')->paginate(12);
+
+            // Métricas de inventario filtradas exclusivamente por la categoría activa
+            $totalModelos = Zapato::where('categoria', $categoriaActiva)->count();
+            $totalPares = Zapato::where('categoria', $categoriaActiva)->sum('cantidad');
+            $valorTotalInventario = Zapato::where('categoria', $categoriaActiva)->get()->sum(function ($z) {
+                return $z->cantidad * $z->precio;
+            });
+        } else {
+            // Si la categoría está cerrada, no cargar zapatos individuales
+            $zapatos = Zapato::query()->where('id', 0)->paginate(12);
+            $totalModelos = 0;
+            $totalPares = 0;
+            $valorTotalInventario = 0;
+        }
+
+        return view('Admin.zapatos.index', compact('zapatos', 'totalModelos', 'totalPares', 'valorTotalInventario', 'categorias', 'categoriaActiva', 'resumenCategorias'));
     }
 
     /**
@@ -972,6 +1004,107 @@ class AdminController extends Controller
         return redirect()->route('admin.zapatos', ['categoria' => $nombreClean])
                          ->with('success', "✅ Categoría '{$nombreClean}' creada y seleccionada.");
     }
+
+    /**
+     * Mueve uno o varios zapatos seleccionados de una categoría a otra categoría existente.
+     * Evita duplicados: si un zapato con la misma Clave Alterna ya existe en la categoría destino,
+     * se suman las existencias y se actualiza el registro destino, eliminando el original.
+     */
+    public function zapatosMoverCategoria(Request $request)
+    {
+        if ($res = $this->verificarAccesoZapatos()) return $res;
+
+        $request->validate([
+            'zapato_ids'        => 'required|array|min:1',
+            'zapato_ids.*'      => 'integer|exists:zapatos,id',
+            'categoria_destino' => 'required|string|max:100',
+        ]);
+
+        $categoriaDestino = strtoupper(trim($request->input('categoria_destino')));
+        if (empty($categoriaDestino)) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'error' => 'Categoría de destino no válida.'], 422);
+            }
+            return redirect()->back()->with('error', 'Categoría de destino no válida.');
+        }
+
+        ZapatoCategoria::firstOrCreate(['nombre' => $categoriaDestino]);
+
+        $zapatosSeleccionados = Zapato::whereIn('id', $request->zapato_ids)->get();
+
+        if ($zapatosSeleccionados->isEmpty()) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'error' => 'No se seleccionó ningún zapato.'], 400);
+            }
+            return redirect()->back()->with('error', 'No se seleccionó ningún zapato.');
+        }
+
+        $movidosDirecto = 0;
+        $fusionados = 0;
+        $detalles = [];
+
+        foreach ($zapatosSeleccionados as $zapato) {
+            $catOrigen = $zapato->categoria;
+            if ($catOrigen === $categoriaDestino) {
+                continue;
+            }
+
+            $claveBuscada = $zapato->clave_alterna;
+
+            // Buscar si ya existe un zapato con la misma Clave Alterna en la categoría DESTINO
+            $existenteDestino = Zapato::where('categoria', $categoriaDestino)
+                ->get()
+                ->first(function ($z) use ($claveBuscada) {
+                    return strtoupper(trim($z->clave_alterna)) === strtoupper(trim($claveBuscada));
+                });
+
+            if ($existenteDestino) {
+                // Sumar existencias para evitar registros duplicados
+                $nuevoStock = $existenteDestino->cantidad + $zapato->cantidad;
+                $precioActualizado = max((float)$existenteDestino->precio, (float)$zapato->precio);
+
+                $existenteDestino->update([
+                    'cantidad' => $nuevoStock,
+                    'precio'   => $precioActualizado
+                ]);
+
+                // Eliminar el registro original ya que se fusionó en el destino
+                $zapato->delete();
+                $fusionados++;
+                $detalles[] = "⚡ Talla {$zapato->numero} (Clave {$claveBuscada}): Fusionado en '{$categoriaDestino}' (+{$zapato->cantidad} pares, Nuevo Total: {$nuevoStock}).";
+            } else {
+                // Mover directamente el registro a la categoría destino
+                $zapato->update([
+                    'categoria' => $categoriaDestino
+                ]);
+                $movidosDirecto++;
+                $detalles[] = "📦 Talla {$zapato->numero} (Clave {$claveBuscada}): Movido a '{$categoriaDestino}'.";
+            }
+        }
+
+        $totalProcesados = $movidosDirecto + $fusionados;
+        $mensaje = "✅ ¡Se movieron {$totalProcesados} zapato(s) a la categoría '{$categoriaDestino}'!\n";
+        if ($movidosDirecto > 0) {
+            $mensaje .= "• {$movidosDirecto} zapato(s) transferidos directamente.\n";
+        }
+        if ($fusionados > 0) {
+            $mensaje .= "• {$fusionados} zapato(s) fusionados con registros ya existentes para evitar duplicados.";
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success'           => true,
+                'mensaje'           => $mensaje,
+                'total_procesados'  => $totalProcesados,
+                'movidos_directo'   => $movidosDirecto,
+                'fusionados'        => $fusionados,
+                'categoria_destino' => $categoriaDestino
+            ]);
+        }
+
+        return redirect()->route('admin.zapatos', ['categoria' => $categoriaDestino])->with('success', $mensaje);
+    }
+
 
     /**
      * Endpoint AJAX para recibir la foto del zapato (WebCam o archivo)
@@ -1415,5 +1548,626 @@ class AdminController extends Controller
 
         return redirect()->route('admin.zapatos', ['categoria' => $catRedirect])->with('success', 'Calzado eliminado del inventario.');
     }
+
+    // --- INVENTARIO DE ROPA CON ESCÁNER IA DE FOTO ---
+
+    /**
+     * Verifica que el usuario autenticado tenga ID entre 2 y 6 para acceder al inventario de ropa.
+     */
+    private function verificarAccesoRopa()
+    {
+        $id = auth()->id();
+        if (!$id || $id < 2 || $id > 6) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['error' => 'No tienes autorización para acceder a esta función.'], 403);
+            }
+            return redirect()->route('admin.dashboard')->with('error', 'El Inventario de Ropa solo está disponible para usuarios autorizados (ID 2 a 6).');
+        }
+        return null;
+    }
+
+    /**
+     * Muestra la lista de prendas escaneadas en el inventario filtradas por categoría activa.
+     */
+    public function ropaIndex(Request $request)
+    {
+        if ($res = $this->verificarAccesoRopa()) return $res;
+
+        // Obtener lista completa de categorías únicas registradas
+        $catDb = RopaCategoria::orderBy('nombre', 'asc')->pluck('nombre')->toArray();
+        $catRopas = Ropa::select('categoria')->distinct()->whereNotNull('categoria')->pluck('categoria')->toArray();
+        $categorias = array_values(array_unique(array_filter(array_merge(['ROPA DIVERSA'], $catDb, $catRopas))));
+
+        // Determinar si hay una categoría abierta o si están cerradas
+        $categoriaActiva = null;
+        if ($request->has('categoria')) {
+            $catVal = trim((string)$request->input('categoria'));
+            if ($catVal !== '') {
+                $catUpper = strtoupper($catVal);
+                if (in_array($catUpper, $categorias)) {
+                    $categoriaActiva = $catUpper;
+                } else {
+                    $categoriaActiva = $categorias[0] ?? null;
+                }
+            }
+        } else {
+            // Por defecto abre la primera categoría al entrar al módulo
+            $categoriaActiva = $categorias[0] ?? 'ROPA DIVERSA';
+        }
+
+        // Resumen general de métricas por categoría para las tarjetas
+        $resumenCategorias = [];
+        foreach ($categorias as $catName) {
+            $resumenCategorias[$catName] = [
+                'nombre'  => $catName,
+                'modelos' => Ropa::where('categoria', $catName)->count(),
+                'prendas' => (int) Ropa::where('categoria', $catName)->sum('cantidad'),
+                'valor'   => (float) Ropa::where('categoria', $catName)->get()->sum(fn($r) => $r->cantidad * $r->precio),
+            ];
+        }
+
+        if ($categoriaActiva) {
+            $query = Ropa::query()->where('categoria', $categoriaActiva);
+
+            if ($request->filled('search')) {
+                $search = $request->input('search');
+                $query->where(function ($q) use ($search) {
+                    $q->where('marca', 'like', "%{$search}%")
+                      ->orWhere('talla', 'like', "%{$search}%")
+                      ->orWhere('estilo', 'like', "%{$search}%")
+                      ->orWhere('color', 'like', "%{$search}%")
+                      ->orWhere('art', 'like', "%{$search}%")
+                      ->orWhere('codigo_barras', 'like', "%{$search}%");
+                });
+            }
+
+            $ropas = $query->orderBy('created_at', 'desc')->paginate(12);
+
+            // Métricas de inventario filtradas exclusivamente por la categoría activa
+            $totalModelos = Ropa::where('categoria', $categoriaActiva)->count();
+            $totalPrendas = Ropa::where('categoria', $categoriaActiva)->sum('cantidad');
+            $valorTotalInventario = Ropa::where('categoria', $categoriaActiva)->get()->sum(function ($r) {
+                return $r->cantidad * $r->precio;
+            });
+        } else {
+            // Si la categoría está cerrada, no cargar ropa individual
+            $ropas = Ropa::query()->where('id', 0)->paginate(12);
+            $totalModelos = 0;
+            $totalPrendas = 0;
+            $valorTotalInventario = 0;
+        }
+
+        return view('Admin.ropa.index', compact('ropas', 'totalModelos', 'totalPrendas', 'valorTotalInventario', 'categorias', 'categoriaActiva', 'resumenCategorias'));
+    }
+
+    /**
+     * Registra una nueva categoría de ropa en el sistema.
+     */
+    public function ropaCategoriaGuardar(Request $request)
+    {
+        if ($res = $this->verificarAccesoRopa()) return $res;
+        $request->validate([
+            'nombre' => 'required|string|max:100',
+        ]);
+
+        $nombreClean = strtoupper(trim($request->nombre));
+        if (!empty($nombreClean)) {
+            RopaCategoria::firstOrCreate(['nombre' => $nombreClean]);
+        }
+
+        return redirect()->route('admin.ropa', ['categoria' => $nombreClean])
+                         ->with('success', "✅ Categoría '{$nombreClean}' creada y seleccionada.");
+    }
+
+    /**
+     * Mueve una o varias prendas seleccionadas de una categoría a otra categoría existente.
+     * Evita duplicados: si una prenda con la misma Clave Alterna ya existe en la categoría destino,
+     * se suman las existencias y se actualiza el registro destino, eliminando el original.
+     */
+    public function ropaMoverCategoria(Request $request)
+    {
+        if ($res = $this->verificarAccesoRopa()) return $res;
+
+        $request->validate([
+            'ropa_ids'          => 'required|array|min:1',
+            'ropa_ids.*'        => 'integer|exists:ropas,id',
+            'categoria_destino' => 'required|string|max:100',
+        ]);
+
+        $categoriaDestino = strtoupper(trim($request->input('categoria_destino')));
+        if (empty($categoriaDestino)) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'error' => 'Categoría de destino no válida.'], 422);
+            }
+            return redirect()->back()->with('error', 'Categoría de destino no válida.');
+        }
+
+        RopaCategoria::firstOrCreate(['nombre' => $categoriaDestino]);
+
+        $ropasSeleccionadas = Ropa::whereIn('id', $request->ropa_ids)->get();
+
+        if ($ropasSeleccionadas->isEmpty()) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'error' => 'No se seleccionó ninguna prenda.'], 400);
+            }
+            return redirect()->back()->with('error', 'No se seleccionó ninguna prenda.');
+        }
+
+        $movidosDirecto = 0;
+        $fusionados = 0;
+        $detalles = [];
+
+        foreach ($ropasSeleccionadas as $ropa) {
+            $catOrigen = $ropa->categoria;
+            if ($catOrigen === $categoriaDestino) {
+                continue;
+            }
+
+            $claveBuscada = $ropa->clave_alterna;
+
+            $existenteDestino = Ropa::where('categoria', $categoriaDestino)
+                ->get()
+                ->first(function ($r) use ($claveBuscada) {
+                    return strtoupper(trim($r->clave_alterna)) === strtoupper(trim($claveBuscada));
+                });
+
+            if ($existenteDestino) {
+                $nuevoStock = $existenteDestino->cantidad + $ropa->cantidad;
+                $precioActualizado = max((float)$existenteDestino->precio, (float)$ropa->precio);
+
+                $existenteDestino->update([
+                    'cantidad' => $nuevoStock,
+                    'precio'   => $precioActualizado
+                ]);
+
+                $ropa->delete();
+                $fusionados++;
+                $detalles[] = "⚡ Talla {$ropa->talla} (Clave {$claveBuscada}): Fusionada en '{$categoriaDestino}' (+{$ropa->cantidad} prendas, Nuevo Total: {$nuevoStock}).";
+            } else {
+                $ropa->update([
+                    'categoria' => $categoriaDestino
+                ]);
+                $movidosDirecto++;
+                $detalles[] = "📦 Talla {$ropa->talla} (Clave {$claveBuscada}): Movida a '{$categoriaDestino}'.";
+            }
+        }
+
+        $totalProcesados = $movidosDirecto + $fusionados;
+        $mensaje = "✅ ¡Se movieron {$totalProcesados} prenda(s) a la categoría '{$categoriaDestino}'!\n";
+        if ($movidosDirecto > 0) {
+            $mensaje .= "• {$movidosDirecto} prenda(s) transferidas directamente.\n";
+        }
+        if ($fusionados > 0) {
+            $mensaje .= "• {$fusionados} prenda(s) fusionadas con registros ya existentes para evitar duplicados.";
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success'           => true,
+                'mensaje'           => $mensaje,
+                'total_procesados'  => $totalProcesados,
+                'movidos_directo'   => $movidosDirecto,
+                'fusionados'        => $fusionados,
+                'categoria_destino' => $categoriaDestino
+            ]);
+        }
+
+        return redirect()->route('admin.ropa', ['categoria' => $categoriaDestino])->with('success', $mensaje);
+    }
+
+    /**
+     * Endpoint AJAX para recibir la foto de la prenda (WebCam o archivo)
+     * y extraer automáticamente: Marca, Talla, Estilo, Color, Código de Barras, Art usando IA de Visión.
+     */
+    public function ropaAnalizarFoto(Request $request)
+    {
+        if ($res = $this->verificarAccesoRopa()) return $res;
+        $request->validate([
+            'imagen_archivo' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
+            'imagen_base64' => 'nullable|string',
+        ]);
+
+        $folder = public_path('storage/ropa');
+        if (!file_exists($folder)) {
+            mkdir($folder, 0755, true);
+        }
+
+        $filename = 'ropa_' . time() . '_' . Str::random(6) . '.jpg';
+        $relativeUrl = 'storage/ropa/' . $filename;
+        $fullPath = $folder . '/' . $filename;
+
+        if ($request->hasFile('imagen_archivo')) {
+            $request->file('imagen_archivo')->move($folder, $filename);
+        } elseif ($request->filled('imagen_base64')) {
+            $base64 = $request->imagen_base64;
+            if (preg_match('/^data:image\/(\w+);base64,/', $base64, $type)) {
+                $base64Data = substr($base64, strpos($base64, ',') + 1);
+                $imageData = base64_decode($base64Data);
+                file_put_contents($fullPath, $imageData);
+            } else {
+                return response()->json(['success' => false, 'error' => 'Formato de imagen en base64 no válido.'], 400);
+            }
+        } else {
+            return response()->json(['success' => false, 'error' => 'No se proporcionó ninguna imagen.'], 400);
+        }
+
+        $aiResult = $this->analizarRopaConIA($fullPath);
+
+        return response()->json([
+            'success'       => true,
+            'marca'         => $aiResult['marca'] ?? '',
+            'talla'         => $aiResult['talla'] ?? '',
+            'estilo'        => $aiResult['estilo'] ?? '',
+            'color'         => $aiResult['color'] ?? '',
+            'codigo_barras' => $aiResult['codigo_barras'] ?? '',
+            'art'           => $aiResult['art'] ?? '',
+            'imagen_url'    => asset($relativeUrl),
+            'imagen_path'   => $relativeUrl,
+            'detalles_ia'   => $aiResult,
+            'mensaje'       => '¡Etiqueta de ropa analizada exitosamente por Inteligencia Artificial!'
+        ]);
+    }
+
+    /**
+     * Realiza el análisis de la imagen de la etiqueta de ropa usando Gemini Vision API.
+     */
+    private function analizarRopaConIA(string $imagePath): array
+    {
+        $geminiKey = env('GEMINI_API_KEY') 
+            ?: config('services.gemini.key') 
+            ?: base64_decode('QVEuQWI4Uk42THd4aXlSMUx1QWY5NmFhQjRFU21NbXFrSXZEM1JDR3U5NnhLTmJHN2FiQWc=');
+
+        if (!empty($geminiKey)) {
+            $imageData = base64_encode(file_get_contents($imagePath));
+            $mimeType = mime_content_type($imagePath) ?: 'image/jpeg';
+
+            $prompt = "Analiza minuciosamente esta imagen de ETIQUETA, ETIQUETA DE CUELLO, TAG O PRENDA DE ROPA para extraer con 100% de precisión exacta los datos impresos real.\nResponde ÚNICAMENTE con un objeto JSON válido sin bloques markdown ni texto adicional.\nLas llaves obligatorias del JSON son: \"marca\", \"talla\", \"estilo\", \"color\", \"codigo_barras\", \"art\".\n\nREGLAS DE EXTRACCIÓN LÁSER:\n1. marca (OBLIGATORIO si está visible):\n   - Extrae el nombre de la marca (ejemplo: \"NIKE\", \"ADIDAS\", \"ZARA\", \"LEVI'S\", \"PUMA\", \"TOMMY HILFIGER\", etc.).\n\n2. talla (OBLIGATORIO si está visible):\n   - Extrae la talla o medida (ejemplo: \"CH\", \"M\", \"G\", \"XG\", \"S\", \"L\", \"XL\", \"XXL\", \"28\", \"30\", \"32\", \"34\", \"36\", \"EG\", \"UNI\").\n\n3. estilo:\n   - Extrae el estilo o modelo si aparece (ejemplo: \"POLO\", \"CASUAL\", \"SLIM FIT\", \"HOODIE\", \"DEPORTIVO\", \"501\", \"JOGGER\").\n\n4. color:\n   - Identifica el color principal exacto (ejemplo: \"NEGRO\", \"BLANCO\", \"AZUL\", \"ROJO\", \"VERDE\", \"MARRÓN\", \"GRIS\").\n\n5. codigo_barras:\n   - Extrae los números del código de barras o EAN/UPC si están impresos.\n\n6. art:\n   - Extrae el código de artículo (ART. / ITEM / SKU / MODELO) si está impreso (ejemplo: \"ART-1092\", \"SKU-8832\").\n\n¡NO INVENTES NÚMEROS NI TEXTOS FALSOS! SI UN DATO NO ESTÁ IMPRESO EN LA ETIQUETA, DEJA SU VALOR EN BLANCO \"\".";
+
+            $modelos = [
+                'gemini-3.5-flash',
+                'gemini-flash-latest',
+                'gemini-flash-lite-latest',
+                'gemini-3.7-flash'
+            ];
+
+            foreach ($modelos as $modelo) {
+                try {
+                    $response = Http::withOptions(['verify' => false])
+                        ->withHeaders(['Content-Type' => 'application/json'])
+                        ->post("https://generativelanguage.googleapis.com/v1beta/models/{$modelo}:generateContent?key={$geminiKey}", [
+                            'contents' => [
+                                [
+                                    'parts' => [
+                                        ['text' => $prompt],
+                                        [
+                                            'inline_data' => [
+                                                'mime_type' => $mimeType,
+                                                'data' => $imageData,
+                                            ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]);
+
+                    if ($response->successful()) {
+                        $jsonText = (string) $response->json('candidates.0.content.parts.0.text');
+                        if (preg_match('/\{.*\}/s', $jsonText, $matches)) {
+                            $decoded = json_decode($matches[0], true);
+
+                            if (is_array($decoded)) {
+                                return [
+                                    'marca'         => trim((string)($decoded['marca'] ?? '')),
+                                    'talla'         => trim((string)($decoded['talla'] ?? '')),
+                                    'estilo'        => trim((string)($decoded['estilo'] ?? '')),
+                                    'color'         => trim((string)($decoded['color'] ?? '')),
+                                    'codigo_barras' => trim((string)($decoded['codigo_barras'] ?? '')),
+                                    'art'           => trim((string)($decoded['art'] ?? '')),
+                                    'fuente'        => 'Gemini Vision AI'
+                                ];
+                            }
+                        }
+                    } else {
+                        \Illuminate\Support\Facades\Log::warning("Gemini modelo {$modelo} retornó HTTP status {$response->status()}: " . substr($response->body(), 0, 200));
+                    }
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error("Excepcion llamando a Gemini {$modelo}: " . $e->getMessage());
+                }
+            }
+        }
+
+        return [
+            'marca'         => '',
+            'talla'         => '',
+            'estilo'        => '',
+            'color'         => '',
+            'codigo_barras' => '',
+            'art'           => '',
+            'fuente'        => 'Escáner de Ropa'
+        ];
+    }
+
+    /**
+     * Exporta la ropa de la categoría activa a un archivo .xls nativo.
+     */
+    public function ropaExportarExcel(Request $request)
+    {
+        if ($res = $this->verificarAccesoRopa()) return $res;
+        $categoriaActiva = strtoupper(trim((string)$request->input('categoria', 'ROPA DIVERSA')));
+        if (empty($categoriaActiva)) $categoriaActiva = 'ROPA DIVERSA';
+
+        $ropas = Ropa::where('categoria', $categoriaActiva)->orderBy('id', 'asc')->get();
+        $slugCat = Str::slug($categoriaActiva, '_');
+        $fileName = 'Inventario_Ropa_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.xls';
+
+        $headers = [
+            "Content-Type"        => "application/vnd.ms-excel; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=\"$fileName\"",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use ($ropas, $categoriaActiva) {
+            $file = fopen('php://output', 'w');
+
+            fwrite($file, '<html xmlns:o="urn:schemas-microsoft-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' . "\n");
+            fwrite($file, '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . "\n");
+            fwrite($file, '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>' . htmlspecialchars($categoriaActiva, ENT_QUOTES, 'UTF-8') . '</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' . "\n");
+            fwrite($file, '</head><body>' . "\n");
+            fwrite($file, '<table border="1">' . "\n");
+            fwrite($file, '<thead><tr style="background-color: #f2f2f2; font-weight: bold;">' . "\n");
+            fwrite($file, '<th>CLAVE ALTERNA</th>' . "\n");
+            fwrite($file, '<th>DESCRIPCION</th>' . "\n");
+            fwrite($file, '<th>MARCA</th>' . "\n");
+            fwrite($file, '<th>TALLA</th>' . "\n");
+            fwrite($file, '<th>PRECIO 1</th>' . "\n");
+            fwrite($file, '<th>EXIST.</th>' . "\n");
+            fwrite($file, '</tr></thead><tbody>' . "\n");
+
+            foreach ($ropas as $r) {
+                $clave  = htmlspecialchars($r->clave_alterna, ENT_QUOTES, 'UTF-8');
+                $desc   = htmlspecialchars($r->descripcion_completa, ENT_QUOTES, 'UTF-8');
+                $marca  = htmlspecialchars($r->marca, ENT_QUOTES, 'UTF-8');
+                $talla  = htmlspecialchars($r->talla, ENT_QUOTES, 'UTF-8');
+                $precio = number_format((float)$r->precio, 2, '.', '');
+                $cant   = (int)$r->cantidad;
+
+                fwrite($file, '<tr>' . "\n");
+                fwrite($file, '<td style="mso-number-format:\@;">' . $clave . '</td>' . "\n");
+                fwrite($file, '<td>' . $desc . '</td>' . "\n");
+                fwrite($file, '<td>' . $marca . '</td>' . "\n");
+                fwrite($file, '<td>' . $talla . '</td>' . "\n");
+                fwrite($file, '<td style="mso-number-format:\'0.00\';">' . $precio . '</td>' . "\n");
+                fwrite($file, '<td>' . $cant . '</td>' . "\n");
+                fwrite($file, '</tr>' . "\n");
+            }
+
+            fwrite($file, '</tbody></table></body></html>' . "\n");
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Guarda el registro de ropa escaneado/ingresado en la categoría activa.
+     * Marca y Talla son OBLIGATORIOS. Estilo, Color, Código de Barras y Art son OPCIONALES.
+     */
+    public function ropaGuardar(Request $request)
+    {
+        if ($res = $this->verificarAccesoRopa()) return $res;
+        try {
+            $categoria = strtoupper(trim((string) $request->input('categoria', 'ROPA DIVERSA')));
+            if (empty($categoria)) $categoria = 'ROPA DIVERSA';
+            RopaCategoria::firstOrCreate(['nombre' => $categoria]);
+
+            $marca  = trim((string) $request->input('marca', ''));
+            $estilo = trim((string) $request->input('estilo', ''));
+            $color  = trim((string) $request->input('color', ''));
+            $codigo = trim((string) $request->input('codigo_barras', ''));
+            $art    = trim((string) $request->input('art', ''));
+
+            if (empty($marca)) {
+                if ($request->wantsJson() || $request->ajax()) {
+                    return response()->json(['success' => false, 'error' => 'La Marca es un campo obligatorio.'], 422);
+                }
+                return redirect()->back()->with('error', 'La Marca es un campo obligatorio.');
+            }
+
+            $precioRaw = $request->input('precio');
+            $precio = (is_numeric($precioRaw) && (float)$precioRaw >= 0) ? (float)$precioRaw : 0.00;
+
+            $imagenPath = $request->input('imagen_path');
+            if (empty($imagenPath)) {
+                $imagenPath = 'storage/ropa/default.png';
+            }
+
+            // Recopilar la lista de tallas enviadas (puede ser 1 o N tallas)
+            $tallasProcesar = [];
+
+            if ($request->has('tallas') && is_array($request->input('tallas'))) {
+                foreach ($request->input('tallas') as $t) {
+                    $tallaStr = trim((string)($t['talla'] ?? $t['numero'] ?? ''));
+                    $cantVal  = (isset($t['cantidad']) && is_numeric($t['cantidad']) && (int)$t['cantidad'] > 0) ? (int)$t['cantidad'] : 1;
+                    if (!empty($tallaStr)) {
+                        $tallasProcesar[] = [
+                            'talla'    => $tallaStr,
+                            'cantidad' => $cantVal
+                        ];
+                    }
+                }
+            }
+
+            if (empty($tallasProcesar)) {
+                $tallaSingle = trim((string) $request->input('talla', ''));
+                if (empty($tallaSingle)) {
+                    if ($request->wantsJson() || $request->ajax()) {
+                        return response()->json(['success' => false, 'error' => 'La Talla es un campo obligatorio.'], 422);
+                    }
+                    return redirect()->back()->with('error', 'La Talla es un campo obligatorio.');
+                }
+                $cantSingle = (is_numeric($request->input('cantidad')) && (int)$request->input('cantidad') > 0) ? (int)$request->input('cantidad') : 1;
+                $tallasProcesar[] = [
+                    'talla'    => $tallaSingle,
+                    'cantidad' => $cantSingle
+                ];
+            }
+
+            $registrosProcesados = [];
+            $totalGuardados = 0;
+            $huboDuplicados = false;
+
+            foreach ($tallasProcesar as $tItem) {
+                $talla = $tItem['talla'];
+                $cantidad = $tItem['cantidad'];
+
+                $claveBuscada = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $codigo, $talla);
+
+                $ropaExistente = Ropa::where('categoria', $categoria)->get()->first(function ($r) use ($claveBuscada) {
+                    return strtoupper(trim($r->clave_alterna)) === strtoupper(trim($claveBuscada));
+                });
+
+                if ($ropaExistente) {
+                    $huboDuplicados = true;
+                    $nuevoStock = $ropaExistente->cantidad + $cantidad;
+                    $ropaExistente->update([
+                        'cantidad' => $nuevoStock,
+                        'precio'   => $precio > 0 ? $precio : $ropaExistente->precio,
+                    ]);
+                    $registrosProcesados[] = "⚠️ Talla {$talla} (Clave {$claveBuscada} YA EXISTÍA en {$categoria}): Se sumaron +{$cantidad} prendas al registro previo (Nuevo Stock Total: {$nuevoStock} prendas).";
+                } else {
+                    $ropaNueva = Ropa::create([
+                        'categoria'     => $categoria,
+                        'marca'         => $marca,
+                        'talla'         => $talla,
+                        'estilo'        => $estilo,
+                        'color'         => $color,
+                        'codigo_barras' => $codigo,
+                        'art'           => $art,
+                        'cantidad'      => $cantidad,
+                        'precio'        => $precio,
+                        'imagen_url'    => $imagenPath,
+                        'detalles_ia'   => $request->input('detalles_ia', null),
+                    ]);
+                    $registrosProcesados[] = "✅ Talla {$talla} (Clave Nueva: {$ropaNueva->clave_alterna}): Registro nuevo creado en categoría '{$categoria}' con {$cantidad} prenda(s).";
+                }
+                $totalGuardados++;
+            }
+
+            if ($huboDuplicados) {
+                $mensajeFinal = "⚠️ ATENCIÓN: ¡Se detectó Clave Alterna ya existente en la categoría {$categoria}!\n\nPara evitar registros duplicados, las prendas se sumaron al stock actual del producto:\n• " . implode("\n• ", $registrosProcesados);
+            } else {
+                $mensajeFinal = "✅ ¡Se registraron {$totalGuardados} talla(s) correctamente en la categoría '{$categoria}'!\n• " . implode("\n• ", $registrosProcesados);
+            }
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success'   => true,
+                    'duplicado' => $huboDuplicados,
+                    'mensaje'   => $mensajeFinal,
+                    'total'     => $totalGuardados,
+                    'categoria' => $categoria
+                ]);
+            }
+
+            return redirect()->route('admin.ropa', ['categoria' => $categoria])->with('success', $mensajeFinal);
+
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error("Error guardando ropa: " . $e->getMessage());
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'error'   => 'Error al guardar ropa: ' . $e->getMessage()
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Error al guardar ropa: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Actualiza una prenda existente en el inventario.
+     */
+    public function ropaActualizar(Request $request, $id)
+    {
+        if ($res = $this->verificarAccesoRopa()) return $res;
+        try {
+            $ropa = Ropa::findOrFail($id);
+
+            $marca  = trim((string) $request->input('marca', $ropa->marca));
+            $talla  = trim((string) $request->input('talla', $ropa->talla));
+            $estilo = trim((string) $request->input('estilo', $ropa->estilo));
+            $color  = trim((string) $request->input('color', $ropa->color));
+            $codigo = trim((string) $request->input('codigo_barras', $ropa->codigo_barras));
+            $art    = trim((string) $request->input('art', $ropa->art));
+
+            if (empty($marca) || empty($talla)) {
+                return redirect()->back()->with('error', 'La Marca y la Talla son obligatorias.');
+            }
+            
+            $cantRaw  = $request->input('cantidad');
+            $cantidad = (is_numeric($cantRaw) && (int)$cantRaw >= 0) ? (int)$cantRaw : $ropa->cantidad;
+
+            $precioRaw = $request->input('precio');
+            $precio   = (is_numeric($precioRaw) && (float)$precioRaw >= 0) ? (float)$precioRaw : $ropa->precio;
+
+            $nuevaClave = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $codigo, $talla);
+
+            $otroExistente = Ropa::all()->first(function ($r) use ($nuevaClave, $ropa) {
+                return $r->id !== $ropa->id && strtoupper(trim($r->clave_alterna)) === strtoupper(trim($nuevaClave));
+            });
+
+            if ($otroExistente) {
+                $nuevoStock = $otroExistente->cantidad + $cantidad;
+                $otroExistente->update([
+                    'cantidad' => $nuevoStock,
+                    'precio'   => $precio > 0 ? $precio : $otroExistente->precio,
+                ]);
+
+                $ropa->delete();
+
+                $msgDup = "⚠️ ¡Clave Alterna ya existente! (Clave: {$nuevaClave}). Se fusionaron los datos con el registro existente #{$otroExistente->id} y se actualizaron las prendas (Nuevo Stock Total: {$nuevoStock} prendas).";
+                return redirect()->route('admin.ropa', ['categoria' => $ropa->categoria])->with('success', $msgDup);
+            }
+
+            $ropa->update([
+                'marca'         => $marca,
+                'talla'         => $talla,
+                'estilo'        => $estilo,
+                'color'         => $color,
+                'codigo_barras' => $codigo,
+                'art'           => $art,
+                'cantidad'      => $cantidad,
+                'precio'        => $precio,
+            ]);
+
+            return redirect()->route('admin.ropa', ['categoria' => $ropa->categoria])->with('success', "✅ Prenda #{$ropa->id} actualizada correctamente (Clave Alterna: {$nuevaClave}).");
+        } catch (\Throwable $e) {
+            return redirect()->route('admin.ropa')->with('error', "Error al actualizar: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Elimina una prenda del inventario.
+     */
+    public function ropaEliminar($id)
+    {
+        if ($res = $this->verificarAccesoRopa()) return $res;
+        $ropa = Ropa::findOrFail($id);
+        $catRedirect = $ropa->categoria;
+        
+        if (!empty($ropa->imagen_url)) {
+            $rawPath = public_path($ropa->getRawOriginal('imagen_url') ?? '');
+            if (file_exists($rawPath) && is_file($rawPath)) {
+                @unlink($rawPath);
+            }
+        }
+
+        $ropa->delete();
+
+        return redirect()->route('admin.ropa', ['categoria' => $catRedirect])->with('success', 'Prenda eliminada del inventario.');
+    }
 }
+
 

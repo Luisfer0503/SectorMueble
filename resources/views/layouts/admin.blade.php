@@ -140,6 +140,13 @@
                         </svg>
                         Inventario Zapatos (Escáner IA)
                     </a>
+                    <a href="{{ route('admin.ropa') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.ropa') || Route::is('admin.ropa.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10v10H7z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 3l-4 4-4-4H3v6l3 3v9h12v-9l3-3V3h-5z"/>
+                        </svg>
+                        Inventario Ropa (Escáner IA)
+                    </a>
                 @endif
 
                 <a href="{{ route('admin.pedidos') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.pedidos') || Route::is('admin.pedidos.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
