@@ -2025,7 +2025,7 @@ class AdminController extends Controller
                 $talla = $tItem['talla'];
                 $cantidad = $tItem['cantidad'];
 
-                $claveBuscada = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $talla);
+                $claveBuscada = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $talla, $precio, $categoria);
 
                 $ropaExistente = Ropa::where('categoria', $categoria)->get()->first(function ($r) use ($claveBuscada) {
                     return strtoupper(trim($r->clave_alterna)) === strtoupper(trim($claveBuscada));
@@ -2116,7 +2116,7 @@ class AdminController extends Controller
             $precioRaw = $request->input('precio');
             $precio   = (is_numeric($precioRaw) && (float)$precioRaw >= 0) ? (float)$precioRaw : $ropa->precio;
 
-            $nuevaClave = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $talla);
+            $nuevaClave = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $talla, $precio, $ropa->categoria, $ropa->id);
 
             $otroExistente = Ropa::all()->first(function ($r) use ($nuevaClave, $ropa) {
                 return $r->id !== $ropa->id && strtoupper(trim($r->clave_alterna)) === strtoupper(trim($nuevaClave));

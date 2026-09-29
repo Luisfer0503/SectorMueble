@@ -33,7 +33,8 @@ class Ropa extends Model
 
     /**
      * Genera la Clave Alterna según la fórmula para Ropa: R(Marca)(Estilo)(Art)(Color)T(Talla)
-     * Ejemplo: RNIKEPOLO102NEGROTCH
+     * Si en la misma categoría existe un registro previo con el mismo modelo pero DIFERENTE precio,
+     * se le concatena el precio al final (ejemplo: RNIKEPOLO102NEGROTCH270).
      */
     public function getClaveAlternaAttribute(): string
     {
@@ -42,14 +43,19 @@ class Ropa extends Model
             $this->estilo,
             $this->art,
             $this->color,
-            $this->talla
+            $this->talla,
+            $this->precio,
+            $this->categoria,
+            $this->id
         );
     }
 
     /**
-     * Genera la Clave Alterna a partir de los valores recibidos sin incluir el código de barras.
+     * Genera la Clave Alterna a partir de los valores recibidos.
+     * Si existe un artículo previo en la categoría con características idénticas pero precio diferente,
+     * agrega el precio al final de la clave.
      */
-    public static function generarClaveAlterna($marca, $estilo, $art, $color, $talla): string
+    public static function generarClaveAlterna($marca, $estilo, $art, $color, $talla, $precio = null, $categoria = null, $ignoreId = null): string
     {
         $cleanMarca  = strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], ['A','E','I','O','U','A','E','I','O','U','N','N'], preg_replace('/[^A-Za-z0-9]/', '', $marca ?? '')));
         $cleanEstilo = !empty($estilo) ? strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $estilo)) : '';
@@ -63,7 +69,38 @@ class Ropa extends Model
             $tallaStr = strtoupper($tallaStr);
         }
 
-        return "R{$cleanMarca}{$cleanEstilo}{$cleanArt}{$cleanColor}{$tallaStr}";
+        $baseClave = "R{$cleanMarca}{$cleanEstilo}{$cleanArt}{$cleanColor}{$tallaStr}";
+
+        if (empty($categoria) || $precio === null) {
+            return $baseClave;
+        }
+
+        $floatPrecio = (float)$precio;
+
+        // Buscar el primer registro base creado en la categoría con estas mismas características
+        $queryBase = self::query()->where('categoria', $categoria)
+            ->whereRaw('LOWER(TRIM(marca)) = ?', [strtolower(trim($marca))])
+            ->whereRaw('LOWER(TRIM(COALESCE(estilo, ""))) = ?', [strtolower(trim($estilo ?? ''))])
+            ->whereRaw('LOWER(TRIM(COALESCE(art, ""))) = ?', [strtolower(trim($art ?? ''))])
+            ->whereRaw('LOWER(TRIM(COALESCE(color, ""))) = ?', [strtolower(trim($color ?? ''))])
+            ->whereRaw('LOWER(TRIM(talla)) = ?', [strtolower(trim($talla))]);
+
+        if (!empty($ignoreId)) {
+            $queryBase->where('id', '!=', $ignoreId);
+        }
+
+        $firstBase = $queryBase->orderBy('id', 'asc')->first();
+
+        if ($firstBase) {
+            $precioBase = (float)$firstBase->precio;
+            // Si el precio de este artículo difiere del precio del registro base original
+            if (abs($floatPrecio - $precioBase) >= 0.01) {
+                $precioClean = ($floatPrecio == (int)$floatPrecio) ? (string)(int)$floatPrecio : str_replace('.', '', (string)$floatPrecio);
+                return $baseClave . $precioClean;
+            }
+        }
+
+        return $baseClave;
     }
 
     /**
