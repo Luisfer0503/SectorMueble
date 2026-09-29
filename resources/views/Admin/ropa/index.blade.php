@@ -25,10 +25,10 @@
             </div>
 
             <!-- Botones Principales -->
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 w-full xl:w-auto">
                 <!-- Botón Principal Héroe: Tomar Foto -->
-                <button onclick="abrirModalEscaner()" class="flex-1 sm:flex-initial inline-flex items-center justify-center px-6 py-3.5 bg-amber-950 hover:bg-amber-900 text-amber-100 font-extrabold text-xs md:text-sm rounded-xl shadow-md hover:shadow-lg border border-amber-800 transition-all space-x-2.5 group cursor-pointer">
-                    <svg class="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button onclick="abrirModalEscaner()" class="col-span-2 sm:flex-initial inline-flex items-center justify-center px-5 py-3.5 bg-amber-950 hover:bg-amber-900 text-amber-100 font-extrabold text-xs md:text-sm rounded-xl shadow-md hover:shadow-lg border border-amber-800 transition-all space-x-2 group cursor-pointer active:scale-95">
+                    <svg class="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v6m3-3H9"/>
                     </svg>
@@ -36,27 +36,26 @@
                 </button>
 
                 <!-- Botón Descargar Excel -->
-                <a href="{{ route('admin.ropa.excel', ['categoria' => $categoriaActiva]) }}" class="inline-flex items-center justify-center px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm hover:shadow transition-all space-x-2">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <a href="{{ route('admin.ropa.excel', ['categoria' => $categoriaActiva]) }}" class="inline-flex items-center justify-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm hover:shadow transition-all space-x-1.5 active:scale-95">
+                    <svg class="w-4 h-4 text-emerald-100 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
                     <span>📥 Descargar Excel</span>
                 </a>
 
                 <!-- Botón Captura Manual -->
-                <button onclick="abrirCapturaManual()" class="inline-flex items-center justify-center px-4 py-3.5 bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs md:text-sm rounded-xl border border-slate-300 shadow-sm transition-all space-x-2">
-                    <svg class="w-4 h-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button onclick="abrirCapturaManual()" class="inline-flex items-center justify-center px-4 py-3 bg-white hover:bg-slate-100 text-slate-800 font-bold text-xs md:text-sm rounded-xl border border-slate-300 shadow-sm transition-all space-x-1.5 active:scale-95">
+                    <svg class="w-4 h-4 text-slate-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
-                    <span>Captura Manual</span>
+                    <span>✍️ Captura Manual</span>
                 </button>
 
                 <!-- Botón Clave API IA -->
-                <button onclick="abrirModalApiKey()" class="inline-flex items-center justify-center px-4 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs md:text-sm rounded-xl border border-slate-300 transition-all space-x-2" title="Configurar Clave API de Gemini Vision">
-                    <svg class="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button onclick="abrirModalApiKey()" class="col-span-2 sm:col-span-1 inline-flex items-center justify-center px-3.5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs md:text-sm rounded-xl border border-slate-300 transition-all space-x-1.5 active:scale-95" title="Configurar Clave API de Gemini Vision">
+                    <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
                     </svg>
-                    <span>Clave API IA</span>
                 </button>
             </div>
         </div>
@@ -339,26 +338,37 @@
                                             @endif
                                         </td>
                                         <td class="py-4 px-4 text-right">
-                                            <div class="flex items-center justify-end space-x-1.5">
+                                            <div class="flex flex-wrap items-center justify-end gap-1.5 min-w-[220px]">
                                                 <!-- Botón + Talla para este modelo -->
-                                                <button onclick="abrirModalAgregarTallaRopa({{ json_encode($ropa) }})" class="px-2.5 py-1.5 text-amber-950 hover:text-white bg-amber-200/90 hover:bg-amber-800 rounded-xl border border-amber-400/60 transition-all font-black text-xs flex items-center space-x-1 shadow-sm cursor-pointer" title="Agregar nueva talla (+ Talla) para este modelo">
-                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <button onclick="abrirModalAgregarTallaRopa({{ json_encode($ropa) }})" class="px-2.5 py-2 bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs rounded-xl shadow-sm border border-amber-500 flex items-center space-x-1 whitespace-nowrap cursor-pointer transition-all active:scale-95" title="Agregar nueva talla (+ Talla) para este modelo">
+                                                    <svg class="w-3.5 h-3.5 text-slate-950" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                                                     </svg>
                                                     <span>+ Talla</span>
                                                 </button>
 
+                                                <!-- Duplicar prenda -->
+                                                <button onclick="abrirModalDuplicarRopa({{ json_encode($ropa) }})" class="px-2.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs rounded-xl shadow-sm border border-indigo-500 flex items-center space-x-1 whitespace-nowrap cursor-pointer transition-all active:scale-95" title="Duplicar prenda (Copiar y modificar 1 o 2 datos)">
+                                                    <svg class="w-3.5 h-3.5 text-indigo-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                                    </svg>
+                                                    <span>📋 Duplicar</span>
+                                                </button>
+
                                                 <!-- Editar prenda -->
-                                                <button onclick="abrirModalEditarRopa({{ json_encode($ropa) }})" class="p-2 text-slate-400 hover:text-amber-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" title="Editar Prenda">
-                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <button onclick="abrirModalEditarRopa({{ json_encode($ropa) }})" class="px-2.5 py-2 bg-slate-800 hover:bg-black text-slate-100 font-extrabold text-xs rounded-xl shadow-sm border border-slate-700 flex items-center space-x-1 whitespace-nowrap cursor-pointer transition-all active:scale-95" title="Editar Prenda">
+                                                    <svg class="w-3.5 h-3.5 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                     </svg>
+                                                    <span>✏️ Editar</span>
                                                 </button>
+
                                                 <!-- Eliminar prenda -->
-                                                <a href="{{ route('admin.ropa.eliminar', $ropa->id) }}" onclick="return confirm('¿Seguro que deseas eliminar esta prenda del inventario?');" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors" title="Eliminar Prenda">
-                                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <a href="{{ route('admin.ropa.eliminar', $ropa->id) }}" onclick="return confirm('¿Seguro que deseas eliminar esta prenda del inventario?');" class="px-2.5 py-2 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white font-extrabold text-xs rounded-xl border border-rose-300 flex items-center space-x-1 whitespace-nowrap cursor-pointer transition-all active:scale-95" title="Eliminar Prenda">
+                                                    <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                                     </svg>
+                                                    <span>🗑️ Borrar</span>
                                                 </a>
                                             </div>
                                         </td>
@@ -729,6 +739,93 @@
     </div>
 
 
+    <!-- MODAL DUPLICAR PRENDA DE ROPA -->
+    <div id="modalDuplicarRopa" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+            <div class="p-5 bg-slate-900 text-white flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 bg-indigo-500 text-white rounded-xl flex items-center justify-center font-bold">
+                        📋
+                    </div>
+                    <div>
+                        <h3 class="serif-title text-base font-extrabold text-amber-300">Duplicar Prenda</h3>
+                        <p class="text-[11px] text-slate-400">Crea una copia de este artículo modificando los campos necesarios.</p>
+                    </div>
+                </div>
+                <button onclick="cerrarModalDuplicarRopa()" class="text-slate-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
+            </div>
+
+            <form action="{{ route('admin.ropa.guardar') }}" method="POST" class="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+                @csrf
+                <input type="hidden" name="categoria" value="{{ $categoriaActiva }}">
+                <input type="hidden" id="dupRopaImagenPath" name="imagen_path" value="">
+
+                <!-- Header de Vista Previa de la Prenda Original -->
+                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 flex items-center space-x-3">
+                    <img id="dupRopaImagenPreview" src="" class="w-12 h-12 object-cover rounded-xl border border-slate-200 bg-white" alt="Vista Previa">
+                    <div class="text-xs">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Copiando desde el registro:</span>
+                        <span id="dupLblOriginalClave" class="font-mono font-black text-indigo-950"></span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-900 mb-1">
+                            Marca <span class="text-rose-600">* (Obligatorio)</span>
+                        </label>
+                        <input type="text" id="dupRopaMarca" name="marca" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-900 mb-1">
+                            Talla <span class="text-rose-600">* (Obligatorio)</span>
+                        </label>
+                        <input type="text" id="dupRopaTalla" name="talla" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Estilo (Opcional)</label>
+                        <input type="text" id="dupRopaEstilo" name="estilo" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Color (Opcional)</label>
+                        <input type="text" id="dupRopaColor" name="color" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Código de Barras (Opcional)</label>
+                        <input type="text" id="dupRopaCodigo" name="codigo_barras" placeholder="Ej. 750123456789" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Art (Opcional)</label>
+                        <input type="text" id="dupRopaArt" name="art" placeholder="Ej. ART-102" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Cantidad (Stock)</label>
+                        <input type="number" id="dupRopaCantidad" name="cantidad" min="1" value="1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">Precio Unitario ($)</label>
+                        <input type="number" step="0.01" id="dupRopaPrecio" name="precio" placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-3">
+                    <button type="button" onclick="cerrarModalDuplicarRopa()" class="px-4 py-2 text-slate-600 text-xs font-bold hover:bg-slate-100 rounded-xl transition-all">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black rounded-xl shadow transition-all cursor-pointer">
+                        📋 Registrar Duplicado en {{ $categoriaActiva }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <!-- MODAL 5: NUEVA CATEGORÍA -->
     <div id="modalNuevaCategoriaRopa" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
@@ -1085,6 +1182,30 @@
 
         function cerrarModalEditarRopa() {
             document.getElementById('modalEditarRopa').classList.add('hidden');
+        }
+
+        // Duplicar Prenda (Copiar y modificar campos)
+        function abrirModalDuplicarRopa(ropaObj) {
+            document.getElementById('dupRopaMarca').value = ropaObj.marca || '';
+            document.getElementById('dupRopaTalla').value = ropaObj.talla || '';
+            document.getElementById('dupRopaEstilo').value = ropaObj.estilo || '';
+            document.getElementById('dupRopaColor').value = ropaObj.color || '';
+            document.getElementById('dupRopaCodigo').value = ropaObj.codigo_barras || '';
+            document.getElementById('dupRopaArt').value = ropaObj.art || '';
+            document.getElementById('dupRopaCantidad').value = ropaObj.cantidad || 1;
+            document.getElementById('dupRopaPrecio').value = ropaObj.precio || '0.00';
+            document.getElementById('dupRopaImagenPath').value = ropaObj.imagen_url || '';
+
+            const claveLbl = ropaObj.clave_alterna || 'S/C';
+            const descLbl = `${ropaObj.marca || ''} ${ropaObj.talla || ''}`.trim();
+            document.getElementById('dupLblOriginalClave').innerText = `${claveLbl} (${descLbl})`;
+            document.getElementById('dupRopaImagenPreview').src = ropaObj.imagen_url || '/storage/ropa/default.png';
+
+            document.getElementById('modalDuplicarRopa').classList.remove('hidden');
+        }
+
+        function cerrarModalDuplicarRopa() {
+            document.getElementById('modalDuplicarRopa').classList.add('hidden');
         }
 
         // Guardar API Key de Gemini
