@@ -446,13 +446,6 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-extrabold text-slate-900 mb-1">
-                                Talla <span class="text-rose-600">* (Obligatorio)</span>
-                            </label>
-                            <input type="text" id="escanerTalla" name="talla" required placeholder="Ej. CH, M, G, XL, 30, 32" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 uppercase focus:ring-2 focus:ring-amber-500">
-                        </div>
-
-                        <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Estilo (Opcional)</label>
                             <input type="text" id="escanerEstilo" name="estilo" placeholder="Ej. POLO, CASUAL, SLIM FIT" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 uppercase focus:ring-2 focus:ring-amber-500">
                         </div>
@@ -473,13 +466,35 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Cantidad (Stock)</label>
-                            <input type="number" name="cantidad" value="1" min="1" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800">
-                        </div>
-
-                        <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Precio Unitario ($)</label>
                             <input type="number" step="0.01" name="precio" placeholder="0.00" value="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono">
+                        </div>
+                    </div>
+
+                    <!-- Sección de Tallas Dinámicas (+ Talla) -->
+                    <div class="bg-amber-50/60 p-4 rounded-2xl border border-amber-200/80 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-xs font-extrabold text-slate-900 block">Tallas y Cantidades (Existencias) <span class="text-rose-600">*</span></span>
+                                <span class="text-[11px] text-slate-500">Puedes agregar múltiples tallas para esta misma prenda escaneada.</span>
+                            </div>
+                            <button type="button" onclick="agregarFilaTallaEscanerRopa()" class="px-3 py-1.5 bg-amber-200 hover:bg-amber-300 text-amber-950 font-black text-xs rounded-lg transition-all cursor-pointer shrink-0">
+                                + Agregar Otra Talla
+                            </button>
+                        </div>
+
+                        <div id="contenedorFilasTallasEscanerRopa" class="space-y-2">
+                            <div class="flex items-center space-x-3 fila-talla-escaner-ropa">
+                                <div class="flex-1">
+                                    <input type="text" id="escanerTalla" name="tallas[0][talla]" required placeholder="Talla (Ej. CH, M, G, XL, 30, 32)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-800 focus:ring-2 focus:ring-amber-500">
+                                </div>
+                                <div class="w-32">
+                                    <input type="number" name="tallas[0][cantidad]" min="1" value="1" required placeholder="Cant." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800">
+                                </div>
+                                <button type="button" onclick="eliminarFilaTallaEscanerRopa(this)" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg hidden text-xs font-bold">
+                                    &times;
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -911,8 +926,11 @@
             .then(data => {
                 loading.classList.add('hidden');
                 if (data.success) {
+                    limpiarFilasTallasEscanerRopa();
                     document.getElementById('escanerMarca').value = data.marca || '';
-                    document.getElementById('escanerTalla').value = data.talla || '';
+                    if (document.getElementById('escanerTalla')) {
+                        document.getElementById('escanerTalla').value = data.talla || '';
+                    }
                     document.getElementById('escanerEstilo').value = data.estilo || '';
                     document.getElementById('escanerColor').value = data.color || '';
                     document.getElementById('escanerCodigoBarras').value = data.codigo_barras || '';
@@ -927,6 +945,65 @@
                 console.error(err);
                 alert('Error al comunicarse con el servidor de análisis IA.');
             });
+        }
+
+        // Agregar / Eliminar filas de Tallas (+ Talla) en Escáner de Foto
+        let contadorFilasTallasEscanerRopa = 1;
+
+        function agregarFilaTallaEscanerRopa() {
+            const contenedor = document.getElementById('contenedorFilasTallasEscanerRopa');
+            const div = document.createElement('div');
+            div.className = 'flex items-center space-x-3 fila-talla-escaner-ropa animate-fade-in';
+            div.innerHTML = `
+                <div class="flex-1">
+                    <input type="text" name="tallas[${contadorFilasTallasEscanerRopa}][talla]" required placeholder="Talla (Ej. CH, M, G, XL)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-800 focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div class="w-32">
+                    <input type="number" name="tallas[${contadorFilasTallasEscanerRopa}][cantidad]" min="1" value="1" required placeholder="Cant." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800">
+                </div>
+                <button type="button" onclick="eliminarFilaTallaEscanerRopa(this)" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg text-xs font-bold">
+                    &times;
+                </button>
+            `;
+            contenedor.appendChild(div);
+            contadorFilasTallasEscanerRopa++;
+            actualizarBotonesEliminarTallaEscanerRopa();
+        }
+
+        function eliminarFilaTallaEscanerRopa(btn) {
+            btn.closest('.fila-talla-escaner-ropa').remove();
+            actualizarBotonesEliminarTallaEscanerRopa();
+        }
+
+        function actualizarBotonesEliminarTallaEscanerRopa() {
+            const filas = document.querySelectorAll('#contenedorFilasTallasEscanerRopa .fila-talla-escaner-ropa');
+            filas.forEach((f) => {
+                const btn = f.querySelector('button');
+                if (filas.length === 1) {
+                    btn.classList.add('hidden');
+                } else {
+                    btn.classList.remove('hidden');
+                }
+            });
+        }
+
+        function limpiarFilasTallasEscanerRopa() {
+            const contenedor = document.getElementById('contenedorFilasTallasEscanerRopa');
+            if (!contenedor) return;
+            contenedor.innerHTML = `
+                <div class="flex items-center space-x-3 fila-talla-escaner-ropa">
+                    <div class="flex-1">
+                        <input type="text" id="escanerTalla" name="tallas[0][talla]" required placeholder="Talla (Ej. CH, M, G, XL, 30, 32)" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold uppercase text-slate-800 focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div class="w-32">
+                        <input type="number" name="tallas[0][cantidad]" min="1" value="1" required placeholder="Cant." class="w-full px-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-800">
+                    </div>
+                    <button type="button" onclick="eliminarFilaTallaEscanerRopa(this)" class="p-2 text-rose-500 hover:bg-rose-50 rounded-lg hidden text-xs font-bold">
+                        &times;
+                    </button>
+                </div>
+            `;
+            contadorFilasTallasEscanerRopa = 1;
         }
 
         // Agregar / Eliminar filas de Tallas (+ Talla) en Captura Manual
