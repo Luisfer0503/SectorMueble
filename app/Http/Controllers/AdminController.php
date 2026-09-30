@@ -1978,8 +1978,21 @@ class AdminController extends Controller
                 return redirect()->back()->with('error', 'La Marca es un campo obligatorio.');
             }
 
+            if (empty($color)) {
+                if ($request->wantsJson() || $request->ajax()) {
+                    return response()->json(['success' => false, 'error' => 'El Color es un campo obligatorio.'], 422);
+                }
+                return redirect()->back()->with('error', 'El Color es un campo obligatorio.');
+            }
+
             $precioRaw = $request->input('precio');
-            $precio = (is_numeric($precioRaw) && (float)$precioRaw >= 0) ? (float)$precioRaw : 0.00;
+            if (!is_numeric($precioRaw) || (float)$precioRaw <= 0) {
+                if ($request->wantsJson() || $request->ajax()) {
+                    return response()->json(['success' => false, 'error' => 'El Precio Unitario es obligatorio y debe ser mayor a 0.'], 422);
+                }
+                return redirect()->back()->with('error', 'El Precio Unitario es obligatorio y debe ser mayor a 0.');
+            }
+            $precio = (float)$precioRaw;
 
             $imagenPath = $request->input('imagen_path');
             if (empty($imagenPath)) {
@@ -2106,15 +2119,18 @@ class AdminController extends Controller
             $codigo = trim((string) $request->input('codigo_barras', $ropa->codigo_barras));
             $art    = trim((string) $request->input('art', $ropa->art));
 
-            if (empty($marca) || empty($talla)) {
-                return redirect()->back()->with('error', 'La Marca y la Talla son obligatorias.');
+            if (empty($marca) || empty($talla) || empty($color)) {
+                return redirect()->back()->with('error', 'La Marca, Talla y Color son obligatorios.');
             }
             
             $cantRaw  = $request->input('cantidad');
             $cantidad = (is_numeric($cantRaw) && (int)$cantRaw >= 0) ? (int)$cantRaw : $ropa->cantidad;
 
             $precioRaw = $request->input('precio');
-            $precio   = (is_numeric($precioRaw) && (float)$precioRaw >= 0) ? (float)$precioRaw : $ropa->precio;
+            if (!is_numeric($precioRaw) || (float)$precioRaw <= 0) {
+                return redirect()->back()->with('error', 'El Precio Unitario es obligatorio y debe ser mayor a 0.');
+            }
+            $precio = (float)$precioRaw;
 
             $nuevaClave = Ropa::generarClaveAlterna($marca, $estilo, $art, $color, $talla, $precio, $ropa->categoria, $ropa->id);
 

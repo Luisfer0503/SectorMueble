@@ -461,8 +461,10 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Color (Opcional)</label>
-                            <input type="text" id="escanerColor" name="color" placeholder="Ej. NEGRO, BLANCO, AZUL" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 uppercase focus:ring-2 focus:ring-amber-500">
+                            <label class="block text-xs font-extrabold text-slate-900 mb-1">
+                                Color <span class="text-rose-600">* (Obligatorio)</span>
+                            </label>
+                            <input type="text" id="escanerColor" name="color" required placeholder="Ej. NEGRO, BLANCO, AZUL" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 uppercase focus:ring-2 focus:ring-amber-500">
                         </div>
 
                         <div>
@@ -476,8 +478,10 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Precio Unitario ($)</label>
-                            <input type="number" step="0.01" name="precio" placeholder="0.00" value="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono">
+                            <label class="block text-xs font-extrabold text-slate-900 mb-1">
+                                Precio Unitario ($) <span class="text-rose-600">* (Obligatorio)</span>
+                            </label>
+                            <input type="number" step="0.01" min="0.01" name="precio" required placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono focus:ring-2 focus:ring-amber-500">
                         </div>
                     </div>
 
@@ -554,8 +558,10 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Color (Opcional)</label>
-                        <input type="text" name="color" placeholder="Ej. NEGRO, BLANCO" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 uppercase focus:ring-2 focus:ring-amber-500">
+                        <label class="block text-xs font-extrabold text-slate-900 mb-1">
+                            Color <span class="text-rose-600">* (Obligatorio)</span>
+                        </label>
+                        <input type="text" name="color" required placeholder="Ej. NEGRO, BLANCO" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 uppercase focus:ring-2 focus:ring-amber-500">
                     </div>
 
                     <div>
@@ -569,8 +575,10 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Precio Unitario ($)</label>
-                        <input type="number" step="0.01" name="precio" placeholder="0.00" value="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono">
+                        <label class="block text-xs font-extrabold text-slate-900 mb-1">
+                            Precio Unitario ($) <span class="text-rose-600">* (Obligatorio)</span>
+                        </label>
+                        <input type="number" step="0.01" min="0.01" name="precio" required placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono focus:ring-2 focus:ring-amber-500">
                     </div>
                 </div>
 
@@ -703,8 +711,10 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Color (Opcional)</label>
-                        <input type="text" id="editRopaColor" name="color" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 uppercase">
+                        <label class="block text-xs font-extrabold text-slate-900 mb-1">
+                            Color <span class="text-rose-600">* (Obligatorio)</span>
+                        </label>
+                        <input type="text" id="editRopaColor" name="color" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 uppercase focus:ring-2 focus:ring-amber-500">
                     </div>
 
                     <div>
@@ -723,8 +733,10 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Precio Unitario ($)</label>
-                        <input type="number" step="0.01" id="editRopaPrecio" name="precio" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono">
+                        <label class="block text-xs font-extrabold text-slate-900 mb-1">
+                            Precio Unitario ($) <span class="text-rose-600">* (Obligatorio)</span>
+                        </label>
+                        <input type="number" step="0.01" min="0.01" id="editRopaPrecio" name="precio" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono focus:ring-2 focus:ring-amber-500">
                     </div>
                 </div>
 
@@ -786,8 +798,10 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Color (Opcional)</label>
-                        <input type="text" id="dupRopaColor" name="color" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
+                        <label class="block text-xs font-extrabold text-slate-900 mb-1">
+                            Color <span class="text-rose-600">* (Obligatorio)</span>
+                        </label>
+                        <input type="text" id="dupRopaColor" name="color" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 uppercase focus:ring-2 focus:ring-indigo-500">
                     </div>
 
                     <div>
@@ -801,8 +815,10 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">Precio Unitario ($)</label>
-                        <input type="number" step="0.01" id="dupRopaPrecio" name="precio" placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono focus:ring-2 focus:ring-indigo-500">
+                        <label class="block text-xs font-extrabold text-slate-900 mb-1">
+                            Precio Unitario ($) <span class="text-rose-600">* (Obligatorio)</span>
+                        </label>
+                        <input type="number" step="0.01" min="0.01" id="dupRopaPrecio" name="precio" required placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-800 font-mono focus:ring-2 focus:ring-indigo-500">
                     </div>
                 </div>
 
