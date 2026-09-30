@@ -103,36 +103,38 @@
 
             <!-- Opciones del Menú de Administración -->
             <nav class="mt-4 px-4 space-y-1 overflow-y-auto max-h-[calc(100vh-160px)]">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.dashboard') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
-                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/>
-                    </svg>
-                    Dashboard
-                </a>
+                @if(auth()->check() && !(auth()->user()->id >= 2 && auth()->user()->id <= 6))
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.dashboard') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"/>
+                        </svg>
+                        Dashboard
+                    </a>
 
-                <a href="{{ route('admin.productos') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.productos') || Route::is('admin.productos.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
-                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-                    </svg>
-                    Muebles (Catálogo)
-                </a>
+                    <a href="{{ route('admin.productos') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.productos') || Route::is('admin.productos.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                        Muebles (Catálogo)
+                    </a>
 
-                <a href="{{ route('admin.cupones') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.cupones') || Route::is('admin.cupones.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
-                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
-                    </svg>
-                    Cupones Descuento
-                </a>
+                    <a href="{{ route('admin.cupones') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.cupones') || Route::is('admin.cupones.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/>
+                        </svg>
+                        Cupones Descuento
+                    </a>
 
-                <a href="{{ route('admin.ruleta') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.ruleta') || Route::is('admin.ruleta.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
-                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
-                    </svg>
-                    Ruleta de Premios
-                </a>
+                    <a href="{{ route('admin.ruleta') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.ruleta') || Route::is('admin.ruleta.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                        </svg>
+                        Ruleta de Premios
+                    </a>
+                @endif
 
-                @if(auth()->check() && auth()->user()->id >= 2 && auth()->user()->id <= 6)
+                @if(auth()->check() && (auth()->user()->id == 1 || (auth()->user()->id >= 2 && auth()->user()->id <= 6)))
                     <a href="{{ route('admin.zapatos') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.zapatos') || Route::is('admin.zapatos.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
                         <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
@@ -149,33 +151,35 @@
                     </a>
                 @endif
 
-                <a href="{{ route('admin.pedidos') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.pedidos') || Route::is('admin.pedidos.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
-                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-                    </svg>
-                    Pedidos
-                </a>
+                @if(auth()->check() && !(auth()->user()->id >= 2 && auth()->user()->id <= 6))
+                    <a href="{{ route('admin.pedidos') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.pedidos') || Route::is('admin.pedidos.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                        </svg>
+                        Pedidos
+                    </a>
 
-                <a href="{{ route('admin.terminos') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.terminos') || Route::is('admin.terminos.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
-                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    Términos y Condiciones
-                </a>
+                    <a href="{{ route('admin.terminos') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.terminos') || Route::is('admin.terminos.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Términos y Condiciones
+                    </a>
 
-                <a href="{{ route('admin.privacidad') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.privacidad') || Route::is('admin.privacidad.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
-                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                    </svg>
-                    Aviso de Privacidad
-                </a>
+                    <a href="{{ route('admin.privacidad') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.privacidad') || Route::is('admin.privacidad.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                        Aviso de Privacidad
+                    </a>
 
-                <a href="{{ route('admin.politicas_envio') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.politicas_envio') || Route::is('admin.politicas_envio.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
-                    <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"/>
-                    </svg>
-                    Políticas de Envío
-                </a>
+                    <a href="{{ route('admin.politicas_envio') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors {{ Route::is('admin.politicas_envio') || Route::is('admin.politicas_envio.*') ? 'bg-amber-800 text-white font-bold' : 'text-zinc-300 hover:bg-zinc-800 hover:text-white' }}">
+                        <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"/>
+                        </svg>
+                        Políticas de Envío
+                    </a>
+                @endif
 
                 <div class="pt-4 mt-4 border-t border-zinc-800">
                     <a href="{{ route('inicio') }}" class="flex items-center px-4 py-3 text-xs font-semibold text-zinc-400 hover:text-white rounded-lg uppercase tracking-wider transition-colors">

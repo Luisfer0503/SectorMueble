@@ -22,10 +22,27 @@ use Illuminate\Support\Facades\Http;
 class AdminController extends Controller
 {
     /**
+     * Verifica que los usuarios con ID entre 2 y 6 solo puedan acceder a los módulos de Zapatos y Ropa.
+     */
+    private function verificarAccesoGeneralAdmin()
+    {
+        $id = auth()->id();
+        if ($id >= 2 && $id <= 6) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json(['error' => 'Tu cuenta solo tiene acceso a los módulos de Zapatos y Ropa.'], 403);
+            }
+            return redirect()->route('admin.zapatos')->with('error', 'Tu cuenta solo tiene acceso a los módulos de Zapatos y Ropa.');
+        }
+        return null;
+    }
+
+    /**
      * Dashboard general con métricas de ventas y pedidos.
      */
     public function dashboard()
     {
+        if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
+
         // Métricas básicas
         $ventasTotales = Pedido::where('estado', '!=', 'cancelado')->sum('total');
         $pedidosTotales = Pedido::count();
@@ -54,6 +71,7 @@ class AdminController extends Controller
 
     public function productosIndex(Request $request)
     {
+        if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
         $query = Producto::with('detalles');
 
         if ($request->filled('buscar')) {
@@ -556,6 +574,7 @@ class AdminController extends Controller
 
     public function cuponesIndex()
     {
+        if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
         $cupones = Cupon::orderBy('created_at', 'desc')->paginate(10);
         return view('Admin.cupones.index', compact('cupones'));
     }
@@ -621,6 +640,7 @@ class AdminController extends Controller
 
     public function pedidosIndex()
     {
+        if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
         $pedidos = Pedido::orderBy('created_at', 'desc')->paginate(10);
         return view('Admin.pedidos.index', compact('pedidos'));
     }
@@ -704,6 +724,7 @@ class AdminController extends Controller
      */
     public function terminosIndex()
     {
+        if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
         $secciones = TerminoCondicion::obtenerSecciones();
         $contenido = TerminoCondicion::obtenerContenido();
         return view('Admin.terminos.index', compact('secciones', 'contenido'));
@@ -746,6 +767,7 @@ class AdminController extends Controller
      */
     public function privacidadIndex()
     {
+        if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
         $secciones = AvisoPrivacidad::obtenerSecciones();
         $contenido = AvisoPrivacidad::obtenerContenido();
         return view('Admin.privacidad.index', compact('secciones', 'contenido'));
@@ -788,6 +810,7 @@ class AdminController extends Controller
      */
     public function politicasEnvioIndex()
     {
+        if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
         $secciones = PoliticaEnvio::obtenerSecciones();
         $contenido = PoliticaEnvio::obtenerContenido();
         return view('Admin.politicas_envio.index', compact('secciones', 'contenido'));
@@ -829,6 +852,7 @@ class AdminController extends Controller
 
     public function ruletaIndex()
     {
+        if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
         $opciones = RuletaOpcion::orderBy('posicion', 'asc')->get();
         
         // Si no existen 3 opciones, asegurar que existan posiciones 1, 2 y 3
@@ -900,16 +924,16 @@ class AdminController extends Controller
     // --- INVENTARIO DE ZAPATOS CON ESCÁNER IA DE FOTO ---
 
     /**
-     * Verifica que el usuario autenticado tenga ID entre 2 y 6 para acceder al inventario de zapatos.
+     * Verifica que el usuario autenticado tenga ID = 1 o ID entre 2 y 6 para acceder al inventario de zapatos.
      */
     private function verificarAccesoZapatos()
     {
         $id = auth()->id();
-        if (!$id || $id < 2 || $id > 6) {
+        if (!$id || !($id == 1 || ($id >= 2 && $id <= 6))) {
             if (request()->wantsJson() || request()->ajax()) {
                 return response()->json(['error' => 'No tienes autorización para acceder a esta función.'], 403);
             }
-            return redirect()->route('admin.dashboard')->with('error', 'El Inventario de Zapatos solo está disponible para usuarios autorizados (ID 2 a 6).');
+            return redirect()->route('admin.dashboard')->with('error', 'El Inventario de Zapatos solo está disponible para usuarios autorizados.');
         }
         return null;
     }
@@ -1552,16 +1576,16 @@ class AdminController extends Controller
     // --- INVENTARIO DE ROPA CON ESCÁNER IA DE FOTO ---
 
     /**
-     * Verifica que el usuario autenticado tenga ID entre 2 y 6 para acceder al inventario de ropa.
+     * Verifica que el usuario autenticado tenga ID = 1 o ID entre 2 y 6 para acceder al inventario de ropa.
      */
     private function verificarAccesoRopa()
     {
         $id = auth()->id();
-        if (!$id || $id < 2 || $id > 6) {
+        if (!$id || !($id == 1 || ($id >= 2 && $id <= 6))) {
             if (request()->wantsJson() || request()->ajax()) {
                 return response()->json(['error' => 'No tienes autorización para acceder a esta función.'], 403);
             }
-            return redirect()->route('admin.dashboard')->with('error', 'El Inventario de Ropa solo está disponible para usuarios autorizados (ID 2 a 6).');
+            return redirect()->route('admin.dashboard')->with('error', 'El Inventario de Ropa solo está disponible para usuarios autorizados.');
         }
         return null;
     }
