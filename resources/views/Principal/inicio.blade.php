@@ -94,43 +94,43 @@
         <!-- ── 1. FONDO CON LA IMAGEN PROMO.PNG COMPLETA SIN RECORTAR ── -->
         <div class="absolute inset-0 z-0 flex items-center justify-center bg-zinc-950 w-full h-full overflow-hidden">
             <!-- Imagen Promo Grande Completa con zoom progresivo sutil -->
-            <img id="promo-img-bg" src="{{ asset('promo.png') }}" alt="Promoción Especial de Septiembre" class="w-full h-full object-contain object-center filter brightness-[1.02] contrast-[1.02] transform scale-105 transition-transform duration-[3200ms] ease-out">
+            <img id="promo-img-bg" src="{{ asset('promo_octubre.png') }}" alt="Promoción Especial de Octubre" class="w-full h-full object-contain object-center filter brightness-[1.02] contrast-[1.02] transform scale-105 transition-transform duration-[3200ms] ease-out">
             
             <!-- Shadow Overlay sutil para potenciar el contraste -->
             <div class="absolute inset-0 bg-black/20 pointer-events-none"></div>
         </div>
 
-        <!-- ── 2. TICKER CONTADOR DE SEPTIEMBRE (PEQUEÑO ABAJO EN MÓVIL / A 1/4 A LA DERECHA EN DESKTOP) ── -->
+        <!-- ── 2. TICKER CONTADOR DE OCTUBRE (PEQUEÑO ABAJO EN MÓVIL / A 1/4 A LA DERECHA EN DESKTOP) ── -->
         <div class="absolute bottom-2.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.25rem)] max-w-sm sm:w-auto sm:max-w-none sm:left-auto sm:right-8 lg:right-12 sm:translate-x-0 sm:bottom-[22%] z-20 pointer-events-auto">
             <div class="flex flex-col items-center lg:items-end bg-black/85 backdrop-blur-md p-2.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#FAF3E0]/40 shadow-[0_10px_35px_rgba(0,0,0,0.7)] hover:border-[#FAF3E0] transition-colors duration-500">
                 <span class="text-[10px] sm:text-xs font-extrabold uppercase tracking-widest text-[#FAF3E0] mb-1.5 sm:mb-2.5 text-center lg:text-right drop-shadow">
-                    ⏳ La oferta termina al finalizar Septiembre:
+                    ⏳ La oferta termina al finalizar Octubre:
                 </span>
                 
                 <div class="flex items-center space-x-1.5 sm:space-x-2.5 text-center">
                     <div class="bg-white/95 border border-white/40 p-1.5 sm:p-3 rounded-xl sm:rounded-2xl w-12 sm:w-18 shadow-2xl backdrop-blur-md">
-                        <span id="flash-days" class="block text-base sm:text-2xl font-extrabold text-[#88432A] font-mono">15</span>
+                        <span id="flash-days" class="block text-base sm:text-2xl font-extrabold text-[#88432A] font-mono">00</span>
                         <span class="text-[7px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-700">Días</span>
                     </div>
                     <span class="text-base sm:text-2xl font-bold text-[#FAF3E0] animate-pulse">:</span>
                     <div class="bg-white/95 border border-white/40 p-1.5 sm:p-3 rounded-xl sm:rounded-2xl w-12 sm:w-18 shadow-2xl backdrop-blur-md">
-                        <span id="flash-hours" class="block text-base sm:text-2xl font-extrabold text-[#88432A] font-mono">11</span>
+                        <span id="flash-hours" class="block text-base sm:text-2xl font-extrabold text-[#88432A] font-mono">00</span>
                         <span class="text-[7px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-700">Horas</span>
                     </div>
                     <span class="text-base sm:text-2xl font-bold text-[#FAF3E0] animate-pulse">:</span>
                     <div class="bg-white/95 border border-white/40 p-1.5 sm:p-3 rounded-xl sm:rounded-2xl w-12 sm:w-18 shadow-2xl backdrop-blur-md">
-                        <span id="flash-minutes" class="block text-base sm:text-2xl font-extrabold text-[#88432A] font-mono">41</span>
+                        <span id="flash-minutes" class="block text-base sm:text-2xl font-extrabold text-[#88432A] font-mono">00</span>
                         <span class="text-[7px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-700">Minutos</span>
                     </div>
                     <span class="text-base sm:text-2xl font-bold text-[#FAF3E0] animate-pulse">:</span>
                     <div class="bg-white/95 border border-white/40 p-1.5 sm:p-3 rounded-xl sm:rounded-2xl w-12 sm:w-18 shadow-2xl backdrop-blur-md">
-                        <span id="flash-seconds" class="block text-base sm:text-2xl font-extrabold text-[#88432A] font-mono">57</span>
+                        <span id="flash-seconds" class="block text-base sm:text-2xl font-extrabold text-[#88432A] font-mono">00</span>
                         <span class="text-[7px] sm:text-[10px] font-bold uppercase tracking-wider text-zinc-700">Segundos</span>
                     </div>
                 </div>
                 
                 <div class="mt-2 sm:mt-3 flex items-center justify-between w-full sm:w-auto gap-2 sm:gap-3">
-                    <span class="text-[9px] sm:text-[10px] text-white/90 font-semibold bg-black/50 px-2 sm:px-2.5 py-0.5 rounded-full border border-white/20">Hasta 30 Sept</span>
+                    <span class="text-[9px] sm:text-[10px] text-white/90 font-semibold bg-black/50 px-2 sm:px-2.5 py-0.5 rounded-full border border-white/20">Hasta 31 Oct</span>
                     <button type="button" onclick="cerrarTelonSplit()" class="text-[10px] sm:text-xs font-bold text-[#FAF3E0] hover:text-white underline cursor-pointer flex items-center gap-1">
                         <span>Cerrar Telón</span> 🎭
                     </button>
@@ -156,7 +156,7 @@
             <div class="text-center bg-[#88432A]/95 p-6 sm:p-12 rounded-3xl border-2 border-[#FAF3E0]/60 shadow-2xl backdrop-blur-md max-w-2xl mx-auto transform hover:scale-102 transition-transform">
                 <span class="inline-flex items-center space-x-2 text-xs font-extrabold uppercase tracking-widest text-white bg-white/20 border border-white/30 px-4 py-1.5 rounded-full mb-4 shadow-md">
                     <span class="w-2.5 h-2.5 rounded-full bg-[#FAF3E0] animate-ping"></span>
-                    <span>Venta Especial de Septiembre 2026</span>
+                    <span>Venta Especial de Octubre 2026</span>
                 </span>
 
                 <h2 class="serif-title text-2xl sm:text-5xl font-bold leading-tight text-white drop-shadow-md">
@@ -167,7 +167,7 @@
                 </p>
 
                 <button type="button" onclick="abrirTelonSplit()" class="mt-6 sm:mt-8 inline-flex items-center space-x-3 bg-[#FAF3E0] text-[#88432A] hover:bg-white hover:scale-108 text-sm sm:text-base font-extrabold px-7 sm:px-9 py-3.5 sm:py-4.5 rounded-2xl shadow-2xl transition-all duration-300 transform active:scale-95 border-2 border-white/80 cursor-pointer group">
-                    <span>Abrir Telón y Descubrir Oferta</span>
+                    <span>Descubrir Oferta</span>
                 </button>
             </div>
         </div>
@@ -539,7 +539,7 @@
             startAutoplay();
 
 
-            // ── 2. Flash Sale Split Telón Curtain Reveal & September Countdown ──
+            // ── 2. Flash Sale Split Telón Curtain Reveal & October Countdown ──
             let telonAbiertoPorScroll = false;
 
             window.abrirTelonSplit = function() {
@@ -597,7 +597,7 @@
                 observer.observe(telonSection);
             }
 
-            const targetSeptDate = new Date('2026-09-30T23:59:59').getTime();
+            const targetOctDate = new Date('2026-10-31T23:59:59').getTime();
             const daysEl = document.getElementById('flash-days');
             const hoursEl = document.getElementById('flash-hours');
             const minsEl = document.getElementById('flash-minutes');
@@ -605,10 +605,10 @@
 
             function updateFlashClock() {
                 const now = new Date().getTime();
-                let distance = targetSeptDate - now;
+                let distance = targetOctDate - now;
 
                 if (distance <= 0) {
-                    distance = 15 * 24 * 3600 * 1000; // Reciclar para demostración
+                    distance = 0;
                 }
 
                 const d = Math.floor(distance / (1000 * 60 * 60 * 24));
