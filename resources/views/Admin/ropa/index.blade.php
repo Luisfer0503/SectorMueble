@@ -141,7 +141,9 @@
                                 <div class="space-y-1 text-xs text-slate-600 mt-3">
                                     <p class="flex justify-between"><span>Modelos/Items:</span> <strong class="text-slate-900">{{ $resCat['modelos'] }}</strong></p>
                                     <p class="flex justify-between"><span>Total Prendas (Exist.):</span> <strong class="text-emerald-700">{{ number_format($resCat['prendas']) }}</strong></p>
-                                    <p class="flex justify-between"><span>Valor Total:</span> <strong class="text-slate-900">$ {{ number_format($resCat['valor'], 2, '.', ',') }}</strong></p>
+                                    @if(auth()->check() && in_array(auth()->user()->id, [1, 2]))
+                                        <p class="flex justify-between"><span>Valor Total:</span> <strong class="text-slate-900">$ {{ number_format($resCat['valor'], 2, '.', ',') }}</strong></p>
+                                    @endif
                                 </div>
                             </div>
                             <a href="{{ route('admin.ropa', ['categoria' => $resCat['nombre']]) }}" class="mt-4 w-full py-2.5 bg-slate-900 hover:bg-black text-amber-300 text-xs font-bold rounded-xl text-center shadow transition-all block">
@@ -153,7 +155,7 @@
             </div>
         @else
             <!-- Métricas de Inventario de la Categoría Abierta -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 {{ (auth()->check() && in_array(auth()->user()->id, [1, 2])) ? 'sm:grid-cols-3' : 'sm:grid-cols-2' }} gap-6">
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Modelos en {{ $categoriaActiva }}</span>
@@ -178,6 +180,7 @@
                     </div>
                 </div>
 
+                @if(auth()->check() && in_array(auth()->user()->id, [1, 2]))
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Valor Inventario {{ $categoriaActiva }}</span>
@@ -189,6 +192,7 @@
                         </svg>
                     </div>
                 </div>
+                @endif
             </div>
 
             <!-- Barra Flotante de Acciones Masivas -->

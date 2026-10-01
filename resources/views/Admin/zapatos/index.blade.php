@@ -144,10 +144,11 @@
                                     </span>
                                     <span class="text-[10px] uppercase font-bold text-slate-400">Cerrada</span>
                                 </div>
-                                <div class="space-y-1 text-xs text-slate-600 mt-3">
-                                    <p class="flex justify-between"><span>Modelos:</span> <strong class="text-slate-900">{{ $resCat['modelos'] }}</strong></p>
+                                                                <p class="flex justify-between"><span>Modelos:</span> <strong class="text-slate-900">{{ $resCat['modelos'] }}</strong></p>
                                     <p class="flex justify-between"><span>Total Pares (Exist.):</span> <strong class="text-emerald-700">{{ number_format($resCat['pares']) }}</strong></p>
-                                    <p class="flex justify-between"><span>Valor Total:</span> <strong class="text-slate-900">$ {{ number_format($resCat['valor'], 2, '.', ',') }}</strong></p>
+                                    @if(auth()->check() && in_array(auth()->user()->id, [1, 2]))
+                                        <p class="flex justify-between"><span>Valor Total:</span> <strong class="text-slate-900">$ {{ number_format($resCat['valor'], 2, '.', ',') }}</strong></p>
+                                    @endif
                                 </div>
                             </div>
                             <a href="{{ route('admin.zapatos', ['categoria' => $resCat['nombre']]) }}" class="mt-4 w-full py-2.5 bg-slate-900 hover:bg-black text-amber-300 text-xs font-bold rounded-xl text-center shadow transition-all block">
@@ -159,7 +160,7 @@
             </div>
         @else
             <!-- Tarjetas de Métricas de Inventario de la Categoría Abierta -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 {{ (auth()->check() && in_array(auth()->user()->id, [1, 2])) ? 'sm:grid-cols-3' : 'sm:grid-cols-2' }} gap-6">
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Modelos en {{ $categoriaActiva }}</span>
@@ -184,6 +185,7 @@
                     </div>
                 </div>
 
+                @if(auth()->check() && in_array(auth()->user()->id, [1, 2]))
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
                     <div>
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-wider block">Valor Inventario {{ $categoriaActiva }}</span>
@@ -193,8 +195,8 @@
                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                    </div>
                 </div>
+                @endif
             </div>
 
             <!-- Barra Flotante de Acciones Masivas (Aparece al seleccionar con Checklist) -->

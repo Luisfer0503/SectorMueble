@@ -18,6 +18,7 @@ use App\Models\PoliticaEnvio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 
 class AdminController extends Controller
 {
@@ -950,8 +951,10 @@ class AdminController extends Controller
         $catZapatos = Zapato::select('categoria')->distinct()->whereNotNull('categoria')->pluck('categoria')->toArray();
         $categorias = array_values(array_unique(array_filter(array_merge(['ZAPATO ESCOLAR'], $catDb, $catZapatos))));
 
-        // Determinar si hay una categoría abierta o si están cerradas
+        // Determinar si hay una categoría abierta o si están cerradas con persistencia por usuario
         $categoriaActiva = null;
+        $userCacheKey = 'user_' . auth()->id() . '_last_cat_zapatos';
+
         if ($request->has('categoria')) {
             $catVal = trim((string)$request->input('categoria'));
             if ($catVal !== '') {
@@ -961,10 +964,29 @@ class AdminController extends Controller
                 } else {
                     $categoriaActiva = $categorias[0] ?? null;
                 }
+                if ($categoriaActiva) {
+                    Cache::forever($userCacheKey, $categoriaActiva);
+                }
+            } else {
+                // El usuario presionó explícitamente "Cerrar Categoría"
+                $categoriaActiva = null;
+                Cache::forever($userCacheKey, '');
             }
         } else {
-            // Por defecto abre la primera categoría al entrar al módulo
-            $categoriaActiva = $categorias[0] ?? 'ZAPATO ESCOLAR';
+            // Recuperar la última categoría que registró o seleccionó el usuario
+            $lastSavedCat = Cache::get($userCacheKey);
+            if ($lastSavedCat === '') {
+                // El usuario había cerrado explícitamente la categoría
+                $categoriaActiva = null;
+            } elseif (!empty($lastSavedCat) && in_array($lastSavedCat, $categorias)) {
+                $categoriaActiva = $lastSavedCat;
+            } else {
+                // Por defecto abre la primera categoría si no hay recuerdo previo
+                $categoriaActiva = $categorias[0] ?? 'ZAPATO ESCOLAR';
+                if ($categoriaActiva) {
+                    Cache::forever($userCacheKey, $categoriaActiva);
+                }
+            }
         }
 
         // Resumen general de métricas por categoría para las tarjetas
@@ -1467,6 +1489,8 @@ class AdminController extends Controller
                 $mensajeFinal = "✅ ¡Se registraron {$totalGuardados} talla(s) correctamente en la categoría '{$categoria}'!\n• " . implode("\n• ", $registrosProcesados);
             }
 
+            Cache::forever('user_' . auth()->id() . '_last_cat_zapatos', strtoupper(trim($categoria)));
+
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
                     'success'        => true,
@@ -1602,8 +1626,10 @@ class AdminController extends Controller
         $catRopas = Ropa::select('categoria')->distinct()->whereNotNull('categoria')->pluck('categoria')->toArray();
         $categorias = array_values(array_unique(array_filter(array_merge(['ROPA DIVERSA'], $catDb, $catRopas))));
 
-        // Determinar si hay una categoría abierta o si están cerradas
+        // Determinar si hay una categoría abierta o si están cerradas con persistencia por usuario
         $categoriaActiva = null;
+        $userCacheKey = 'user_' . auth()->id() . '_last_cat_ropa';
+
         if ($request->has('categoria')) {
             $catVal = trim((string)$request->input('categoria'));
             if ($catVal !== '') {
@@ -1613,10 +1639,29 @@ class AdminController extends Controller
                 } else {
                     $categoriaActiva = $categorias[0] ?? null;
                 }
+                if ($categoriaActiva) {
+                    Cache::forever($userCacheKey, $categoriaActiva);
+                }
+            } else {
+                // El usuario presionó explícitamente "Cerrar Categoría"
+                $categoriaActiva = null;
+                Cache::forever($userCacheKey, '');
             }
         } else {
-            // Por defecto abre la primera categoría al entrar al módulo
-            $categoriaActiva = $categorias[0] ?? 'ROPA DIVERSA';
+            // Recuperar la última categoría que registró o seleccionó el usuario
+            $lastSavedCat = Cache::get($userCacheKey);
+            if ($lastSavedCat === '') {
+                // El usuario había cerrado explícitamente la categoría
+                $categoriaActiva = null;
+            } elseif (!empty($lastSavedCat) && in_array($lastSavedCat, $categorias)) {
+                $categoriaActiva = $lastSavedCat;
+            } else {
+                // Por defecto abre la primera categoría si no hay recuerdo previo
+                $categoriaActiva = $categorias[0] ?? 'ROPA DIVERSA';
+                if ($categoriaActiva) {
+                    Cache::forever($userCacheKey, $categoriaActiva);
+                }
+            }
         }
 
         // Resumen general de métricas por categoría para las tarjetas
@@ -2101,6 +2146,8 @@ class AdminController extends Controller
             } else {
                 $mensajeFinal = "✅ ¡Se registraron {$totalGuardados} talla(s) correctamente en la categoría '{$categoria}'!\n• " . implode("\n• ", $registrosProcesados);
             }
+
+            Cache::forever('user_' . auth()->id() . '_last_cat_ropa', strtoupper(trim($categoria)));
 
             if ($request->wantsJson() || $request->ajax()) {
                 return response()->json([
