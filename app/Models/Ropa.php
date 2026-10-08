@@ -108,7 +108,8 @@ class Ropa extends Model
      */
     public function getDescripcionCompletaAttribute(): string
     {
-        $desc = "ROPA MARCA {$this->marca}";
+        $tipo = Zapato::obtenerPrimeraPalabraSingular($this->categoria, 'ROPA');
+        $desc = "{$tipo} MARCA {$this->marca}";
         if (!empty($this->estilo)) {
             $desc .= " ESTILO {$this->estilo}";
         }

@@ -280,7 +280,7 @@
                                     </th>
                                     <th class="py-3.5 px-3 w-12 text-center">#</th>
                                     <th class="py-3.5 px-4">Foto / Clave Alterna</th>
-                                    <th class="py-3.5 px-4">Marca & Talla</th>
+                                    <th class="py-3.5 px-4">DESCRIPCION</th>
                                     <th class="py-3.5 px-4">Estilo / Color / Barcode</th>
                                     <th class="py-3.5 px-4 text-right">Precio Unit.</th>
                                     <th class="py-3.5 px-4 text-center">Stock (Exist.)</th>
@@ -308,10 +308,11 @@
                                             </div>
                                         </td>
                                         <td class="py-4 px-4">
-                                            <span class="font-black text-slate-900 uppercase block text-xs tracking-tight">Marca: {{ $ropa->marca }}</span>
-                                            <span class="font-bold text-amber-900 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 inline-block text-[11px] mt-1">
-                                                Talla: {{ $ropa->talla }}
-                                            </span>
+                                            <span class="font-extrabold text-slate-900 uppercase block text-xs tracking-tight">{{ $ropa->descripcion_completa }}</span>
+                                            <div class="flex flex-wrap items-center gap-1.5 text-[10px] text-slate-500 mt-1">
+                                                <span class="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">Marca: <strong>{{ $ropa->marca }}</strong></span>
+                                                <span class="bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-300 font-bold">Talla: <strong>{{ $ropa->talla }}</strong></span>
+                                            </div>
                                         </td>
                                         <td class="py-4 px-4">
                                             <div class="flex flex-wrap gap-1 text-[11px]">
