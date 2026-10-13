@@ -262,18 +262,6 @@
                             <span id="btn-stripe-texto" class="font-bold">Pagar $ {{ number_format($total, 2, '.', ',') }} MXN</span>
                         </button>
 
-                        <!-- Aviso Legal de Sitio de Prueba / Demostración -->
-                        <div class="mt-3 p-3.5 bg-[#F9F6F0] border border-[#E5DCCF] rounded-xl text-center shadow-xs">
-                            <div class="flex items-center justify-center gap-1.5 text-[#6B4F37] font-bold text-xs mb-1">
-                                <svg class="w-4 h-4 text-[#88674B] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <span>Entorno de Prueba / Demostración</span>
-                            </div>
-                            <p class="text-[11px] text-[#7A624E] leading-snug font-medium">
-                                Este sitio web es una plataforma de prueba y demostración técnica. Las transacciones realizadas aquí no conllevan cobros comerciales reales ni compromisos de entrega.
-                            </p>
-                        </div>
 
                         <!-- Alerta Informativa / Bloqueo por CP -->
                         <div id="cp-bloqueo-alerta" class="mt-4 p-4 bg-[#1E2440] border-2 border-white/20 rounded-2xl text-xs text-white leading-relaxed shadow-sm">
