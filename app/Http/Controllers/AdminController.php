@@ -1095,7 +1095,7 @@ class AdminController extends Controller
                 continue;
             }
 
-            $claveBuscada = $zapato->clave_alterna;
+            $claveBuscada = Zapato::generarClaveAlterna($zapato->estilo, $zapato->material, $zapato->color, $zapato->bordado, $zapato->numero, $zapato->precio, $categoriaDestino);
 
             // Buscar si ya existe un zapato con la misma Clave Alterna en la categoría DESTINO
             $existenteDestino = Zapato::where('categoria', $categoriaDestino)
@@ -1450,7 +1450,7 @@ class AdminController extends Controller
                 $cantidad = $tItem['cantidad'];
 
                 // Generar la Clave Alterna para esta talla específica
-                $claveBuscada = Zapato::generarClaveAlterna($estilo, $material, $color, $bordado, $numero);
+                $claveBuscada = Zapato::generarClaveAlterna($estilo, $material, $color, $bordado, $numero, $precio, $categoria);
 
                 // Buscar si existe un registro con la misma Clave Alterna DENTRO DE LA MISMA CATEGORÍA
                 $zapatoExistente = Zapato::where('categoria', $categoria)->get()->first(function ($z) use ($claveBuscada) {
@@ -1539,7 +1539,7 @@ class AdminController extends Controller
             $precio   = (is_numeric($precioRaw) && (float)$precioRaw >= 0) ? (float)$precioRaw : $zapato->precio;
 
             // Verificar si con los nuevos datos se genera una Clave Alterna que ya pertenece a OTRO zapato
-            $nuevaClave = Zapato::generarClaveAlterna($estilo, $material, $color, $bordado, $numero);
+            $nuevaClave = Zapato::generarClaveAlterna($estilo, $material, $color, $bordado, $numero, $precio, $zapato->categoria, $zapato->id);
 
             $otroExistente = Zapato::all()->first(function ($z) use ($nuevaClave, $zapato) {
                 return $z->id !== $zapato->id && strtoupper(trim($z->clave_alterna)) === strtoupper(trim($nuevaClave));
@@ -1772,7 +1772,7 @@ class AdminController extends Controller
                 continue;
             }
 
-            $claveBuscada = $ropa->clave_alterna;
+            $claveBuscada = Ropa::generarClaveAlterna($ropa->marca, $ropa->estilo, $ropa->art, $ropa->color, $ropa->talla, $ropa->precio, $categoriaDestino);
 
             $existenteDestino = Ropa::where('categoria', $categoriaDestino)
                 ->get()

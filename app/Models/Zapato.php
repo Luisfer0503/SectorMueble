@@ -32,17 +32,28 @@ class Zapato extends Model
 
     /**
      * Genera la Clave Alterna según la fórmula: M(Estilo)(Material)(Color)[Bordado]T(Talla)
-     * Ejemplo: M1214SINTETICONEGROT22.0
+     * Si en la misma categoría existe un registro previo con el mismo modelo pero DIFERENTE precio,
+     * se le concatena el precio al final (ejemplo: M1214SINTETICONEGROT22.0250).
      */
     public function getClaveAlternaAttribute(): string
     {
-        return self::generarClaveAlterna($this->estilo, $this->material, $this->color, $this->bordado, $this->numero);
+        return self::generarClaveAlterna(
+            $this->estilo,
+            $this->material,
+            $this->color,
+            $this->bordado,
+            $this->numero,
+            $this->precio,
+            $this->categoria
+        );
     }
 
     /**
      * Genera la Clave Alterna a partir de los valores recibidos.
+     * Si existe un calzado previo en la categoría con características idénticas pero precio diferente,
+     * agrega el precio al final de la clave.
      */
-    public static function generarClaveAlterna($estilo, $material, $color, $bordado, $numero): string
+    public static function generarClaveAlterna($estilo, $material, $color, $bordado, $numero, $precio = null, $categoria = null, $ignoreId = null): string
     {
         $cleanEstilo = strtoupper(preg_replace('/[^A-Za-z0-9]/', '', $estilo ?? ''));
         $cleanMaterial = strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'], ['A','E','I','O','U','A','E','I','O','U','N','N'], preg_replace('/[^A-Za-z0-9]/', '', $material ?? '')));
@@ -56,7 +67,38 @@ class Zapato extends Model
             $tallaStr = strtoupper($tallaStr);
         }
 
-        return "M{$cleanEstilo}{$cleanMaterial}{$cleanColor}{$cleanBordado}{$tallaStr}";
+        $baseClave = "M{$cleanEstilo}{$cleanMaterial}{$cleanColor}{$cleanBordado}{$tallaStr}";
+
+        if (empty($categoria) || $precio === null) {
+            return $baseClave;
+        }
+
+        $floatPrecio = (float)$precio;
+
+        // Buscar el primer registro base creado en la categoría con estas mismas características
+        $queryBase = self::query()->where('categoria', $categoria)
+            ->whereRaw('LOWER(TRIM(COALESCE(estilo, ""))) = ?', [strtolower(trim($estilo ?? ''))])
+            ->whereRaw('LOWER(TRIM(COALESCE(material, ""))) = ?', [strtolower(trim($material ?? ''))])
+            ->whereRaw('LOWER(TRIM(COALESCE(color, ""))) = ?', [strtolower(trim($color ?? ''))])
+            ->whereRaw('LOWER(TRIM(COALESCE(bordado, ""))) = ?', [strtolower(trim($bordado ?? ''))])
+            ->whereRaw('LOWER(TRIM(COALESCE(numero, ""))) = ?', [strtolower(trim($numero ?? ''))]);
+
+        if (!empty($ignoreId)) {
+            $queryBase->where('id', '!=', $ignoreId);
+        }
+
+        $firstBase = $queryBase->orderBy('id', 'asc')->first();
+
+        if ($firstBase) {
+            $precioBase = (float)$firstBase->precio;
+            // Si el precio de este artículo difiere del precio del registro base original
+            if (abs($floatPrecio - $precioBase) >= 0.01) {
+                $precioClean = ($floatPrecio == (int)$floatPrecio) ? (string)(int)$floatPrecio : str_replace('.', '', (string)$floatPrecio);
+                return $baseClave . $precioClean;
+            }
+        }
+
+        return $baseClave;
     }
 
     /**

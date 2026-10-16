@@ -698,7 +698,7 @@
                         </div>
                         <div>
                             <label class="block text-xs font-extrabold text-slate-900 uppercase mb-1">Precio 1 ($ MXN)</label>
-                            <input type="number" id="tallaPrecio" name="precio" step="0.01" min="0" required class="w-full px-3.5 py-2 text-sm font-bold bg-white border border-slate-300 rounded-xl outline-none">
+                            <input type="number" id="tallaPrecio" name="precio" step="0.01" min="0" required oninput="actualizarPreviewClaveAlterna()" class="w-full px-3.5 py-2 text-sm font-bold bg-white border border-slate-300 rounded-xl outline-none">
                         </div>
                     </div>
                 </div>
@@ -1333,17 +1333,20 @@
         function actualizarPreviewClaveAlterna() {
             if (!zapatoBaseActual) return;
             const num = document.getElementById('tallaNumeroInput').value;
+            const precioInput = document.getElementById('tallaPrecio').value;
             const clave = calcularClaveAlternaJS(
                 zapatoBaseActual.estilo,
                 zapatoBaseActual.material,
                 zapatoBaseActual.color,
                 zapatoBaseActual.bordado,
-                num
+                num,
+                precioInput,
+                zapatoBaseActual.precio
             );
             document.getElementById('previewNuevaClave').innerText = clave;
         }
 
-        function calcularClaveAlternaJS(estilo, material, color, bordado, numero) {
+        function calcularClaveAlternaJS(estilo, material, color, bordado, numero, precio, precioBase) {
             const cleanStr = (s) => (s || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^A-Za-z0-9]/g, '').toUpperCase();
             const cleanEstilo = cleanStr(estilo);
             const cleanMaterial = cleanStr(material);
@@ -1357,7 +1360,18 @@
                 tallaStr = tallaStr.toUpperCase();
             }
 
-            return `M${cleanEstilo}${cleanMaterial}${cleanColor}${cleanBordado}${tallaStr}`;
+            let base = `M${cleanEstilo}${cleanMaterial}${cleanColor}${cleanBordado}${tallaStr}`;
+
+            if (precio !== undefined && precio !== null && precio !== '' && precioBase !== undefined && precioBase !== null) {
+                const p = parseFloat(precio);
+                const pb = parseFloat(precioBase);
+                if (!isNaN(p) && !isNaN(pb) && Math.abs(p - pb) >= 0.01) {
+                    const precioClean = (p % 1 === 0) ? p.toFixed(0) : p.toString().replace('.', '');
+                    return base + precioClean;
+                }
+            }
+
+            return base;
         }
 
         function guardarNuevaTallaZapato(e) {

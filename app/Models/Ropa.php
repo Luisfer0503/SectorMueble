@@ -45,8 +45,7 @@ class Ropa extends Model
             $this->color,
             $this->talla,
             $this->precio,
-            $this->categoria,
-            $this->id
+            $this->categoria
         );
     }
 
