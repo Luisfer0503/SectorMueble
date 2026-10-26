@@ -7,6 +7,9 @@
     <title>@yield('titulo', 'Sector Mueble | E-commerce de Muebles de Diseño')</title>
     <meta name="description" content="Encuentra los mejores muebles de diseño escandinavo, industrial y moderno para tu hogar u oficina en Sector Mueble. Envíos a todo el país.">
 
+    <!-- Verificación de Dominio de Facebook / Meta -->
+    <meta name="facebook-domain-verification" content="xivo2uhnsq3qup0agseqvctw8tuhid" />
+
     <!-- Favicon / Ícono de la pestaña del navegador (logo2.png) -->
     <link rel="icon" type="image/png" href="{{ asset('logo2.png') }}">
     <link rel="shortcut icon" href="{{ asset('logo2.png') }}" type="image/png">
