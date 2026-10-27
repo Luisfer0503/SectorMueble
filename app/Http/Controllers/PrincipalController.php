@@ -874,6 +874,7 @@ class PrincipalController extends Controller
                 ];
             }
 
+            $stripe = new \Stripe\StripeClient($stripeSecret);
             $session = $stripe->checkout->sessions->create([
                 'line_items'     => $lineItems,
                 'mode'           => 'payment',
