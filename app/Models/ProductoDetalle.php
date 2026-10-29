@@ -21,6 +21,8 @@ class ProductoDetalle extends Model
         'precio',
         'stock',
         'activo',
+        'ultima_pieza',
+        'agotado',
         'porcentaje_descuento',
         'precio_descuento',
     ];
@@ -29,6 +31,8 @@ class ProductoDetalle extends Model
         'precio'               => 'float',
         'stock'                => 'integer',
         'activo'               => 'boolean',
+        'ultima_pieza'         => 'boolean',
+        'agotado'              => 'boolean',
         'porcentaje_descuento' => 'integer',
         'precio_descuento'     => 'decimal:2',
     ];

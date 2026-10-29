@@ -203,6 +203,9 @@ class AdminController extends Controller
 
         $acabadosData = $this->procesarColoresRequest($request);
 
+        $agotadoGen = $request->has('agotado');
+        $ultimaPiezaGen = !$agotadoGen && $request->has('ultima_pieza');
+
         $producto = Producto::create([
             'nombre' => $request->nombre,
             'slug' => Str::slug($request->nombre),
@@ -216,6 +219,8 @@ class AdminController extends Controller
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
             'activo' => $request->has('activo') ? (bool)$request->activo : true,
+            'ultima_pieza' => $ultimaPiezaGen,
+            'agotado' => $agotadoGen,
             'colores' => !empty($acabadosData) ? $acabadosData : null,
             'imagen_dimension_lateral' => $dimLateral,
             'imagen_dimension_frontal' => $dimFrontal,
@@ -299,6 +304,9 @@ class AdminController extends Controller
 
         $acabadosData = $this->procesarColoresRequest($request);
 
+        $agotadoGen = $request->has('agotado');
+        $ultimaPiezaGen = !$agotadoGen && $request->has('ultima_pieza');
+
         $producto->update([
             'nombre' => $request->nombre,
             'slug' => Str::slug($request->nombre),
@@ -312,6 +320,8 @@ class AdminController extends Controller
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
             'activo' => $request->has('activo') ? (bool)$request->activo : true,
+            'ultima_pieza' => $ultimaPiezaGen,
+            'agotado' => $agotadoGen,
             'colores' => !empty($acabadosData) ? $acabadosData : null,
             'imagen_dimension_lateral' => $dimLateral,
             'imagen_dimension_frontal' => $dimFrontal,
@@ -338,6 +348,8 @@ class AdminController extends Controller
                 $precio = (isset($acabado['precio']) && $acabado['precio'] !== null) ? (float) $acabado['precio'] : (float) $producto->precio;
                 $stock  = (isset($acabado['stock']) && $acabado['stock'] !== null) ? (int) $acabado['stock'] : (int) $producto->stock;
                 $activoSub = isset($acabado['activo']) ? (bool) $acabado['activo'] : true;
+                $ultimaPiezaSub = !empty($acabado['ultima_pieza']);
+                $agotadoSub     = !empty($acabado['agotado']);
                 $pctDesc = isset($acabado['porcentaje_descuento']) && $acabado['porcentaje_descuento'] !== null ? (int) $acabado['porcentaje_descuento'] : 0;
                 $precioDesc = ($pctDesc > 0 && $precio > 0) ? round($precio * (1 - ($pctDesc / 100)), 2) : null;
                 
@@ -354,6 +366,8 @@ class AdminController extends Controller
                     'precio'               => $precio,
                     'stock'                => $stock,
                     'activo'               => $activoSub,
+                    'ultima_pieza'         => $ultimaPiezaSub,
+                    'agotado'              => $agotadoSub,
                     'porcentaje_descuento' => $pctDesc > 0 ? $pctDesc : null,
                     'precio_descuento'     => $precioDesc,
                 ]);
@@ -370,6 +384,9 @@ class AdminController extends Controller
                 'imagen'               => $producto->getRawOriginal('imagen_url'),
                 'precio'               => $pPrecio,
                 'stock'                => (int) $producto->stock,
+                'activo'               => true,
+                'ultima_pieza'         => (bool)$producto->ultima_pieza,
+                'agotado'              => (bool)$producto->agotado,
                 'porcentaje_descuento' => $pctDescPadre > 0 ? $pctDescPadre : null,
                 'precio_descuento'     => $pPrecioDesc,
             ]);
@@ -405,7 +422,9 @@ class AdminController extends Controller
             $skus       = $request->input('acabados_skus', []);
             $matExistentes = $request->input('acabados_materiales_existentes', []);
             $muebleExistentes = $request->input('acabados_muebles_existentes', $request->input('colores_imagenes_existentes', []));
-            $activosInput = $request->input('acabados_activos', []);
+            $activosInput     = $request->input('acabados_activos', []);
+            $ultimaPiezaInput = $request->input('acabados_ultima_pieza', []);
+            $agotadoInput     = $request->input('acabados_agotado', []);
 
             foreach ($nombres as $i => $nombre) {
                 if (trim($nombre) === '') continue;
@@ -417,6 +436,10 @@ class AdminController extends Controller
                 $stockVal = isset($stocks[$i]) && $stocks[$i] !== '' ? (int) $stocks[$i] : null;
                 $skuVal = isset($skus[$i]) && $skus[$i] !== '' ? trim($skus[$i]) : null;
                 $activoVal = isset($activosInput[$i]) ? (bool) $activosInput[$i] : true;
+                $checkAgotado     = !empty($agotadoInput[$i]) || $request->has("acabados_agotado.{$i}");
+                $checkUltimaPieza = !empty($ultimaPiezaInput[$i]) || $request->has("acabados_ultima_pieza.{$i}");
+                $agotadoVal       = $checkAgotado;
+                $ultimaPiezaVal   = !$checkAgotado && $checkUltimaPieza;
 
                 // Subida de imagen de muestra de material
                 $matFiles = $request->file('acabados_materiales');
@@ -460,6 +483,8 @@ class AdminController extends Controller
                     'stock'                => $stockVal,
                     'sku'                  => $skuVal,
                     'activo'               => $activoVal,
+                    'ultima_pieza'         => $ultimaPiezaVal,
+                    'agotado'              => $agotadoVal,
                 ];
             }
         }
@@ -512,6 +537,102 @@ class AdminController extends Controller
         }
 
         return redirect()->back()->with('success', $detalle->activo ? 'Subartículo "' . $detalle->nombre . '" activado.' : 'Subartículo "' . $detalle->nombre . '" desactivado.');
+    }
+
+    /**
+     * Alterna (toggle) el estado agotado de un mueble principal.
+     */
+    public function toggleProductoAgotado(Request $request, $id)
+    {
+        $producto = Producto::findOrFail($id);
+        $nuevoEstado = $request->has('agotado') ? (bool)$request->agotado : !$producto->agotado;
+        $producto->update([
+            'agotado' => $nuevoEstado,
+            'ultima_pieza' => $nuevoEstado ? false : $producto->ultima_pieza,
+        ]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'agotado' => $producto->agotado,
+                'ultima_pieza' => $producto->ultima_pieza,
+                'message' => $producto->agotado ? 'El mueble "' . $producto->nombre . '" está marcado como AGOTADO.' : 'El mueble "' . $producto->nombre . '" ya no está marcado como agotado.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', $producto->agotado ? 'El mueble "' . $producto->nombre . '" está marcado como AGOTADO.' : 'El mueble "' . $producto->nombre . '" ya no está marcado como agotado.');
+    }
+
+    /**
+     * Alterna (toggle) el estado última pieza de un mueble principal.
+     */
+    public function toggleProductoUltimaPieza(Request $request, $id)
+    {
+        $producto = Producto::findOrFail($id);
+        $nuevoEstado = $request->has('ultima_pieza') ? (bool)$request->ultima_pieza : !$producto->ultima_pieza;
+        $producto->update([
+            'ultima_pieza' => $nuevoEstado,
+            'agotado' => $nuevoEstado ? false : $producto->agotado,
+        ]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'ultima_pieza' => $producto->ultima_pieza,
+                'agotado' => $producto->agotado,
+                'message' => $producto->ultima_pieza ? 'El mueble "' . $producto->nombre . '" está marcado como ÚLTIMA PIEZA.' : 'El mueble "' . $producto->nombre . '" ya no está marcado como última pieza.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', $producto->ultima_pieza ? 'El mueble "' . $producto->nombre . '" está marcado como ÚLTIMA PIEZA.' : 'El mueble "' . $producto->nombre . '" ya no está marcado como última pieza.');
+    }
+
+    /**
+     * Alterna (toggle) el estado agotado de un subartículo.
+     */
+    public function toggleSubarticuloAgotado(Request $request, $id)
+    {
+        $detalle = ProductoDetalle::findOrFail($id);
+        $nuevoEstado = $request->has('agotado') ? (bool)$request->agotado : !$detalle->agotado;
+        $detalle->update([
+            'agotado' => $nuevoEstado,
+            'ultima_pieza' => $nuevoEstado ? false : $detalle->ultima_pieza,
+        ]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'agotado' => $detalle->agotado,
+                'ultima_pieza' => $detalle->ultima_pieza,
+                'message' => $detalle->agotado ? 'Subartículo "' . $detalle->nombre . '" marcado como AGOTADO.' : 'Subartículo "' . $detalle->nombre . '" disponible.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', $detalle->agotado ? 'Subartículo "' . $detalle->nombre . '" marcado como AGOTADO.' : 'Subartículo "' . $detalle->nombre . '" disponible.');
+    }
+
+    /**
+     * Alterna (toggle) el estado última pieza de un subartículo.
+     */
+    public function toggleSubarticuloUltimaPieza(Request $request, $id)
+    {
+        $detalle = ProductoDetalle::findOrFail($id);
+        $nuevoEstado = $request->has('ultima_pieza') ? (bool)$request->ultima_pieza : !$detalle->ultima_pieza;
+        $detalle->update([
+            'ultima_pieza' => $nuevoEstado,
+            'agotado' => $nuevoEstado ? false : $detalle->agotado,
+        ]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'ultima_pieza' => $detalle->ultima_pieza,
+                'agotado' => $detalle->agotado,
+                'message' => $detalle->ultima_pieza ? 'Subartículo "' . $detalle->nombre . '" marcado como ÚLTIMA PIEZA.' : 'Subartículo "' . $detalle->nombre . '" desmarcado de última pieza.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', $detalle->ultima_pieza ? 'Subartículo "' . $detalle->nombre . '" marcado como ÚLTIMA PIEZA.' : 'Subartículo "' . $detalle->nombre . '" desmarcado de última pieza.');
     }
 
     /**

@@ -132,7 +132,7 @@
                                 <!-- Categoría -->
                                 <td class="p-4 text-zinc-500 font-medium">{{ $producto->categoria }}</td>
                                 
-                                <!-- Visibilidad / Botón Activo/Inactivo -->
+                                <!-- Visibilidad / Botón Activo/Inactivo & Estados -->
                                 <td class="p-4">
                                     <form action="{{ route('admin.productos.toggle_activo', $producto->id) }}" method="POST" class="inline-block">
                                         @csrf
@@ -141,6 +141,20 @@
                                             <span>{{ $producto->activo ? 'Activo (Público)' : 'Inactivo (Oculto)' }}</span>
                                         </button>
                                     </form>
+                                    <div class="flex items-center gap-1.5 mt-2 flex-wrap">
+                                        <form action="{{ route('admin.productos.toggle_ultima_pieza', $producto->id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            <button type="submit" class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer {{ $producto->ultima_pieza ? 'bg-orange-100 text-orange-800 border border-orange-300 hover:bg-orange-200' : 'bg-zinc-100 text-zinc-400 border border-zinc-200 hover:bg-zinc-200' }}" title="Clic para alternar Última Pieza">
+                                                <span>⚡ {{ $producto->ultima_pieza ? 'Última Pieza' : 'No Últ. Pieza' }}</span>
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('admin.productos.toggle_agotado', $producto->id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            <button type="submit" class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer {{ $producto->agotado ? 'bg-rose-100 text-rose-800 border border-rose-300 hover:bg-rose-200' : 'bg-zinc-100 text-zinc-400 border border-zinc-200 hover:bg-zinc-200' }}" title="Clic para alternar Agotado">
+                                                <span>🚫 {{ $producto->agotado ? 'Agotado' : 'Disponible' }}</span>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
 
                                 <!-- Precio -->
@@ -193,7 +207,7 @@
 
                             <!-- Subartículos (Producto Detalles) -->
                             <tr class="bg-zinc-50/60 border-b border-zinc-200">
-                                <td colspan="7" class="p-3 pl-8 sm:pl-12 pr-6">
+                                <td colspan="9" class="p-3 pl-8 sm:pl-12 pr-6">
                                     <div class="bg-white border border-zinc-200 rounded-xl p-3.5 shadow-2xs">
                                         <div class="flex items-center justify-between mb-2 pb-2 border-b border-zinc-150">
                                             <div class="flex items-center space-x-2">
@@ -215,12 +229,14 @@
                                                         <th class="py-1.5 px-2">Nombre del Subartículo</th>
                                                         <th class="py-1.5 px-2">Precio</th>
                                                         <th class="py-1.5 px-2">Stock</th>
+                                                        <th class="py-1.5 px-2">Última Pieza</th>
+                                                        <th class="py-1.5 px-2">Agotado</th>
                                                         <th class="py-1.5 px-2">Visibilidad</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody class="divide-y divide-zinc-50">
                                                     @forelse($producto->detalles as $det)
-                                                        <tr class="hover:bg-zinc-50 transition-colors {{ !$det->activo ? 'bg-rose-50/30' : '' }}">
+                                                        <tr class="hover:bg-zinc-50 transition-colors {{ !$det->activo ? 'bg-rose-50/30' : ($det->agotado ? 'bg-rose-50/20' : '') }}">
                                                             <td class="py-2 px-2 font-mono font-bold text-zinc-500">#{{ $det->producto_id }}</td>
                                                             <td class="py-2 px-2 font-mono text-zinc-600 font-semibold">{{ $det->sku ?? '-' }}</td>
                                                             <td class="py-2 px-2">
@@ -236,6 +252,22 @@
                                                                 </span>
                                                             </td>
                                                             <td class="py-2 px-2">
+                                                                <form action="{{ route('admin.productos.subarticulo_toggle_ultima_pieza', $det->id) }}" method="POST" class="inline-block">
+                                                                    @csrf
+                                                                    <button type="submit" class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer {{ $det->ultima_pieza ? 'bg-orange-100 text-orange-800 border border-orange-300 hover:bg-orange-200' : 'bg-zinc-100 text-zinc-400 border border-zinc-200 hover:bg-zinc-200' }}" title="Clic para alternar Última Pieza">
+                                                                        <span>⚡ {{ $det->ultima_pieza ? 'Sí' : 'No' }}</span>
+                                                                    </button>
+                                                                </form>
+                                                            </td>
+                                                            <td class="py-2 px-2">
+                                                                <form action="{{ route('admin.productos.subarticulo_toggle_agotado', $det->id) }}" method="POST" class="inline-block">
+                                                                    @csrf
+                                                                    <button type="submit" class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer {{ $det->agotado ? 'bg-rose-100 text-rose-800 border border-rose-300 hover:bg-rose-200' : 'bg-zinc-100 text-zinc-400 border border-zinc-200 hover:bg-zinc-200' }}" title="Clic para alternar Agotado">
+                                                                        <span>🚫 {{ $det->agotado ? 'Agotado' : 'Disp.' }}</span>
+                                                                    </button>
+                                                                </form>
+                                                            </td>
+                                                            <td class="py-2 px-2">
                                                                 <form action="{{ route('admin.productos.subarticulo_toggle_activo', $det->id) }}" method="POST" class="inline-block">
                                                                     @csrf
                                                                     <button type="submit" class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer {{ $det->activo ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 border border-rose-300 hover:bg-rose-200' }}" title="Haz clic para {{ $det->activo ? 'desactivar' : 'activar' }}">
@@ -247,7 +279,7 @@
                                                         </tr>
                                                     @empty
                                                         <tr>
-                                                            <td colspan="7" class="py-2 px-2 text-zinc-400 italic text-[11px]">
+                                                            <td colspan="9" class="py-2 px-2 text-zinc-400 italic text-[11px]">
                                                                 Sin subartículos registrados.
                                                             </td>
                                                         </tr>

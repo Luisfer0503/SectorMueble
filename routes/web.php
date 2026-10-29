@@ -108,7 +108,11 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::get('/muebles/descuento/{id}', [AdminController::class, 'productosDescuento'])->name('admin.productos.descuento');
     Route::post('/muebles/descuento/{id}', [AdminController::class, 'productosAplicarDescuento'])->name('admin.productos.aplicar_descuento');
     Route::post('/muebles/toggle-activo/{id}', [AdminController::class, 'toggleProductoActivo'])->name('admin.productos.toggle_activo');
+    Route::post('/muebles/toggle-agotado/{id}', [AdminController::class, 'toggleProductoAgotado'])->name('admin.productos.toggle_agotado');
+    Route::post('/muebles/toggle-ultima-pieza/{id}', [AdminController::class, 'toggleProductoUltimaPieza'])->name('admin.productos.toggle_ultima_pieza');
     Route::post('/subarticulos/toggle-activo/{id}', [AdminController::class, 'toggleSubarticuloActivo'])->name('admin.productos.subarticulo_toggle_activo');
+    Route::post('/subarticulos/toggle-agotado/{id}', [AdminController::class, 'toggleSubarticuloAgotado'])->name('admin.productos.subarticulo_toggle_agotado');
+    Route::post('/subarticulos/toggle-ultima-pieza/{id}', [AdminController::class, 'toggleSubarticuloUltimaPieza'])->name('admin.productos.subarticulo_toggle_ultima_pieza');
 
     // CRUD de Cupones / Descuentos
     Route::get('/cupones', [AdminController::class, 'cuponesIndex'])->name('admin.cupones');

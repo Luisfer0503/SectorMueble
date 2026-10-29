@@ -48,7 +48,17 @@
                         @endif
 
                         {{-- Badges --}}
-                        <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col space-y-1">
+                        <div class="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col space-y-1 z-10">
+                            @if($producto->isAgotado() || $producto->agotado)
+                                <span class="inline-flex items-center gap-1 bg-rose-600 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 uppercase rounded-full tracking-wider shadow">
+                                    🚫 Agotado
+                                </span>
+                            @endif
+                            @if($producto->isUltimaPieza() || $producto->ultima_pieza)
+                                <span class="inline-flex items-center gap-1 bg-orange-600 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 uppercase rounded-full tracking-wider shadow">
+                                    ⚡ Última Pieza
+                                </span>
+                            @endif
                             @if($producto->tieneDescuento())
                                 <span class="inline-flex items-center gap-1 bg-rose-600 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 uppercase rounded-full tracking-wider shadow">
                                     -{{ $producto->porcentaje_descuento }}%
@@ -59,7 +69,7 @@
                                     ★ Destacado
                                 </span>
                             @endif
-                            @if($producto->stock > 0 && $producto->stock <= 5)
+                            @if(!$producto->isAgotado() && $producto->stock > 0 && $producto->stock <= 5)
                                 <span class="inline-flex items-center gap-1 bg-orange-500 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 uppercase rounded-full tracking-wider shadow">
                                     Últimas {{ $producto->stock }}
                                 </span>
@@ -101,6 +111,8 @@
                             {{-- Combinaciones / Acabados disponibles --}}
                             @php
                                 $detallesActivos = $producto->detalles ? $producto->detalles->where('activo', true) : collect();
+                                $primerDetalleActivo = $detallesActivos->first();
+                                $inicialCardAgotado = (bool)($producto->agotado || ($primerDetalleActivo && $primerDetalleActivo->agotado) || $producto->stock <= 0);
                             @endphp
                             @if($detallesActivos->count() > 0)
                                 <div class="mt-2.5 pt-2 border-t border-zinc-100/80">
@@ -114,10 +126,21 @@
                                         @foreach($detallesActivos as $idx => $det)
                                             <button
                                                 type="button"
-                                                title="{{ $det->nombre }}"
+                                                title="{{ $det->nombre }} {{ $det->agotado ? '(Agotado)' : ($det->ultima_pieza ? '(Última Pieza)' : '') }}"
+                                                data-agotado="{{ $det->agotado ? '1' : '0' }}"
+                                                data-ultima-pieza="{{ $det->ultima_pieza ? '1' : '0' }}"
                                                 onclick="event.stopPropagation(); cambiarImagenCard(this, 'img-prod-{{ $producto->id }}', '{{ $det->imagen_url }}', '{{ $det->id }}', 'form-add-{{ $producto->id }}')"
-                                                class="btn-var-thumb relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg overflow-hidden border-2 transition-all duration-200 shrink-0 focus:outline-none {{ $idx === 0 ? 'border-[#88674B] ring-2 ring-[#88674B]/30 scale-105' : 'border-zinc-200 hover:border-[#88674B]' }}">
+                                                class="btn-var-thumb relative w-8 h-8 sm:w-9 sm:h-9 rounded-lg overflow-hidden border-2 transition-all duration-200 shrink-0 focus:outline-none {{ $idx === 0 ? 'border-[#88674B] ring-2 ring-[#88674B]/30 scale-105' : 'border-zinc-200 hover:border-[#88674B]' }}">
                                                 <img src="{{ $det->imagen_url }}" alt="{{ $det->nombre }}" class="w-full h-full object-cover">
+                                                @if($det->agotado)
+                                                    <div class="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                                        <span class="text-[6.5px] text-rose-300 font-extrabold uppercase leading-none">Agotado</span>
+                                                    </div>
+                                                @elseif($det->ultima_pieza)
+                                                    <div class="absolute bottom-0 inset-x-0 bg-orange-600 text-white text-[6.5px] font-black uppercase text-center leading-tight py-0.5 shadow">
+                                                        Última
+                                                    </div>
+                                                @endif
                                             </button>
                                         @endforeach
                                     </div>
@@ -148,28 +171,31 @@
                                 <span class="text-[10px] text-zinc-500 font-semibold">MXN</span>
                             </div>
 
-                            @if($producto->stock > 0)
-                                <form
-                                    id="form-add-{{ $producto->id }}"
-                                    action="{{ route('carrito.agregar', $producto->id) }}"
-                                    method="POST"
-                                    data-nombre="{{ $producto->nombre }}"
-                                    data-img="{{ $producto->imagen_url }}"
-                                    class="w-full sm:w-auto"
-                                    onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
-                                    @csrf
-                                    <input type="hidden" name="subarticulo_id" value="{{ $detallesActivos->first()->id ?? '' }}">
-                                    <button type="submit"
-                                        class="w-full sm:w-auto flex items-center justify-center space-x-1.5 text-xs font-bold bg-zinc-950 hover:bg-amber-800 text-white rounded-xl px-3.5 py-2.5 transition-all duration-300 shadow active:scale-95 group/btn">
+                            <form
+                                id="form-add-{{ $producto->id }}"
+                                action="{{ route('carrito.agregar', $producto->id) }}"
+                                method="POST"
+                                data-nombre="{{ $producto->nombre }}"
+                                data-img="{{ $producto->imagen_url }}"
+                                data-prod-agotado="{{ $producto->agotado ? '1' : '0' }}"
+                                class="w-full sm:w-auto"
+                                onsubmit="if(this.querySelector('button[type=submit]')?.disabled) { return false; } return window.SM && window.SM.agregarCarrito(event, this)">
+                                @csrf
+                                <input type="hidden" name="subarticulo_id" value="{{ $detallesActivos->first()->id ?? '' }}">
+                                <button type="submit"
+                                    id="btn-card-add-{{ $producto->id }}"
+                                    {{ $inicialCardAgotado ? 'disabled' : '' }}
+                                    class="w-full sm:w-auto flex items-center justify-center space-x-1.5 text-xs font-bold rounded-xl px-3.5 py-2.5 transition-all duration-300 {{ $inicialCardAgotado ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed pointer-events-none shadow-none' : 'bg-zinc-950 hover:bg-amber-800 text-white shadow active:scale-95 group/btn' }}">
+                                    @if($inicialCardAgotado)
+                                        <span>Agotado</span>
+                                    @else
                                         <svg class="h-3.5 w-3.5 transition-transform group-hover/btn:rotate-90 duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                                         </svg>
                                         <span>Añadir</span>
-                                    </button>
-                                </form>
-                            @else
-                                <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider bg-zinc-100 rounded-xl px-3 py-1.5 text-center">Agotado</span>
-                            @endif
+                                    @endif
+                                </button>
+                            </form>
                         </div>
                     </div>
 
@@ -207,6 +233,26 @@
                         const subInput = formEl.querySelector('input[name="subarticulo_id"]');
                         if (subInput) subInput.value = subId;
                         formEl.setAttribute('data-img', newSrc);
+
+                        const isProdAgotado = formEl.dataset.prodAgotado === '1';
+                        const isSubAgotado = btn && btn.dataset.agotado === '1';
+                        const btnAdd = formEl.querySelector('button[type="submit"]');
+                        if (btnAdd) {
+                            if (isProdAgotado || isSubAgotado) {
+                                btnAdd.disabled = true;
+                                btnAdd.className = 'w-full sm:w-auto flex items-center justify-center space-x-1.5 text-xs font-bold rounded-xl px-3.5 py-2.5 transition-all duration-300 bg-zinc-200 text-zinc-400 cursor-not-allowed pointer-events-none shadow-none';
+                                btnAdd.innerHTML = '<span>Agotado</span>';
+                            } else {
+                                btnAdd.disabled = false;
+                                btnAdd.className = 'w-full sm:w-auto flex items-center justify-center space-x-1.5 text-xs font-bold rounded-xl px-3.5 py-2.5 transition-all duration-300 bg-zinc-950 hover:bg-amber-800 text-white shadow active:scale-95 group/btn';
+                                btnAdd.innerHTML = `
+                                    <svg class="h-3.5 w-3.5 transition-transform group-hover/btn:rotate-90 duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    <span>Añadir</span>
+                                `;
+                            }
+                        }
                     }
                 }
 

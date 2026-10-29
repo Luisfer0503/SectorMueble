@@ -25,6 +25,8 @@ class Producto extends Model
         'calificacion',
         'destacado',
         'activo',
+        'ultima_pieza',
+        'agotado',
         'porcentaje_descuento',
         'precio_descuento',
         'colores',
@@ -38,6 +40,8 @@ class Producto extends Model
         'calificacion'          => 'decimal:1',
         'destacado'             => 'boolean',
         'activo'                => 'boolean',
+        'ultima_pieza'          => 'boolean',
+        'agotado'               => 'boolean',
         'porcentaje_descuento'  => 'integer',
         'colores'               => 'array',
     ];
@@ -48,6 +52,43 @@ class Producto extends Model
     public function scopeActivo($query)
     {
         return $query->where('activo', true);
+    }
+
+    /**
+     * Indica si el producto está marcado como agotado o todos sus subartículos están agotados.
+     */
+    public function isAgotado(): bool
+    {
+        if ($this->agotado) {
+            return true;
+        }
+
+        $detalles = $this->relationLoaded('detalles') ? $this->detalles : $this->detalles()->get();
+        if ($detalles->isNotEmpty()) {
+            $activos = $detalles->where('activo', true);
+            if ($activos->isNotEmpty()) {
+                return $activos->every(fn($d) => (bool) $d->agotado);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Indica si el producto está marcado como última pieza o alguno de sus subartículos activos es última pieza.
+     */
+    public function isUltimaPieza(): bool
+    {
+        if ($this->ultima_pieza) {
+            return true;
+        }
+
+        $detalles = $this->relationLoaded('detalles') ? $this->detalles : $this->detalles()->get();
+        if ($detalles->isNotEmpty()) {
+            return $detalles->where('activo', true)->contains(fn($d) => (bool) $d->ultima_pieza);
+        }
+
+        return false;
     }
 
     /**

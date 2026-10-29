@@ -230,16 +230,30 @@
                     @enderror
                 </div>
 
-                <!-- Visibilidad & Destacado -->
+                <!-- Visibilidad & Destacado & Estados Especiales -->
                 <div class="sm:col-span-2 flex flex-wrap items-center gap-6 border-t border-zinc-200 pt-4">
                     <div class="flex items-center">
                         <input type="checkbox" name="activo" id="activo" value="1" {{ old('activo', $producto->activo) ? 'checked' : '' }} class="h-4 w-4 text-emerald-600 border-zinc-300 rounded focus:ring-emerald-500">
-                        <label for="activo" class="ml-2 text-xs text-zinc-900 font-bold cursor-pointer">Activo (Visible al público en la tienda)</label>
+                        <label for="activo" class="ml-2 text-xs text-zinc-900 font-bold cursor-pointer">Activo (Visible en tienda)</label>
                     </div>
 
                     <div class="flex items-center">
                         <input type="checkbox" name="destacado" id="destacado" {{ old('destacado', $producto->destacado) ? 'checked' : '' }} class="h-4 w-4 text-amber-850 border-zinc-300 rounded focus:ring-amber-700">
-                        <label for="destacado" class="ml-2 text-xs text-zinc-700 font-medium cursor-pointer">Destacar este mueble en la página principal</label>
+                        <label for="destacado" class="ml-2 text-xs text-zinc-700 font-medium cursor-pointer">Destacar en inicio</label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input type="checkbox" name="ultima_pieza" id="ultima_pieza" value="1" {{ old('ultima_pieza', $producto->ultima_pieza) ? 'checked' : '' }} onchange="if(this.checked) document.getElementById('agotado').checked = false;" class="h-4 w-4 text-orange-600 border-zinc-300 rounded focus:ring-orange-500">
+                        <label for="ultima_pieza" class="ml-2 text-xs text-orange-950 font-bold cursor-pointer flex items-center gap-1">
+                            <span>⚡</span> Última Pieza
+                        </label>
+                    </div>
+
+                    <div class="flex items-center">
+                        <input type="checkbox" name="agotado" id="agotado" value="1" {{ old('agotado', $producto->agotado) ? 'checked' : '' }} onchange="if(this.checked) document.getElementById('ultima_pieza').checked = false;" class="h-4 w-4 text-rose-600 border-zinc-300 rounded focus:ring-rose-500">
+                        <label for="agotado" class="ml-2 text-xs text-rose-950 font-bold cursor-pointer flex items-center gap-1">
+                            <span>🚫</span> Agotado (Bloquea compra visual)
+                        </label>
                     </div>
                 </div>
 
@@ -286,6 +300,8 @@
                                 $descuentoVal = is_object($acab) ? ($acab->porcentaje_descuento ?? 0) : ($acab['porcentaje_descuento'] ?? 0);
                                 $stockVal = is_object($acab) ? $acab->stock : ($acab['stock'] ?? $producto->stock);
                                 $activoVal = is_object($acab) ? (bool)$acab->activo : (bool)($acab['activo'] ?? true);
+                                $ultimaPiezaVal = is_object($acab) ? (bool)$acab->ultima_pieza : (bool)($acab['ultima_pieza'] ?? false);
+                                $agotadoVal = is_object($acab) ? (bool)$acab->agotado : (bool)($acab['agotado'] ?? false);
                             @endphp
                             <div class="acabado-row p-4 bg-zinc-50/90 border border-zinc-200 rounded-2xl space-y-3">
                                 <input type="hidden" name="acabados_materiales_existentes[]" value="{{ $materialImgRaw ?? '' }}">
@@ -343,6 +359,19 @@
                                             <option value="0" {{ !$activoVal ? 'selected' : '' }}>Inactivo</option>
                                         </select>
                                     </div>
+                                </div>
+
+                                <!-- Checklist Estado Subartículo (Última Pieza y Agotado) -->
+                                <div class="flex flex-wrap items-center gap-6 pt-2 border-t border-zinc-200/70 bg-white/70 px-3 py-2 rounded-xl">
+                                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Checklist Subartículo:</span>
+                                    <label class="inline-flex items-center text-xs font-semibold text-orange-950 cursor-pointer">
+                                        <input type="checkbox" name="acabados_ultima_pieza[{{ $idx }}]" value="1" {{ $ultimaPiezaVal ? 'checked' : '' }} onchange="if(this.checked){ const ag = this.closest('.acabado-row').querySelector('input[name*=\'acabados_agotado\']'); if(ag) ag.checked = false; }" class="h-4 w-4 text-orange-600 border-zinc-300 rounded focus:ring-orange-500 mr-1.5">
+                                        <span>⚡ Última Pieza</span>
+                                    </label>
+                                    <label class="inline-flex items-center text-xs font-semibold text-rose-950 cursor-pointer">
+                                        <input type="checkbox" name="acabados_agotado[{{ $idx }}]" value="1" {{ $agotadoVal ? 'checked' : '' }} onchange="if(this.checked){ const up = this.closest('.acabado-row').querySelector('input[name*=\'acabados_ultima_pieza\']'); if(up) up.checked = false; }" class="h-4 w-4 text-rose-600 border-zinc-300 rounded focus:ring-rose-500 mr-1.5">
+                                        <span>🚫 Agotado</span>
+                                    </label>
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end pt-2 border-t border-zinc-200/60">
@@ -487,6 +516,19 @@
                             <option value="0">Inactivo</option>
                         </select>
                     </div>
+                </div>
+
+                <!-- Checklist Estado Subartículo (Última Pieza y Agotado) -->
+                <div class="flex flex-wrap items-center gap-6 pt-2 border-t border-zinc-200/70 bg-white/70 px-3 py-2 rounded-xl">
+                    <span class="text-[10px] font-bold text-zinc-500 uppercase tracking-wider">Checklist Subartículo:</span>
+                    <label class="inline-flex items-center text-xs font-semibold text-orange-950 cursor-pointer">
+                        <input type="checkbox" name="acabados_ultima_pieza[${acabadoIndexCount}]" value="1" onchange="if(this.checked){ const ag = this.closest('.acabado-row').querySelector('input[name*=\\'acabados_agotado\\']'); if(ag) ag.checked = false; }" class="h-4 w-4 text-orange-600 border-zinc-300 rounded focus:ring-orange-500 mr-1.5">
+                        <span>⚡ Última Pieza</span>
+                    </label>
+                    <label class="inline-flex items-center text-xs font-semibold text-rose-950 cursor-pointer">
+                        <input type="checkbox" name="acabados_agotado[${acabadoIndexCount}]" value="1" onchange="if(this.checked){ const up = this.closest('.acabado-row').querySelector('input[name*=\\'acabados_ultima_pieza\\']'); if(up) up.checked = false; }" class="h-4 w-4 text-rose-600 border-zinc-300 rounded focus:ring-rose-500 mr-1.5">
+                        <span>🚫 Agotado</span>
+                    </label>
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end pt-2 border-t border-zinc-200/60">

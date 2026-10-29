@@ -358,6 +358,12 @@
                             
                             <!-- Insignias / Badges -->
                             <div class="absolute top-3 left-3 flex flex-col space-y-1.5 z-10">
+                                @if($producto->isAgotado() || $producto->agotado)
+                                    <span class="bg-rose-600 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">🚫 AGOTADO</span>
+                                @endif
+                                @if($producto->isUltimaPieza() || $producto->ultima_pieza)
+                                    <span class="bg-orange-600 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">⚡ ÚLTIMA PIEZA</span>
+                                @endif
                                 @if($producto->modelo_3d_url)
                                     <span class="bg-[#FAF3E0] text-[#74563C] border border-[#E6D7C3] text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md flex items-center space-x-1">
                                         <span> 3D DISPONIBLE</span>
@@ -367,7 +373,7 @@
                                     <span class="bg-rose-600 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">-{{ $producto->porcentaje_descuento }}% OFERTA</span>
                                 @endif
                                 <span class="bg-[#88674B] text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">Destacado</span>
-                                @if($producto->stock <= 5)
+                                @if(!$producto->isAgotado() && $producto->stock <= 5)
                                     <span class="bg-zinc-900 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">Últimas {{ $producto->stock }} unid.</span>
                                 @endif
                             </div>
@@ -419,21 +425,30 @@
                                     @endif
                                 </div>
                                 
-                                <form
-                                    id="form-add-dest-{{ $producto->id }}"
-                                    action="{{ route('carrito.agregar', $producto->id) }}"
-                                    method="POST"
-                                    data-nombre="{{ $producto->nombre }}"
-                                    data-img="{{ $producto->imagen_url }}"
-                                    onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
-                                    @csrf
-                                    <input type="hidden" name="subarticulo_id" value="{{ $producto->detalles ? optional($producto->detalles->where('activo', true)->first())->id : '' }}">
-                                    <button type="submit" aria-label="Añadir {{ $producto->nombre }} al carrito" class="p-3 bg-[#FAF3E0] hover:bg-[#88674B] text-[#74563C] hover:text-white rounded-2xl border border-[#E6D7C3] hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-md">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                                        </svg>
+                                @php
+                                    $destAgotado = $producto->isAgotado() || $producto->agotado;
+                                @endphp
+                                @if($destAgotado)
+                                    <button type="button" disabled class="px-3.5 py-2.5 bg-zinc-200 text-zinc-400 rounded-2xl cursor-not-allowed text-xs font-bold pointer-events-none">
+                                        Agotado
                                     </button>
-                                </form>
+                                @else
+                                    <form
+                                        id="form-add-dest-{{ $producto->id }}"
+                                        action="{{ route('carrito.agregar', $producto->id) }}"
+                                        method="POST"
+                                        data-nombre="{{ $producto->nombre }}"
+                                        data-img="{{ $producto->imagen_url }}"
+                                        onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
+                                        @csrf
+                                        <input type="hidden" name="subarticulo_id" value="{{ $producto->detalles ? optional($producto->detalles->where('activo', true)->first())->id : '' }}">
+                                        <button type="submit" aria-label="Añadir {{ $producto->nombre }} al carrito" class="p-3 bg-[#FAF3E0] hover:bg-[#88674B] text-[#74563C] hover:text-white rounded-2xl border border-[#E6D7C3] hover:border-transparent transition-all duration-300 shadow-sm hover:shadow-md">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                @endif
                             </div>
                         </div>
 

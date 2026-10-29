@@ -109,16 +109,30 @@
                                     data-stock="{{ $det->stock }}"
                                     data-precio="{{ $det->precio ?? $producto->precio }}"
                                     data-descuento-pct="{{ $det->porcentaje_descuento ?? $producto->porcentaje_descuento ?? 0 }}"
+                                    data-agotado="{{ $det->agotado ? '1' : '0' }}"
+                                    data-ultima-pieza="{{ $det->ultima_pieza ? '1' : '0' }}"
                                     onclick="switchSubArticulo('{{ $det->id }}')" 
-                                    class="subarticulo-btn flex flex-col items-center p-2.5 rounded-xl border-2 {{ $idx === 0 ? 'border-[#5C4033] bg-[#F5EBE0] ring-2 ring-[#88674B]/30' : 'border-zinc-200 bg-white' }} transition-all cursor-pointer hover:shadow-md group">
+                                    class="subarticulo-btn relative flex flex-col items-center p-2 sm:p-2.5 rounded-xl border-2 {{ $idx === 0 ? 'border-[#5C4033] bg-[#F5EBE0] ring-2 ring-[#88674B]/30' : 'border-zinc-200 bg-white' }} transition-all cursor-pointer hover:shadow-md group">
                                 
-                                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg shadow-sm border border-zinc-200 overflow-hidden bg-zinc-100 group-hover:scale-105 transition-transform flex items-center justify-center">
+                                {{-- Contenedor de la foto pequeña del subartículo con su badge directo --}}
+                                <div class="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl shadow-xs border border-zinc-200 overflow-hidden bg-zinc-100 group-hover:scale-105 transition-transform flex items-center justify-center">
                                     @if(!empty($det->imagen))
                                         <img src="{{ $det->imagen_url }}" alt="{{ $det->nombre }}" class="w-full h-full object-cover">
                                     @else
                                         <span class="text-xs font-bold text-[#5C4033]">🪵</span>
                                     @endif
+
+                                    @if($det->agotado)
+                                        <div class="absolute inset-0 bg-black/60 backdrop-blur-[0.5px] flex items-center justify-center p-0.5">
+                                            <span class="text-[7.5px] font-black uppercase text-white bg-rose-600 px-1 py-0.5 rounded shadow leading-none text-center">Agotado</span>
+                                        </div>
+                                    @elseif($det->ultima_pieza)
+                                        <div class="absolute bottom-0 inset-x-0 bg-orange-600 text-white text-[7.5px] font-black uppercase text-center py-0.5 leading-none shadow-sm">
+                                            ⚡ Última
+                                        </div>
+                                    @endif
                                 </div>
+
                                 <span class="text-[11px] font-bold text-zinc-900 mt-1.5 truncate max-w-full text-center leading-tight">{{ $det->nombre }}</span>
                                 <span class="text-[9px] font-extrabold text-[#5C4033] mt-0.5 font-sans">$ {{ number_format((float)($det->precio ?? $producto->precio), 2, '.', ',') }}</span>
                             </button>
@@ -131,7 +145,19 @@
             <div class="flex flex-col justify-between">
                 <div>
                     <!-- Category & Title -->
-                    <span class="text-xs text-zinc-400 font-bold uppercase tracking-wider">{{ $producto->categoria }}</span>
+                    @php
+                        $inicialAgotado = (bool)($producto->agotado || ($primerDetalle && $primerDetalle->agotado));
+                        $inicialUltimaPieza = !$inicialAgotado && (bool)($producto->ultima_pieza || ($primerDetalle && $primerDetalle->ultima_pieza));
+                    @endphp
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs text-zinc-400 font-bold uppercase tracking-wider">{{ $producto->categoria }}</span>
+                        <span id="badge-ultima-pieza-display" class="inline-flex items-center gap-1 bg-orange-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow {{ $inicialUltimaPieza ? '' : 'hidden' }}">
+                            ⚡ Última Pieza
+                        </span>
+                        <span id="badge-agotado-general-display" class="inline-flex items-center gap-1 bg-rose-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow {{ $inicialAgotado ? '' : 'hidden' }}">
+                            🚫 Agotado
+                        </span>
+                    </div>
                     <h1 class="serif-title text-3xl sm:text-4xl font-bold text-zinc-950 mt-2 leading-tight">{{ $producto->nombre }}</h1>
                     
                     <!-- Subartículo Seleccionado (Información de producto_detalles) -->
@@ -257,73 +283,77 @@
                     </div>
 
                     <!-- Stock Status Badge -->
-                    <div class="mt-6 flex items-center space-x-2">
-                        @if($producto->stock > 0)
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
-                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
-                                En stock
-                            </span>
-                        @else
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200">
-                                <span class="h-1.5 w-1.5 rounded-full bg-rose-600 mr-1.5"></span>
-                                Agotado temporalmente
-                            </span>
-                        @endif
+                    <div class="mt-6 flex items-center space-x-2" id="stock-badge-container">
+                        <span id="stock-badge-available" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $inicialUltimaPieza ? 'bg-orange-50 text-orange-800 border border-orange-200 font-semibold' : 'bg-emerald-50 text-emerald-800 border border-emerald-200' }} {{ $inicialAgotado || $producto->stock <= 0 ? 'hidden' : '' }}">
+                            <span class="h-1.5 w-1.5 rounded-full {{ $inicialUltimaPieza ? 'bg-orange-600 mr-1.5 animate-ping' : 'bg-emerald-600 mr-1.5' }}"></span>
+                            {{ $inicialUltimaPieza ? 'Última Pieza en stock' : 'En stock' }}
+                        </span>
+                        <span id="stock-badge-soldout" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-800 border border-rose-200 {{ $inicialAgotado || $producto->stock <= 0 ? '' : 'hidden' }}">
+                            <span class="h-1.5 w-1.5 rounded-full bg-rose-600 mr-1.5"></span>
+                            Agotado
+                        </span>
                     </div>
                 </div>
 
                 <!-- Add to Cart Form -->
                 <div class="mt-8 border-t border-zinc-200 pt-6">
-                    @if($producto->stock > 0)
-                        <form
-                            id="form-add-to-cart"
-                            action="{{ route('carrito.agregar', $producto->id) }}"
-                            method="POST"
-                            class="flex flex-row items-center space-x-3"
-                            data-nombre="{{ $producto->nombre }}"
-                            data-img="{{ $primerDetalle->imagen_url ?? $producto->imagen_url }}"
-                            onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
-                            @csrf
-                            <input type="hidden" name="color" id="input-color-seleccionado" value="{{ $primerDetalle->nombre ?? 'Original / Natural' }}">
-                            <input type="hidden" name="subarticulo_id" id="input-subarticulo-id" value="{{ $primerDetalle->id ?? '' }}">
-                            <!-- Quantity -->
-                            <div class="flex items-center border border-zinc-300 rounded-xl overflow-hidden h-12 bg-white flex-shrink-0">
-                                <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value > 1) qty.value = parseInt(qty.value)-1;" class="px-3 sm:px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors text-base">-</button>
-                                <input type="number" name="cantidad" id="cantidad" value="1" min="1" max="{{ $producto->stock }}" class="w-10 sm:w-12 text-center text-sm font-semibold border-none focus:outline-none focus:ring-0" readonly>
-                                <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value < {{ $producto->stock }}) qty.value = parseInt(qty.value)+1;" class="px-3 sm:px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors text-base">+</button>
-                            </div>
+                    <form
+                        id="form-add-to-cart"
+                        action="{{ route('carrito.agregar', $producto->id) }}"
+                        method="POST"
+                        class="flex flex-row items-center space-x-3"
+                        data-nombre="{{ $producto->nombre }}"
+                        data-img="{{ $primerDetalle->imagen_url ?? $producto->imagen_url }}"
+                        onsubmit="if(document.getElementById('btn-add-to-cart-submit')?.disabled) { return false; } return window.SM && window.SM.agregarCarrito(event, this)">
+                        @csrf
+                        <input type="hidden" name="color" id="input-color-seleccionado" value="{{ $primerDetalle->nombre ?? 'Original / Natural' }}">
+                        <input type="hidden" name="subarticulo_id" id="input-subarticulo-id" value="{{ $primerDetalle->id ?? '' }}">
+                        <!-- Quantity -->
+                        <div class="flex items-center border border-zinc-300 rounded-xl overflow-hidden h-12 bg-white flex-shrink-0">
+                            <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value > 1) qty.value = parseInt(qty.value)-1;" class="qty-control-btn px-3 sm:px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors text-base" {{ $inicialAgotado || $producto->stock <= 0 ? 'disabled' : '' }}>-</button>
+                            <input type="number" name="cantidad" id="cantidad" value="1" min="1" max="{{ $producto->stock }}" class="w-10 sm:w-12 text-center text-sm font-semibold border-none focus:outline-none focus:ring-0" readonly {{ $inicialAgotado || $producto->stock <= 0 ? 'disabled' : '' }}>
+                            <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value < {{ $producto->stock }}) qty.value = parseInt(qty.value)+1;" class="qty-control-btn px-3 sm:px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors text-base" {{ $inicialAgotado || $producto->stock <= 0 ? 'disabled' : '' }}>+</button>
+                        </div>
 
-                            <!-- Submit Button -->
-                            <button type="submit" class="flex-grow bg-amber-800 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold uppercase tracking-wider h-12 px-4 sm:px-8 rounded-xl transition-colors shadow flex items-center justify-center space-x-2">
+                        <!-- Submit Button (Bloqueado visualmente si está agotado) -->
+                        <button type="submit" 
+                                id="btn-add-to-cart-submit" 
+                                {{ $inicialAgotado || $producto->stock <= 0 ? 'disabled' : '' }} 
+                                class="flex-grow {{ $inicialAgotado || $producto->stock <= 0 ? 'bg-zinc-300 text-zinc-500 cursor-not-allowed hover:bg-zinc-300 pointer-events-none' : 'bg-amber-800 hover:bg-amber-700 text-white shadow' }} text-xs sm:text-sm font-bold uppercase tracking-wider h-12 px-4 sm:px-8 rounded-xl transition-colors flex items-center justify-center space-x-2">
+                            @if($inicialAgotado || $producto->stock <= 0)
+                                <svg class="w-4 h-4 text-zinc-500 hidden sm:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                                </svg>
+                                <span>Agotado</span>
+                            @else
                                 <svg class="w-4 h-4 text-white hidden sm:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                                 </svg>
                                 <span>Añadir al Carrito</span>
+                            @endif
+                        </button>
+                    </form>
+
+                    <!-- Sticky Bottom Bar Solo para Móviles -->
+                    <div class="md:hidden fixed bottom-14 left-0 right-0 z-[70] bg-white/95 backdrop-blur-md border-t border-zinc-200 p-3 shadow-2xl flex items-center justify-between gap-3">
+                        <div class="flex flex-col min-w-0">
+                            <span class="text-[11px] font-bold text-zinc-900 truncate">{{ $producto->nombre }}</span>
+                            <span class="text-xs font-bold text-emerald-700 font-sans">
+                                $ {{ number_format($producto->precio_descuento ?? $producto->precio, 2, '.', ',') }} MXN
+                            </span>
+                        </div>
+                        <form id="form-add-to-cart-mobile" action="{{ route('carrito.agregar', $producto->id) }}" method="POST" data-nombre="{{ $producto->nombre }}" data-img="{{ $primerDetalle->imagen_url ?? $producto->imagen_url }}" onsubmit="if(document.getElementById('btn-add-to-cart-mobile-submit')?.disabled) { return false; } return window.SM && window.SM.agregarCarrito(event, this)">
+                            @csrf
+                            <input type="hidden" name="color" id="input-color-seleccionado-mobile" value="{{ $primerDetalle->nombre ?? 'Original / Natural' }}">
+                            <input type="hidden" name="subarticulo_id" id="input-subarticulo-id-mobile" value="{{ $primerDetalle->id ?? '' }}">
+                            <button type="submit" 
+                                    id="btn-add-to-cart-mobile-submit" 
+                                    {{ $inicialAgotado || $producto->stock <= 0 ? 'disabled' : '' }} 
+                                    class="{{ $inicialAgotado || $producto->stock <= 0 ? 'bg-zinc-300 text-zinc-500 cursor-not-allowed hover:bg-zinc-300 pointer-events-none' : 'bg-amber-800 hover:bg-amber-700 text-white shadow' }} text-xs font-bold px-4 py-2.5 rounded-xl uppercase tracking-wider whitespace-nowrap">
+                                <span>{{ $inicialAgotado || $producto->stock <= 0 ? '🚫 Agotado' : '🛒 Añadir' }}</span>
                             </button>
                         </form>
-
-                        <!-- Sticky Bottom Bar Solo para Móviles -->
-                        <div class="md:hidden fixed bottom-14 left-0 right-0 z-[70] bg-white/95 backdrop-blur-md border-t border-zinc-200 p-3 shadow-2xl flex items-center justify-between gap-3">
-                            <div class="flex flex-col min-w-0">
-                                <span class="text-[11px] font-bold text-zinc-900 truncate">{{ $producto->nombre }}</span>
-                                <span class="text-xs font-bold text-emerald-700 font-sans">
-                                    $ {{ number_format($producto->precio_descuento ?? $producto->precio, 2, '.', ',') }} MXN
-                                </span>
-                            </div>
-                            <form id="form-add-to-cart-mobile" action="{{ route('carrito.agregar', $producto->id) }}" method="POST" data-nombre="{{ $producto->nombre }}" data-img="{{ $primerDetalle->imagen_url ?? $producto->imagen_url }}" onsubmit="return window.SM && window.SM.agregarCarrito(event, this)">
-                                @csrf
-                                <input type="hidden" name="color" id="input-color-seleccionado-mobile" value="{{ $primerDetalle->nombre ?? 'Original / Natural' }}">
-                                <input type="hidden" name="subarticulo_id" id="input-subarticulo-id-mobile" value="{{ $primerDetalle->id ?? '' }}">
-                                <button type="submit" class="bg-amber-800 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl uppercase tracking-wider shadow whitespace-nowrap">
-                                    🛒 Añadir
-                                </button>
-                            </form>
-                        </div>
-                    @else
-                        <button disabled class="w-full bg-zinc-200 text-zinc-400 text-sm font-bold uppercase tracking-wider py-4 px-8 rounded cursor-not-allowed">
-                            Agotado
-                        </button>
-                    @endif
+                    </div>
                 </div>
 
 
@@ -344,7 +374,13 @@
                                 <img src="{{ $rel->imagen_url }}" alt="{{ $rel->nombre }}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-500">
                                 
                                 <!-- Badges -->
-                                <div class="absolute top-3 left-3 flex flex-col space-y-1">
+                                <div class="absolute top-3 left-3 flex flex-col space-y-1 z-10">
+                                    @if($rel->isAgotado() || $rel->agotado)
+                                        <span class="bg-rose-600 text-white text-[9px] font-bold px-2 py-0.5 uppercase rounded tracking-wider shadow">🚫 Agotado</span>
+                                    @endif
+                                    @if($rel->isUltimaPieza() || $rel->ultima_pieza)
+                                        <span class="bg-orange-600 text-white text-[9px] font-bold px-2 py-0.5 uppercase rounded tracking-wider shadow">⚡ Última Pieza</span>
+                                    @endif
                                     @if($rel->tieneDescuento())
                                         <span class="bg-rose-600 text-white text-[9px] font-bold px-2 py-0.5 uppercase rounded tracking-wider shadow">-{{ $rel->porcentaje_descuento }}% OFERTA</span>
                                     @endif
@@ -560,6 +596,99 @@
 
             btn.classList.remove('border-zinc-200', 'bg-white');
             btn.classList.add('border-[#5C4033]', 'bg-[#F5EBE0]', 'ring-2', 'ring-[#88674B]/30');
+
+            // Estado visual Agotado y Última Pieza (Mutuamente Excluyentes)
+            const productoGeneralAgotado = {{ $producto->agotado ? 'true' : 'false' }};
+            const productoGeneralUltimaPieza = {{ $producto->ultima_pieza ? 'true' : 'false' }};
+            const isAgotado = productoGeneralAgotado || (btn.dataset.agotado === '1');
+            const isUltimaPieza = !isAgotado && (productoGeneralUltimaPieza || (btn.dataset.ultimaPieza === '1'));
+
+            // Actualizar Badge Última Pieza en título
+            const ultimaPiezaBadge = document.getElementById('badge-ultima-pieza-display');
+            if (ultimaPiezaBadge) {
+                if (isUltimaPieza) {
+                    ultimaPiezaBadge.classList.remove('hidden');
+                } else {
+                    ultimaPiezaBadge.classList.add('hidden');
+                }
+            }
+
+            // Actualizar Badge Agotado general en título
+            const agotadoGeneralBadge = document.getElementById('badge-agotado-general-display');
+            if (agotadoGeneralBadge) {
+                if (isAgotado) {
+                    agotadoGeneralBadge.classList.remove('hidden');
+                } else {
+                    agotadoGeneralBadge.classList.add('hidden');
+                }
+            }
+
+            // Actualizar Insignia de Stock
+            const badgeAvail = document.getElementById('stock-badge-available');
+            const badgeSold = document.getElementById('stock-badge-soldout');
+            if (badgeAvail && badgeSold) {
+                if (isAgotado) {
+                    badgeAvail.classList.add('hidden');
+                    badgeSold.classList.remove('hidden');
+                } else {
+                    badgeAvail.classList.remove('hidden');
+                    badgeSold.classList.add('hidden');
+                    if (isUltimaPieza) {
+                        badgeAvail.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-50 text-orange-800 border border-orange-200';
+                        badgeAvail.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-orange-600 mr-1.5 animate-ping"></span>Última Pieza en stock';
+                    } else {
+                        badgeAvail.className = 'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-800 border border-emerald-200';
+                        badgeAvail.innerHTML = '<span class="h-1.5 w-1.5 rounded-full bg-emerald-600 mr-1.5"></span>En stock';
+                    }
+                }
+            }
+
+            // Bloquear / Desbloquear botón Añadir al Carrito (Desktop)
+            const btnSubmit = document.getElementById('btn-add-to-cart-submit');
+            const qtyInput = document.getElementById('cantidad');
+            const qtyBtns = document.querySelectorAll('.qty-control-btn');
+
+            if (btnSubmit) {
+                if (isAgotado) {
+                    btnSubmit.disabled = true;
+                    btnSubmit.className = 'flex-grow bg-zinc-300 text-zinc-500 cursor-not-allowed hover:bg-zinc-300 pointer-events-none text-xs sm:text-sm font-bold uppercase tracking-wider h-12 px-4 sm:px-8 rounded-xl transition-colors flex items-center justify-center space-x-2';
+                    btnSubmit.innerHTML = `
+                        <svg class="w-4 h-4 text-zinc-500 hidden sm:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                        </svg>
+                        <span>Agotado</span>
+                    `;
+                } else {
+                    btnSubmit.disabled = false;
+                    btnSubmit.className = 'flex-grow bg-amber-800 hover:bg-amber-700 text-white shadow text-xs sm:text-sm font-bold uppercase tracking-wider h-12 px-4 sm:px-8 rounded-xl transition-colors flex items-center justify-center space-x-2';
+                    btnSubmit.innerHTML = `
+                        <svg class="w-4 h-4 text-white hidden sm:inline" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                        </svg>
+                        <span>Añadir al Carrito</span>
+                    `;
+                }
+            }
+
+            // Bloquear / Desbloquear botón Añadir al Carrito (Móvil)
+            const btnSubmitMobile = document.getElementById('btn-add-to-cart-mobile-submit');
+            if (btnSubmitMobile) {
+                if (isAgotado) {
+                    btnSubmitMobile.disabled = true;
+                    btnSubmitMobile.className = 'bg-zinc-300 text-zinc-500 cursor-not-allowed hover:bg-zinc-300 pointer-events-none text-xs font-bold px-4 py-2.5 rounded-xl uppercase tracking-wider whitespace-nowrap';
+                    btnSubmitMobile.innerHTML = '<span>🚫 Agotado</span>';
+                } else {
+                    btnSubmitMobile.disabled = false;
+                    btnSubmitMobile.className = 'bg-amber-800 hover:bg-amber-700 text-white shadow text-xs font-bold px-4 py-2.5 rounded-xl uppercase tracking-wider whitespace-nowrap';
+                    btnSubmitMobile.innerHTML = '<span>🛒 Añadir</span>';
+                }
+            }
+
+            // Deshabilitar selector de cantidad si está agotado
+            if (qtyInput) {
+                qtyInput.disabled = isAgotado;
+            }
+            qtyBtns.forEach(qb => qb.disabled = isAgotado);
         }
 
         function switchProductAcabado(key) {
