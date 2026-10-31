@@ -360,80 +360,80 @@
 
                             <!-- Tarjeta Meses Sin Intereses -->
                             <div id="cart-card-msi" onclick="seleccionarModalidadCarrito('msi')"
-                                 class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all duration-150 {{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? 'border-amber-600 bg-amber-50/80 shadow-xs' : 'border-zinc-200 bg-zinc-50/70 hover:border-amber-400' }}">
+                                 class="p-3.5 rounded-2xl border-2 cursor-pointer transition-all duration-150 {{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? 'border-emerald-600 bg-emerald-50/70 shadow-xs' : 'border-zinc-200 bg-zinc-50/70 hover:border-emerald-400' }}">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-2.5">
-                                        <input type="radio" name="cart_modalidad_pago" id="radio-cart-msi" value="msi" {{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? 'checked' : '' }} class="h-4 w-4 text-amber-800 focus:ring-amber-700 pointer-events-none">
+                                        <input type="radio" name="cart_modalidad_pago" id="radio-cart-msi" value="msi" {{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? 'checked' : '' }} class="h-4 w-4 text-emerald-600 focus:ring-emerald-500 pointer-events-none">
                                         <span class="text-xs font-black uppercase text-zinc-900">Meses Sin Intereses</span>
                                     </div>
-                                    <span class="bg-[#1E2440] text-amber-300 border border-amber-300/30 text-[9px] font-black px-2 py-0.5 rounded shadow-2xs uppercase">
+                                    <span class="bg-[#1E2440] text-white border border-white/20 text-[9.5px] font-black px-2 py-0.5 rounded shadow-2xs uppercase tracking-wider">
                                         Hasta 35% + MSI
                                     </span>
                                 </div>
                                 <div class="mt-2 pl-6.5 flex items-baseline justify-between flex-wrap gap-1">
-                                    <span class="text-lg font-black text-amber-950 font-sans">${{ number_format($totalMsi, 2, '.', ',') }}</span>
+                                    <span class="text-lg font-black text-emerald-900 font-sans">${{ number_format($totalMsi, 2, '.', ',') }}</span>
                                     @php
                                         $mActual = $mesesMsiSeleccionado ?? 12;
                                         $cActual = ($mActual == 3) ? $cuotaMsi3 : (($mActual == 6) ? $cuotaMsi6 : (($mActual == 9) ? $cuotaMsi9 : $cuotaMsi12));
                                     @endphp
-                                    <span id="cart-msi-badge-top" class="text-xs font-black text-amber-900 font-sans bg-white px-2 py-0.5 rounded border border-amber-300 shadow-2xs">
+                                    <span id="cart-msi-badge-top" class="text-xs font-black text-emerald-900 font-sans bg-white px-2 py-0.5 rounded border border-emerald-300 shadow-2xs">
                                         {{ $mActual }} MSI de ${{ number_format($cActual, 2, '.', ',') }}/m
                                     </span>
                                 </div>
 
                                 <!-- Desglose de Plazos MSI Seleccionables -->
-                                <div id="cart-msi-breakdown" class="{{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? '' : 'hidden' }} mt-3 pt-2.5 border-t border-amber-200/80">
+                                <div id="cart-msi-breakdown" class="{{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? '' : 'hidden' }} mt-3 pt-2.5 border-t border-emerald-200/80">
                                     <div class="flex items-center justify-between mb-2">
-                                        <span class="text-[10.5px] font-black uppercase text-amber-950">Elige a cuántos meses deseas pagar:</span>
+                                        <span class="text-[10.5px] font-black uppercase text-emerald-950">Elige a cuántos meses deseas pagar:</span>
                                         <span class="text-[9px] text-zinc-500 font-bold uppercase tracking-wider">Toca una opción</span>
                                     </div>
                                     <div class="grid grid-cols-4 gap-1.5 text-center font-sans">
                                         <!-- 3 Meses -->
                                         <button type="button" id="btn-msi-cart-3" onclick="seleccionarMesesMsi(3, event)"
-                                             class="cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between {{ ($mesesMsiSeleccionado ?? 12) == 3 ? 'border-2 border-amber-600 bg-amber-100/95 shadow-sm ring-2 ring-amber-500/20' : 'bg-white border border-amber-200/90 hover:border-amber-400 hover:bg-amber-50/50' }}">
-                                            <span class="block text-[8.5px] uppercase font-bold text-center {{ ($mesesMsiSeleccionado ?? 12) == 3 ? 'text-amber-950 font-black' : 'text-zinc-600' }}">3 Meses</span>
-                                            <span class="text-[10.5px] font-black block font-sans text-center mt-0.5 {{ ($mesesMsiSeleccionado ?? 12) == 3 ? 'text-amber-950' : 'text-zinc-900' }}">${{ number_format($cuotaMsi3, 2, '.', ',') }}</span>
+                                             class="cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between {{ ($mesesMsiSeleccionado ?? 12) == 3 ? 'border-2 border-emerald-600 bg-emerald-100/95 shadow-sm ring-2 ring-emerald-500/20' : 'bg-white border border-emerald-200/90 hover:border-emerald-400 hover:bg-emerald-50/50' }}">
+                                            <span class="block text-[8.5px] uppercase font-bold text-center {{ ($mesesMsiSeleccionado ?? 12) == 3 ? 'text-emerald-950 font-black' : 'text-zinc-600' }}">3 Meses</span>
+                                            <span class="text-[10.5px] font-black block font-sans text-center mt-0.5 {{ ($mesesMsiSeleccionado ?? 12) == 3 ? 'text-emerald-950' : 'text-zinc-900' }}">${{ number_format($cuotaMsi3, 2, '.', ',') }}</span>
                                             <span class="text-[8px] text-zinc-500 block text-center">/ mes</span>
                                         </button>
                                         <!-- 6 Meses -->
                                         <button type="button" id="btn-msi-cart-6" onclick="seleccionarMesesMsi(6, event)"
-                                             class="cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between {{ ($mesesMsiSeleccionado ?? 12) == 6 ? 'border-2 border-amber-600 bg-amber-100/95 shadow-sm ring-2 ring-amber-500/20' : 'bg-white border border-amber-200/90 hover:border-amber-400 hover:bg-amber-50/50' }}">
-                                            <span class="block text-[8.5px] uppercase font-bold text-center {{ ($mesesMsiSeleccionado ?? 12) == 6 ? 'text-amber-950 font-black' : 'text-zinc-600' }}">6 Meses</span>
-                                            <span class="text-[10.5px] font-black block font-sans text-center mt-0.5 {{ ($mesesMsiSeleccionado ?? 12) == 6 ? 'text-amber-950' : 'text-zinc-900' }}">${{ number_format($cuotaMsi6, 2, '.', ',') }}</span>
+                                             class="cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between {{ ($mesesMsiSeleccionado ?? 12) == 6 ? 'border-2 border-emerald-600 bg-emerald-100/95 shadow-sm ring-2 ring-emerald-500/20' : 'bg-white border border-emerald-200/90 hover:border-emerald-400 hover:bg-emerald-50/50' }}">
+                                            <span class="block text-[8.5px] uppercase font-bold text-center {{ ($mesesMsiSeleccionado ?? 12) == 6 ? 'text-emerald-950 font-black' : 'text-zinc-600' }}">6 Meses</span>
+                                            <span class="text-[10.5px] font-black block font-sans text-center mt-0.5 {{ ($mesesMsiSeleccionado ?? 12) == 6 ? 'text-emerald-950' : 'text-zinc-900' }}">${{ number_format($cuotaMsi6, 2, '.', ',') }}</span>
                                             <span class="text-[8px] text-zinc-500 block text-center">/ mes</span>
                                         </button>
                                         <!-- 9 Meses -->
                                         <button type="button" id="btn-msi-cart-9" onclick="seleccionarMesesMsi(9, event)"
-                                             class="cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between {{ ($mesesMsiSeleccionado ?? 12) == 9 ? 'border-2 border-amber-600 bg-amber-100/95 shadow-sm ring-2 ring-amber-500/20' : 'bg-white border border-amber-200/90 hover:border-amber-400 hover:bg-amber-50/50' }}">
-                                            <span class="block text-[8.5px] uppercase font-bold text-center {{ ($mesesMsiSeleccionado ?? 12) == 9 ? 'text-amber-950 font-black' : 'text-zinc-600' }}">9 Meses</span>
-                                            <span class="text-[10.5px] font-black block font-sans text-center mt-0.5 {{ ($mesesMsiSeleccionado ?? 12) == 9 ? 'text-amber-950' : 'text-zinc-900' }}">${{ number_format($cuotaMsi9, 2, '.', ',') }}</span>
+                                             class="cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between {{ ($mesesMsiSeleccionado ?? 12) == 9 ? 'border-2 border-emerald-600 bg-emerald-100/95 shadow-sm ring-2 ring-emerald-500/20' : 'bg-white border border-emerald-200/90 hover:border-emerald-400 hover:bg-emerald-50/50' }}">
+                                            <span class="block text-[8.5px] uppercase font-bold text-center {{ ($mesesMsiSeleccionado ?? 12) == 9 ? 'text-emerald-950 font-black' : 'text-zinc-600' }}">9 Meses</span>
+                                            <span class="text-[10.5px] font-black block font-sans text-center mt-0.5 {{ ($mesesMsiSeleccionado ?? 12) == 9 ? 'text-emerald-950' : 'text-zinc-900' }}">${{ number_format($cuotaMsi9, 2, '.', ',') }}</span>
                                             <span class="text-[8px] text-zinc-500 block text-center">/ mes</span>
                                         </button>
                                         <!-- 12 Meses -->
                                         <button type="button" id="btn-msi-cart-12" onclick="seleccionarMesesMsi(12, event)"
-                                             class="cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between {{ ($mesesMsiSeleccionado ?? 12) == 12 ? 'border-2 border-amber-600 bg-amber-100/95 shadow-sm ring-2 ring-amber-500/20' : 'bg-white border border-amber-200/90 hover:border-amber-400 hover:bg-amber-50/50' }}">
-                                            <span class="block text-[8.5px] uppercase font-bold text-center {{ ($mesesMsiSeleccionado ?? 12) == 12 ? 'text-amber-950 font-black' : 'text-zinc-600' }}">12 Meses</span>
-                                            <span class="text-[10.5px] font-black block font-sans text-center mt-0.5 {{ ($mesesMsiSeleccionado ?? 12) == 12 ? 'text-amber-950' : 'text-zinc-900' }}">${{ number_format($cuotaMsi12, 2, '.', ',') }}</span>
+                                             class="cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between {{ ($mesesMsiSeleccionado ?? 12) == 12 ? 'border-2 border-emerald-600 bg-emerald-100/95 shadow-sm ring-2 ring-emerald-500/20' : 'bg-white border border-emerald-200/90 hover:border-emerald-400 hover:bg-emerald-50/50' }}">
+                                            <span class="block text-[8.5px] uppercase font-bold text-center {{ ($mesesMsiSeleccionado ?? 12) == 12 ? 'text-emerald-950 font-black' : 'text-zinc-600' }}">12 Meses</span>
+                                            <span class="text-[10.5px] font-black block font-sans text-center mt-0.5 {{ ($mesesMsiSeleccionado ?? 12) == 12 ? 'text-emerald-950' : 'text-zinc-900' }}">${{ number_format($cuotaMsi12, 2, '.', ',') }}</span>
                                             <span class="text-[8px] text-zinc-500 block text-center">/ mes</span>
                                         </button>
                                     </div>
 
                                     <!-- Recuadro informativo con la cantidad exacta -->
-                                    <div id="cart-msi-plan-info" class="mt-2.5 p-2.5 bg-white rounded-xl border border-amber-300 shadow-2xs text-[11px] font-sans">
+                                    <div id="cart-msi-plan-info" class="mt-2.5 p-2.5 bg-white rounded-xl border border-emerald-300 shadow-2xs text-[11px] font-sans">
                                         <div class="flex items-center justify-between">
-                                            <span class="font-extrabold text-amber-950 flex items-center gap-1">
+                                            <span class="font-extrabold text-emerald-950 flex items-center gap-1">
                                                 <span class="text-emerald-700 font-black">✓</span> Plazo seleccionado:
                                             </span>
-                                            <span id="cart-msi-plan-summary" class="font-black text-amber-900 text-xs">
+                                            <span id="cart-msi-plan-summary" class="font-black text-emerald-900 text-xs">
                                                 {{ $mActual }} meses de ${{ number_format($cActual, 2, '.', ',') }}/m
                                             </span>
                                         </div>
-                                        <div class="flex items-center justify-between mt-1 pt-1 border-t border-amber-100 text-[10px] text-zinc-600">
+                                        <div class="flex items-center justify-between mt-1 pt-1 border-t border-emerald-100 text-[10px] text-zinc-600">
                                             <span>Monto total exacto a pagar:</span>
                                             <strong class="text-zinc-950 font-extrabold">${{ number_format($totalMsi, 2, '.', ',') }} MXN</strong>
                                         </div>
                                     </div>
-                                    <p class="text-[9.5px] text-zinc-500 italic mt-1.5 leading-tight">* Podrás confirmar tu plazo de <span id="cart-meses-hint" class="font-bold text-amber-900">{{ $mActual }}</span> meses sin intereses con tu tarjeta de crédito participante en Stripe.</p>
+                                    <p class="text-[9.5px] text-zinc-500 italic mt-1.5 leading-tight">* Podrás confirmar tu plazo de <span id="cart-meses-hint" class="font-bold text-emerald-900">{{ $mActual }}</span> meses sin intereses con tu tarjeta de crédito participante en Stripe.</p>
                                 </div>
                             </div>
                         </div>
@@ -444,7 +444,7 @@
                         <span id="label-total-cart" class="text-sm sm:text-base font-bold">
                             Total estimado ({{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? 'Meses Sin Intereses' : 'Contado' }})
                         </span>
-                        <span id="valor-total-cart" class="text-xl sm:text-2xl font-extrabold font-sans {{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? 'text-amber-950' : 'text-emerald-900' }}">
+                        <span id="valor-total-cart" class="text-xl sm:text-2xl font-extrabold font-sans text-emerald-900">
                             ${{ number_format($total, 2, '.', ',') }}
                         </span>
                     </div>
@@ -537,12 +537,12 @@
             const btn = document.getElementById('btn-msi-cart-' + m);
             if (btn) {
                 if (m === meses) {
-                    btn.className = 'cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between border-2 border-amber-600 bg-amber-100/95 shadow-sm ring-2 ring-amber-500/20';
+                    btn.className = 'cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between border-2 border-emerald-600 bg-emerald-100/95 shadow-sm ring-2 ring-emerald-500/20';
                     const spans = btn.querySelectorAll('span');
-                    if (spans[0]) spans[0].className = 'block text-[8.5px] uppercase font-black text-amber-950 text-center';
-                    if (spans[1]) spans[1].className = 'text-[10.5px] font-black block font-sans text-center mt-0.5 text-amber-950';
+                    if (spans[0]) spans[0].className = 'block text-[8.5px] uppercase font-black text-emerald-950 text-center';
+                    if (spans[1]) spans[1].className = 'text-[10.5px] font-black block font-sans text-center mt-0.5 text-emerald-950';
                 } else {
-                    btn.className = 'cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between bg-white border border-amber-200/90 hover:border-amber-400 hover:bg-amber-50/50';
+                    btn.className = 'cursor-pointer rounded-xl p-1.5 transition-all text-left flex flex-col justify-between bg-white border border-emerald-200/90 hover:border-emerald-400 hover:bg-emerald-50/50';
                     const spans = btn.querySelectorAll('span');
                     if (spans[0]) spans[0].className = 'block text-[8.5px] uppercase font-bold text-zinc-600 text-center';
                     if (spans[1]) spans[1].className = 'text-[10.5px] font-black block font-sans text-center mt-0.5 text-zinc-900';
@@ -624,7 +624,7 @@
         if (tipo === 'msi') {
             if (radioMsi) radioMsi.checked = true;
             if (cardMsi) {
-                cardMsi.className = 'p-3.5 rounded-2xl border-2 border-amber-600 bg-amber-50/80 shadow-xs cursor-pointer transition-all duration-150';
+                cardMsi.className = 'p-3.5 rounded-2xl border-2 border-emerald-600 bg-emerald-50/70 shadow-xs cursor-pointer transition-all duration-150';
             }
             if (cardContado) {
                 cardContado.className = 'p-3.5 rounded-2xl border-2 border-zinc-200 bg-zinc-50/70 hover:border-emerald-400 cursor-pointer transition-all duration-150';
@@ -633,7 +633,7 @@
             if (labelTotal) labelTotal.textContent = 'Total estimado (Meses Sin Intereses)';
             if (valorTotal) {
                 valorTotal.textContent = '$' + totalMsiFormatted;
-                valorTotal.className = 'text-xl sm:text-2xl font-extrabold font-sans text-amber-950';
+                valorTotal.className = 'text-xl sm:text-2xl font-extrabold font-sans text-emerald-900';
             }
             if (valorSubtotal) valorSubtotal.textContent = '$' + subtotalMsiFormatted;
             if (valorEnvio) {
@@ -655,7 +655,7 @@
                 cardContado.className = 'p-3.5 rounded-2xl border-2 border-emerald-600 bg-emerald-50/70 shadow-xs cursor-pointer transition-all duration-150';
             }
             if (cardMsi) {
-                cardMsi.className = 'p-3.5 rounded-2xl border-2 border-zinc-200 bg-zinc-50/70 hover:border-amber-400 cursor-pointer transition-all duration-150';
+                cardMsi.className = 'p-3.5 rounded-2xl border-2 border-zinc-200 bg-zinc-50/70 hover:border-emerald-400 cursor-pointer transition-all duration-150';
             }
             if (breakdownMsi) breakdownMsi.classList.add('hidden');
             if (labelTotal) labelTotal.textContent = 'Total estimado (Contado)';

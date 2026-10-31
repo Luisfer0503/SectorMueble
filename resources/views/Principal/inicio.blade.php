@@ -371,7 +371,7 @@
                                 @endif
                                 {{-- Badges Promocionales Contado y MSI --}}
                                 <span class="bg-rose-600 text-white text-[10px] font-black px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">-{{ $producto->porcentaje_descuento_contado }}% CONTADO</span>
-                                <span class="bg-[#1E2440] text-amber-300 border border-amber-400/30 text-[9px] font-black px-2 py-0.5 uppercase rounded-lg tracking-wider shadow-md">-{{ $producto->porcentaje_descuento_msi }}% + MSI (3,6,9,12)</span>
+                                <span class="bg-[#1E2440] text-white border border-white/20 text-[10px] font-black px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">-{{ $producto->porcentaje_descuento_msi }}% + MSI (3,6,9,12)</span>
                                 <span class="bg-[#88674B] text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">Destacado</span>
                                 @if(!$producto->isAgotado() && $producto->stock <= 5)
                                     <span class="bg-zinc-900 text-white text-[10px] font-extrabold px-2.5 py-1 uppercase rounded-lg tracking-wider shadow-md">Últimas {{ $producto->stock }} unid.</span>

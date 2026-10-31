@@ -64,7 +64,7 @@
                             <span class="inline-flex items-center gap-1 bg-rose-600 text-white text-[8px] sm:text-[9.5px] font-black px-1.5 sm:px-2 py-0.5 uppercase rounded-md tracking-wider shadow">
                                 -{{ $producto->porcentaje_descuento_contado }}% CONTADO
                             </span>
-                            <span class="inline-flex items-center gap-1 bg-[#1E2440] text-amber-300 border border-amber-400/30 text-[7.5px] sm:text-[8.5px] font-black px-1.5 sm:px-2 py-0.5 uppercase rounded-md tracking-wider shadow">
+                            <span class="inline-flex items-center gap-1 bg-[#1E2440] text-white border border-white/20 text-[8px] sm:text-[9.5px] font-black px-1.5 sm:px-2 py-0.5 uppercase rounded-md tracking-wider shadow">
                                 -{{ $producto->porcentaje_descuento_msi }}% + MSI (3,6,9,12)
                             </span>
 

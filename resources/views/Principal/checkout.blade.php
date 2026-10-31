@@ -185,76 +185,76 @@
                             </div>
 
                             {{-- Tarjeta Opción Meses Sin Intereses --}}
-                            <div id="card-opt-msi" onclick="seleccionarModalidadPago('msi')" class="relative border-2 border-zinc-200 bg-zinc-50/70 hover:border-amber-400 rounded-2xl p-4 cursor-pointer transition-all">
+                            <div id="card-opt-msi" onclick="seleccionarModalidadPago('msi')" class="relative border-2 border-zinc-200 bg-zinc-50/70 hover:border-emerald-400 rounded-2xl p-4 cursor-pointer transition-all">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center space-x-2.5">
-                                        <input type="radio" name="radio_tipo_pago" id="radio_msi" value="msi" class="h-4 w-4 text-amber-800 focus:ring-amber-700">
+                                        <input type="radio" name="radio_tipo_pago" id="radio_msi" value="msi" class="h-4 w-4 text-emerald-600 focus:ring-emerald-500">
                                         <span class="text-xs font-black uppercase text-zinc-900">Meses Sin Intereses</span>
                                     </div>
-                                    <span class="bg-[#1E2440] text-amber-300 border border-amber-300/30 text-[9px] font-black px-2 py-0.5 rounded shadow-xs uppercase">
+                                    <span class="bg-[#1E2440] text-white border border-white/20 text-[9.5px] font-black px-2 py-0.5 rounded shadow-xs uppercase tracking-wider">
                                         Hasta 35% + MSI
                                     </span>
                                 </div>
                                 <div class="mt-2 pl-6">
-                                    <span class="text-xl font-black text-amber-950 font-sans block">$ {{ number_format($totalMsi, 2, '.', ',') }} <span class="text-xs font-semibold">MXN</span></span>
+                                    <span class="text-xl font-black text-emerald-900 font-sans block">$ {{ number_format($totalMsi, 2, '.', ',') }} <span class="text-xs font-semibold">MXN</span></span>
                                     <p class="text-[11px] text-zinc-600 mt-0.5">3, 6, 9 o 12 MSI con tarjetas participantes.</p>
                                 </div>
                             </div>
                         </div>
 
                         {{-- Desglose de Mensualidades Seleccionables (visible al elegir MSI) --}}
-                        <div id="box-desglose-msi" class="hidden mb-5 bg-amber-50/70 border border-amber-200 rounded-2xl p-4 text-xs">
+                        <div id="box-desglose-msi" class="hidden mb-5 bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 text-xs">
                             <div class="flex items-center justify-between mb-2.5">
-                                <span class="font-extrabold text-amber-950 block">Selecciona a cuántos meses deseas pagar en Stripe:</span>
+                                <span class="font-extrabold text-emerald-950 block">Selecciona a cuántos meses deseas pagar en Stripe:</span>
                                 <span class="text-[9.5px] text-zinc-500 font-bold uppercase tracking-wider">Toca tu plazo</span>
                             </div>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center font-sans font-bold">
                                 <!-- 3 Meses -->
                                 <button type="button" id="btn-msi-checkout-3" onclick="seleccionarMesesMsiCheckout(3)"
-                                     class="cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between {{ ($mesesMsiInicial ?? 12) == 3 ? 'border-2 border-amber-600 bg-amber-100/95 shadow-sm ring-2 ring-amber-500/20' : 'bg-white border border-amber-200/80 hover:border-amber-400 hover:bg-amber-50/50' }}">
-                                    <span class="block text-[9px] uppercase font-bold text-center {{ ($mesesMsiInicial ?? 12) == 3 ? 'text-amber-950 font-black' : 'text-zinc-500' }}">3 Meses</span>
-                                    <span class="text-xs font-black block font-sans text-center mt-1 {{ ($mesesMsiInicial ?? 12) == 3 ? 'text-amber-950' : 'text-zinc-900' }}">$ {{ number_format($cuotaMsi3, 2, '.', ',') }}</span>
+                                     class="cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between {{ ($mesesMsiInicial ?? 12) == 3 ? 'border-2 border-emerald-600 bg-emerald-100/95 shadow-sm ring-2 ring-emerald-500/20' : 'bg-white border border-emerald-200/80 hover:border-emerald-400 hover:bg-emerald-50/50' }}">
+                                    <span class="block text-[9px] uppercase font-bold text-center {{ ($mesesMsiInicial ?? 12) == 3 ? 'text-emerald-950 font-black' : 'text-zinc-500' }}">3 Meses</span>
+                                    <span class="text-xs font-black block font-sans text-center mt-1 {{ ($mesesMsiInicial ?? 12) == 3 ? 'text-emerald-950' : 'text-zinc-900' }}">$ {{ number_format($cuotaMsi3, 2, '.', ',') }}</span>
                                     <span class="text-[8.5px] text-zinc-500 block text-center">/ mes</span>
                                 </button>
                                 <!-- 6 Meses -->
                                 <button type="button" id="btn-msi-checkout-6" onclick="seleccionarMesesMsiCheckout(6)"
-                                     class="cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between {{ ($mesesMsiInicial ?? 12) == 6 ? 'border-2 border-amber-600 bg-amber-100/95 shadow-sm ring-2 ring-amber-500/20' : 'bg-white border border-amber-200/80 hover:border-amber-400 hover:bg-amber-50/50' }}">
-                                    <span class="block text-[9px] uppercase font-bold text-center {{ ($mesesMsiInicial ?? 12) == 6 ? 'text-amber-950 font-black' : 'text-zinc-500' }}">6 Meses</span>
-                                    <span class="text-xs font-black block font-sans text-center mt-1 {{ ($mesesMsiInicial ?? 12) == 6 ? 'text-amber-950' : 'text-zinc-900' }}">$ {{ number_format($cuotaMsi6, 2, '.', ',') }}</span>
+                                     class="cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between {{ ($mesesMsiInicial ?? 12) == 6 ? 'border-2 border-emerald-600 bg-emerald-100/95 shadow-sm ring-2 ring-emerald-500/20' : 'bg-white border border-emerald-200/80 hover:border-emerald-400 hover:bg-emerald-50/50' }}">
+                                    <span class="block text-[9px] uppercase font-bold text-center {{ ($mesesMsiInicial ?? 12) == 6 ? 'text-emerald-950 font-black' : 'text-zinc-500' }}">6 Meses</span>
+                                    <span class="text-xs font-black block font-sans text-center mt-1 {{ ($mesesMsiInicial ?? 12) == 6 ? 'text-emerald-950' : 'text-zinc-900' }}">$ {{ number_format($cuotaMsi6, 2, '.', ',') }}</span>
                                     <span class="text-[8.5px] text-zinc-500 block text-center">/ mes</span>
                                 </button>
                                 <!-- 9 Meses -->
                                 <button type="button" id="btn-msi-checkout-9" onclick="seleccionarMesesMsiCheckout(9)"
-                                     class="cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between {{ ($mesesMsiInicial ?? 12) == 9 ? 'border-2 border-amber-600 bg-amber-100/95 shadow-sm ring-2 ring-amber-500/20' : 'bg-white border border-amber-200/80 hover:border-amber-400 hover:bg-amber-50/50' }}">
-                                    <span class="block text-[9px] uppercase font-bold text-center {{ ($mesesMsiInicial ?? 12) == 9 ? 'text-amber-950 font-black' : 'text-zinc-500' }}">9 Meses</span>
-                                    <span class="text-xs font-black block font-sans text-center mt-1 {{ ($mesesMsiInicial ?? 12) == 9 ? 'text-amber-950' : 'text-zinc-900' }}">$ {{ number_format($cuotaMsi9, 2, '.', ',') }}</span>
+                                     class="cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between {{ ($mesesMsiInicial ?? 12) == 9 ? 'border-2 border-emerald-600 bg-emerald-100/95 shadow-sm ring-2 ring-emerald-500/20' : 'bg-white border border-emerald-200/80 hover:border-emerald-400 hover:bg-emerald-50/50' }}">
+                                    <span class="block text-[9px] uppercase font-bold text-center {{ ($mesesMsiInicial ?? 12) == 9 ? 'text-emerald-950 font-black' : 'text-zinc-500' }}">9 Meses</span>
+                                    <span class="text-xs font-black block font-sans text-center mt-1 {{ ($mesesMsiInicial ?? 12) == 9 ? 'text-emerald-950' : 'text-zinc-900' }}">$ {{ number_format($cuotaMsi9, 2, '.', ',') }}</span>
                                     <span class="text-[8.5px] text-zinc-500 block text-center">/ mes</span>
                                 </button>
                                 <!-- 12 Meses -->
                                 <button type="button" id="btn-msi-checkout-12" onclick="seleccionarMesesMsiCheckout(12)"
-                                     class="cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between {{ ($mesesMsiInicial ?? 12) == 12 ? 'border-2 border-amber-600 bg-amber-100/95 shadow-sm ring-2 ring-amber-500/20' : 'bg-white border border-amber-200/80 hover:border-amber-400 hover:bg-amber-50/50' }}">
-                                    <span class="block text-[9px] uppercase font-bold text-center {{ ($mesesMsiInicial ?? 12) == 12 ? 'text-amber-950 font-black' : 'text-zinc-500' }}">12 Meses</span>
-                                    <span class="text-xs font-black block font-sans text-center mt-1 {{ ($mesesMsiInicial ?? 12) == 12 ? 'text-amber-950' : 'text-zinc-900' }}">$ {{ number_format($cuotaMsi12, 2, '.', ',') }}</span>
+                                     class="cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between {{ ($mesesMsiInicial ?? 12) == 12 ? 'border-2 border-emerald-600 bg-emerald-100/95 shadow-sm ring-2 ring-emerald-500/20' : 'bg-white border border-emerald-200/80 hover:border-emerald-400 hover:bg-emerald-50/50' }}">
+                                    <span class="block text-[9px] uppercase font-bold text-center {{ ($mesesMsiInicial ?? 12) == 12 ? 'text-emerald-950 font-black' : 'text-zinc-500' }}">12 Meses</span>
+                                    <span class="text-xs font-black block font-sans text-center mt-1 {{ ($mesesMsiInicial ?? 12) == 12 ? 'text-emerald-950' : 'text-zinc-900' }}">$ {{ number_format($cuotaMsi12, 2, '.', ',') }}</span>
                                     <span class="text-[8.5px] text-zinc-500 block text-center">/ mes</span>
                                 </button>
                             </div>
 
                             <!-- Resumen Exacto del Plan -->
-                            <div class="mt-3 p-3 bg-white rounded-xl border border-amber-300 shadow-2xs">
+                            <div class="mt-3 p-3 bg-white rounded-xl border border-emerald-300 shadow-2xs">
                                 <div class="flex items-center justify-between text-xs">
-                                    <span class="font-extrabold text-amber-950 flex items-center gap-1.5">
+                                    <span class="font-extrabold text-emerald-950 flex items-center gap-1.5">
                                         <span class="text-emerald-700 font-black">✓</span> Plan de pago elegido:
                                     </span>
-                                    <strong id="checkout-msi-plan-summary" class="text-amber-900 font-black font-sans text-sm">
+                                    <strong id="checkout-msi-plan-summary" class="text-emerald-900 font-black font-sans text-sm">
                                         {{ $mesesMsiInicial ?? 12 }} mensualidades fijas de $ {{ number_format($mesesMsiInicial == 3 ? $cuotaMsi3 : ($mesesMsiInicial == 6 ? $cuotaMsi6 : ($mesesMsiInicial == 9 ? $cuotaMsi9 : $cuotaMsi12)), 2, '.', ',') }}
                                     </strong>
                                 </div>
-                                <div class="flex items-center justify-between mt-1 pt-1.5 border-t border-amber-100 text-[11px] text-zinc-600">
+                                <div class="flex items-center justify-between mt-1 pt-1.5 border-t border-emerald-100 text-[11px] text-zinc-600">
                                     <span>Total exacto de la orden a meses:</span>
                                     <strong class="text-zinc-950 font-black font-sans">$ {{ number_format($totalMsi, 2, '.', ',') }} MXN</strong>
                                 </div>
                             </div>
-                            <p class="text-[10px] text-zinc-500 italic mt-2 leading-tight">* Stripe te permitirá confirmar tu plazo seleccionado de <strong id="checkout-msi-meses-hint" class="text-amber-900">{{ $mesesMsiInicial ?? 12 }}</strong> meses directamente en el formulario seguro tras ingresar los datos de tu tarjeta de crédito participante.</p>
+                            <p class="text-[10px] text-zinc-500 italic mt-2 leading-tight">* Stripe te permitirá confirmar tu plazo seleccionado de <strong id="checkout-msi-meses-hint" class="text-emerald-900">{{ $mesesMsiInicial ?? 12 }}</strong> meses directamente en el formulario seguro tras ingresar los datos de tu tarjeta de crédito participante.</p>
                         </div>
 
                         {{-- Pasarela Stripe Info --}}
@@ -432,12 +432,12 @@
                 const btn = document.getElementById('btn-msi-checkout-' + m);
                 if (btn) {
                     if (m === meses) {
-                        btn.className = 'cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between border-2 border-amber-600 bg-amber-100/95 shadow-sm ring-2 ring-amber-500/20';
+                        btn.className = 'cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between border-2 border-emerald-600 bg-emerald-100/95 shadow-sm ring-2 ring-emerald-500/20';
                         const spans = btn.querySelectorAll('span');
-                        if (spans[0]) spans[0].className = 'block text-[9px] uppercase font-black text-amber-950 text-center';
-                        if (spans[1]) spans[1].className = 'text-xs font-black block font-sans text-center mt-1 text-amber-950';
+                        if (spans[0]) spans[0].className = 'block text-[9px] uppercase font-black text-emerald-950 text-center';
+                        if (spans[1]) spans[1].className = 'text-xs font-black block font-sans text-center mt-1 text-emerald-950';
                     } else {
-                        btn.className = 'cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between bg-white border border-amber-200/80 hover:border-amber-400 hover:bg-amber-50/50';
+                        btn.className = 'cursor-pointer rounded-xl p-2.5 transition-all text-center flex flex-col justify-between bg-white border border-emerald-200/80 hover:border-emerald-400 hover:bg-emerald-50/50';
                         const spans = btn.querySelectorAll('span');
                         if (spans[0]) spans[0].className = 'block text-[9px] uppercase font-bold text-zinc-500 text-center';
                         if (spans[1]) spans[1].className = 'text-xs font-black block font-sans text-center mt-1 text-zinc-900';
@@ -488,13 +488,13 @@
                     cardContado.className = 'relative border-2 border-zinc-200 bg-zinc-50/70 hover:border-emerald-400 rounded-2xl p-4 cursor-pointer transition-all';
                 }
                 if (cardMsi) {
-                    cardMsi.className = 'relative border-2 border-amber-600 bg-amber-50/70 rounded-2xl p-4 cursor-pointer transition-all shadow-sm';
+                    cardMsi.className = 'relative border-2 border-emerald-600 bg-emerald-50/70 rounded-2xl p-4 cursor-pointer transition-all shadow-sm';
                 }
                 if (boxDesglose) boxDesglose.classList.remove('hidden');
                 if (summarySubtotal) summarySubtotal.textContent = `$ ${subtotalMsiFormatted}`;
                 if (summaryTotal) {
                     summaryTotal.textContent = `$ ${totalMsiFormatted}`;
-                    summaryTotal.className = 'text-xl font-bold font-sans text-amber-950';
+                    summaryTotal.className = 'text-xl font-bold font-sans text-emerald-900';
                 }
                 if (summaryMsiPreview) summaryMsiPreview.classList.remove('hidden');
 
@@ -505,7 +505,7 @@
                     cardContado.className = 'relative border-2 border-emerald-600 bg-emerald-50/60 rounded-2xl p-4 cursor-pointer transition-all shadow-sm';
                 }
                 if (cardMsi) {
-                    cardMsi.className = 'relative border-2 border-zinc-200 bg-zinc-50/70 hover:border-amber-400 rounded-2xl p-4 cursor-pointer transition-all';
+                    cardMsi.className = 'relative border-2 border-zinc-200 bg-zinc-50/70 hover:border-emerald-400 rounded-2xl p-4 cursor-pointer transition-all';
                 }
                 if (boxDesglose) boxDesglose.classList.add('hidden');
                 if (summarySubtotal) summarySubtotal.textContent = `$ ${subtotalContadoFormatted}`;

@@ -243,7 +243,7 @@
                                             <span id="badge-check-msi" class="hidden h-4 w-4 rounded-full bg-amber-700 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
                                             <span class="text-[10px] font-black uppercase tracking-wider text-amber-950">Meses Sin Intereses</span>
                                         </div>
-                                        <span id="badge-pct-msi-display" class="bg-[#1E2440] text-amber-300 border border-amber-300/30 text-[9.5px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-xs">
+                                        <span id="badge-pct-msi-display" class="bg-[#1E2440] text-white border border-white/20 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-xs">
                                             -{{ $pctMsi }}% + MSI
                                         </span>
                                     </div>
