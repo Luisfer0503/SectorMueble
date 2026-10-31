@@ -89,54 +89,66 @@
                                                     @endif
                                                 </div>
 
-                                                <!-- Precio del ítem con Desglose Contado y MSI -->
+                                                <!-- Precio del ítem con Desglose Contado y MSI (o Tradicional fuera de campaña) -->
                                                 <div class="text-right shrink-0">
-                                                    @php
-                                                        $baseItem = (float)($item['precio_original'] ?? $item['precio']);
-                                                        $isEsp = !empty($item['es_promo_especial']);
-                                                        $pContadoItem = $item['precio_contado'] ?? round($baseItem * ($isEsp ? 0.50 : 0.60), 2);
-                                                        $pMsiItem = $item['precio_msi'] ?? round($baseItem * ($isEsp ? 0.65 : 0.70), 2);
-                                                    @endphp
-
-                                                    <!-- Vista cuando está en modo CONTADO -->
-                                                    <div class="item-price-contado-box {{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? 'hidden' : '' }}">
-                                                        <span class="text-base sm:text-lg font-extrabold text-emerald-800 font-sans block">
-                                                            ${{ number_format($pContadoItem * $item['cantidad'], 2, '.', ',') }}
-                                                        </span>
-                                                        <div class="flex items-center justify-end gap-1">
-                                                            <span class="text-[10px] text-zinc-400 line-through font-sans">
-                                                                ${{ number_format($baseItem * $item['cantidad'], 2, '.', ',') }}
-                                                            </span>
-                                                            <span class="text-[8.5px] font-black bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded uppercase">
-                                                                -{{ $isEsp ? '50' : '40' }}% Contado
-                                                            </span>
-                                                        </div>
-                                                        <span class="text-[10px] font-bold text-amber-900 block font-sans mt-0.5">
-                                                            o 12 MSI de ${{ number_format(($pMsiItem * $item['cantidad']) / 12, 2, '.', ',') }}
-                                                        </span>
-                                                    </div>
-
-                                                    <!-- Vista cuando está en modo MSI -->
-                                                    <div class="item-price-msi-box {{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? '' : 'hidden' }}">
-                                                        <span class="text-base sm:text-lg font-extrabold text-amber-950 font-sans block">
-                                                            ${{ number_format($pMsiItem * $item['cantidad'], 2, '.', ',') }}
-                                                        </span>
-                                                        <div class="flex items-center justify-end gap-1">
-                                                            <span class="text-[10px] text-zinc-400 line-through font-sans">
-                                                                ${{ number_format($baseItem * $item['cantidad'], 2, '.', ',') }}
-                                                            </span>
-                                                            <span class="text-[8.5px] font-black bg-amber-100 text-amber-900 px-1 py-0.2 rounded uppercase">
-                                                                -{{ $isEsp ? '35' : '30' }}% MSI
-                                                            </span>
-                                                        </div>
+                                                    @if($promoActiva ?? \App\Models\Producto::isCampanaPromocionalActiva())
                                                         @php
-                                                            $mItemSel = $mesesMsiSeleccionado ?? 12;
+                                                            $baseItem = (float)($item['precio_original'] ?? $item['precio']);
+                                                            $isEsp = !empty($item['es_promo_especial']);
+                                                            $pContadoItem = $item['precio_contado'] ?? round($baseItem * ($isEsp ? 0.50 : 0.60), 2);
+                                                            $pMsiItem = $item['precio_msi'] ?? round($baseItem * ($isEsp ? 0.65 : 0.70), 2);
                                                         @endphp
-                                                        <span class="cart-item-msi-badge text-[10.5px] font-black text-amber-950 block font-sans mt-0.5 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200"
-                                                              data-total-item="{{ $pMsiItem * $item['cantidad'] }}">
-                                                            <span class="item-msi-meses-txt">{{ $mItemSel }}</span> MSI de $<span class="item-msi-cuota-txt">{{ number_format(($pMsiItem * $item['cantidad']) / $mItemSel, 2, '.', ',') }}</span>/m
+
+                                                        <!-- Vista cuando está en modo CONTADO -->
+                                                        <div class="item-price-contado-box {{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? 'hidden' : '' }}">
+                                                            <span class="text-base sm:text-lg font-extrabold text-emerald-800 font-sans block">
+                                                                ${{ number_format($pContadoItem * $item['cantidad'], 2, '.', ',') }}
+                                                            </span>
+                                                            <div class="flex items-center justify-end gap-1">
+                                                                <span class="text-[10px] text-zinc-400 line-through font-sans">
+                                                                    ${{ number_format($baseItem * $item['cantidad'], 2, '.', ',') }}
+                                                                </span>
+                                                                <span class="text-[8.5px] font-black bg-emerald-100 text-emerald-800 px-1 py-0.2 rounded uppercase">
+                                                                    -{{ $isEsp ? '50' : '40' }}% Contado
+                                                                </span>
+                                                            </div>
+                                                            <span class="text-[10px] font-bold text-amber-900 block font-sans mt-0.5">
+                                                                o 12 MSI de ${{ number_format(($pMsiItem * $item['cantidad']) / 12, 2, '.', ',') }}
+                                                            </span>
+                                                        </div>
+
+                                                        <!-- Vista cuando está en modo MSI -->
+                                                        <div class="item-price-msi-box {{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? '' : 'hidden' }}">
+                                                            <span class="text-base sm:text-lg font-extrabold text-amber-950 font-sans block">
+                                                                ${{ number_format($pMsiItem * $item['cantidad'], 2, '.', ',') }}
+                                                            </span>
+                                                            <div class="flex items-center justify-end gap-1">
+                                                                <span class="text-[10px] text-zinc-400 line-through font-sans">
+                                                                    ${{ number_format($baseItem * $item['cantidad'], 2, '.', ',') }}
+                                                                </span>
+                                                                <span class="text-[8.5px] font-black bg-amber-100 text-amber-900 px-1 py-0.2 rounded uppercase">
+                                                                    -{{ $isEsp ? '35' : '30' }}% MSI
+                                                                </span>
+                                                            </div>
+                                                            @php
+                                                                $mItemSel = $mesesMsiSeleccionado ?? 12;
+                                                            @endphp
+                                                            <span class="cart-item-msi-badge text-[10.5px] font-black text-amber-950 block font-sans mt-0.5 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200"
+                                                                  data-total-item="{{ $pMsiItem * $item['cantidad'] }}">
+                                                                <span class="item-msi-meses-txt">{{ $mItemSel }}</span> MSI de $<span class="item-msi-cuota-txt">{{ number_format(($pMsiItem * $item['cantidad']) / $mItemSel, 2, '.', ',') }}</span>/m
+                                                            </span>
+                                                        </div>
+                                                    @else
+                                                        {{-- Formato Tradicional de Precio fuera de campaña --}}
+                                                        <span class="text-base sm:text-lg font-extrabold text-zinc-950 font-sans block">
+                                                            ${{ number_format($item['precio'] * $item['cantidad'], 2, '.', ',') }}
                                                         </span>
-                                                    </div>
+                                                        @if(!empty($item['con_descuento']) && $item['con_descuento'])
+                                                            <span class="text-[10px] text-zinc-400 line-through block">
+                                                                ${{ number_format($item['precio_original'] * $item['cantidad'], 2, '.', ',') }}
+                                                            </span>
+                                                        @endif
+                                                    @endif
                                                 </div>
                                             </div>
 
@@ -330,6 +342,7 @@
                         </div>
                     </div>
 
+                    @if($promoActiva ?? \App\Models\Producto::isCampanaPromocionalActiva())
                     <!-- Selector Interactivo de Modalidad de Pago -->
                     <div class="mt-4 pt-4 border-t border-zinc-200">
                         <div class="flex items-center justify-between mb-2.5">
@@ -438,11 +451,16 @@
                             </div>
                         </div>
                     </div>
+                    @endif
 
                     <!-- Total Estimado -->
                     <div class="flex items-center justify-between py-4 text-zinc-950">
                         <span id="label-total-cart" class="text-sm sm:text-base font-bold">
-                            Total estimado ({{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? 'Meses Sin Intereses' : 'Contado' }})
+                            @if($promoActiva ?? \App\Models\Producto::isCampanaPromocionalActiva())
+                                Total estimado ({{ ($tipoPagoSeleccionado ?? 'contado') === 'msi' ? 'Meses Sin Intereses' : 'Contado' }})
+                            @else
+                                Total estimado
+                            @endif
                         </span>
                         <span id="valor-total-cart" class="text-xl sm:text-2xl font-extrabold font-sans text-emerald-900">
                             ${{ number_format($total, 2, '.', ',') }}
@@ -452,7 +470,7 @@
                     <!-- Botón Principal "Continuar" combinando con los colores de la marca -->
                     <div class="mt-2 space-y-3">
                         @if(!empty($carrito))
-                            <a id="btn-continuar-checkout" href="{{ route('checkout') }}?tipo_pago={{ $tipoPagoSeleccionado ?? 'contado' }}&meses_msi={{ $mesesMsiSeleccionado ?? 12 }}" class="w-full block text-center bg-amber-800 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-4 rounded-2xl transition-all shadow-md hover:shadow-amber-900/30 active:scale-98 border border-white/20">
+                            <a id="btn-continuar-checkout" href="{{ route('checkout') }}{{ ($promoActiva ?? \App\Models\Producto::isCampanaPromocionalActiva()) ? '?tipo_pago=' . ($tipoPagoSeleccionado ?? 'contado') . '&meses_msi=' . ($mesesMsiSeleccionado ?? 12) : '' }}" class="w-full block text-center bg-amber-800 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-4 rounded-2xl transition-all shadow-md hover:shadow-amber-900/30 active:scale-98 border border-white/20">
                                 Continuar
                             </a>
                         @else

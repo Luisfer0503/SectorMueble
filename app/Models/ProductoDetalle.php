@@ -50,20 +50,27 @@ class ProductoDetalle extends Model
 
     /**
      * Porcentaje de descuento para pago de contado.
-     * 50% para productos seleccionados, 40% para el resto.
+     * 50% para productos seleccionados, 40% para el resto (durante la campaña).
+     * Fuera de campaña: porcentaje_descuento individual si tiene.
      */
     public function getPorcentajeDescuentoContadoAttribute(): int
     {
-        return $this->isPromoEspecial() ? 50 : 40;
+        if (Producto::isCampanaPromocionalActiva()) {
+            return $this->isPromoEspecial() ? 50 : 40;
+        }
+        return (int) ($this->attributes['porcentaje_descuento'] ?? 0);
     }
 
     /**
      * Porcentaje de descuento para pago con Meses Sin Intereses (3, 6, 9, 12 MSI).
-     * 35% para productos seleccionados, 30% para el resto.
+     * 35% para productos seleccionados, 30% para el resto (durante la campaña).
      */
     public function getPorcentajeDescuentoMsiAttribute(): int
     {
-        return $this->isPromoEspecial() ? 35 : 30;
+        if (Producto::isCampanaPromocionalActiva()) {
+            return $this->isPromoEspecial() ? 35 : 30;
+        }
+        return 0;
     }
 
     /**
@@ -71,8 +78,11 @@ class ProductoDetalle extends Model
      */
     public function getPrecioContadoAttribute(): float
     {
-        $base = (float) $this->precio;
-        return round($base * (1 - ($this->porcentaje_descuento_contado / 100)), 2);
+        if (Producto::isCampanaPromocionalActiva()) {
+            $base = (float) $this->precio;
+            return round($base * (1 - ($this->porcentaje_descuento_contado / 100)), 2);
+        }
+        return $this->precioEfectivo();
     }
 
     /**
@@ -80,8 +90,11 @@ class ProductoDetalle extends Model
      */
     public function getPrecioMsiAttribute(): float
     {
-        $base = (float) $this->precio;
-        return round($base * (1 - ($this->porcentaje_descuento_msi / 100)), 2);
+        if (Producto::isCampanaPromocionalActiva()) {
+            $base = (float) $this->precio;
+            return round($base * (1 - ($this->porcentaje_descuento_msi / 100)), 2);
+        }
+        return $this->precioEfectivo();
     }
 
     /**
@@ -98,15 +111,25 @@ class ProductoDetalle extends Model
      */
     public function tieneDescuento(): bool
     {
-        return true;
+        if (Producto::isCampanaPromocionalActiva()) {
+            return true;
+        }
+        return !is_null($this->attributes['porcentaje_descuento'] ?? null) && ((int) ($this->attributes['porcentaje_descuento'] ?? 0)) > 0;
     }
 
     /**
-     * Retorna el precio final de contado efectivo del subartículo.
+     * Retorna el precio final efectivo del subartículo.
      */
     public function precioEfectivo(): float
     {
-        return $this->precio_contado;
+        if (Producto::isCampanaPromocionalActiva()) {
+            return $this->precio_contado;
+        }
+
+        if ($this->tieneDescuento() && !empty($this->attributes['precio_descuento'])) {
+            return (float) $this->attributes['precio_descuento'];
+        }
+        return (float) $this->precio;
     }
 
     /**
@@ -114,7 +137,10 @@ class ProductoDetalle extends Model
      */
     public function getPorcentajeDescuentoAttribute($value): int
     {
-        return $this->porcentaje_descuento_contado;
+        if (Producto::isCampanaPromocionalActiva()) {
+            return $this->porcentaje_descuento_contado;
+        }
+        return (int) ($value ?? 0);
     }
 
     /**
@@ -122,7 +148,10 @@ class ProductoDetalle extends Model
      */
     public function getPrecioDescuentoAttribute($value): float
     {
-        return $this->precio_contado;
+        if (Producto::isCampanaPromocionalActiva()) {
+            return $this->precio_contado;
+        }
+        return (float) ($value ?? $this->precio);
     }
 
     /**

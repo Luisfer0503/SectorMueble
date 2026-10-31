@@ -94,6 +94,27 @@ class Producto extends Model
     }
 
     /**
+     * Determina si la campaña de promociones (50%/35% y 40%/30% + MSI) está activa.
+     * Inicia automáticamente el 1 de noviembre de 2026 a las 00:00:00 hora Ciudad de México.
+     * Puede forzarse vía entorno con PROMO_NOVIEMBRE_ACTIVA=true o false.
+     */
+    public static function isCampanaPromocionalActiva(): bool
+    {
+        $override = env('PROMO_NOVIEMBRE_ACTIVA', null);
+        if ($override !== null && $override !== '') {
+            return filter_var($override, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        try {
+            $ahora = \Carbon\Carbon::now('America/Mexico_City');
+            $inicioPromo = \Carbon\Carbon::create(2026, 11, 1, 0, 0, 0, 'America/Mexico_City');
+            return $ahora->greaterThanOrEqualTo($inicioPromo);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    /**
      * Indica si el producto forma parte de la promoción especial seleccionada (50% contado / 35% MSI).
      */
     public function isPromoEspecial(): bool
@@ -103,20 +124,28 @@ class Producto extends Model
 
     /**
      * Porcentaje de descuento para pago de contado.
-     * 50% para productos seleccionados, 40% para todos los demás.
+     * Durante la campaña: 50% para productos seleccionados, 40% para todos los demás.
+     * Fuera de la campaña: porcentaje_descuento normal asignado al producto.
      */
     public function getPorcentajeDescuentoContadoAttribute(): int
     {
-        return $this->isPromoEspecial() ? 50 : 40;
+        if (self::isCampanaPromocionalActiva()) {
+            return $this->isPromoEspecial() ? 50 : 40;
+        }
+        return (int) ($this->attributes['porcentaje_descuento'] ?? 0);
     }
 
     /**
      * Porcentaje de descuento para pago a Meses Sin Intereses (3, 6, 9, 12 MSI).
-     * 35% para productos seleccionados, 30% para todos los demás.
+     * Durante la campaña: 35% para productos seleccionados, 30% para todos los demás.
+     * Fuera de la campaña: 0%.
      */
     public function getPorcentajeDescuentoMsiAttribute(): int
     {
-        return $this->isPromoEspecial() ? 35 : 30;
+        if (self::isCampanaPromocionalActiva()) {
+            return $this->isPromoEspecial() ? 35 : 30;
+        }
+        return 0;
     }
 
     /**
@@ -124,8 +153,11 @@ class Producto extends Model
      */
     public function getPrecioContadoAttribute(): float
     {
-        $base = (float) $this->precio;
-        return round($base * (1 - ($this->porcentaje_descuento_contado / 100)), 2);
+        if (self::isCampanaPromocionalActiva()) {
+            $base = (float) $this->precio;
+            return round($base * (1 - ($this->porcentaje_descuento_contado / 100)), 2);
+        }
+        return $this->precioEfectivo();
     }
 
     /**
@@ -133,8 +165,11 @@ class Producto extends Model
      */
     public function getPrecioMsiAttribute(): float
     {
-        $base = (float) $this->precio;
-        return round($base * (1 - ($this->porcentaje_descuento_msi / 100)), 2);
+        if (self::isCampanaPromocionalActiva()) {
+            $base = (float) $this->precio;
+            return round($base * (1 - ($this->porcentaje_descuento_msi / 100)), 2);
+        }
+        return $this->precioEfectivo();
     }
 
     /**
@@ -147,35 +182,51 @@ class Producto extends Model
     }
 
     /**
-     * Indica si el producto tiene promoción activa (siempre true bajo esta campaña).
+     * Indica si el producto tiene promoción/descuento activo.
      */
     public function tieneDescuento(): bool
     {
-        return true;
+        if (self::isCampanaPromocionalActiva()) {
+            return true;
+        }
+        return !is_null($this->attributes['porcentaje_descuento'] ?? null) && ((int) ($this->attributes['porcentaje_descuento'] ?? 0)) > 0;
     }
 
     /**
-     * Retorna el precio de contado por defecto como precio efectivo.
+     * Retorna el precio final efectivo.
      */
     public function precioEfectivo(): float
     {
-        return $this->precio_contado;
+        if (self::isCampanaPromocionalActiva()) {
+            return $this->precio_contado;
+        }
+
+        if ($this->tieneDescuento() && !empty($this->attributes['precio_descuento'])) {
+            return (float) $this->attributes['precio_descuento'];
+        }
+        return (float) $this->precio;
     }
 
     /**
-     * Accessor para porcentaje de descuento compatible con código previo (refleja pago de contado).
+     * Accessor para porcentaje de descuento compatible con código previo.
      */
     public function getPorcentajeDescuentoAttribute($value): int
     {
-        return $this->porcentaje_descuento_contado;
+        if (self::isCampanaPromocionalActiva()) {
+            return $this->porcentaje_descuento_contado;
+        }
+        return (int) ($value ?? 0);
     }
 
     /**
-     * Accessor para precio con descuento compatible con código previo (refleja pago de contado).
+     * Accessor para precio con descuento compatible con código previo.
      */
     public function getPrecioDescuentoAttribute($value): float
     {
-        return $this->precio_contado;
+        if (self::isCampanaPromocionalActiva()) {
+            return $this->precio_contado;
+        }
+        return (float) ($value ?? $this->precio);
     }
 
     /**

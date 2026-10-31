@@ -157,13 +157,14 @@
 
                     <!-- Paso 3: Modalidad y Método de Pago Seguro (Stripe) -->
                     <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
+                        <input type="hidden" name="tipo_pago" id="tipo_pago" value="{{ $tipoPagoInicial ?? 'contado' }}">
+                        <input type="hidden" name="meses_msi" id="meses_msi" value="{{ $mesesMsiInicial ?? 12 }}">
+
+                        @if($promoActiva ?? \App\Models\Producto::isCampanaPromocionalActiva())
                         <div class="flex items-center space-x-3 mb-4 sm:mb-6">
                             <span class="bg-[#4c6f4f] text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
                             <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Elige tu Modalidad de Pago</h2>
                         </div>
-
-                        <input type="hidden" name="tipo_pago" id="tipo_pago" value="{{ $tipoPagoInicial ?? 'contado' }}">
-                        <input type="hidden" name="meses_msi" id="meses_msi" value="{{ $mesesMsiInicial ?? 12 }}">
 
                         {{-- Selector de Modalidad: Contado vs MSI --}}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
@@ -256,6 +257,7 @@
                             </div>
                             <p class="text-[10px] text-zinc-500 italic mt-2 leading-tight">* Stripe te permitirá confirmar tu plazo seleccionado de <strong id="checkout-msi-meses-hint" class="text-emerald-900">{{ $mesesMsiInicial ?? 12 }}</strong> meses directamente en el formulario seguro tras ingresar los datos de tu tarjeta de crédito participante.</p>
                         </div>
+                        @endif
 
                         {{-- Pasarela Stripe Info --}}
                         <div class="bg-gradient-to-r from-amber-500/10 via-amber-100/40 to-amber-50/20 p-4 sm:p-5 rounded-2xl border border-amber-200">
@@ -411,6 +413,7 @@
         const cuotaMsi9Formatted = "{{ number_format($cuotaMsi9, 2, '.', ',') }}";
         const cuotaMsi12Formatted = "{{ number_format($cuotaMsi12, 2, '.', ',') }}";
 
+        const promoActiva = {{ ($promoActiva ?? \App\Models\Producto::isCampanaPromocionalActiva()) ? 'true' : 'false' }};
         let tipoPagoActual = '{{ $tipoPagoInicial ?? "contado" }}';
         let mesesMsiActual = {{ $mesesMsiInicial ?? 12 }};
         let cpValidadoEnBD = false;
@@ -515,7 +518,7 @@
                 }
                 if (summaryMsiPreview) summaryMsiPreview.classList.add('hidden');
                 if (btnTexto && cpValidadoEnBD) {
-                    btnTexto.textContent = `Pagar $ ${totalContadoFormatted} MXN de Contado`;
+                    btnTexto.textContent = `Pagar $ ${totalContadoFormatted} MXN${promoActiva ? ' de Contado' : ''}`;
                 }
             }
         }
