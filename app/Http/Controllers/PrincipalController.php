@@ -210,8 +210,35 @@ class PrincipalController extends Controller
         $favoritos = session()->get('favoritos', []);
         
         $subtotal = 0;
-        foreach ($carrito as $item) {
-            $subtotal += $item['precio'] * $item['cantidad'];
+        $subtotalContado = 0;
+        $subtotalMsi = 0;
+        foreach ($carrito as $id => $item) {
+            $base = (float)($item['precio_original'] ?? $item['precio']);
+            $isEspecial = !empty($item['es_promo_especial']);
+            $prodModel = Producto::find($item['producto_id'] ?? $id);
+            if ($prodModel) {
+                $isEspecial = $prodModel->isPromoEspecial();
+            }
+            $pContado = round($base * ($isEspecial ? 0.50 : 0.60), 2);
+            $pMsi = round($base * ($isEspecial ? 0.65 : 0.70), 2);
+
+            $subtotalContado += $pContado * $item['cantidad'];
+            $subtotalMsi += $pMsi * $item['cantidad'];
+        }
+
+        $tipoPagoSeleccionado = session()->get('tipo_pago_seleccionado', 'contado');
+        if (request()->has('tipo_pago') && in_array(request()->query('tipo_pago'), ['contado', 'msi'])) {
+            $tipoPagoSeleccionado = request()->query('tipo_pago');
+            session()->put('tipo_pago_seleccionado', $tipoPagoSeleccionado);
+        }
+
+        $mesesMsiSeleccionado = (int) session()->get('meses_msi_seleccionado', 12);
+        if (request()->has('meses_msi') && in_array((int)request()->query('meses_msi'), [3, 6, 9, 12])) {
+            $mesesMsiSeleccionado = (int) request()->query('meses_msi');
+            session()->put('meses_msi_seleccionado', $mesesMsiSeleccionado);
+        }
+        if (!in_array($mesesMsiSeleccionado, [3, 6, 9, 12])) {
+            $mesesMsiSeleccionado = 12;
         }
 
         // Calcular cupón de descuento
@@ -220,7 +247,8 @@ class PrincipalController extends Controller
         if ($cuponAplicado) {
             $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
             if ($cupon) {
-                $descuento = $cupon->calcularDescuento($subtotal);
+                $subtotalParaCupon = ($tipoPagoSeleccionado === 'msi') ? $subtotalMsi : $subtotalContado;
+                $descuento = $cupon->calcularDescuento($subtotalParaCupon);
             } else {
                 session()->forget('cupon');
                 $cuponAplicado = null;
@@ -228,15 +256,55 @@ class PrincipalController extends Controller
         }
 
         // Envío gratis si alcanza o supera los $10,000 MXN, si no, $600 MXN de costo de envío dentro del radar de cobertura
-        $envio = ($subtotal >= 10000 || $subtotal == 0) ? 0 : 600.00;
-        $total = max(0, $subtotal - $descuento) + $envio;
+        $envioContado = ($subtotalContado >= 10000 || $subtotalContado == 0) ? 0 : 600.00;
+        $envioMsi = ($subtotalMsi >= 10000 || $subtotalMsi == 0) ? 0 : 600.00;
+
+        $totalContado = max(0, $subtotalContado - $descuento) + $envioContado;
+        $totalMsi = max(0, $subtotalMsi - $descuento) + $envioMsi;
+
+        $cuotaMsi12 = $totalMsi > 0 ? round($totalMsi / 12, 2) : 0;
+        $cuotaMsi9 = $totalMsi > 0 ? round($totalMsi / 9, 2) : 0;
+        $cuotaMsi6 = $totalMsi > 0 ? round($totalMsi / 6, 2) : 0;
+        $cuotaMsi3 = $totalMsi > 0 ? round($totalMsi / 3, 2) : 0;
+
+        $subtotal = ($tipoPagoSeleccionado === 'msi') ? $subtotalMsi : $subtotalContado;
+        $envio = ($tipoPagoSeleccionado === 'msi') ? $envioMsi : $envioContado;
+        $total = ($tipoPagoSeleccionado === 'msi') ? $totalMsi : $totalContado;
 
         // Muebles frecuentemente comprados juntos / recomendados
         $frecuentementeComprados = Producto::activo()->with(['detalles' => function($q) {
             $q->where('activo', true);
         }])->inRandomOrder()->take(3)->get();
 
-        return view('Principal.carrito', compact('carrito', 'favoritos', 'subtotal', 'envio', 'descuento', 'total', 'cuponAplicado', 'frecuentementeComprados'));
+        return view('Principal.carrito', compact(
+            'carrito', 'favoritos', 'subtotal', 'subtotalContado', 'subtotalMsi',
+            'totalContado', 'totalMsi', 'cuotaMsi12', 'cuotaMsi9', 'cuotaMsi6', 'cuotaMsi3',
+            'envio', 'envioContado', 'envioMsi', 'descuento', 'total', 'cuponAplicado',
+            'frecuentementeComprados', 'tipoPagoSeleccionado', 'mesesMsiSeleccionado'
+        ));
+    }
+
+    /**
+     * Guardar la modalidad de pago seleccionada por el usuario (contado o msi y número de meses).
+     */
+    public function seleccionarTipoPago(Request $request)
+    {
+        $tipo = $request->input('tipo_pago', 'contado');
+        if (!in_array($tipo, ['contado', 'msi'])) {
+            $tipo = 'contado';
+        }
+        session()->put('tipo_pago_seleccionado', $tipo);
+
+        $mesesMsi = (int) $request->input('meses_msi', 12);
+        if (in_array($mesesMsi, [3, 6, 9, 12])) {
+            session()->put('meses_msi_seleccionado', $mesesMsi);
+        }
+
+        return response()->json([
+            'success'   => true,
+            'tipo_pago' => $tipo,
+            'meses_msi' => $mesesMsi,
+        ]);
     }
 
     /**
@@ -317,25 +385,42 @@ class PrincipalController extends Controller
             }
             $carrito[$itemKey]['cantidad'] = $nuevaCantidad;
         } else {
-            $tieneDesc = ($detalle && $detalle->tieneDescuento()) ? true : $producto->tieneDescuento();
-            $descPct = ($detalle && $detalle->porcentaje_descuento !== null) ? (float)$detalle->porcentaje_descuento : (float)($producto->porcentaje_descuento ?? 0);
-            $precioEf = $tieneDesc ? round($precioUnitario * (1 - $descPct / 100), 2) : $precioUnitario;
+            $isEspecial = $producto->isPromoEspecial();
+            $pctContado = $isEspecial ? 50 : 40;
+            $pctMsi = $isEspecial ? 35 : 30;
+            $precioBase = $precioUnitario;
+            $precioContado = round($precioBase * (1 - $pctContado / 100), 2);
+            $precioMsi = round($precioBase * (1 - $pctMsi / 100), 2);
 
             $carrito[$itemKey] = [
-                'producto_id'       => $producto->id,
-                'subarticulo_id'    => $detalleId,
-                'nombre'            => $producto->nombre,
+                'producto_id'        => $producto->id,
+                'subarticulo_id'     => $detalleId,
+                'nombre'             => $producto->nombre,
                 'subarticulo_nombre' => $nombreSub,
-                'sku'               => $skuSub,
-                'precio'            => $precioEf,
-                'precio_original'   => $precioUnitario,
-                'con_descuento'     => $tieneDesc,
-                'imagen_url'        => $imagenUrl,
-                'cantidad'          => $cantidad,
-                'categoria'         => $producto->categoria,
-                'color'             => $nombreSub,
-                'stock_disponible'  => $stockDisponible,
+                'sku'                => $skuSub,
+                'precio'             => $precioContado,
+                'precio_original'    => $precioBase,
+                'precio_contado'     => $precioContado,
+                'precio_msi'         => $precioMsi,
+                'pct_contado'        => $pctContado,
+                'pct_msi'            => $pctMsi,
+                'es_promo_especial'  => $isEspecial,
+                'con_descuento'      => true,
+                'imagen_url'         => $imagenUrl,
+                'cantidad'           => $cantidad,
+                'categoria'          => $producto->categoria,
+                'color'              => $nombreSub,
+                'stock_disponible'   => $stockDisponible,
             ];
+        }
+
+        $tipoPago = $request->input('tipo_pago');
+        if ($tipoPago && in_array($tipoPago, ['contado', 'msi'])) {
+            session()->put('tipo_pago_seleccionado', $tipoPago);
+        }
+        $mesesMsi = (int) $request->input('meses_msi');
+        if ($mesesMsi && in_array($mesesMsi, [3, 6, 9, 12])) {
+            session()->put('meses_msi_seleccionado', $mesesMsi);
         }
 
         session()->put('carrito', $carrito);
@@ -535,7 +620,7 @@ class PrincipalController extends Controller
     /**
      * Mostrar la vista para finalizar compra (Checkout).
      */
-    public function finalizarCompra()
+    public function finalizarCompra(Request $request)
     {
         $carrito = session()->get('carrito', []);
 
@@ -543,10 +628,35 @@ class PrincipalController extends Controller
             return redirect()->route('carrito')->with('error', 'Tu carrito está vacío. Agrega algún mueble para comprar.');
         }
 
-        $subtotal = 0;
-        foreach ($carrito as $item) {
-            $subtotal += $item['precio'] * $item['cantidad'];
+        $tipoPagoInicial = $request->query('tipo_pago', session('tipo_pago_seleccionado', 'contado'));
+        if (!in_array($tipoPagoInicial, ['contado', 'msi'])) {
+            $tipoPagoInicial = 'contado';
         }
+        session()->put('tipo_pago_seleccionado', $tipoPagoInicial);
+
+        $mesesMsiInicial = (int) $request->query('meses_msi', session('meses_msi_seleccionado', 12));
+        if (!in_array($mesesMsiInicial, [3, 6, 9, 12])) {
+            $mesesMsiInicial = 12;
+        }
+        session()->put('meses_msi_seleccionado', $mesesMsiInicial);
+
+        $subtotalContado = 0;
+        $subtotalMsi = 0;
+        foreach ($carrito as $id => $item) {
+            $base = (float)($item['precio_original'] ?? $item['precio']);
+            $isEspecial = !empty($item['es_promo_especial']);
+            $prodModel = Producto::find($item['producto_id'] ?? $id);
+            if ($prodModel) {
+                $isEspecial = $prodModel->isPromoEspecial();
+            }
+            $pContado = round($base * ($isEspecial ? 0.50 : 0.60), 2);
+            $pMsi = round($base * ($isEspecial ? 0.65 : 0.70), 2);
+
+            $subtotalContado += $pContado * $item['cantidad'];
+            $subtotalMsi += $pMsi * $item['cantidad'];
+        }
+
+        $subtotal = $subtotalContado;
 
         // Calcular cupón de descuento
         $descuento = 0.00;
@@ -554,7 +664,8 @@ class PrincipalController extends Controller
         if ($cuponAplicado) {
             $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
             if ($cupon) {
-                $descuento = $cupon->calcularDescuento($subtotal);
+                $subtotalParaCupon = ($tipoPagoInicial === 'msi') ? $subtotalMsi : $subtotalContado;
+                $descuento = $cupon->calcularDescuento($subtotalParaCupon);
             } else {
                 session()->forget('cupon');
                 $cuponAplicado = null;
@@ -564,7 +675,18 @@ class PrincipalController extends Controller
         $envio = ($subtotal >= 10000) ? 0 : 600.00;
         $total = max(0, $subtotal - $descuento) + $envio;
 
-        return view('Principal.checkout', compact('carrito', 'subtotal', 'envio', 'descuento', 'total', 'cuponAplicado'));
+        $envioMsi = ($subtotalMsi >= 10000) ? 0 : 600.00;
+        $totalMsi = max(0, $subtotalMsi - $descuento) + $envioMsi;
+        $cuotaMsi12 = round($totalMsi / 12, 2);
+        $cuotaMsi9 = round($totalMsi / 9, 2);
+        $cuotaMsi6 = round($totalMsi / 6, 2);
+        $cuotaMsi3 = round($totalMsi / 3, 2);
+
+        return view('Principal.checkout', compact(
+            'carrito', 'subtotal', 'envio', 'descuento', 'total', 'cuponAplicado',
+            'subtotalContado', 'subtotalMsi', 'totalMsi', 'cuotaMsi12', 'cuotaMsi9', 'cuotaMsi6', 'cuotaMsi3',
+            'tipoPagoInicial', 'mesesMsiInicial'
+        ));
     }
 
     /**
@@ -603,14 +725,44 @@ class PrincipalController extends Controller
             return redirect()->back()->with('error', 'El Código Postal ' . $request->codigo_postal . ' no cuenta con cobertura para pago en línea. Por favor contacta a un agente de ventas.')->withInput();
         }
 
+        $tipoPago = $request->input('tipo_pago', 'contado');
+        if (!in_array($tipoPago, ['contado', 'msi'])) {
+            $tipoPago = 'contado';
+        }
+        $mesesMsi = (int) $request->input('meses_msi', 12);
+        if (!in_array($mesesMsi, [3, 6, 9, 12])) {
+            $mesesMsi = 12;
+        }
+        $tipoPagoGuardar = ($tipoPago === 'msi') ? "msi_{$mesesMsi}" : 'contado';
+
         $subtotal = 0;
+        $itemsProcesados = [];
         foreach ($carrito as $id => $item) {
             // Verificar stock en tiempo real
-            $producto = Producto::find($id);
+            $producto = Producto::find($item['producto_id'] ?? $id);
             if (!$producto || $producto->stock < $item['cantidad']) {
                 return redirect()->route('carrito')->with('error', 'El producto ' . ($producto ? $producto->nombre : '') . ' ya no tiene stock suficiente. Ajusta tu carrito.');
             }
-            $subtotal += $item['precio'] * $item['cantidad'];
+
+            $base = (float)($item['precio_original'] ?? $item['precio']);
+            $isEspecial = $producto->isPromoEspecial();
+
+            if ($tipoPago === 'msi') {
+                $itemPrecio = round($base * ($isEspecial ? 0.65 : 0.70), 2);
+                $descLabel = $isEspecial ? '35% desc. + MSI' : '30% desc. + MSI';
+            } else {
+                $itemPrecio = round($base * ($isEspecial ? 0.50 : 0.60), 2);
+                $descLabel = $isEspecial ? '50% desc. Contado' : '40% desc. Contado';
+            }
+
+            $subtotal += $itemPrecio * $item['cantidad'];
+            $itemsProcesados[] = [
+                'producto_id'     => $producto->id,
+                'subarticulo_id'  => $item['subarticulo_id'] ?? null,
+                'nombre'          => $item['nombre'] . ' (' . $descLabel . ')',
+                'precio'          => $itemPrecio,
+                'cantidad'        => $item['cantidad'],
+            ];
         }
 
         // Calcular cupón de descuento
@@ -643,6 +795,7 @@ class PrincipalController extends Controller
                 'ciudad'               => $request->ciudad,
                 'codigo_postal'        => $request->codigo_postal,
                 'total'                => $total,
+                'tipo_pago'            => $tipoPagoGuardar,
                 'cupon_codigo'         => $cuponCodigo,
                 'descuento'            => $descuento,
                 'estado'               => 'pendiente',
@@ -657,15 +810,13 @@ class PrincipalController extends Controller
             ]);
 
             // 2. Crear Detalles y reducir Stock
-            foreach ($carrito as $id => $item) {
-                $producto = Producto::find($id);
-                
+            foreach ($itemsProcesados as $calc) {
                 DetallePedido::create([
-                    'pedido_id' => $pedido->id,
-                    'producto_id' => $producto->id,
-                    'nombre_producto' => $item['nombre'],
-                    'precio' => $item['precio'],
-                    'cantidad' => $item['cantidad'],
+                    'pedido_id'       => $pedido->id,
+                    'producto_id'     => $calc['producto_id'],
+                    'nombre_producto' => $calc['nombre'],
+                    'precio'          => $calc['precio'],
+                    'cantidad'        => $calc['cantidad'],
                 ]);
 
                 // Descontar stock del subartículo / acabado específico
@@ -786,10 +937,46 @@ class PrincipalController extends Controller
         try {
             DB::beginTransaction();
 
-            $subtotal = 0;
-            foreach ($carrito as $item) {
-                $subtotal += $item['precio'] * $item['cantidad'];
+            $tipoPago = $request->input('tipo_pago', 'contado');
+            if (!in_array($tipoPago, ['contado', 'msi'])) {
+                $tipoPago = 'contado';
             }
+            $mesesMsi = (int) $request->input('meses_msi', 12);
+            if (!in_array($mesesMsi, [3, 6, 9, 12])) {
+                $mesesMsi = 12;
+            }
+            $tipoPagoGuardar = ($tipoPago === 'msi') ? "msi_{$mesesMsi}" : 'contado';
+
+            $subtotal = 0;
+            $itemsCalculados = [];
+            foreach ($carrito as $id => $item) {
+                $base = (float)($item['precio_original'] ?? $item['precio']);
+                $isEspecial = !empty($item['es_promo_especial']);
+                $producto = Producto::find($item['producto_id'] ?? $id);
+                if ($producto) {
+                    $isEspecial = $producto->isPromoEspecial();
+                }
+
+                if ($tipoPago === 'msi') {
+                    // 35% de descuento en seleccionados, 30% en los demás
+                    $itemPrecio = round($base * ($isEspecial ? 0.65 : 0.70), 2);
+                    $descLabel = $isEspecial ? '35% desc. + MSI' : '30% desc. + MSI';
+                } else {
+                    // 50% de descuento en seleccionados, 40% en los demás
+                    $itemPrecio = round($base * ($isEspecial ? 0.50 : 0.60), 2);
+                    $descLabel = $isEspecial ? '50% desc. Contado' : '40% desc. Contado';
+                }
+
+                $subtotal += $itemPrecio * $item['cantidad'];
+
+                $itemsCalculados[] = [
+                    'producto_id'     => $producto ? $producto->id : null,
+                    'nombre'          => $item['nombre'] . ' (' . $descLabel . ')',
+                    'precio'          => $itemPrecio,
+                    'cantidad'        => $item['cantidad'],
+                ];
+            }
+
             $descuento = 0.00;
             $cuponCodigo = null;
             $cuponAplicado = session()->get('cupon');
@@ -815,6 +1002,7 @@ class PrincipalController extends Controller
                 'ciudad'               => $request->ciudad,
                 'codigo_postal'        => $request->codigo_postal,
                 'total'                => $total,
+                'tipo_pago'            => $tipoPagoGuardar,
                 'cupon_codigo'         => $cuponCodigo,
                 'descuento'            => $descuento,
                 'estado'               => 'procesando',
@@ -829,15 +1017,14 @@ class PrincipalController extends Controller
             ]);
 
             // 2. Crear detalles del pedido
-            foreach ($carrito as $id => $item) {
-                $producto = Producto::find($id);
-                if ($producto) {
+            foreach ($itemsCalculados as $calc) {
+                if ($calc['producto_id']) {
                     DetallePedido::create([
                         'pedido_id'       => $pedido->id,
-                        'producto_id'     => $producto->id,
-                        'nombre_producto' => $item['nombre'],
-                        'precio'          => $item['precio'],
-                        'cantidad'        => $item['cantidad'],
+                        'producto_id'     => $calc['producto_id'],
+                        'nombre_producto' => $calc['nombre'],
+                        'precio'          => $calc['precio'],
+                        'cantidad'        => $calc['cantidad'],
                     ]);
                 }
             }
@@ -846,18 +1033,18 @@ class PrincipalController extends Controller
 
             session()->put('ultimo_pedido_id', $pedido->id);
 
-            // 3. Crear sesión en Stripe con los ítems
+            // 3. Crear sesión en Stripe con los ítems calculados
             $lineItems = [];
-            foreach ($carrito as $item) {
+            foreach ($itemsCalculados as $calc) {
                 $lineItems[] = [
                     'price_data' => [
                         'currency' => config('services.stripe.currency', 'mxn'),
                         'product_data' => [
-                            'name' => $item['nombre'],
+                            'name' => $calc['nombre'],
                         ],
-                        'unit_amount' => (int) round($item['precio'] * 100),
+                        'unit_amount' => (int) round($calc['precio'] * 100),
                     ],
-                    'quantity' => $item['cantidad'],
+                    'quantity' => $calc['cantidad'],
                 ];
             }
 
@@ -874,17 +1061,32 @@ class PrincipalController extends Controller
                 ];
             }
 
-            $stripe = new \Stripe\StripeClient($stripeSecret);
-            $session = $stripe->checkout->sessions->create([
+            $stripeParams = [
                 'line_items'     => $lineItems,
                 'mode'           => 'payment',
                 'customer_email' => $request->correo_cliente,
                 'metadata'       => [
                     'pedido_id'  => $pedido->id,
+                    'tipo_pago'  => $tipoPagoGuardar,
+                    'meses_msi'  => $tipoPago === 'msi' ? $mesesMsi : null,
                 ],
                 'success_url'    => route('checkout.stripe.exito') . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url'     => route('checkout.stripe.cancelado'),
-            ]);
+            ];
+
+            if ($tipoPago === 'msi') {
+                $stripeParams['payment_method_types'] = ['card'];
+                $stripeParams['payment_method_options'] = [
+                    'card' => [
+                        'installments' => [
+                            'enabled' => true,
+                        ],
+                    ],
+                ];
+            }
+
+            $stripe = new \Stripe\StripeClient($stripeSecret);
+            $session = $stripe->checkout->sessions->create($stripeParams);
 
             return response()->json([
                 'success' => true,
@@ -1566,14 +1768,24 @@ class PrincipalController extends Controller
             $digitosTel = '52' . $digitosTel; // Formato México
         }
 
-        // Calcular totales
-        $subtotal = 0;
+        // Calcular totales para Contado y MSI
+        $subtotalContado = 0;
+        $subtotalMsi = 0;
         $itemsTexto = "";
-        foreach ($carrito as $item) {
-            $subtotalItem = $item['precio'] * $item['cantidad'];
-            $subtotal += $subtotalItem;
-            $precioFmt = number_format($subtotalItem, 2, '.', ',');
-            $itemsTexto .= "• {$item['cantidad']}x {$item['nombre']} (\${$precioFmt} MXN)\n";
+        foreach ($carrito as $id => $item) {
+            $base = (float)($item['precio_original'] ?? $item['precio']);
+            $isEspecial = !empty($item['es_promo_especial']);
+            $producto = Producto::find($item['producto_id'] ?? $id);
+            if ($producto) {
+                $isEspecial = $producto->isPromoEspecial();
+            }
+            $pContado = round($base * ($isEspecial ? 0.50 : 0.60), 2);
+            $pMsi = round($base * ($isEspecial ? 0.65 : 0.70), 2);
+
+            $subtotalContado += $pContado * $item['cantidad'];
+            $subtotalMsi += $pMsi * $item['cantidad'];
+
+            $itemsTexto .= "• {$item['cantidad']}x {$item['nombre']} [Contado: $" . number_format($pContado * $item['cantidad'], 2, '.', ',') . " | MSI: $" . number_format($pMsi * $item['cantidad'], 2, '.', ',') . "]\n";
         }
 
         $descuento = 0.00;
@@ -1581,12 +1793,17 @@ class PrincipalController extends Controller
         if ($cuponAplicado) {
             $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
             if ($cupon) {
-                $descuento = $cupon->calcularDescuento($subtotal);
+                $descuento = $cupon->calcularDescuento($subtotalContado);
             }
         }
-        $envio = ($subtotal >= 10000) ? 0 : 600.00;
-        $total = max(0, $subtotal - $descuento) + $envio;
-        $totalFmt = number_format($total, 2, '.', ',');
+        $envio = ($subtotalContado >= 10000) ? 0 : 600.00;
+        $totalContado = max(0, $subtotalContado - $descuento) + $envio;
+        $totalMsi = max(0, $subtotalMsi - $descuento) + $envio;
+        $cuota12 = round($totalMsi / 12, 2);
+
+        $totalContadoFmt = number_format($totalContado, 2, '.', ',');
+        $totalMsiFmt = number_format($totalMsi, 2, '.', ',');
+        $cuota12Fmt = number_format($cuota12, 2, '.', ',');
 
         // Enlace interactivo para que el agente responda directamente al WhatsApp del cliente
         $mensajeRespuestaAgente = rawurlencode("Hola {$nombre}, un gusto saludarte. Recibimos tu solicitud en Sector Mueble para tu pedido con dirección: {$direccionCompleta}. ¿En qué podemos ayudarte?");
@@ -1598,7 +1815,8 @@ class PrincipalController extends Controller
         $mensajeVentas .= "📞 *Teléfono:* +{$digitosTel}\n";
         $mensajeVentas .= "📍 *Dirección / CP:* {$direccionCompleta}\n\n";
         $mensajeVentas .= "🛋️ *ARTÍCULOS EN EL CARRITO:*\n{$itemsTexto}\n";
-        $mensajeVentas .= "💰 *Total Estimado:* \${$totalFmt} MXN\n\n";
+        $mensajeVentas .= "💰 *Total Contado:* \${$totalContadoFmt} MXN\n";
+        $mensajeVentas .= "🗓️ *Total con MSI:* \${$totalMsiFmt} MXN (12 pagos de \${$cuota12Fmt} MXN)\n\n";
         $mensajeVentas .= "💬 *HAZ CLIC AQUÍ PARA RESPONDER AL CLIENTE POR WHATSAPP:*\n{$linkRespuestaCliente}";
 
         $numeroVentasRaw = config('services.whatsapp.ventas_number', '522226702641');

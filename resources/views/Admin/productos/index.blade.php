@@ -58,13 +58,28 @@
                     </svg>
                     <span>Buscar Mueble</span>
                 </button>
-                @if(request('buscar'))
+                @if(request('buscar') || request('promo'))
                     <a href="{{ route('admin.productos') }}" class="bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-bold px-4 py-2.5 rounded-xl transition-all">
                         Limpiar
                     </a>
                 @endif
             </div>
         </form>
+
+        {{-- Filtros de Promoción Rápida --}}
+        <div class="mt-3 pt-3 border-t border-zinc-100 flex flex-wrap items-center gap-2">
+            <span class="text-xs font-bold text-zinc-500 mr-1">Filtro de Promoción:</span>
+            <a href="{{ route('admin.productos') }}" class="px-3 py-1 rounded-full text-xs font-bold transition-all {{ !request('promo') ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200' }}">
+                Todos ({{ \App\Models\Producto::count() }})
+            </a>
+            <a href="{{ route('admin.productos', ['promo' => 'especial']) }}" class="px-3 py-1 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 {{ request('promo') === 'especial' ? 'bg-amber-800 text-white ring-2 ring-amber-900/30' : 'bg-amber-50 text-amber-900 border border-amber-300 hover:bg-amber-100' }}">
+                <span>⭐ Seleccionados (50% Contado / 35% MSI)</span>
+                <span class="bg-white/90 text-amber-900 text-[10px] px-1.5 py-0.2 rounded-full font-extrabold">{{ \App\Models\Producto::where('promo_especial', true)->count() }}</span>
+            </a>
+            <a href="{{ route('admin.productos', ['promo' => 'regular']) }}" class="px-3 py-1 rounded-full text-xs font-bold transition-all {{ request('promo') === 'regular' ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200' }}">
+                Promo General (40% Contado / 30% MSI) ({{ \App\Models\Producto::where('promo_especial', false)->count() }})
+            </a>
+        </div>
 
         @if(request('buscar'))
             <div class="mt-3 pt-3 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
@@ -154,19 +169,27 @@
                                                 <span>🚫 {{ $producto->agotado ? 'Agotado' : 'Disponible' }}</span>
                                             </button>
                                         </form>
+                                        <form action="{{ route('admin.productos.toggle_promo_especial', $producto->id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            <button type="submit" class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer {{ $producto->promo_especial ? 'bg-amber-100 text-amber-950 border border-amber-400 hover:bg-amber-200 shadow-2xs' : 'bg-zinc-100 text-zinc-500 border border-zinc-200 hover:bg-zinc-200' }}" title="Clic para cambiar entre Promo Especial (50%/35% MSI) y Promo General (40%/30% MSI)">
+                                                <span>{{ $producto->promo_especial ? '⭐ Promo Especial (50% / 35% MSI)' : '🏷️ Promo General (40% / 30% MSI)' }}</span>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
 
                                 <!-- Precio -->
                                 <td class="p-4">
-                                    <div class="flex flex-col">
-                                        @if($producto->tieneDescuento())
-                                            <span class="font-semibold text-zinc-400 line-through text-xs font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }}</span>
-                                            <span class="font-bold text-emerald-700 font-sans">$ {{ number_format($producto->precio_descuento, 2, '.', ',') }}</span>
-                                            <span class="text-[9px] font-bold text-white bg-rose-600 rounded px-1.5 py-0.5 w-fit mt-0.5">-{{ $producto->porcentaje_descuento }}%</span>
-                                        @else
-                                            <span class="font-semibold text-zinc-900 font-sans">$ {{ number_format($producto->precio, 2, '.', ',') }}</span>
-                                        @endif
+                                    <div class="flex flex-col space-y-0.5">
+                                        <span class="text-[11px] font-semibold text-zinc-400 line-through font-sans">Base: $ {{ number_format($producto->precio, 2, '.', ',') }}</span>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="font-extrabold text-emerald-800 font-sans text-xs">$ {{ number_format($producto->precio_contado, 2, '.', ',') }}</span>
+                                            <span class="text-[9px] font-black text-white bg-rose-600 rounded px-1 py-0.2">-{{ $producto->porcentaje_descuento_contado }}% Contado</span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="font-bold text-amber-900 font-sans text-[11px]">12 MSI: $ {{ number_format($producto->getMensualidadMsi(12), 2, '.', ',') }}/m</span>
+                                            <span class="text-[9px] font-bold text-zinc-700 bg-amber-100 rounded px-1 py-0.2">-{{ $producto->porcentaje_descuento_msi }}% MSI</span>
+                                        </div>
                                     </div>
                                 </td>
                                 

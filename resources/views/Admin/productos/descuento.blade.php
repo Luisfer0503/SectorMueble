@@ -24,12 +24,22 @@
                 <div class="w-20 h-20 rounded bg-zinc-100 overflow-hidden flex-shrink-0">
                     <img src="{{ $producto->imagen_url }}" alt="{{ $producto->nombre }}" class="w-full h-full object-cover">
                 </div>
-                <div class="min-w-0">
-                    <h2 class="font-bold text-zinc-950 text-base truncate">{{ $producto->nombre }}</h2>
+                <div class="min-w-0 flex-grow">
+                    <div class="flex items-center justify-between gap-2">
+                        <h2 class="font-bold text-zinc-950 text-base truncate">{{ $producto->nombre }}</h2>
+                        <form action="{{ route('admin.productos.toggle_promo_especial', $producto->id) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer {{ $producto->promo_especial ? 'bg-amber-100 text-amber-950 border border-amber-300' : 'bg-zinc-100 text-zinc-600 border border-zinc-200' }}">
+                                {{ $producto->promo_especial ? '⭐ Promo Especial (50%/35% MSI)' : '🏷️ Promo General (40%/30% MSI)' }}
+                            </button>
+                        </form>
+                    </div>
                     <p class="text-xs text-zinc-500 mt-0.5">Categoría: {{ $producto->categoria }}</p>
-                    <p class="text-sm font-semibold text-zinc-700 mt-2 font-sans">
-                        Precio base: <span class="text-amber-800">$ {{ number_format($producto->precio, 2, '.', ',') }} MXN</span>
-                    </p>
+                    <div class="flex flex-wrap items-center gap-4 mt-2 text-xs">
+                        <span class="text-zinc-500 font-sans">Precio base: <strong class="text-zinc-900">$ {{ number_format($producto->precio, 2, '.', ',') }}</strong></span>
+                        <span class="text-emerald-700 font-sans font-bold">Contado (-{{ $producto->porcentaje_descuento_contado }}%): $ {{ number_format($producto->precio_contado, 2, '.', ',') }}</span>
+                        <span class="text-amber-900 font-sans font-bold">MSI (-{{ $producto->porcentaje_descuento_msi }}%): 12 MSI de $ {{ number_format($producto->getMensualidadMsi(12), 2, '.', ',') }}</span>
+                    </div>
                 </div>
             </div>
 

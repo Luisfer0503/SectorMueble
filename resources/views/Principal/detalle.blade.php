@@ -107,8 +107,10 @@
                                     data-nombre="{{ $det->nombre }}"
                                     data-imagen="{{ $det->imagen_url }}"
                                     data-stock="{{ $det->stock }}"
-                                    data-precio="{{ $det->precio ?? $producto->precio }}"
-                                    data-descuento-pct="{{ $det->porcentaje_descuento ?? $producto->porcentaje_descuento ?? 0 }}"
+                                    data-precio="{{ (float)($det->precio ?? $producto->precio) }}"
+                                    data-pct-contado="{{ $det->porcentaje_descuento_contado }}"
+                                    data-pct-msi="{{ $det->porcentaje_descuento_msi }}"
+                                    data-descuento-pct="{{ $det->porcentaje_descuento_contado }}"
                                     data-agotado="{{ $det->agotado ? '1' : '0' }}"
                                     data-ultima-pieza="{{ $det->ultima_pieza ? '1' : '0' }}"
                                     onclick="switchSubArticulo('{{ $det->id }}')" 
@@ -180,24 +182,108 @@
                         <span class="text-zinc-500 text-xs">(12 valoraciones de clientes)</span>
                     </div>
 
-                    <!-- Price -->
+                    <!-- Price Section Promocional (Contado vs MSI) -->
                     @php
                         $precioInicialSub = (float)($primerDetalle->precio ?? $producto->precio);
-                        $descPctSub = (float)($primerDetalle->porcentaje_descuento ?? $producto->porcentaje_descuento ?? 0);
-                        $tieneDescSub = $descPctSub > 0;
-                        $precioDescInicialSub = $tieneDescSub ? round($precioInicialSub * (1 - $descPctSub / 100), 2) : $precioInicialSub;
+                        $pctContado = $primerDetalle ? $primerDetalle->porcentaje_descuento_contado : $producto->porcentaje_descuento_contado;
+                        $pctMsi = $primerDetalle ? $primerDetalle->porcentaje_descuento_msi : $producto->porcentaje_descuento_msi;
+                        $precioContadoInicial = round($precioInicialSub * (1 - $pctContado / 100), 2);
+                        $precioMsiInicial = round($precioInicialSub * (1 - $pctMsi / 100), 2);
+                        $ahorroContado = $precioInicialSub - $precioContadoInicial;
+                        $ahorroMsi = $precioInicialSub - $precioMsiInicial;
+                        $msi12Inicial = round($precioMsiInicial / 12, 2);
+                        $msi9Inicial = round($precioMsiInicial / 9, 2);
+                        $msi6Inicial = round($precioMsiInicial / 6, 2);
+                        $msi3Inicial = round($precioMsiInicial / 3, 2);
                     @endphp
-                    <div class="mt-6" id="price-container" data-descuento-pct="{{ $descPctSub }}">
-                        <div class="flex items-center space-x-3 {{ $tieneDescSub ? '' : 'hidden' }}" id="price-discount-wrapper">
-                            <span id="price-discounted-display" class="text-2xl font-bold text-emerald-700 font-sans">$ {{ number_format($precioDescInicialSub, 2, '.', ',') }} MXN</span>
-                            <span id="price-original-display" class="text-base text-zinc-400 line-through font-sans">$ {{ number_format($precioInicialSub, 2, '.', ',') }}</span>
-                            <span id="price-badge-display" class="bg-rose-600 text-white text-xs font-bold px-2.5 py-1 rounded">-{{ (int)$descPctSub }}%</span>
+
+                    <div class="mt-6 space-y-3" id="price-container" data-pct-contado="{{ $pctContado }}" data-pct-msi="{{ $pctMsi }}">
+                        {{-- Precio base tachado --}}
+                        <div class="flex items-center space-x-2">
+                            <span class="text-xs font-semibold text-zinc-500 uppercase tracking-wider">Precio regular:</span>
+                            <span id="price-original-display" class="text-base text-zinc-400 line-through font-sans font-bold">
+                                $ {{ number_format($precioInicialSub, 2, '.', ',') }} MXN
+                            </span>
                         </div>
-                        <span id="price-main-display" class="text-2xl font-bold text-zinc-950 font-sans {{ $tieneDescSub ? 'hidden' : '' }}">$ {{ number_format($precioInicialSub, 2, '.', ',') }} MXN</span>
-                        <p class="text-xs text-emerald-600 font-semibold mt-1 {{ $tieneDescSub ? '' : 'hidden' }}" id="price-savings-container">
-                            Ahorras <span id="price-savings-display">$ {{ number_format($precioInicialSub - $precioDescInicialSub, 2, '.', ',') }} MXN</span>
-                        </p>
-                        <p class="text-xs text-zinc-400 mt-1">IVA incluido. Envío estimado en 3-5 días laborables.</p>
+
+                        {{-- Cuadrículas de Opciones Promocionales: Contado y MSI --}}
+                        {{-- Cuadrículas de Opciones Promocionales: Contado y MSI --}}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                            {{-- Opción 1: Pago de Contado --}}
+                            <div id="card-detalle-contado" onclick="seleccionarModalidadDetalle('contado')" class="relative bg-emerald-50/90 border-2 border-emerald-600 rounded-2xl p-4 shadow-md transition-all cursor-pointer flex flex-col justify-between ring-2 ring-emerald-500/20">
+                                <div>
+                                    <div class="flex items-center justify-between gap-1 mb-2">
+                                        <div class="flex items-center gap-1.5">
+                                            <span id="badge-check-contado" class="h-4 w-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                                            <span class="text-[10px] font-black uppercase tracking-wider text-emerald-950">Pago de Contado</span>
+                                        </div>
+                                        <span id="badge-pct-contado-display" class="bg-rose-600 text-white text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-xs">
+                                            -{{ $pctContado }}% OFF
+                                        </span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1 mt-1">
+                                        <span id="price-contado-display" class="text-2xl sm:text-3xl font-extrabold text-emerald-850 font-sans tracking-tight">
+                                            $ {{ number_format($precioContadoInicial, 2, '.', ',') }}
+                                        </span>
+                                        <span class="text-[11px] font-bold text-zinc-600">MXN</span>
+                                    </div>
+                                    <p class="text-[11px] font-semibold text-emerald-700 mt-1 flex items-center gap-1">
+                                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                        <span>Ahorras <strong id="price-ahorro-contado-display" class="font-bold">$ {{ number_format($ahorroContado, 2, '.', ',') }} MXN</strong></span>
+                                    </p>
+                                </div>
+                                <span class="text-[10px] text-zinc-500 block mt-2.5 pt-2 border-t border-emerald-200/50">1 sola exhibición (Tarjeta, Transferencia o Efectivo)</span>
+                            </div>
+
+                            {{-- Opción 2: Meses Sin Intereses --}}
+                            <div id="card-detalle-msi" onclick="seleccionarModalidadDetalle('msi')" class="relative bg-zinc-50/60 border-2 border-zinc-200 rounded-2xl p-4 shadow-2xs transition-all hover:border-amber-400 cursor-pointer flex flex-col justify-between opacity-80">
+                                <div>
+                                    <div class="flex items-center justify-between gap-1 mb-2">
+                                        <div class="flex items-center gap-1.5">
+                                            <span id="badge-check-msi" class="hidden h-4 w-4 rounded-full bg-amber-700 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                                            <span class="text-[10px] font-black uppercase tracking-wider text-amber-950">Meses Sin Intereses</span>
+                                        </div>
+                                        <span id="badge-pct-msi-display" class="bg-[#1E2440] text-amber-300 border border-amber-300/30 text-[9.5px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow-xs">
+                                            -{{ $pctMsi }}% + MSI
+                                        </span>
+                                    </div>
+                                    <div class="flex items-baseline gap-1 mt-1">
+                                        <span id="price-msi-12-display" class="text-2xl sm:text-3xl font-extrabold text-amber-950 font-sans tracking-tight">
+                                            $ {{ number_format($msi12Inicial, 2, '.', ',') }}
+                                        </span>
+                                        <span id="price-msi-quota-label" class="text-[11px] font-bold text-zinc-700">/ mes (12 MSI)</span>
+                                    </div>
+                                    <p class="text-[11px] font-semibold text-amber-900 mt-1">
+                                        Total a MSI: <strong id="price-msi-total-display" class="font-bold">$ {{ number_format($precioMsiInicial, 2, '.', ',') }} MXN</strong>
+                                    </p>
+                                </div>
+
+                                {{-- Desplegable / Detalle de plazos 3, 6, 9 y 12 meses seleccionables --}}
+                                <div class="mt-2.5 pt-2 border-t border-amber-200/60 text-[10px] text-zinc-600">
+                                    <span class="font-bold text-amber-950 block mb-1">Elige a cuántos meses pagar:</span>
+                                    <div class="grid grid-cols-4 gap-1 text-center font-sans font-bold">
+                                        <div id="btn-msi-det-3" onclick="seleccionarMesesMsiDetalle(3, event)" class="cursor-pointer bg-white/90 border border-amber-200/80 rounded-lg py-1 px-0.5 hover:border-amber-400 transition-all">
+                                            <span class="block text-[8.5px] text-zinc-500 uppercase font-sans">3 Meses</span>
+                                            <span id="price-msi-3-display" class="text-[10px] text-zinc-800 font-sans font-black block">$ {{ number_format($msi3Inicial, 2, '.', ',') }}</span>
+                                        </div>
+                                        <div id="btn-msi-det-6" onclick="seleccionarMesesMsiDetalle(6, event)" class="cursor-pointer bg-white/90 border border-amber-200/80 rounded-lg py-1 px-0.5 hover:border-amber-400 transition-all">
+                                            <span class="block text-[8.5px] text-zinc-500 uppercase font-sans">6 Meses</span>
+                                            <span id="price-msi-6-display" class="text-[10px] text-zinc-800 font-sans font-black block">$ {{ number_format($msi6Inicial, 2, '.', ',') }}</span>
+                                        </div>
+                                        <div id="btn-msi-det-9" onclick="seleccionarMesesMsiDetalle(9, event)" class="cursor-pointer bg-white/90 border border-amber-200/80 rounded-lg py-1 px-0.5 hover:border-amber-400 transition-all">
+                                            <span class="block text-[8.5px] text-zinc-500 uppercase font-sans">9 Meses</span>
+                                            <span id="price-msi-9-display" class="text-[10px] text-zinc-800 font-sans font-black block">$ {{ number_format($msi9Inicial, 2, '.', ',') }}</span>
+                                        </div>
+                                        <div id="btn-msi-det-12" onclick="seleccionarMesesMsiDetalle(12, event)" class="cursor-pointer bg-amber-100/90 border-2 border-amber-600 rounded-lg py-1 px-0.5 shadow-2xs transition-all">
+                                            <span class="block text-[8.5px] text-amber-950 font-black uppercase font-sans">12 Meses</span>
+                                            <span id="price-msi-12-sub-display" class="text-[10px] text-amber-950 font-black font-sans block">$ {{ number_format($msi12Inicial, 2, '.', ',') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-zinc-400 pt-1">IVA incluido. Envío seguro garantizado y entrega coordinada con tu agente de ventas.</p>
                     </div>
 
                     <!-- Description -->
@@ -308,6 +394,8 @@
                         @csrf
                         <input type="hidden" name="color" id="input-color-seleccionado" value="{{ $primerDetalle->nombre ?? 'Original / Natural' }}">
                         <input type="hidden" name="subarticulo_id" id="input-subarticulo-id" value="{{ $primerDetalle->id ?? '' }}">
+                        <input type="hidden" name="tipo_pago" id="input-tipo-pago-detalle" value="contado">
+                        <input type="hidden" name="meses_msi" id="input-meses-msi-detalle" value="12">
                         <!-- Quantity -->
                         <div class="flex items-center border border-zinc-300 rounded-xl overflow-hidden h-12 bg-white flex-shrink-0">
                             <button type="button" onclick="const qty = document.getElementById('cantidad'); if(qty.value > 1) qty.value = parseInt(qty.value)-1;" class="qty-control-btn px-3 sm:px-4 py-2 hover:bg-zinc-100 text-zinc-600 font-bold transition-colors text-base" {{ $inicialAgotado || $producto->stock <= 0 ? 'disabled' : '' }}>-</button>
@@ -346,6 +434,8 @@
                             @csrf
                             <input type="hidden" name="color" id="input-color-seleccionado-mobile" value="{{ $primerDetalle->nombre ?? 'Original / Natural' }}">
                             <input type="hidden" name="subarticulo_id" id="input-subarticulo-id-mobile" value="{{ $primerDetalle->id ?? '' }}">
+                            <input type="hidden" name="tipo_pago" id="input-tipo-pago-detalle-mobile" value="contado">
+                            <input type="hidden" name="meses_msi" id="input-meses-msi-detalle-mobile" value="12">
                             <button type="submit" 
                                     id="btn-add-to-cart-mobile-submit" 
                                     {{ $inicialAgotado || $producto->stock <= 0 ? 'disabled' : '' }} 
@@ -381,9 +471,8 @@
                                     @if($rel->isUltimaPieza() || $rel->ultima_pieza)
                                         <span class="bg-orange-600 text-white text-[9px] font-bold px-2 py-0.5 uppercase rounded tracking-wider shadow">⚡ Última Pieza</span>
                                     @endif
-                                    @if($rel->tieneDescuento())
-                                        <span class="bg-rose-600 text-white text-[9px] font-bold px-2 py-0.5 uppercase rounded tracking-wider shadow">-{{ $rel->porcentaje_descuento }}% OFERTA</span>
-                                    @endif
+                                    <span class="bg-rose-600 text-white text-[9px] font-black px-2 py-0.5 uppercase rounded tracking-wider shadow">-{{ $rel->porcentaje_descuento_contado }}% CONTADO</span>
+                                    <span class="bg-[#1E2440] text-amber-300 border border-amber-300/30 text-[8px] font-black px-1.5 py-0.5 uppercase rounded tracking-wider shadow">-{{ $rel->porcentaje_descuento_msi }}% + MSI</span>
                                     @if($rel->destacado)
                                         <span class="bg-amber-800 text-white text-[9px] font-bold px-2 py-0.5 uppercase rounded tracking-wider shadow">Destacado</span>
                                     @endif
@@ -407,12 +496,12 @@
                                 </div>
                                 <div class="flex items-center justify-between mt-4">
                                     <div class="flex flex-col">
-                                        @if($rel->tieneDescuento())
+                                        <div class="flex items-center space-x-1.5 leading-tight">
                                             <span class="text-xs text-zinc-400 line-through font-sans">$ {{ number_format($rel->precio, 2, '.', ',') }}</span>
-                                            <span class="text-sm font-bold text-emerald-700 font-sans">$ {{ number_format($rel->precio_descuento, 2, '.', ',') }}</span>
-                                        @else
-                                            <span class="text-sm font-bold text-zinc-950 font-sans">$ {{ number_format($rel->precio, 2, '.', ',') }}</span>
-                                        @endif
+                                            <span class="text-xs font-black text-rose-600 font-sans">(-{{ $rel->porcentaje_descuento_contado }}%)</span>
+                                        </div>
+                                        <span class="text-sm font-extrabold text-emerald-800 font-sans">$ {{ number_format($rel->precio_contado, 2, '.', ',') }}</span>
+                                        <span class="text-[10px] text-amber-900 font-bold mt-0.5">o 12 MSI de $ {{ number_format($rel->getMensualidadMsi(12), 2, '.', ',') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -550,41 +639,66 @@
                 if (imagen) mobileForm.dataset.img = imagen;
             }
 
-            // Actualizar Precio Dinámicamente
+            // Actualizar Precio Dinámicamente (Contado y MSI)
             if (precioRaw > 0) {
-                const descPct = parseFloat(btn.dataset.descuentoPct || 0);
-
-                const priceMainDisplay = document.getElementById('price-main-display');
-                const priceOriginalDisplay = document.getElementById('price-original-display');
-                const priceDiscountedDisplay = document.getElementById('price-discounted-display');
-                const priceSavingsDisplay = document.getElementById('price-savings-display');
-                const priceBadgeDisplay = document.getElementById('price-badge-display');
-                const priceDiscountWrapper = document.getElementById('price-discount-wrapper');
-                const priceSavingsContainer = document.getElementById('price-savings-container');
+                const pctContado = parseFloat(btn.dataset.pctContado || 40);
+                const pctMsi = parseFloat(btn.dataset.pctMsi || 30);
 
                 const formatMoney = (amount) => {
                     return amount.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 };
 
-                if (descPct > 0) {
-                    const discountedPrice = Math.round(precioRaw * (1 - descPct / 100) * 100) / 100;
-                    const savings = precioRaw - discountedPrice;
+                const precioContado = Math.round(precioRaw * (1 - pctContado / 100) * 100) / 100;
+                const precioMsi = Math.round(precioRaw * (1 - pctMsi / 100) * 100) / 100;
+                const ahorroContado = precioRaw - precioContado;
+                const msi12 = Math.round((precioMsi / 12) * 100) / 100;
+                const msi9 = Math.round((precioMsi / 9) * 100) / 100;
+                const msi6 = Math.round((precioMsi / 6) * 100) / 100;
+                const msi3 = Math.round((precioMsi / 3) * 100) / 100;
 
-                    if (priceDiscountedDisplay) priceDiscountedDisplay.textContent = `$ ${formatMoney(discountedPrice)} MXN`;
-                    if (priceOriginalDisplay) priceOriginalDisplay.textContent = `$ ${formatMoney(precioRaw)}`;
-                    if (priceSavingsDisplay) priceSavingsDisplay.textContent = `$ ${formatMoney(savings)} MXN`;
-                    if (priceBadgeDisplay) priceBadgeDisplay.textContent = `-${Math.round(descPct)}%`;
+                const priceOriginal = document.getElementById('price-original-display');
+                if (priceOriginal) priceOriginal.textContent = `$ ${formatMoney(precioRaw)} MXN`;
 
-                    if (priceMainDisplay) priceMainDisplay.classList.add('hidden');
-                    if (priceDiscountWrapper) priceDiscountWrapper.classList.remove('hidden');
-                    if (priceSavingsContainer) priceSavingsContainer.classList.remove('hidden');
-                } else {
-                    if (priceMainDisplay) {
-                        priceMainDisplay.textContent = `$ ${formatMoney(precioRaw)} MXN`;
-                        priceMainDisplay.classList.remove('hidden');
-                    }
-                    if (priceDiscountWrapper) priceDiscountWrapper.classList.add('hidden');
-                    if (priceSavingsContainer) priceSavingsContainer.classList.add('hidden');
+                const priceContadoEl = document.getElementById('price-contado-display');
+                if (priceContadoEl) priceContadoEl.textContent = `$ ${formatMoney(precioContado)}`;
+
+                const badgeContado = document.getElementById('badge-pct-contado-display');
+                if (badgeContado) badgeContado.textContent = `-${Math.round(pctContado)}% OFF`;
+
+                const ahorroContadoEl = document.getElementById('price-ahorro-contado-display');
+                if (ahorroContadoEl) ahorroContadoEl.textContent = `$ ${formatMoney(ahorroContado)} MXN`;
+
+                let currentMsiAmount = msi12;
+                if (typeof mesesMsiDetalleActual !== 'undefined') {
+                    if (mesesMsiDetalleActual === 3) currentMsiAmount = msi3;
+                    else if (mesesMsiDetalleActual === 6) currentMsiAmount = msi6;
+                    else if (mesesMsiDetalleActual === 9) currentMsiAmount = msi9;
+                }
+
+                const priceMsi12El = document.getElementById('price-msi-12-display');
+                if (priceMsi12El) priceMsi12El.textContent = `$ ${formatMoney(currentMsiAmount)}`;
+
+                const badgeMsi = document.getElementById('badge-pct-msi-display');
+                if (badgeMsi) badgeMsi.textContent = `-${Math.round(pctMsi)}% + MSI`;
+
+                const priceMsiTotal = document.getElementById('price-msi-total-display');
+                if (priceMsiTotal) priceMsiTotal.textContent = `$ ${formatMoney(precioMsi)} MXN`;
+
+                const msi3El = document.getElementById('price-msi-3-display');
+                if (msi3El) msi3El.textContent = `$ ${formatMoney(msi3)}`;
+
+                const msi6El = document.getElementById('price-msi-6-display');
+                if (msi6El) msi6El.textContent = `$ ${formatMoney(msi6)}`;
+
+                const msi9El = document.getElementById('price-msi-9-display');
+                if (msi9El) msi9El.textContent = `$ ${formatMoney(msi9)}`;
+
+                const msi12SubEl = document.getElementById('price-msi-12-sub-display');
+                if (msi12SubEl) msi12SubEl.textContent = `$ ${formatMoney(msi12)}`;
+
+                const mobilePriceSpan = document.querySelector('#form-add-to-cart-mobile')?.previousElementSibling?.querySelector('.text-emerald-700');
+                if (mobilePriceSpan) {
+                    mobilePriceSpan.textContent = `$ ${formatMoney(precioContado)} MXN`;
                 }
             }
 
@@ -740,6 +854,86 @@
         // Retrocompatibilidad
         function switchProductColor(key) {
             switchProductAcabado(key);
+        }
+
+        let mesesMsiDetalleActual = 12;
+
+        function seleccionarMesesMsiDetalle(meses, event) {
+            if (event) event.stopPropagation();
+            mesesMsiDetalleActual = meses;
+
+            seleccionarModalidadDetalle('msi');
+
+            const inputDesktop = document.getElementById('input-meses-msi-detalle');
+            const inputMobile = document.getElementById('input-meses-msi-detalle-mobile');
+            if (inputDesktop) inputDesktop.value = meses;
+            if (inputMobile) inputMobile.value = meses;
+
+            // Actualizar apariencia de los botones de plazos
+            [3, 6, 9, 12].forEach(m => {
+                const btn = document.getElementById('btn-msi-det-' + m);
+                if (btn) {
+                    if (m === meses) {
+                        btn.className = 'cursor-pointer bg-amber-100/90 border-2 border-amber-600 rounded-lg py-1 px-0.5 shadow-2xs transition-all';
+                        const spans = btn.querySelectorAll('span');
+                        if (spans[0]) spans[0].className = 'block text-[8.5px] text-amber-950 font-black uppercase font-sans';
+                        if (spans[1]) spans[1].className = 'text-[10px] text-amber-950 font-black font-sans block';
+                    } else {
+                        btn.className = 'cursor-pointer bg-white/90 border border-amber-200/80 rounded-lg py-1 px-0.5 hover:border-amber-400 transition-all';
+                        const spans = btn.querySelectorAll('span');
+                        if (spans[0]) spans[0].className = 'block text-[8.5px] text-zinc-500 uppercase font-sans';
+                        if (spans[1]) spans[1].className = 'text-[10px] text-zinc-800 font-sans font-black block';
+                    }
+                }
+            });
+
+            // Actualizar gran display de precio mensual
+            let valElem = null;
+            if (meses === 3) valElem = document.getElementById('price-msi-3-display');
+            else if (meses === 6) valElem = document.getElementById('price-msi-6-display');
+            else if (meses === 9) valElem = document.getElementById('price-msi-9-display');
+            else if (meses === 12) valElem = document.getElementById('price-msi-12-sub-display');
+
+            const mainMsiDisplay = document.getElementById('price-msi-12-display');
+            const labelQuota = document.getElementById('price-msi-quota-label');
+            if (valElem && mainMsiDisplay) {
+                mainMsiDisplay.textContent = valElem.textContent;
+            }
+            if (labelQuota) {
+                labelQuota.textContent = `/ mes (${meses} MSI)`;
+            }
+        }
+
+        function seleccionarModalidadDetalle(tipo) {
+            const cardContado = document.getElementById('card-detalle-contado');
+            const cardMsi = document.getElementById('card-detalle-msi');
+            const inputDesktop = document.getElementById('input-tipo-pago-detalle');
+            const inputMobile = document.getElementById('input-tipo-pago-detalle-mobile');
+            const badgeContado = document.getElementById('badge-check-contado');
+            const badgeMsi = document.getElementById('badge-check-msi');
+
+            if (inputDesktop) inputDesktop.value = tipo;
+            if (inputMobile) inputMobile.value = tipo;
+
+            if (tipo === 'msi') {
+                if (cardMsi) {
+                    cardMsi.className = 'relative bg-amber-50/90 border-2 border-amber-600 rounded-2xl p-4 shadow-md transition-all cursor-pointer flex flex-col justify-between ring-2 ring-amber-500/20';
+                }
+                if (cardContado) {
+                    cardContado.className = 'relative bg-zinc-50/60 border-2 border-zinc-200 rounded-2xl p-4 shadow-2xs transition-all hover:border-emerald-400 cursor-pointer flex flex-col justify-between opacity-80';
+                }
+                if (badgeMsi) badgeMsi.classList.remove('hidden');
+                if (badgeContado) badgeContado.classList.add('hidden');
+            } else {
+                if (cardContado) {
+                    cardContado.className = 'relative bg-emerald-50/90 border-2 border-emerald-600 rounded-2xl p-4 shadow-md transition-all cursor-pointer flex flex-col justify-between ring-2 ring-emerald-500/20';
+                }
+                if (cardMsi) {
+                    cardMsi.className = 'relative bg-zinc-50/60 border-2 border-zinc-200 rounded-2xl p-4 shadow-2xs transition-all hover:border-amber-400 cursor-pointer flex flex-col justify-between opacity-80';
+                }
+                if (badgeContado) badgeContado.classList.remove('hidden');
+                if (badgeMsi) badgeMsi.classList.add('hidden');
+            }
         }
     </script>
 @endsection

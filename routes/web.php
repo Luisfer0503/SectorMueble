@@ -35,6 +35,7 @@ Route::post('/carrito/guardar-despues/{id}', [PrincipalController::class, 'guard
 Route::post('/carrito/mover-al-carrito/{id}', [PrincipalController::class, 'moverAlCarrito'])->name('carrito.mover_al_carrito');
 Route::match(['get', 'post'], '/carrito/eliminar-guardado/{id}', [PrincipalController::class, 'eliminarGuardado'])->name('carrito.eliminar_guardado');
 Route::post('/carrito/solicitud-especial/{id}', [PrincipalController::class, 'guardarSolicitudEspecial'])->name('carrito.solicitud_especial');
+Route::post('/carrito/seleccionar-tipo-pago', [PrincipalController::class, 'seleccionarTipoPago'])->name('carrito.seleccionar_tipo_pago');
 
 // Aplicación de cupones por el cliente
 Route::post('/carrito/aplicar-cupon', [PrincipalController::class, 'aplicarCupon'])->name('carrito.cupon.aplicar');
@@ -110,6 +111,7 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::post('/muebles/toggle-activo/{id}', [AdminController::class, 'toggleProductoActivo'])->name('admin.productos.toggle_activo');
     Route::post('/muebles/toggle-agotado/{id}', [AdminController::class, 'toggleProductoAgotado'])->name('admin.productos.toggle_agotado');
     Route::post('/muebles/toggle-ultima-pieza/{id}', [AdminController::class, 'toggleProductoUltimaPieza'])->name('admin.productos.toggle_ultima_pieza');
+    Route::post('/muebles/toggle-promo-especial/{id}', [AdminController::class, 'toggleProductoPromoEspecial'])->name('admin.productos.toggle_promo_especial');
     Route::post('/subarticulos/toggle-activo/{id}', [AdminController::class, 'toggleSubarticuloActivo'])->name('admin.productos.subarticulo_toggle_activo');
     Route::post('/subarticulos/toggle-agotado/{id}', [AdminController::class, 'toggleSubarticuloAgotado'])->name('admin.productos.subarticulo_toggle_agotado');
     Route::post('/subarticulos/toggle-ultima-pieza/{id}', [AdminController::class, 'toggleSubarticuloUltimaPieza'])->name('admin.productos.subarticulo_toggle_ultima_pieza');

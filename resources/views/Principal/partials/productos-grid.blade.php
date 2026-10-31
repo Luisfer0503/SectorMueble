@@ -59,11 +59,15 @@
                                     ⚡ Última Pieza
                                 </span>
                             @endif
-                            @if($producto->tieneDescuento())
-                                <span class="inline-flex items-center gap-1 bg-rose-600 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 uppercase rounded-full tracking-wider shadow">
-                                    -{{ $producto->porcentaje_descuento }}%
-                                </span>
-                            @endif
+
+                            {{-- Badges Promocionales Contado y MSI --}}
+                            <span class="inline-flex items-center gap-1 bg-rose-600 text-white text-[8px] sm:text-[9.5px] font-black px-1.5 sm:px-2 py-0.5 uppercase rounded-md tracking-wider shadow">
+                                -{{ $producto->porcentaje_descuento_contado }}% CONTADO
+                            </span>
+                            <span class="inline-flex items-center gap-1 bg-[#1E2440] text-amber-300 border border-amber-400/30 text-[7.5px] sm:text-[8.5px] font-black px-1.5 sm:px-2 py-0.5 uppercase rounded-md tracking-wider shadow">
+                                -{{ $producto->porcentaje_descuento_msi }}% + MSI (3,6,9,12)
+                            </span>
+
                             @if($producto->destacado)
                                 <span class="inline-flex items-center gap-1 bg-amber-800 text-white text-[8px] sm:text-[9px] font-bold px-1.5 sm:px-2 py-0.5 uppercase rounded-full tracking-wider shadow">
                                     ★ Destacado
@@ -151,24 +155,28 @@
                         {{-- Precio y botón Añadir --}}
                         <div class="flex flex-col sm:flex-row sm:items-end justify-between mt-3 sm:mt-4 pt-3 border-t border-zinc-100 gap-2.5 sm:gap-0">
                             <div class="flex flex-col">
-                                @if($producto->tieneDescuento())
-                                    <div class="flex items-center space-x-1.5 leading-tight">
-                                        <span class="text-xs text-zinc-400 line-through font-sans">
-                                            $ {{ number_format($producto->precio, 2, '.', ',') }}
-                                        </span>
-                                        <span class="text-xs font-bold text-rose-600 font-sans">
-                                            (-{{ $producto->porcentaje_descuento }}%)
-                                        </span>
-                                    </div>
-                                    <span class="text-sm sm:text-base font-extrabold text-emerald-800 font-sans leading-tight">
-                                        $ {{ number_format($producto->precio_descuento, 2, '.', ',') }}
-                                    </span>
-                                @else
-                                    <span class="text-sm sm:text-base font-extrabold text-zinc-950 font-sans">
+                                {{-- Precio Original tachado y % Contado --}}
+                                <div class="flex items-center space-x-1.5 leading-tight">
+                                    <span class="text-xs text-zinc-400 line-through font-sans">
                                         $ {{ number_format($producto->precio, 2, '.', ',') }}
                                     </span>
-                                @endif
-                                <span class="text-[10px] text-zinc-500 font-semibold">MXN</span>
+                                    <span class="text-[11px] font-black text-rose-600 font-sans">
+                                        (-{{ $producto->porcentaje_descuento_contado }}%)
+                                    </span>
+                                </div>
+                                {{-- Precio de Contado --}}
+                                <div class="flex items-baseline gap-1">
+                                    <span class="text-sm sm:text-base font-extrabold text-emerald-800 font-sans leading-tight">
+                                        $ {{ number_format($producto->precio_contado, 2, '.', ',') }}
+                                    </span>
+                                    <span class="text-[10px] text-zinc-500 font-bold">MXN</span>
+                                </div>
+                                {{-- Meses Sin Intereses --}}
+                                <div class="mt-0.5 flex items-center gap-1 text-[10px] sm:text-[11px] text-zinc-700 font-medium">
+                                    <span class="text-amber-900 font-extrabold">o 12 MSI de</span>
+                                    <span class="font-extrabold text-amber-900 font-sans">$ {{ number_format($producto->getMensualidadMsi(12), 2, '.', ',') }}</span>
+                                    <span class="text-[9px] text-zinc-500 font-semibold">(-{{ $producto->porcentaje_descuento_msi }}%)</span>
+                                </div>
                             </div>
 
                             <form

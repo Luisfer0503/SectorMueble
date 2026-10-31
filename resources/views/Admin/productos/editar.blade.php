@@ -255,6 +255,13 @@
                             <span>🚫</span> Agotado (Bloquea compra visual)
                         </label>
                     </div>
+
+                    <div class="flex items-center bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl">
+                        <input type="checkbox" name="promo_especial" id="promo_especial" value="1" {{ old('promo_especial', $producto->promo_especial) ? 'checked' : '' }} class="h-4 w-4 text-amber-800 border-zinc-300 rounded focus:ring-amber-700">
+                        <label for="promo_especial" class="ml-2 text-xs text-amber-950 font-extrabold cursor-pointer flex items-center gap-1">
+                            <span>⭐</span> Promo Especial (50% Contado / 35% MSI)
+                        </label>
+                    </div>
                 </div>
 
                 <!-- Gestión de Acabados y Materiales del Mueble -->

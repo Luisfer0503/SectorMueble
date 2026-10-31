@@ -89,6 +89,14 @@ class AdminController extends Controller
             });
         }
 
+        if ($request->filled('promo')) {
+            if ($request->promo === 'especial') {
+                $query->where('promo_especial', true);
+            } elseif ($request->promo === 'regular') {
+                $query->where('promo_especial', false);
+            }
+        }
+
         $productos = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         return view('Admin.productos.index', compact('productos'));
     }
@@ -219,6 +227,7 @@ class AdminController extends Controller
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
             'activo' => $request->has('activo') ? (bool)$request->activo : true,
+            'promo_especial' => $request->has('promo_especial'),
             'ultima_pieza' => $ultimaPiezaGen,
             'agotado' => $agotadoGen,
             'colores' => !empty($acabadosData) ? $acabadosData : null,
@@ -320,6 +329,7 @@ class AdminController extends Controller
             'calificacion' => $request->calificacion,
             'destacado' => $request->has('destacado'),
             'activo' => $request->has('activo') ? (bool)$request->activo : true,
+            'promo_especial' => $request->has('promo_especial'),
             'ultima_pieza' => $ultimaPiezaGen,
             'agotado' => $agotadoGen,
             'colores' => !empty($acabadosData) ? $acabadosData : null,
@@ -585,6 +595,30 @@ class AdminController extends Controller
         }
 
         return redirect()->back()->with('success', $producto->ultima_pieza ? 'El mueble "' . $producto->nombre . '" está marcado como ÚLTIMA PIEZA.' : 'El mueble "' . $producto->nombre . '" ya no está marcado como última pieza.');
+    }
+
+    /**
+     * Alterna (toggle) la promoción especial seleccionada (50% contado / 35% MSI) de un mueble.
+     */
+    public function toggleProductoPromoEspecial(Request $request, $id)
+    {
+        $producto = Producto::findOrFail($id);
+        $nuevoEstado = $request->has('promo_especial') ? (bool)$request->promo_especial : !$producto->promo_especial;
+        $producto->update(['promo_especial' => $nuevoEstado]);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'promo_especial' => $producto->promo_especial,
+                'message' => $producto->promo_especial
+                    ? 'El mueble "' . $producto->nombre . '" ahora tiene la PROMO ESPECIAL (50% Contado / 35% MSI).'
+                    : 'El mueble "' . $producto->nombre . '" ahora tiene la PROMO REGULAR (40% Contado / 30% MSI).',
+            ]);
+        }
+
+        return redirect()->back()->with('success', $producto->promo_especial
+            ? 'El mueble "' . $producto->nombre . '" ahora tiene la PROMO ESPECIAL (50% Contado / 35% MSI).'
+            : 'El mueble "' . $producto->nombre . '" ahora tiene la PROMO REGULAR (40% Contado / 30% MSI).');
     }
 
     /**
