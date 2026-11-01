@@ -88,7 +88,7 @@
     </div>
 
 
-    <!-- ── 3. BANNER DE OFERTA FLASH CON TELÓN CINE A PANTALLA COMPLETA ── -->
+    {{-- ── 3. BANNER DE OFERTA FLASH CON TELÓN CINE A PANTALLA COMPLETA (OCULTO TEMPORALMENTE) ──
     <div id="telon-promo-section" class="relative w-full overflow-hidden bg-zinc-950 min-h-[400px] sm:min-h-[550px] lg:min-h-[650px] flex items-center justify-center border-y border-white/20 shadow-2xl">
         
         <!-- ── 1. FONDO CON LA IMAGEN PROMO.PNG COMPLETA SIN RECORTAR ── -->
@@ -173,6 +173,7 @@
         </div>
 
     </div>
+    --}}
 
 
     <!-- ── 4. CATEGORÍAS "INSPIRACIÓN POR ESTANCIAS" ── -->
@@ -579,7 +580,8 @@
             startAutoplay();
 
 
-            // ── 2. Flash Sale Split Telón Curtain Reveal & October Countdown ──
+            /*
+            // ── 2. Flash Sale Split Telón Curtain Reveal & October Countdown (Temporalmente desactivado) ──
             let telonAbiertoPorScroll = false;
 
             window.abrirTelonSplit = function() {
@@ -664,6 +666,7 @@
 
             setInterval(updateFlashClock, 1000);
             updateFlashClock();
+            */
 
 
             // ── 3. Category Tab Filtering ──
