@@ -135,25 +135,25 @@
 
 
     <!-- ── 2. BARRA DE BENEFICIOS Y GARANTÍAS ── -->
-    <div class="bg-[#FAF8F5] py-5 sm:py-12 border-b border-[#88674B]/20 relative z-10">
+    <div class="bg-[#FAF8F5] py-2.5 sm:py-12 border-b border-[#88674B]/20 relative z-10">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
                 
                 <!-- Envío Gratuito -->
-                <div class="hover-lift bg-[#FAF8F5] p-5 sm:p-6 rounded-2xl border border-zinc-300/80 shadow-xs flex items-start space-x-4 group hover:border-[#4A4746] transition-all duration-300">
-                    <div class="p-3.5 bg-[#4A4746] text-white rounded-2xl group-hover:bg-[#383534] transition-colors duration-300 shadow-md flex-shrink-0">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="hover-lift bg-[#FAF8F5] p-3.5 sm:p-6 rounded-2xl border border-zinc-300/80 shadow-xs flex items-start space-x-3 sm:space-x-4 group hover:border-[#4A4746] transition-all duration-300">
+                    <div class="p-2.5 sm:p-3.5 bg-[#4A4746] text-white rounded-2xl group-hover:bg-[#383534] transition-colors duration-300 shadow-md flex-shrink-0">
+                        <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002-2V8m-9 4h4"/>
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold text-zinc-950">Envío Gratuito Premium</h3>
-                        <p class="mt-1 text-xs text-zinc-600 leading-relaxed">Aplica en compras desde $10,000 MXN dentro de la zona de cobertura(Puebla Capital, San Andrés Cholula y San Pedro Cholula).</p>
+                        <h3 class="text-xs sm:text-sm font-bold text-zinc-950">Envío Gratuito Premium</h3>
+                        <p class="mt-0.5 sm:mt-1 text-[11px] sm:text-xs text-zinc-600 leading-relaxed">Aplica en compras desde $10,000 MXN dentro de la zona de cobertura(Puebla Capital, San Andrés Cholula y San Pedro Cholula).</p>
                     </div>
                 </div>
 
-                <!-- Pago Seguro -->
-                <div class="hover-lift bg-[#FAF8F5] p-5 sm:p-6 rounded-2xl border border-zinc-300/80 shadow-xs flex items-start space-x-4 group hover:border-[#4A4746] transition-all duration-300">
+                <!-- Pago Seguro (Oculto en celular, visible en desktop/tablet) -->
+                <div class="hidden sm:flex hover-lift bg-[#FAF8F5] p-5 sm:p-6 rounded-2xl border border-zinc-300/80 shadow-xs items-start space-x-4 group hover:border-[#4A4746] transition-all duration-300">
                     <div class="p-3.5 bg-[#4A4746] text-white rounded-2xl group-hover:bg-[#383534] transition-colors duration-300 shadow-md flex-shrink-0">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
@@ -171,7 +171,7 @@
 
 
     <!-- ── 3. HERO EDITORIAL Y COLECCIÓN DE AUTOR ── -->
-    <div class="relative bg-[#0B0A0A] overflow-hidden min-h-[520px] sm:min-h-[580px] lg:min-h-[640px] flex items-center justify-center border-y border-[#88674B]/20">
+    <div class="relative bg-[#0B0A0A] overflow-hidden min-h-[440px] sm:min-h-[580px] lg:min-h-[640px] flex items-center justify-center border-y border-[#88674B]/20">
         
         <!-- Imagen de Fondo Llamativa de Alta Resolución -->
         <div class="absolute inset-0 z-0">
@@ -181,7 +181,7 @@
         </div>
 
         <!-- Contenido Centrado Enfrente -->
-        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 text-center w-full">
+        <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-24 text-center w-full">
             
             <!-- Sub-badge Superior Centrado -->
             <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#88674B]/80 border border-[#FAF3E0]/30 text-white text-[11px] sm:text-xs font-extrabold uppercase tracking-widest shadow-lg mb-6 backdrop-blur-md">
