@@ -20,14 +20,30 @@
     @endphp
 
     <style>
-        /* Optimización de tamaño e impacto visual en celulares para el Buen Fin */
+        /* Carrusel con paneo panorámico completo de derecha a izquierda en móviles (Buen Fin) */
         @media (max-width: 639px) {
             #hero-slider {
-                height: 235px !important;
-                min-height: 235px !important;
+                height: 260px !important;
+                min-height: 260px !important;
             }
             .hero-banner-img {
-                object-position: 80% center !important;
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+                object-position: 100% center;
+                will-change: object-position;
+            }
+            /* La imagen se va moviendo poco a poco empezando de derecha a izquierda */
+            .hero-slide-item.active-pan .hero-banner-img {
+                animation: panPromoMobile 7.2s ease-in-out forwards;
+            }
+            @keyframes panPromoMobile {
+                0%, 15% {
+                    object-position: 100% center; /* Inicia mostrando ofertas y promociones a la derecha */
+                }
+                85%, 100% {
+                    object-position: 0% center; /* Se desplaza gradualmente hacia la izquierda mostrando los muebles completos */
+                }
             }
         }
         @media (min-width: 640px) {
@@ -552,6 +568,19 @@
                 });
             }
 
+            // Dispara el paneo suave de derecha a izquierda en la imagen activa en celulares
+            function triggerSlidePan(trackIndex) {
+                if (window.innerWidth >= 640 || !track) return;
+                const slideItems = track.querySelectorAll('.hero-slide-item');
+                slideItems.forEach((item, idx) => {
+                    item.classList.remove('active-pan');
+                    if (idx === trackIndex) {
+                        void item.offsetWidth; // Forzar reflow para reiniciar la animación
+                        item.classList.add('active-pan');
+                    }
+                });
+            }
+
             function moveToTrackIndex(index, animate = true) {
                 if (!track) return;
                 currentTrackIndex = index;
@@ -565,6 +594,9 @@
                 }
 
                 track.style.transform = `translateX(-${index * 100}%)`;
+
+                // Activar animación de paneo gradual de derecha a izquierda en móvil
+                triggerSlidePan(index);
 
                 // Calcular índice de dot activo (0 a realSlidesCount - 1)
                 let realIndex = 0;
@@ -602,9 +634,13 @@
                 });
             }
 
+            function getAutoplayDelay() {
+                return window.innerWidth < 640 ? 7800 : 5000;
+            }
+
             function startAutoplay() {
                 if (!slideInterval && realSlidesCount > 1) {
-                    slideInterval = setInterval(nextSlide, 4500);
+                    slideInterval = setInterval(nextSlide, getAutoplayDelay());
                 }
             }
 
@@ -736,6 +772,7 @@
             }
 
             startAutoplay();
+            triggerSlidePan(1);
 
 
             /*
