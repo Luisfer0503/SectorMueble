@@ -8,12 +8,12 @@
         $bannerSlides = [
             [
                 'imagen' => asset('promonov1.webp'),
-                'alt' => 'Buen Fin Noviembre - Hasta 50% de descuento en productos seleccionados y 12 MSI',
+                'alt' => 'Hasta 50% de descuento en productos seleccionados y 12 MSI',
                 'link' => route('catalogo'),
             ],
             [
                 'imagen' => asset('promonov2.webp'),
-                'alt' => 'Buen Fin Noviembre - Hasta 40% de descuento en todos los productos y 12 MSI',
+                'alt' => 'Hasta 40% de descuento en todos los productos y 12 MSI',
                 'link' => route('catalogo'),
             ],
         ];
