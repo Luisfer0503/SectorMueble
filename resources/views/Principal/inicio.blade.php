@@ -3,66 +3,112 @@
 @section('titulo', 'Sector Mueble | Muebles de Diseño para tu Hogar')
 
 @section('contenido')
-    <!-- ── 1. HERO BANNER PRINCIPAL EN CARRUSEL (2 IMÁGENES) ── -->
+    <!-- ── 1. HERO BANNER PRINCIPAL EN CARRUSEL DESLIZANTE (BUEN FIN / NOVIEMBRE) ── -->
     @php
         $bannerSlides = [
             [
                 'imagen' => asset('promonov1.webp'),
-                'alt' => 'Promoción Especial - Hasta 50% de descuento en productos seleccionados',
+                'alt' => 'Buen Fin Noviembre - Hasta 50% de descuento en productos seleccionados y 12 MSI',
                 'link' => route('catalogo'),
             ],
             [
                 'imagen' => asset('promonov2.webp'),
-                'alt' => 'Promoción Especial - Hasta 40% de descuento en todos los productos',
+                'alt' => 'Buen Fin Noviembre - Hasta 40% de descuento en todos los productos y 12 MSI',
                 'link' => route('catalogo'),
             ],
         ];
     @endphp
 
+    <style>
+        /* Optimización de tamaño e impacto visual en celulares para el Buen Fin */
+        @media (max-width: 639px) {
+            #hero-slider {
+                height: 235px !important;
+                min-height: 235px !important;
+            }
+            .hero-banner-img {
+                object-position: 80% center !important;
+            }
+        }
+        @media (min-width: 640px) {
+            #hero-slider {
+                aspect-ratio: 1920 / 680 !important;
+                height: auto !important;
+                max-height: 680px !important;
+            }
+            .hero-banner-img {
+                object-position: center center !important;
+            }
+        }
+    </style>
+
     <div id="hero-slider" 
          tabindex="0"
-         class="relative w-full overflow-hidden bg-[#FAF8F5] select-none border-b border-[#88674B]/20 group focus:outline-none" 
-         style="aspect-ratio: 1920 / 680; max-height: 680px;">
+         class="relative w-full overflow-hidden bg-[#FAF8F5] select-none border-b border-[#88674B]/20 group focus:outline-none touch-pan-y shadow-xs">
         
-        <!-- Contenedor de Diapositivas -->
-        <div class="relative w-full h-full">
+        <!-- Pista Deslizante (Slide Track - Desplazamiento Continuo de Derecha a Izquierda) -->
+        <div id="hero-slider-track" 
+             class="flex w-full h-full will-change-transform"
+             style="transform: translateX(-100%);">
+            
+            <!-- Clone del último slide (para loop infinito de derecha a izquierda) -->
+            <div class="hero-slide-item w-full h-full shrink-0 flex-none" aria-hidden="true">
+                <a href="{{ $bannerSlides[count($bannerSlides)-1]['link'] }}" class="block w-full h-full" tabindex="-1">
+                    <img src="{{ $bannerSlides[count($bannerSlides)-1]['imagen'] }}" 
+                         alt="" 
+                         class="hero-banner-img w-full h-full object-cover pointer-events-none select-none"
+                         loading="lazy">
+                </a>
+            </div>
+
+            <!-- Slides Principales -->
             @foreach($bannerSlides as $index => $slide)
-                <div class="hero-slide absolute inset-0 transition-opacity duration-700 ease-in-out {{ $index === 0 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none z-0' }}" data-slide="{{ $index }}">
+                <div class="hero-slide-item w-full h-full shrink-0 flex-none" data-index="{{ $index }}">
                     <a href="{{ $slide['link'] }}" class="block w-full h-full" title="{{ $slide['alt'] }}">
                         <img src="{{ $slide['imagen'] }}" 
                              alt="{{ $slide['alt'] }}" 
-                             class="w-full h-full object-cover object-center"
+                             class="hero-banner-img w-full h-full object-cover pointer-events-none select-none"
                              {{ $index === 0 ? 'fetchpriority="high"' : 'loading="lazy"' }}>
                     </a>
                 </div>
             @endforeach
+
+            <!-- Clone del primer slide (para loop infinito de derecha a izquierda) -->
+            <div class="hero-slide-item w-full h-full shrink-0 flex-none" aria-hidden="true">
+                <a href="{{ $bannerSlides[0]['link'] }}" class="block w-full h-full" tabindex="-1">
+                    <img src="{{ $bannerSlides[0]['imagen'] }}" 
+                         alt="" 
+                         class="hero-banner-img w-full h-full object-cover pointer-events-none select-none"
+                         loading="lazy">
+                </a>
+            </div>
         </div>
 
-        <!-- Botón Anterior -->
+        <!-- Botón Anterior (Desktop y Tablet) -->
         <button id="slider-prev-btn" 
                 type="button" 
                 aria-label="Diapositiva anterior"
-                class="absolute left-2.5 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-black/35 hover:bg-black/70 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-300 shadow-xl opacity-80 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transform hover:scale-110 active:scale-95 cursor-pointer">
-            <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                class="hidden sm:flex absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/35 hover:bg-black/70 text-white backdrop-blur-md border border-white/20 items-center justify-center transition-all duration-300 shadow-xl opacity-0 group-hover:opacity-100 focus:opacity-100 transform hover:scale-110 active:scale-95 cursor-pointer">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
             </svg>
         </button>
 
-        <!-- Botón Siguiente -->
+        <!-- Botón Siguiente (Desktop y Tablet) -->
         <button id="slider-next-btn" 
                 type="button" 
                 aria-label="Diapositiva siguiente"
-                class="absolute right-2.5 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-black/35 hover:bg-black/70 text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all duration-300 shadow-xl opacity-80 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100 transform hover:scale-110 active:scale-95 cursor-pointer">
-            <svg class="w-4 h-4 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                class="hidden sm:flex absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/35 hover:bg-black/70 text-white backdrop-blur-md border border-white/20 items-center justify-center transition-all duration-300 shadow-xl opacity-0 group-hover:opacity-100 focus:opacity-100 transform hover:scale-110 active:scale-95 cursor-pointer">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
             </svg>
         </button>
 
-        <!-- Indicadores / Dots -->
-        <div class="absolute bottom-2.5 sm:bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center space-x-2 bg-black/40 backdrop-blur-md px-3 sm:px-4 py-1.5 rounded-full border border-white/25 shadow-lg">
+        <!-- Indicadores / Dots (Diseño estilizado y compacto en celular) -->
+        <div class="absolute bottom-2 sm:bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center space-x-1.5 sm:space-x-2 bg-black/40 backdrop-blur-md px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-full border border-white/20 shadow-lg">
             @foreach($bannerSlides as $index => $slide)
                 <button type="button" 
-                        class="slider-dot transition-all duration-300 rounded-full h-2 sm:h-2.5 {{ $index === 0 ? 'w-7 sm:w-8 bg-[#FAF3E0]' : 'w-2 sm:w-2.5 bg-white/50 hover:bg-white' }} shadow cursor-pointer" 
+                        class="slider-dot transition-all duration-300 rounded-full h-1.5 sm:h-2.5 {{ $index === 0 ? 'w-6 sm:w-8 bg-[#FAF3E0]' : 'w-1.5 sm:w-2.5 bg-white/50 hover:bg-white' }} shadow cursor-pointer" 
                         data-slide="{{ $index }}" 
                         aria-label="Ir a diapositiva {{ $index + 1 }}">
                 </button>
@@ -73,7 +119,7 @@
 
 
     <!-- ── 2. BARRA DE BENEFICIOS Y GARANTÍAS ── -->
-    <div class="bg-[#FAF8F5] py-8 sm:py-14 border-b border-[#88674B]/20 relative z-10">
+    <div class="bg-[#FAF8F5] py-5 sm:py-12 border-b border-[#88674B]/20 relative z-10">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 
@@ -484,55 +530,81 @@
     <!-- ── SCRIPTS INTERACTIVOS SENIOR FRONTEND ── -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // ── 1. Hero Slider Logic ──
-            const slides = document.querySelectorAll('.hero-slide');
+            // ── 1. Hero Slider Logic (Desplazamiento Continuo Derecha -> Izquierda / Loop Infinito) ──
+            const track = document.getElementById('hero-slider-track');
             const dots = document.querySelectorAll('.slider-dot');
             const prevBtn = document.getElementById('slider-prev-btn');
             const nextBtn = document.getElementById('slider-next-btn');
             const slider = document.getElementById('hero-slider');
+            const realSlidesCount = dots.length || 2;
 
-            let currentSlide = 0;
+            let currentTrackIndex = 1; // Inicia en el primer slide real (después del clon)
+            let isTransitioning = false;
             let slideInterval = null;
 
-            function goToSlide(index) {
-                if (!slides.length) return;
-
-                slides.forEach((slide, idx) => {
-                    if (idx === index) {
-                        slide.classList.remove('opacity-0', 'pointer-events-none', 'z-0');
-                        slide.classList.add('opacity-100', 'z-10');
-                    } else {
-                        slide.classList.remove('opacity-100', 'z-10');
-                        slide.classList.add('opacity-0', 'pointer-events-none', 'z-0');
-                    }
-                });
-
+            function updateDots(realIndex) {
                 dots.forEach((dot, idx) => {
-                    if (idx === index) {
-                        dot.className = 'slider-dot transition-all duration-300 rounded-full h-2 sm:h-2.5 w-7 sm:w-8 bg-[#FAF3E0] shadow cursor-pointer';
+                    if (idx === realIndex) {
+                        dot.className = 'slider-dot transition-all duration-300 rounded-full h-1.5 sm:h-2.5 w-6 sm:w-8 bg-[#FAF3E0] shadow cursor-pointer';
                     } else {
-                        dot.className = 'slider-dot transition-all duration-300 rounded-full h-2 sm:h-2.5 w-2 sm:w-2.5 bg-white/50 hover:bg-white shadow cursor-pointer';
+                        dot.className = 'slider-dot transition-all duration-300 rounded-full h-1.5 sm:h-2.5 w-1.5 sm:w-2.5 bg-white/50 hover:bg-white shadow cursor-pointer';
                     }
                 });
+            }
 
-                currentSlide = index;
+            function moveToTrackIndex(index, animate = true) {
+                if (!track) return;
+                currentTrackIndex = index;
+
+                if (animate) {
+                    track.style.transition = 'transform 600ms cubic-bezier(0.25, 1, 0.5, 1)';
+                    isTransitioning = true;
+                } else {
+                    track.style.transition = 'none';
+                    isTransitioning = false;
+                }
+
+                track.style.transform = `translateX(-${index * 100}%)`;
+
+                // Calcular índice de dot activo (0 a realSlidesCount - 1)
+                let realIndex = 0;
+                if (index === 0) {
+                    realIndex = realSlidesCount - 1;
+                } else if (index === realSlidesCount + 1) {
+                    realIndex = 0;
+                } else {
+                    realIndex = index - 1;
+                }
+                updateDots(realIndex);
             }
 
             function nextSlide() {
-                if (!slides.length) return;
-                const next = (currentSlide + 1) % slides.length;
-                goToSlide(next);
+                if (isTransitioning) return;
+                moveToTrackIndex(currentTrackIndex + 1, true);
             }
 
             function prevSlide() {
-                if (!slides.length) return;
-                const prev = (currentSlide - 1 + slides.length) % slides.length;
-                goToSlide(prev);
+                if (isTransitioning) return;
+                moveToTrackIndex(currentTrackIndex - 1, true);
+            }
+
+            if (track) {
+                track.addEventListener('transitionend', () => {
+                    isTransitioning = false;
+                    // Si llegamos al clon del final (índice 3), saltamos instantáneamente al slide real 1
+                    if (currentTrackIndex === realSlidesCount + 1) {
+                        moveToTrackIndex(1, false);
+                    }
+                    // Si retrocedemos al clon del inicio (índice 0), saltamos instantáneamente al último slide real (2)
+                    else if (currentTrackIndex === 0) {
+                        moveToTrackIndex(realSlidesCount, false);
+                    }
+                });
             }
 
             function startAutoplay() {
-                if (slides.length > 1 && !slideInterval) {
-                    slideInterval = setInterval(nextSlide, 5000);
+                if (!slideInterval && realSlidesCount > 1) {
+                    slideInterval = setInterval(nextSlide, 4500);
                 }
             }
 
@@ -543,53 +615,111 @@
                 }
             }
 
-            if (nextBtn) nextBtn.addEventListener('click', (e) => { 
-                e.stopPropagation();
-                nextSlide(); 
-                stopAutoplay(); 
-                startAutoplay(); 
-            });
+            if (nextBtn) {
+                nextBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    nextSlide();
+                    stopAutoplay();
+                    startAutoplay();
+                });
+            }
 
-            if (prevBtn) prevBtn.addEventListener('click', (e) => { 
-                e.stopPropagation();
-                prevSlide(); 
-                stopAutoplay(); 
-                startAutoplay(); 
-            });
+            if (prevBtn) {
+                prevBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    prevSlide();
+                    stopAutoplay();
+                    startAutoplay();
+                });
+            }
 
             dots.forEach((dot) => {
                 dot.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    const slideIndex = parseInt(dot.getAttribute('data-slide'));
-                    goToSlide(slideIndex);
+                    if (isTransitioning) return;
+                    const realIndex = parseInt(dot.getAttribute('data-slide'));
+                    moveToTrackIndex(realIndex + 1, true);
                     stopAutoplay();
                     startAutoplay();
                 });
             });
 
-            if (slider) {
+            if (slider && track) {
                 slider.addEventListener('mouseenter', stopAutoplay);
                 slider.addEventListener('mouseleave', startAutoplay);
 
-                // Soporte táctil / swipe para dispositivos móviles
-                let touchStartX = 0;
-                let touchEndX = 0;
+                // Soporte táctil / Swipe suave para dispositivos móviles
+                let isDragging = false;
+                let startX = 0;
+                let startY = 0;
+                let currentX = 0;
+                let diffX = 0;
+                let diffY = 0;
+                let isHorizontalSwipe = null;
+                let trackWidth = 0;
 
                 slider.addEventListener('touchstart', (e) => {
-                    touchStartX = e.changedTouches[0].screenX;
+                    if (isTransitioning) return;
+                    isDragging = true;
+                    startX = e.touches[0].clientX;
+                    startY = e.touches[0].clientY;
+                    currentX = startX;
+                    diffX = 0;
+                    diffY = 0;
+                    isHorizontalSwipe = null;
+                    trackWidth = slider.offsetWidth || 1;
                     stopAutoplay();
                 }, { passive: true });
 
-                slider.addEventListener('touchend', (e) => {
-                    touchEndX = e.changedTouches[0].screenX;
-                    const swipeThreshold = 40;
-                    if (touchEndX < touchStartX - swipeThreshold) {
-                        nextSlide();
-                    } else if (touchEndX > touchStartX + swipeThreshold) {
-                        prevSlide();
+                slider.addEventListener('touchmove', (e) => {
+                    if (!isDragging) return;
+                    currentX = e.touches[0].clientX;
+                    const currentY = e.touches[0].clientY;
+                    diffX = currentX - startX;
+                    diffY = currentY - startY;
+
+                    // Distinguir entre scroll vertical de página y deslizamiento horizontal del banner
+                    if (isHorizontalSwipe === null) {
+                        if (Math.abs(diffX) > 7 || Math.abs(diffY) > 7) {
+                            isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+                        }
                     }
+
+                    if (isHorizontalSwipe) {
+                        track.style.transition = 'none';
+                        const percentMoved = (diffX / trackWidth) * 100;
+                        track.style.transform = `translateX(calc(-${currentTrackIndex * 100}% + ${percentMoved}%))`;
+                    }
+                }, { passive: true });
+
+                slider.addEventListener('touchend', () => {
+                    if (!isDragging) return;
+                    isDragging = false;
+
+                    if (isHorizontalSwipe) {
+                        const threshold = 40;
+                        if (diffX < -threshold) {
+                            // Deslizó hacia la izquierda -> avanzar a la siguiente (pasa de derecha a izquierda)
+                            nextSlide();
+                        } else if (diffX > threshold) {
+                            // Deslizó hacia la derecha -> diapositiva anterior
+                            prevSlide();
+                        } else {
+                            moveToTrackIndex(currentTrackIndex, true);
+                        }
+                    }
+                    isHorizontalSwipe = null;
                     startAutoplay();
                 }, { passive: true });
+
+                // Prevenir clics accidentales en los enlaces si el usuario estaba arrastrando/deslizando
+                slider.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        if (Math.abs(diffX) > 10) {
+                            e.preventDefault();
+                        }
+                    });
+                });
 
                 // Navegación con teclado cuando tiene foco
                 slider.addEventListener('keydown', (e) => {
