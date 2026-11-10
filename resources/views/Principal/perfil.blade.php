@@ -147,8 +147,8 @@
                                             @foreach($pedido->detalles as $detalle)
                                                 <div class="flex items-center justify-between text-xs bg-white p-2.5 rounded-xl border border-zinc-100">
                                                     <div class="flex items-center space-x-3">
-                                                        @if($detalle->producto && $detalle->producto->imagen)
-                                                            <img src="{{ asset('storage/' . $detalle->producto->imagen) }}" alt="{{ $detalle->nombre_producto }}" class="w-10 h-10 object-cover rounded-lg border border-zinc-200 shrink-0">
+                                                        @if($detalle->producto && $detalle->producto->imagen_url)
+                                                            <img src="{{ $detalle->producto->imagen_url }}" alt="{{ $detalle->nombre_producto }}" class="w-10 h-10 object-cover rounded-lg border border-zinc-200 shrink-0">
                                                         @else
                                                             <div class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center text-zinc-400 shrink-0">
                                                                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -179,8 +179,8 @@
 
                                         <div class="mt-4 pt-3 border-t border-zinc-200">
                                             <div class="flex justify-between items-center">
-                                                <span class="text-xs font-bold text-zinc-600 uppercase">Total Pagado:</span>
-                                                <span class="text-base font-extrabold text-[#4c6f4f]">${{ number_format($pedido->total, 2) }} MXN</span>
+                                                <span class="text-xs font-bold text-zinc-600 uppercase">{{ $estadoNorm === 'cancelado' ? 'Total (Sin Cobro):' : ($estadoNorm === 'pendiente' ? 'Total por Pagar:' : 'Total Pagado:') }}</span>
+                                                <span class="text-base font-extrabold {{ $estadoNorm === 'cancelado' ? 'text-zinc-400 line-through' : 'text-[#4c6f4f]' }}">${{ number_format($pedido->total, 2) }} MXN</span>
                                             </div>
                                         </div>
                                     </div>

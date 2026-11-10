@@ -110,13 +110,33 @@
 
                 <!-- Resumen de Costes -->
                 @php
-                    $costoEnvio = max(0, ($pedido->total ?? 0) - $subtotalCalculado);
+                    $descuentoPedido = (float) ($pedido->descuento ?? 0);
+                    $costoEnvio = max(0, round(($pedido->total ?? 0) - $subtotalCalculado + $descuentoPedido, 2));
+                    $tipoPagoRaw = (string) ($pedido->tipo_pago ?? 'contado');
+                    $esMsi = str_starts_with($tipoPagoRaw, 'msi_');
+                    $plazoMsi = $esMsi ? (int) str_replace('msi_', '', $tipoPagoRaw) : 0;
                 @endphp
                 <div class="bg-zinc-50 rounded p-4 space-y-2 text-xs border border-zinc-150">
+                    <div class="flex justify-between text-zinc-500">
+                        <span>Modalidad de pago</span>
+                        <span class="font-bold text-zinc-900">
+                            @if($esMsi && $plazoMsi > 0)
+                                {{ $plazoMsi }} Meses Sin Intereses (Stripe)
+                            @else
+                                Pago de Contado (Stripe)
+                            @endif
+                        </span>
+                    </div>
                     <div class="flex justify-between text-zinc-500">
                         <span>Subtotal de productos</span>
                         <span class="font-semibold text-zinc-900 font-sans">$ {{ number_format($subtotalCalculado, 2, '.', ',') }}</span>
                     </div>
+                    @if($descuentoPedido > 0)
+                        <div class="flex justify-between text-rose-700 font-medium">
+                            <span>Descuento aplicado{{ !empty($pedido->cupon_codigo) ? ' (Cupón: ' . $pedido->cupon_codigo . ')' : '' }}</span>
+                            <span class="font-sans">-$ {{ number_format($descuentoPedido, 2, '.', ',') }}</span>
+                        </div>
+                    @endif
                     <div class="flex justify-between text-zinc-500">
                         <span>Costo de envío</span>
                         @if($costoEnvio <= 0)
@@ -126,8 +146,8 @@
                         @endif
                     </div>
                     <div class="flex justify-between items-center text-sm text-zinc-950 pt-2 border-t border-zinc-200">
-                        <span class="font-semibold">{{ ($pedido->estado ?? '') === 'cancelado' ? 'Total (No Cobrado)' : 'Total Pagado' }}</span>
-                        <span class="text-base font-bold font-sans {{ ($pedido->estado ?? '') === 'cancelado' ? 'text-zinc-500 line-through' : 'text-emerald-900' }}">$ {{ number_format($pedido->total ?? 0, 2, '.', ',') }}</span>
+                        <span class="font-semibold">{{ ($pedido->estado ?? '') === 'cancelado' ? 'Total (No Cobrado)' : (($pedido->estado ?? '') === 'pendiente' ? 'Total por Pagar' : 'Total Pagado') }}</span>
+                        <span class="text-base font-bold font-sans {{ ($pedido->estado ?? '') === 'cancelado' ? 'text-zinc-500 line-through' : 'text-emerald-900' }}">$ {{ number_format($pedido->total ?? 0, 2, '.', ',') }} MXN</span>
                     </div>
                 </div>
 

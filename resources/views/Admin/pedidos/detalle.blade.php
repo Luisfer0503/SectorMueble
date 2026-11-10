@@ -46,16 +46,25 @@
 
                 <!-- Resumen de Precios -->
                 @php
-                    $costoEnvio = $pedido->total - $subtotalProductos + $pedido->descuento;
+                    $costoEnvio = max(0, round($pedido->total - $subtotalProductos + ($pedido->descuento ?? 0), 2));
+                    $tpDetalle = (string) ($pedido->tipo_pago ?? 'contado');
+                    $esMsiDetalle = str_starts_with($tpDetalle, 'msi_');
+                    $plazoMsiDetalle = $esMsiDetalle ? (int) str_replace('msi_', '', $tpDetalle) : 0;
                 @endphp
                 <div class="bg-zinc-50 rounded border border-zinc-150 p-4 space-y-2 text-xs mt-6">
+                    <div class="flex justify-between text-zinc-500">
+                        <span>Modalidad de pago</span>
+                        <span class="font-bold {{ $esMsiDetalle ? 'text-indigo-800' : 'text-emerald-800' }}">
+                            {{ $esMsiDetalle && $plazoMsiDetalle > 0 ? $plazoMsiDetalle . ' Meses Sin Intereses (Stripe)' : 'Pago de Contado (Stripe)' }}
+                        </span>
+                    </div>
                     <div class="flex justify-between text-zinc-500">
                         <span>Subtotal de productos</span>
                         <span class="font-semibold text-zinc-900 font-sans">$ {{ number_format($subtotalProductos, 2, '.', ',') }}</span>
                     </div>
-                    @if($pedido->cupon_codigo)
+                    @if(($pedido->descuento ?? 0) > 0)
                         <div class="flex justify-between text-zinc-500">
-                            <span>Descuento aplicado (Cupón: {{ $pedido->cupon_codigo }})</span>
+                            <span>Descuento aplicado{{ $pedido->cupon_codigo ? ' (Cupón: ' . $pedido->cupon_codigo . ')' : '' }}</span>
                             <span class="font-semibold text-rose-700 font-sans">-$ {{ number_format($pedido->descuento, 2, '.', ',') }}</span>
                         </div>
                     @endif
@@ -68,8 +77,8 @@
                         @endif
                     </div>
                     <div class="flex justify-between items-center text-sm text-zinc-950 pt-2 border-t border-zinc-200">
-                        <span class="font-bold">Total Pagado</span>
-                        <span class="text-base font-bold font-sans text-amber-800">$ {{ number_format($pedido->total, 2, '.', ',') }} MXN</span>
+                        <span class="font-bold">{{ $pedido->estado === 'cancelado' ? 'Total (Cancelado / Sin Cobro)' : ($pedido->estado === 'pendiente' ? 'Total por Pagar' : 'Total Pagado') }}</span>
+                        <span class="text-base font-bold font-sans {{ $pedido->estado === 'cancelado' ? 'text-zinc-400 line-through' : 'text-amber-800' }}">$ {{ number_format($pedido->total, 2, '.', ',') }} MXN</span>
                     </div>
                 </div>
             </div>

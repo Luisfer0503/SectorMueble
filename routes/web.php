@@ -47,8 +47,8 @@ Route::post('/finalizar-compra', [PrincipalController::class, 'procesarCompra'])
 
 // Rutas de Pago Seguro Stripe (Sandbox / Producción)
 Route::post('/checkout/crear-sesion-pago', [PrincipalController::class, 'crearSesionPagoStripe'])->name('checkout.stripe.session')->middleware(['auth', 'verified']);
-Route::get('/checkout/pago-exito', [PrincipalController::class, 'confirmarPagoStripe'])->name('checkout.stripe.exito')->middleware(['auth', 'verified']);
-Route::get('/checkout/pago-cancelado', [PrincipalController::class, 'cancelarPagoStripe'])->name('checkout.stripe.cancelado')->middleware(['auth', 'verified']);
+Route::get('/checkout/pago-exito', [PrincipalController::class, 'confirmarPagoStripe'])->name('checkout.stripe.exito');
+Route::get('/checkout/pago-cancelado', [PrincipalController::class, 'cancelarPagoStripe'])->name('checkout.stripe.cancelado');
 Route::post('/stripe/webhook', [PrincipalController::class, 'webhookStripe'])->name('checkout.stripe.webhook');
 
 // Página de éxito del Pedido y Contactar Agente

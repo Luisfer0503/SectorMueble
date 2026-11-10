@@ -44,8 +44,8 @@ class AdminController extends Controller
     {
         if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
 
-        // Métricas básicas
-        $ventasTotales = Pedido::where('estado', '!=', 'cancelado')->sum('total');
+        // Métricas básicas (solo contabilizar en ventas totales los pedidos efectivamente pagados/confirmados)
+        $ventasTotales = Pedido::whereIn('estado', ['procesando', 'procesado', 'pagado', 'completado', 'enviado', 'entregado', 'recibido'])->sum('total');
         $pedidosTotales = Pedido::count();
         $pedidosPendientes = Pedido::where('estado', 'pendiente')->count();
         $mueblesTotales = Producto::count();

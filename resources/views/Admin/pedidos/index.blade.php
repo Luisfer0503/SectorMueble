@@ -60,7 +60,15 @@
                                 
                                 <!-- Total -->
                                 <td class="p-4 font-bold text-zinc-900 font-sans">
-                                    $ {{ number_format($pedido->total, 2, '.', ',') }}
+                                    <span class="{{ $pedido->estado === 'cancelado' ? 'text-zinc-400 line-through' : '' }}">$ {{ number_format($pedido->total, 2, '.', ',') }}</span>
+                                    @php
+                                        $tpAdmin = (string) ($pedido->tipo_pago ?? 'contado');
+                                        $esMsiAdmin = str_starts_with($tpAdmin, 'msi_');
+                                        $plazoMsiAdmin = $esMsiAdmin ? (int) str_replace('msi_', '', $tpAdmin) : 0;
+                                    @endphp
+                                    <span class="block text-[10px] font-semibold {{ $esMsiAdmin ? 'text-indigo-700' : 'text-emerald-700' }} mt-0.5">
+                                        {{ $esMsiAdmin && $plazoMsiAdmin > 0 ? $plazoMsiAdmin . ' MSI (Stripe)' : 'Contado (Stripe)' }}
+                                    </span>
                                 </td>
                                 
                                 <!-- Estado -->

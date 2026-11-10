@@ -686,14 +686,15 @@ class PrincipalController extends Controller
 
         $subtotal = $subtotalContado;
 
-        // Calcular cupón de descuento
+        // Calcular cupón de descuento para Contado y MSI por separado
         $descuento = 0.00;
+        $descuentoMsi = 0.00;
         $cuponAplicado = session()->get('cupon');
         if ($cuponAplicado) {
             $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
             if ($cupon) {
-                $subtotalParaCupon = ($tipoPagoInicial === 'msi') ? $subtotalMsi : $subtotalContado;
-                $descuento = $cupon->calcularDescuento($subtotalParaCupon);
+                $descuento = min($subtotalContado, $cupon->calcularDescuento($subtotalContado));
+                $descuentoMsi = min($subtotalMsi, $cupon->calcularDescuento($subtotalMsi));
             } else {
                 session()->forget('cupon');
                 $cuponAplicado = null;
@@ -704,7 +705,7 @@ class PrincipalController extends Controller
         $total = max(0, $subtotal - $descuento) + $envio;
 
         $envioMsi = ($subtotalMsi >= 10000) ? 0 : 600.00;
-        $totalMsi = max(0, $subtotalMsi - $descuento) + $envioMsi;
+        $totalMsi = max(0, $subtotalMsi - $descuentoMsi) + $envioMsi;
         $cuotaMsi12 = round($totalMsi / 12, 2);
         $cuotaMsi9 = round($totalMsi / 9, 2);
         $cuotaMsi6 = round($totalMsi / 6, 2);
@@ -718,187 +719,18 @@ class PrincipalController extends Controller
     }
 
     /**
-     * Procesar el pago y guardar el pedido.
+     * Redirige cualquier intento de envío directo de formulario hacia la pasarela segura de Stripe.
+     * Evita que se creen pedidos sin cobrar si el navegador envía el formulario por POST tradicional.
      */
     public function procesarCompra(Request $request)
     {
-        $carrito = session()->get('carrito', []);
-
-        if (empty($carrito)) {
-            return redirect()->route('carrito')->with('error', 'Tu carrito está vacío.');
+        if ($request->ajax() || $request->wantsJson()) {
+            return $this->crearSesionPagoStripe($request);
         }
 
-        $request->validate([
-            'nombre_cliente' => 'required|string|max:255',
-            'correo_cliente' => 'required|email|max:255',
-            'telefono_cliente' => 'required|string|max:20',
-            'direccion_envio' => 'required|string|max:255',
-            'ciudad' => 'required|string|max:100',
-            'codigo_postal' => 'required|string|max:10',
-        ]);
-
-        if ($request->has('requiere_factura') && $request->requiere_factura) {
-            $request->validate([
-                'rfc_receptor'         => 'required|string|min:12|max:13',
-                'razon_social'        => 'required|string|max:255',
-                'regimen_fiscal'      => 'required|string',
-                'uso_cfdi'            => 'required|string',
-                'codigo_postal_fiscal' => 'required|string|max:10',
-                'correo_facturacion'  => 'required|email|max:255',
-            ]);
-        }
-
-        $cpValido = CatalogoCodigoPostal::where('codigo_postal', trim($request->codigo_postal))->where('activo', true)->exists();
-        if (!$cpValido) {
-            return redirect()->back()->with('error', 'El Código Postal ' . $request->codigo_postal . ' no cuenta con cobertura para pago en línea. Por favor contacta a un agente de ventas.')->withInput();
-        }
-
-        $promoActiva = Producto::isCampanaPromocionalActiva();
-
-        $tipoPago = $promoActiva ? $request->input('tipo_pago', 'contado') : 'contado';
-        if (!in_array($tipoPago, ['contado', 'msi'])) {
-            $tipoPago = 'contado';
-        }
-        $mesesMsi = (int) $request->input('meses_msi', 12);
-        if (!in_array($mesesMsi, [3, 6, 9, 12])) {
-            $mesesMsi = 12;
-        }
-        $tipoPagoGuardar = ($promoActiva && $tipoPago === 'msi') ? "msi_{$mesesMsi}" : 'contado';
-
-        $subtotal = 0;
-        $itemsProcesados = [];
-        foreach ($carrito as $id => $item) {
-            // Verificar stock en tiempo real
-            $producto = Producto::find($item['producto_id'] ?? $id);
-            if (!$producto || $producto->stock < $item['cantidad']) {
-                return redirect()->route('carrito')->with('error', 'El producto ' . ($producto ? $producto->nombre : '') . ' ya no tiene stock suficiente. Ajusta tu carrito.');
-            }
-
-            $base = (float)($item['precio_original'] ?? $item['precio']);
-            $isEspecial = $producto->isPromoEspecial();
-
-            if ($promoActiva) {
-                if ($promoActiva && $tipoPago === 'msi') {
-                    $itemPrecio = round($base * ($isEspecial ? 0.65 : 0.70), 2);
-                    $descLabel = ' (' . ($isEspecial ? '35% desc. + MSI' : '30% desc. + MSI') . ')';
-                } else {
-                    $itemPrecio = round($base * ($isEspecial ? 0.50 : 0.60), 2);
-                    $descLabel = ' (' . ($isEspecial ? '50% desc. Contado' : '40% desc. Contado') . ')';
-                }
-            } else {
-                $itemPrecio = (float)($item['precio'] ?? $base);
-                $descLabel = '';
-            }
-
-            $subtotal += $itemPrecio * $item['cantidad'];
-            $itemsProcesados[] = [
-                'producto_id'     => $producto->id,
-                'subarticulo_id'  => $item['subarticulo_id'] ?? null,
-                'nombre'          => $item['nombre'] . $descLabel,
-                'precio'          => $itemPrecio,
-                'cantidad'        => $item['cantidad'],
-            ];
-        }
-
-        // Calcular cupón de descuento
-        $descuento = 0.00;
-        $cuponCodigo = null;
-        $cuponAplicado = session()->get('cupon');
-        if ($cuponAplicado) {
-            $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
-            if ($cupon) {
-                $descuento = $cupon->calcularDescuento($subtotal);
-                $cuponCodigo = $cupon->codigo;
-            }
-        }
-
-        $envio = ($subtotal >= 10000) ? 0 : 600.00;
-        $total = max(0, $subtotal - $descuento) + $envio;
-
-        try {
-            DB::beginTransaction();
-
-            $requiereFactura = (bool) $request->has('requiere_factura');
-
-            // 1. Crear Pedido con campos fiscales si requiere factura
-            $pedido = Pedido::create([
-                'usuario_id'           => auth()->id(), // Se asocia con el usuario autenticado
-                'nombre_cliente'       => $request->nombre_cliente,
-                'correo_cliente'       => $request->correo_cliente,
-                'telefono_cliente'     => $request->telefono_cliente,
-                'direccion_envio'      => $request->direccion_envio,
-                'ciudad'               => $request->ciudad,
-                'codigo_postal'        => $request->codigo_postal,
-                'total'                => $total,
-                'tipo_pago'            => $tipoPagoGuardar,
-                'cupon_codigo'         => $cuponCodigo,
-                'descuento'            => $descuento,
-                'estado'               => 'pendiente',
-                'requiere_factura'     => $requiereFactura,
-                'rfc_receptor'         => $requiereFactura ? strtoupper(trim($request->rfc_receptor)) : null,
-                'razon_social'        => $requiereFactura ? mb_strtoupper(trim($request->razon_social)) : null,
-                'regimen_fiscal'      => $requiereFactura ? $request->regimen_fiscal : null,
-                'uso_cfdi'            => $requiereFactura ? $request->uso_cfdi : null,
-                'codigo_postal_fiscal' => $requiereFactura ? trim($request->codigo_postal_fiscal) : null,
-                'correo_facturacion'  => $requiereFactura ? trim($request->correo_facturacion) : null,
-                'factura_estado'       => $requiereFactura ? 'pendiente' : 'no_solicitada',
-            ]);
-
-            // 2. Crear Detalles y reducir Stock
-            foreach ($itemsProcesados as $calc) {
-                DetallePedido::create([
-                    'pedido_id'       => $pedido->id,
-                    'producto_id'     => $calc['producto_id'],
-                    'nombre_producto' => $calc['nombre'],
-                    'precio'          => $calc['precio'],
-                    'cantidad'        => $calc['cantidad'],
-                ]);
-
-                // Descontar stock del subartículo / acabado específico
-                if (!empty($item['subarticulo_id'])) {
-                    $det = ProductoDetalle::find($item['subarticulo_id']);
-                    if ($det) {
-                        $det->decrement('stock', $item['cantidad']);
-                    }
-                } else {
-                    $det = $producto->detalles->first();
-                    if ($det) {
-                        $det->decrement('stock', $item['cantidad']);
-                    }
-                }
-            }
-
-            DB::commit();
-
-            // 3. Notificar por correo la confirmación del pedido
-            try {
-                $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
-                if ($correoDestino) {
-                    \Illuminate\Support\Facades\Notification::route('mail', $correoDestino)
-                        ->notify(new \App\Notifications\EstadoPedidoNotificacion($pedido, 'pagado'));
-                }
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Error al enviar correo de confirmación del pedido #{$pedido->id}: " . $e->getMessage());
-            }
-
-            // 4. Emitir Factura vía FastAPI si fue solicitada
-            if ($pedido->requiere_factura) {
-                app(\App\Services\FacturacionFastApiService::class)->generarFactura($pedido);
-            }
-
-            // Vaciar carrito y cupón en sesión y base de datos
-            session()->forget('carrito');
-            session()->forget('cupon');
-            if (auth()->check()) {
-                auth()->user()->update(['carrito_guardado' => null]);
-            }
-
-            return redirect()->route('pedido.confirmado', $pedido->id)->with('success', '¡Tu compra ha sido procesada con éxito!');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Ocurrió un error al procesar tu compra. Por favor, inténtalo de nuevo. Error: ' . $e->getMessage())->withInput();
-        }
+        return redirect()->route('checkout')
+            ->with('info', 'Para completar tu compra de forma segura, haz clic en el botón de pago con Stripe.')
+            ->withInput();
     }
 
     /**
@@ -913,6 +745,7 @@ class PrincipalController extends Controller
             'direccion_envio'  => 'required|string|max:255',
             'ciudad'           => 'required|string|max:100',
             'codigo_postal'    => 'required|string|max:10',
+            'referencias'      => 'nullable|string|max:255',
         ]);
 
         if ($request->has('requiere_factura') && $request->requiere_factura) {
@@ -926,11 +759,12 @@ class PrincipalController extends Controller
             ]);
         }
 
-        $cpValido = CatalogoCodigoPostal::where('codigo_postal', trim($request->codigo_postal))->where('activo', true)->exists();
+        $cpLimpio = trim($request->codigo_postal);
+        $cpValido = CatalogoCodigoPostal::where('codigo_postal', $cpLimpio)->where('activo', true)->exists();
         if (!$cpValido) {
             return response()->json([
                 'success' => false,
-                'message' => 'El Código Postal ' . $request->codigo_postal . ' no cuenta con cobertura de envío directo para pago en línea. Por favor contacta a un agente de ventas.'
+                'message' => 'El Código Postal ' . $cpLimpio . ' no cuenta con cobertura de envío directo para pago en línea. Por favor contacta a un agente de ventas.'
             ], 422);
         }
 
@@ -943,14 +777,21 @@ class PrincipalController extends Controller
             ], 422);
         }
 
+        $direccionCompleta = trim($request->direccion_envio);
+        $referenciasEntrega = trim((string) $request->input('referencias', ''));
+        if ($referenciasEntrega !== '' && !str_contains($direccionCompleta, $referenciasEntrega)) {
+            $direccionCompleta .= " (Ref: {$referenciasEntrega})";
+        }
+
         // Almacenar datos temporales de entrega y facturación en sesión
         session()->put('datos_envio_checkout', [
-            'nombre_cliente'       => $request->nombre_cliente,
-            'correo_cliente'       => $request->correo_cliente,
-            'telefono_cliente'     => $request->telefono_cliente,
-            'direccion_envio'      => $request->direccion_envio,
-            'ciudad'               => $request->ciudad,
-            'codigo_postal'        => $request->codigo_postal,
+            'nombre_cliente'       => trim($request->nombre_cliente),
+            'correo_cliente'       => trim($request->correo_cliente),
+            'telefono_cliente'     => trim($request->telefono_cliente),
+            'direccion_envio'      => $direccionCompleta,
+            'ciudad'               => trim($request->ciudad),
+            'codigo_postal'        => $cpLimpio,
+            'referencias'          => $referenciasEntrega,
             'requiere_factura'     => (bool) $request->has('requiere_factura'),
             'rfc_receptor'         => $request->has('requiere_factura') ? strtoupper(trim($request->rfc_receptor)) : null,
             'razon_social'        => $request->has('requiere_factura') ? mb_strtoupper(trim($request->razon_social)) : null,
@@ -965,7 +806,7 @@ class PrincipalController extends Controller
         if (empty($stripeSecret)) {
             return response()->json([
                 'success' => false,
-                'message' => 'La clave STRIPE_SECRET no está configurada en el archivo .env del servidor.'
+                'message' => 'La clave STRIPE_SECRET no está configurada en el servidor.'
             ], 422);
         }
 
@@ -987,15 +828,42 @@ class PrincipalController extends Controller
             $subtotal = 0;
             $itemsCalculados = [];
             foreach ($carrito as $id => $item) {
-                $base = (float)($item['precio_original'] ?? $item['precio']);
-                $isEspecial = !empty($item['es_promo_especial']);
-                $producto = Producto::find($item['producto_id'] ?? $id);
-                if ($producto) {
-                    $isEspecial = $producto->isPromoEspecial();
+                $producto = Producto::with('detalles')->find($item['producto_id'] ?? $id);
+                if (!$producto || !$producto->activo || $producto->isAgotado()) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'El mueble "' . ($item['nombre'] ?? 'seleccionado') . '" ya no se encuentra disponible. Por favor actualiza tu carrito.',
+                    ], 422);
                 }
 
+                // Validar subartículo y stock disponible en tiempo real
+                $subId = $item['subarticulo_id'] ?? null;
+                $detalleSub = null;
+                if (!empty($subId)) {
+                    $detalleSub = $producto->detalles->where('id', $subId)->first();
+                }
+                if (!$detalleSub) {
+                    $detalleSub = $producto->detalles->where('activo', true)->first() ?? $producto->detalles->first();
+                }
+
+                $stockReal = ($detalleSub && (int) $detalleSub->stock > 0) ? (int) $detalleSub->stock : (int) max($producto->stock, 1);
+                $cantidadItem = max(1, (int) ($item['cantidad'] ?? 1));
+                if ($stockReal < $cantidadItem) {
+                    DB::rollBack();
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'No hay stock suficiente para "' . $producto->nombre . '" (Disponible: ' . $stockReal . '). Ajusta la cantidad en tu carrito.',
+                    ], 422);
+                }
+
+                $base = ($detalleSub && $detalleSub->precio !== null)
+                    ? (float) $detalleSub->precio
+                    : (float) ($item['precio_original'] ?? $producto->precio ?? $item['precio']);
+                $isEspecial = $producto->isPromoEspecial();
+
                 if ($promoActiva) {
-                    if ($promoActiva && $tipoPago === 'msi') {
+                    if ($tipoPago === 'msi') {
                         // 35% de descuento en seleccionados, 30% en los demás
                         $itemPrecio = round($base * ($isEspecial ? 0.65 : 0.70), 2);
                         $descLabel = ' (' . ($isEspecial ? '35% desc. + MSI' : '30% desc. + MSI') . ')';
@@ -1005,17 +873,26 @@ class PrincipalController extends Controller
                         $descLabel = ' (' . ($isEspecial ? '50% desc. Contado' : '40% desc. Contado') . ')';
                     }
                 } else {
-                    $itemPrecio = (float)($item['precio'] ?? $base);
+                    $pctNormal = (int) ($detalleSub?->porcentaje_descuento ?? $producto->porcentaje_descuento ?? 0);
+                    $itemPrecio = $pctNormal > 0 ? round($base * (1 - $pctNormal / 100), 2) : (float) ($item['precio'] ?? $base);
                     $descLabel = '';
                 }
 
-                $subtotal += $itemPrecio * $item['cantidad'];
+                $subtotal += $itemPrecio * $cantidadItem;
+
+                // Incluir acabado y nota especial si existen para que almacén/admin lo identifique con exactitud
+                $acabadoNombre = trim((string) ($item['color'] ?? $item['subarticulo_nombre'] ?? ($detalleSub->nombre ?? '')));
+                $acabadoTag = ($acabadoNombre !== '' && mb_strtolower($acabadoNombre) !== mb_strtolower($producto->nombre))
+                    ? " [{$acabadoNombre}]"
+                    : '';
+                $notaEspecial = trim((string) ($item['solicitud_especial'] ?? ''));
+                $notaTag = $notaEspecial !== '' ? " (Nota: {$notaEspecial})" : '';
 
                 $itemsCalculados[] = [
-                    'producto_id'     => $producto ? $producto->id : null,
-                    'nombre'          => $item['nombre'] . $descLabel,
+                    'producto_id'     => $producto->id,
+                    'nombre'          => $producto->nombre . $acabadoTag . $descLabel . $notaTag,
                     'precio'          => $itemPrecio,
-                    'cantidad'        => $item['cantidad'],
+                    'cantidad'        => $cantidadItem,
                 ];
             }
 
@@ -1025,24 +902,31 @@ class PrincipalController extends Controller
             if ($cuponAplicado) {
                 $cupon = Cupon::where('codigo', $cuponAplicado['codigo'])->where('activo', true)->first();
                 if ($cupon) {
-                    $descuento = $cupon->calcularDescuento($subtotal);
+                    $descuento = min($subtotal, $cupon->calcularDescuento($subtotal));
                     $cuponCodigo = $cupon->codigo;
                 }
             }
             $envio = ($subtotal >= 10000) ? 0 : 600.00;
-            $total = max(0, $subtotal - $descuento) + $envio;
+            $total = round(max(0, $subtotal - $descuento) + $envio, 2);
+
+            if ($total < 10) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El monto mínimo para procesar pagos en línea con Stripe es de $10.00 MXN.',
+                ], 422);
+            }
 
             $requiereFactura = (bool) $request->has('requiere_factura');
 
-            // 1. Crear el Pedido en estado 'pendiente' (se confirmará a 'procesando' al verificar el pago con Stripe)
-            $pedido = Pedido::create([
+            $datosPedido = [
                 'usuario_id'           => auth()->id(),
-                'nombre_cliente'       => $request->nombre_cliente,
-                'correo_cliente'       => $request->correo_cliente,
-                'telefono_cliente'     => $request->telefono_cliente,
-                'direccion_envio'      => $request->direccion_envio,
-                'ciudad'               => $request->ciudad,
-                'codigo_postal'        => $request->codigo_postal,
+                'nombre_cliente'       => trim($request->nombre_cliente),
+                'correo_cliente'       => trim($request->correo_cliente),
+                'telefono_cliente'     => trim($request->telefono_cliente),
+                'direccion_envio'      => $direccionCompleta,
+                'ciudad'               => trim($request->ciudad),
+                'codigo_postal'        => $cpLimpio,
                 'total'                => $total,
                 'tipo_pago'            => $tipoPagoGuardar,
                 'cupon_codigo'         => $cuponCodigo,
@@ -1056,7 +940,23 @@ class PrincipalController extends Controller
                 'codigo_postal_fiscal' => $requiereFactura ? trim($request->codigo_postal_fiscal) : null,
                 'correo_facturacion'  => $requiereFactura ? trim($request->correo_facturacion) : null,
                 'factura_estado'       => $requiereFactura ? 'pendiente' : 'no_solicitada',
-            ]);
+            ];
+
+            // 1. Reutilizar pedido pendiente/cancelado de la misma sesión de checkout para evitar duplicados, o crear uno nuevo
+            $pedidoExistenteId = session()->get('ultimo_pedido_id');
+            $pedido = null;
+            if ($pedidoExistenteId) {
+                $candidato = Pedido::find($pedidoExistenteId);
+                if ($candidato && $candidato->usuario_id === auth()->id() && in_array($candidato->estado, ['pendiente', 'cancelado'])) {
+                    $candidato->update($datosPedido);
+                    $candidato->detalles()->delete();
+                    $pedido = $candidato;
+                }
+            }
+
+            if (!$pedido) {
+                $pedido = Pedido::create($datosPedido);
+            }
 
             // 2. Crear detalles del pedido
             foreach ($itemsCalculados as $calc) {
@@ -1076,11 +976,12 @@ class PrincipalController extends Controller
             session()->put('ultimo_pedido_id', $pedido->id);
 
             // 3. Crear sesión en Stripe con los ítems calculados
+            $currency = strtolower(config('services.stripe.currency', 'mxn'));
             $lineItems = [];
             foreach ($itemsCalculados as $calc) {
                 $lineItems[] = [
                     'price_data' => [
-                        'currency' => config('services.stripe.currency', 'mxn'),
+                        'currency' => $currency,
                         'product_data' => [
                             'name' => $calc['nombre'],
                         ],
@@ -1093,7 +994,7 @@ class PrincipalController extends Controller
             if ($envio > 0) {
                 $lineItems[] = [
                     'price_data' => [
-                        'currency' => config('services.stripe.currency', 'mxn'),
+                        'currency' => $currency,
                         'product_data' => [
                             'name' => 'Costo de Envío Especial',
                         ],
@@ -1103,21 +1004,30 @@ class PrincipalController extends Controller
                 ];
             }
 
+            $folioFormat = str_pad($pedido->id, 5, '0', STR_PAD_LEFT);
+            $metadataComun = [
+                'pedido_id'  => (string) $pedido->id,
+                'usuario_id' => (string) (auth()->id() ?? ''),
+                'tipo_pago'  => $tipoPagoGuardar,
+                'meses_msi'  => $tipoPago === 'msi' ? (string) $mesesMsi : '',
+            ];
+
             $stripeParams = [
-                'line_items'     => $lineItems,
-                'mode'           => 'payment',
-                'customer_email' => $request->correo_cliente,
-                'metadata'       => [
-                    'pedido_id'  => $pedido->id,
-                    'tipo_pago'  => $tipoPagoGuardar,
-                    'meses_msi'  => $tipoPago === 'msi' ? $mesesMsi : null,
+                'line_items'             => $lineItems,
+                'mode'                   => 'payment',
+                'client_reference_id'    => (string) $pedido->id,
+                'customer_email'         => trim($request->correo_cliente),
+                'integration_identifier' => 'sectormueble_checkout_kxmwpqzr',
+                'metadata'               => $metadataComun,
+                'payment_intent_data'    => [
+                    'description' => "Pedido #{$folioFormat} - Sector Mueble ({$pedido->nombre_cliente})",
+                    'metadata'    => $metadataComun,
                 ],
-                'success_url'    => route('checkout.stripe.exito') . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url'     => route('checkout.stripe.cancelado'),
+                'success_url'            => route('checkout.stripe.exito') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url'             => route('checkout.stripe.cancelado') . '?pedido_id=' . $pedido->id,
             ];
 
             if ($promoActiva && $tipoPago === 'msi') {
-                $stripeParams['payment_method_types'] = ['card'];
                 $stripeParams['payment_method_options'] = [
                     'card' => [
                         'installments' => [
@@ -1133,7 +1043,7 @@ class PrincipalController extends Controller
                 try {
                     $coupon = $stripe->coupons->create([
                         'amount_off' => (int) round($descuento * 100),
-                        'currency'   => config('services.stripe.currency', 'mxn'),
+                        'currency'   => $currency,
                         'duration'   => 'once',
                         'name'       => 'Descuento ' . ($cuponCodigo ? ('(' . $cuponCodigo . ')') : ''),
                     ]);
@@ -1141,7 +1051,22 @@ class PrincipalController extends Controller
                         ['coupon' => $coupon->id],
                     ];
                 } catch (\Exception $ce) {
-                    \Illuminate\Support\Facades\Log::warning("No se pudo crear cupón en Stripe: " . $ce->getMessage());
+                    \Illuminate\Support\Facades\Log::warning("Respaldo de descuento directo en line_items (Cupón Stripe): " . $ce->getMessage());
+                    // Si la clave de API es restringida y no permite crear cupones, consolidar el monto exacto con descuento aplicado
+                    $resumenNombres = collect($itemsCalculados)->map(fn($i) => "{$i['cantidad']}x {$i['nombre']}")->implode(', ');
+                    $stripeParams['line_items'] = [
+                        [
+                            'price_data' => [
+                                'currency' => $currency,
+                                'product_data' => [
+                                    'name'        => "Pedido #{$folioFormat} - Sector Mueble (Cupón {$cuponCodigo} aplicado)",
+                                    'description' => \Illuminate\Support\Str::limit($resumenNombres, 450),
+                                ],
+                                'unit_amount' => (int) round($total * 100),
+                            ],
+                            'quantity' => 1,
+                        ],
+                    ];
                 }
             }
 
@@ -1153,7 +1078,10 @@ class PrincipalController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            DB::rollBack();
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            \Illuminate\Support\Facades\Log::error("Error al crear sesión de pago en Stripe: " . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error al conectar con Stripe: ' . $e->getMessage(),
@@ -1162,46 +1090,75 @@ class PrincipalController extends Controller
     }
 
     /**
-     * Marca un pedido como pagado y realiza las tareas post-pago (idempotente).
+     * Marca un pedido como pagado y realiza las tareas post-pago (100% idempotente y protegido contra condiciones de carrera).
      */
-    protected function marcarPedidoComoPagado(Pedido $pedido, $stripePaymentId = null)
+    protected function marcarPedidoComoPagado(Pedido $pedidoInput, $stripeReference = null)
     {
-        // Evitar procesar dos veces el mismo pedido (por ejemplo, Webhook + Redirect)
-        if (in_array($pedido->estado, ['procesando', 'pagado', 'enviado', 'entregado', 'completado'])) {
-            return $pedido;
-        }
+        $recienPagado = false;
+        $pedido = $pedidoInput;
 
-        // 1. Marcar el estado como procesando (Pagado / En preparación)
-        $pedido->update(['estado' => 'procesando']);
+        DB::transaction(function () use ($pedidoInput, &$pedido, &$recienPagado) {
+            $locked = Pedido::with('detalles')->where('id', $pedidoInput->id)->lockForUpdate()->first();
+            if (!$locked) {
+                return;
+            }
 
-        // 2. Descontar inventario de cada producto
-        foreach ($pedido->detalles as $detItem) {
-            $producto = Producto::find($detItem->producto_id);
-            if ($producto) {
-                $det = $producto->detalles->first();
-                if ($det && $det->stock >= $detItem->cantidad) {
-                    $det->decrement('stock', $detItem->cantidad);
+            // Si ya fue procesado/pagado previamente (ej. por el Webhook milisegundos antes), no duplicar acciones
+            if (in_array($locked->estado, ['procesando', 'procesado', 'pagado', 'enviado', 'entregado', 'recibido', 'completado'])) {
+                $pedido = $locked;
+                return;
+            }
+
+            // 1. Actualizar estado a procesando (Pagado / En preparación)
+            $locked->update(['estado' => 'procesando']);
+
+            // 2. Descontar inventario del subartículo correspondiente
+            foreach ($locked->detalles as $detItem) {
+                $producto = Producto::with('detalles')->find($detItem->producto_id);
+                if ($producto) {
+                    $det = $producto->detalles->where('activo', true)->first(function ($d) use ($detItem) {
+                        return !empty($d->nombre) && str_contains($detItem->nombre_producto, $d->nombre);
+                    }) ?? $producto->detalles->where('activo', true)->first() ?? $producto->detalles->first();
+
+                    if ($det) {
+                        $nuevoStock = max(0, (int) $det->stock - (int) $detItem->cantidad);
+                        $det->update([
+                            'stock'   => $nuevoStock,
+                            'agotado' => $nuevoStock <= 0 ? true : $det->agotado,
+                        ]);
+                    }
                 }
             }
-        }
 
-        // 3. Enviar correo electrónico de confirmación de compra
-        try {
-            $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
-            if ($correoDestino) {
-                \Illuminate\Support\Facades\Notification::route('mail', $correoDestino)
-                    ->notify(new \App\Notifications\EstadoPedidoNotificacion($pedido, 'procesando'));
+            // 3. Limpiar carrito guardado en la base de datos del usuario
+            if ($locked->usuario_id) {
+                User::where('id', $locked->usuario_id)->update(['carrito_guardado' => null]);
             }
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Error al enviar correo de confirmación del pedido #{$pedido->id}: " . $e->getMessage());
-        }
 
-        // 4. Emitir Factura vía FastAPI si fue solicitada y no se ha timbrado
-        if ($pedido->requiere_factura && $pedido->factura_estado !== 'facturado') {
+            $pedido = $locked;
+            $recienPagado = true;
+        });
+
+        // Ejecutar notificaciones externas solo si esta petición fue la que transicionó el pedido a pagado
+        if ($recienPagado) {
+            // 4. Enviar correo electrónico de confirmación de compra al cliente
             try {
-                app(\App\Services\FacturacionFastApiService::class)->generarFactura($pedido);
-            } catch (\Exception $fe) {
-                \Illuminate\Support\Facades\Log::error("Error timbrando factura automática pedido #{$pedido->id}: " . $fe->getMessage());
+                $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
+                if ($correoDestino) {
+                    \Illuminate\Support\Facades\Notification::route('mail', $correoDestino)
+                        ->notify(new \App\Notifications\EstadoPedidoNotificacion($pedido, 'procesando'));
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error("Error al enviar correo de confirmación del pedido #{$pedido->id}: " . $e->getMessage());
+            }
+
+            // 5. Emitir Factura vía FastAPI si fue solicitada y no se ha timbrado
+            if ($pedido->requiere_factura && $pedido->factura_estado !== 'facturado') {
+                try {
+                    app(\App\Services\FacturacionFastApiService::class)->generarFactura($pedido);
+                } catch (\Exception $fe) {
+                    \Illuminate\Support\Facades\Log::error("Error timbrando factura automática pedido #{$pedido->id}: " . $fe->getMessage());
+                }
             }
         }
 
@@ -1209,7 +1166,7 @@ class PrincipalController extends Controller
     }
 
     /**
-     * Procesa la confirmación exitosa de pago en Stripe.
+     * Procesa la confirmación exitosa de pago al retornar de Stripe Checkout.
      */
     public function confirmarPagoStripe(Request $request)
     {
@@ -1226,11 +1183,13 @@ class PrincipalController extends Controller
             $checkoutSession = $stripe->checkout->sessions->retrieve($sessionId);
 
             if ($checkoutSession->payment_status !== 'paid') {
-                return redirect()->route('checkout')->with('error', 'El pago no ha sido completado en Stripe. Por favor intenta nuevamente.');
+                return redirect()->route('checkout')->with('error', 'El pago aún no figura como completado en Stripe. Por favor intenta nuevamente.');
             }
 
-            if (empty($pedidoId) && isset($checkoutSession->metadata->pedido_id)) {
+            if (!empty($checkoutSession->metadata->pedido_id)) {
                 $pedidoId = $checkoutSession->metadata->pedido_id;
+            } elseif (!empty($checkoutSession->client_reference_id)) {
+                $pedidoId = $checkoutSession->client_reference_id;
             }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Error al consultar la sesión de Stripe {$sessionId}: " . $e->getMessage());
@@ -1248,27 +1207,27 @@ class PrincipalController extends Controller
         }
 
         // Marcar como pagado de forma segura e idempotente
-        $this->marcarPedidoComoPagado($pedido, $checkoutSession->payment_intent ?? null);
+        $pedido = $this->marcarPedidoComoPagado($pedido, $checkoutSession->payment_intent ?? $sessionId);
 
-        // Vaciar carrito en sesión y base de datos
+        // Vaciar carrito en sesión y autorizar vista del recibo incluso si el navegador reinició cookies tras 3D Secure
         session()->forget('carrito');
         session()->forget('cupon');
         session()->forget('datos_envio_checkout');
         session()->forget('ultimo_pedido_id');
-        if (auth()->check()) {
-            auth()->user()->update(['carrito_guardado' => null]);
-        }
+        session()->put('pedido_confirmado_acceso_' . $pedido->id, true);
 
         return redirect()->route('pedido.confirmado', $pedido->id)->with('success', '¡Pago procesado con éxito en Stripe! Tu pedido ha sido confirmado.');
     }
 
     /**
      * Webhook de Stripe para confirmación asíncrona de pagos en segundo plano.
+     * Soporta checkout.session.completed, checkout.session.async_payment_succeeded,
+     * checkout.session.async_payment_failed y checkout.session.expired.
      */
     public function webhookStripe(Request $request)
     {
         $stripeSecret = config('services.stripe.secret');
-        $webhookSecret = env('STRIPE_WEBHOOK_SECRET');
+        $webhookSecret = config('services.stripe.webhook_secret');
 
         $payload = $request->getContent();
         $sigHeader = $request->header('Stripe-Signature');
@@ -1277,19 +1236,37 @@ class PrincipalController extends Controller
             if (!empty($webhookSecret) && !empty($sigHeader)) {
                 $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $webhookSecret);
             } else {
-                $event = json_decode($payload);
+                $rawEvent = json_decode($payload);
+                if (!$rawEvent || !isset($rawEvent->type, $rawEvent->data->object->id) || empty($stripeSecret)) {
+                    return response()->json(['error' => 'Invalid webhook payload'], 400);
+                }
+                // Si no hay STRIPE_WEBHOOK_SECRET configurado aún, verificar autenticidad consultando la sesión directo en Stripe API
+                $stripe = new \Stripe\StripeClient($stripeSecret);
+                $verifiedSession = $stripe->checkout->sessions->retrieve($rawEvent->data->object->id);
+                $rawEvent->data->object = $verifiedSession;
+                $event = $rawEvent;
             }
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Error verificando Webhook de Stripe: " . $e->getMessage());
             return response()->json(['error' => 'Webhook error: ' . $e->getMessage()], 400);
         }
 
-        if ($event && isset($event->type) && $event->type === 'checkout.session.completed') {
-            $session = $event->data->object;
-            if ($session->payment_status === 'paid' && !empty($session->metadata->pedido_id)) {
-                $pedido = Pedido::with('detalles')->find($session->metadata->pedido_id);
+        if ($event && isset($event->type)) {
+            $session = $event->data->object ?? null;
+            $pedidoId = $session->metadata->pedido_id ?? $session->client_reference_id ?? null;
+
+            if ($pedidoId) {
+                $pedido = Pedido::with('detalles')->find($pedidoId);
                 if ($pedido) {
-                    $this->marcarPedidoComoPagado($pedido, $session->payment_intent ?? null);
+                    if (in_array($event->type, ['checkout.session.completed', 'checkout.session.async_payment_succeeded'])) {
+                        if (($session->payment_status ?? '') === 'paid') {
+                            $this->marcarPedidoComoPagado($pedido, $session->payment_intent ?? $session->id ?? null);
+                        }
+                    } elseif (in_array($event->type, ['checkout.session.async_payment_failed', 'checkout.session.expired'])) {
+                        if ($pedido->estado === 'pendiente') {
+                            $pedido->update(['estado' => 'cancelado']);
+                        }
+                    }
                 }
             }
         }
@@ -1298,20 +1275,20 @@ class PrincipalController extends Controller
     }
 
     /**
-     * Maneja el retorno cuando el pago en Stripe es cancelado.
+     * Maneja el retorno cuando el cliente cancela o regresa desde Stripe Checkout.
      */
-    public function cancelarPagoStripe()
+    public function cancelarPagoStripe(Request $request)
     {
-        $pedidoId = session()->get('ultimo_pedido_id');
+        $pedidoId = $request->query('pedido_id', session()->get('ultimo_pedido_id'));
         if ($pedidoId) {
             $pedido = Pedido::find($pedidoId);
-            if ($pedido && in_array($pedido->estado, ['pendiente', 'procesando'])) {
+            // Solo marcar como cancelado si sigue pendiente (nunca si ya fue pagado)
+            if ($pedido && $pedido->estado === 'pendiente') {
                 $pedido->update(['estado' => 'cancelado']);
             }
-            session()->forget('ultimo_pedido_id');
         }
 
-        return redirect()->route('checkout')->with('info', 'El proceso de pago en Stripe fue cancelado. Tus productos siguen guardados en tu carrito.');
+        return redirect()->route('checkout')->with('info', 'El proceso de pago en Stripe fue cancelado. Tus productos siguen guardados en tu carrito por si deseas reintentar.');
     }
 
     /**
@@ -1338,14 +1315,16 @@ class PrincipalController extends Controller
         }
 
         // Control de Privacidad y Acceso:
-        // Solo el propietario del pedido o los administradores pueden ver el recibo
+        // Puede ver el recibo: el administrador, el dueño autenticado del pedido, o quien acaba de retornar de Stripe con sesión autorizada
         $esAdmin = auth()->check() && (bool) auth()->user()->is_admin;
-        if (!$esAdmin) {
+        $accesoRecienteStripe = (bool) session()->get('pedido_confirmado_acceso_' . $pedido->id, false);
+
+        if (!$esAdmin && !$accesoRecienteStripe) {
             if (!auth()->check()) {
                 return redirect()->route('login')->with('info', 'Por favor inicia sesión para consultar los detalles de tu compra.');
             }
 
-            if ($pedido->usuario_id && $pedido->usuario_id !== auth()->id()) {
+            if ($pedido->usuario_id && (int) $pedido->usuario_id !== (int) auth()->id()) {
                 abort(403, 'No tienes autorización para consultar este recibo de compra.');
             }
         }
@@ -1963,7 +1942,7 @@ class PrincipalController extends Controller
             try {
                 if (str_contains($apiUrl, 'graph.facebook.com')) {
                     // Meta WhatsApp Cloud API oficial
-                    $templateName = config('services.whatsapp.template', env('WHATSAPP_TEMPLATE_NAME', 'aviso_nuevo_contacto'));
+                    $templateName = config('services.whatsapp.template', 'aviso_nuevo_contacto');
 
                     $payloadMeta = [
                         'messaging_product' => 'whatsapp',
@@ -1990,7 +1969,7 @@ class PrincipalController extends Controller
                                         ['type' => 'text', 'text' => '+' . (string) $digitosTel],
                                         ['type' => 'text', 'text' => (string) $direccionCompleta],
                                         ['type' => 'text', 'text' => (string) $itemsTextoLimpio],
-                                        ['type' => 'text', 'text' => '$' . (string) $totalFmt . ' MXN'],
+                                        ['type' => 'text', 'text' => '$' . (string) $totalContadoFmt . ' MXN'],
                                     ]
                                 ]
                             ]
@@ -2074,10 +2053,13 @@ class PrincipalController extends Controller
         $pedido = Pedido::findOrFail($id);
 
         $estadoAnterior = $pedido->estado;
-        $pedido->update(['estado' => 'contacto_agente']);
+        $yaPagado = in_array($estadoAnterior, ['procesando', 'procesado', 'pagado', 'completado', 'enviado', 'entregado', 'recibido']);
 
-        // Notificar por correo al cliente verificado
-        if ($estadoAnterior !== 'contacto_agente') {
+        // Solo cambiar a 'contacto_agente' si el pedido no estaba ya pagado/en curso
+        if (!$yaPagado && $estadoAnterior !== 'contacto_agente') {
+            $pedido->update(['estado' => 'contacto_agente']);
+
+            // Notificar por correo al cliente verificado
             try {
                 $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
                 if ($correoDestino) {

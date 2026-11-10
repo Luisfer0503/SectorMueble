@@ -6,7 +6,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-16">
         <h1 class="serif-title text-2xl sm:text-3xl font-bold text-zinc-950 mb-6 sm:mb-8 font-sans">Finalizar Compra</h1>
 
-        <form id="checkout-form" action="{{ route('checkout.procesar') }}" method="POST">
+        <form id="checkout-form" action="{{ route('checkout.procesar') }}" method="POST" onsubmit="iniciarPagoStripe(event); return false;">
             @csrf
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-12">
                 
@@ -718,6 +718,11 @@
         async function iniciarPagoStripe(e) {
             if (e) e.preventDefault();
 
+            const cpVal = (document.getElementById('codigo_postal')?.value || '').trim();
+            if (!cpValidadoEnBD && cpVal.length === 5 && /^[0-9]{5}$/.test(cpVal)) {
+                await verificarCPCheckout(cpVal);
+            }
+
             if (!cpValidadoEnBD) {
                 alert('El Código Postal ingresado no cuenta con cobertura de envío directa para pago en línea. Por favor contacta a un agente de ventas.');
                 return;
@@ -771,19 +776,43 @@
                     body: JSON.stringify(data)
                 });
 
+                if (response.status === 419) {
+                    alert('Tu sesión ha expirado por inactividad. La página se recargará para continuar con tu pago seguro.');
+                    window.location.reload();
+                    return;
+                }
+
+                if (response.status === 401) {
+                    window.location.href = "{{ route('login') }}";
+                    return;
+                }
+
                 const resData = await response.json();
 
                 if (resData.success && resData.checkout_url) {
                     window.location.href = resData.checkout_url;
                 } else {
-                    alert(resData.message || 'Ocurrió un error al preparar la sesión de pago de Stripe.');
-                    if (btn) btn.disabled = false;
+                    let msgError = resData.message || 'Ocurrió un error al preparar la sesión de pago de Stripe.';
+                    if (resData.errors && typeof resData.errors === 'object') {
+                        const firstErrorList = Object.values(resData.errors)[0];
+                        if (Array.isArray(firstErrorList) && firstErrorList.length > 0) {
+                            msgError = firstErrorList[0];
+                        }
+                    }
+                    alert(msgError);
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-75');
+                    }
                     if (btnTexto) btnTexto.innerText = 'Reintentar Pago con Stripe';
                 }
             } catch (err) {
                 console.error(err);
                 alert("Error al conectar con la pasarela de pagos: " + (err.message || 'Inténtalo de nuevo.'));
-                if (btn) btn.disabled = false;
+                if (btn) {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75');
+                }
                 if (btnTexto) btnTexto.innerText = 'Reintentar Pago con Stripe';
             }
         }

@@ -358,7 +358,7 @@
                                             <div style="font-size: 12px; color: #71717A;">Cantidad: {{ $det->cantidad }} | $ {{ number_format($det->precio * $det->cantidad, 2, '.', ',') }} MXN</div>
                                         </div>
                                     </div>
-                                    <a href="{{ url('/checkout') }}" style="display: inline-block; background-color: #88674B; color: #FFFFFF !important; font-size: 12px; font-weight: 700; padding: 8px 16px; border-radius: 8px; text-decoration: none;">
+                                    <a href="{{ route('checkout') }}" style="display: inline-block; background-color: #88674B; color: #FFFFFF !important; font-size: 12px; font-weight: 700; padding: 8px 16px; border-radius: 8px; text-decoration: none;">
                                         Completar mi pedido
                                     </a>
                                 </div>
@@ -405,13 +405,35 @@
                 <!-- Order Summary -->
                 <div class="order-summary">
                     <h3>Detalles del Pedido #{{ str_pad($pedido->id, 5, '0', STR_PAD_LEFT) }}</h3>
-                    
+                    @php
+                        $subtotalCorreo = 0;
+                    @endphp
                     @foreach($pedido->detalles as $det)
+                        @php
+                            $subtotalCorreo += ($det->precio * $det->cantidad);
+                        @endphp
                         <div class="item-row">
                             <span>{{ $det->cantidad }}x {{ $det->nombre_producto }}</span>
                             <span style="font-weight: 600;">$ {{ number_format($det->precio * $det->cantidad, 2, '.', ',') }} MXN</span>
                         </div>
                     @endforeach
+
+                    @if(($pedido->descuento ?? 0) > 0)
+                        <div class="item-row" style="color: #B91C1C;">
+                            <span>Descuento aplicado{{ !empty($pedido->cupon_codigo) ? ' (' . $pedido->cupon_codigo . ')' : '' }}</span>
+                            <span style="font-weight: 600;">-$ {{ number_format($pedido->descuento, 2, '.', ',') }} MXN</span>
+                        </div>
+                    @endif
+
+                    @php
+                        $envioCorreo = max(0, round(($pedido->total ?? 0) - $subtotalCorreo + ($pedido->descuento ?? 0), 2));
+                    @endphp
+                    <div class="item-row">
+                        <span>Costo de Envío</span>
+                        <span style="font-weight: 600; color: {{ $envioCorreo <= 0 ? '#047857' : '#18181B' }};">
+                            {{ $envioCorreo <= 0 ? 'GRATIS' : '$ ' . number_format($envioCorreo, 2, '.', ',') . ' MXN' }}
+                        </span>
+                    </div>
 
                     <div class="total-row">
                         <span>Total del Pedido</span>
