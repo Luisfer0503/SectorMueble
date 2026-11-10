@@ -290,19 +290,53 @@
                         <h2 class="serif-title text-lg font-bold text-zinc-950 pb-4 border-b border-zinc-150">Resumen del Pedido</h2>
                         
                         <!-- Listado de Artículos -->
-                        <div class="divide-y divide-zinc-100 max-h-60 overflow-y-auto py-2">
+                        <div class="divide-y divide-zinc-100 max-h-64 overflow-y-auto py-2">
                             @foreach($carrito as $id => $item)
-                                <div class="flex items-center justify-between py-3">
-                                    <div class="flex items-center space-x-3">
+                                @php
+                                    $baseItemOrig = (float) ($item['precio_base_original'] ?? $item['precio_original'] ?? $item['precio']);
+                                    $esEspItem = !empty($item['es_promo_especial']);
+                                    $pContadoUnit = (float) ($item['precio_contado'] ?? ($promoActiva ? round($baseItemOrig * ($esEspItem ? 0.50 : 0.60), 2) : $item['precio']));
+                                    $pMsiUnit = (float) ($item['precio_msi'] ?? ($promoActiva ? round($baseItemOrig * ($esEspItem ? 0.65 : 0.70), 2) : $pContadoUnit));
+                                    $totalItemContado = $pContadoUnit * $item['cantidad'];
+                                    $totalItemMsi = $pMsiUnit * $item['cantidad'];
+                                    $mesesSelInit = $mesesMsiInicial ?? 12;
+                                @endphp
+                                <div class="flex items-center justify-between py-3 gap-2">
+                                    <div class="flex items-center space-x-3 min-w-0">
                                         <div class="w-12 h-12 bg-zinc-100 rounded overflow-hidden flex-shrink-0">
                                             <img src="{{ $item['imagen_url'] }}" alt="{{ $item['nombre'] }}" class="w-full h-full object-cover">
                                         </div>
-                                        <div>
+                                        <div class="min-w-0">
                                             <h3 class="text-xs font-bold text-zinc-900 line-clamp-1">{{ $item['nombre'] }}</h3>
-                                            <span class="text-[11px] text-zinc-500">Cant: {{ $item['cantidad'] }}</span>
+                                            <div class="flex flex-wrap items-center gap-1.5 mt-0.5">
+                                                <span class="text-[11px] text-zinc-500">Cant: {{ $item['cantidad'] }}</span>
+                                                @if($promoActiva ?? true)
+                                                    <span class="checkout-item-badge-contado text-[9px] font-extrabold bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded uppercase {{ ($tipoPagoInicial ?? 'contado') === 'msi' ? 'hidden' : '' }}">
+                                                        -{{ $esEspItem ? '50' : '40' }}% Contado
+                                                    </span>
+                                                    <span class="checkout-item-badge-msi text-[9px] font-extrabold bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded uppercase {{ ($tipoPagoInicial ?? 'contado') === 'msi' ? '' : 'hidden' }}">
+                                                        -{{ $esEspItem ? '35' : '30' }}% MSI
+                                                    </span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
-                                    <span class="text-xs font-bold text-zinc-900 font-sans">$ {{ number_format($item['precio'] * $item['cantidad'], 2, '.', ',') }}</span>
+                                    <div class="text-right shrink-0">
+                                        <!-- Precio del mueble en modo Contado -->
+                                        <div class="checkout-item-price-contado {{ ($tipoPagoInicial ?? 'contado') === 'msi' ? 'hidden' : '' }}">
+                                            <span class="text-xs font-bold text-zinc-900 font-sans block">$ {{ number_format($totalItemContado, 2, '.', ',') }}</span>
+                                            @if(($promoActiva ?? true) && $baseItemOrig > $pContadoUnit)
+                                                <span class="text-[10px] text-zinc-400 line-through font-sans block">$ {{ number_format($baseItemOrig * $item['cantidad'], 2, '.', ',') }}</span>
+                                            @endif
+                                        </div>
+                                        <!-- Precio del mueble en modo MSI -->
+                                        <div class="checkout-item-price-msi {{ ($tipoPagoInicial ?? 'contado') === 'msi' ? '' : 'hidden' }}" data-item-total-msi="{{ $totalItemMsi }}">
+                                            <span class="text-xs font-bold text-zinc-900 font-sans block">$ {{ number_format($totalItemMsi, 2, '.', ',') }}</span>
+                                            <span class="checkout-item-msi-cuota text-[10px] font-bold text-amber-900 font-sans block">
+                                                {{ $mesesSelInit }} MSI de $ {{ number_format($totalItemMsi / $mesesSelInit, 2, '.', ',') }}/m
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -311,21 +345,23 @@
                         <div class="space-y-3 py-4 border-t border-b border-zinc-150 text-xs mt-4">
                             <div class="flex justify-between text-zinc-500">
                                 <span>Subtotal</span>
-                                <span id="summary-subtotal-display" class="font-semibold text-zinc-900 font-sans">$ {{ number_format($subtotal, 2, '.', ',') }}</span>
+                                <span id="summary-subtotal-display" class="font-semibold text-zinc-900 font-sans">$ {{ number_format(($tipoPagoInicial ?? 'contado') === 'msi' ? $subtotalMsi : $subtotal, 2, '.', ',') }}</span>
                             </div>
-                            @if($descuento > 0)
+                            @if(($descuento ?? 0) > 0 || ($descuentoMsi ?? 0) > 0)
                                 <div class="flex justify-between text-rose-700 font-medium">
                                     <span>Descuento (Cupón: {{ $cuponAplicado['codigo'] ?? '' }})</span>
-                                    <span class="font-sans">-$ {{ number_format($descuento, 2, '.', ',') }}</span>
+                                    <span id="summary-descuento-display" class="font-sans">-$ {{ number_format(($tipoPagoInicial ?? 'contado') === 'msi' ? ($descuentoMsi ?? $descuento) : $descuento, 2, '.', ',') }}</span>
                                 </div>
                             @endif
                             <div class="flex justify-between text-zinc-500">
                                 <span>Envío</span>
-                                @if($envio == 0)
-                                    <span class="font-bold text-emerald-700 uppercase">Gratis</span>
-                                @else
-                                    <span class="font-semibold text-zinc-900 font-sans">$ {{ number_format($envio, 2, '.', ',') }}</span>
-                                @endif
+                                <span id="summary-envio-display">
+                                    @if((($tipoPagoInicial ?? 'contado') === 'msi' ? ($envioMsi ?? $envio) : $envio) == 0)
+                                        <span class="font-bold text-emerald-700 uppercase">Gratis</span>
+                                    @else
+                                        <span class="font-semibold text-zinc-900 font-sans">$ {{ number_format(($tipoPagoInicial ?? 'contado') === 'msi' ? ($envioMsi ?? $envio) : $envio, 2, '.', ',') }}</span>
+                                    @endif
+                                </span>
                             </div>
                             <div id="summary-msi-preview" class="hidden flex justify-between items-center text-amber-950 font-extrabold bg-amber-50 p-2.5 rounded-xl border border-amber-300">
                                 <span>12 Mensualidades de:</span>
@@ -407,6 +443,12 @@
         const totalMsiFormatted = "{{ number_format($totalMsi, 2, '.', ',') }}";
         const subtotalContadoFormatted = "{{ number_format($subtotal, 2, '.', ',') }}";
         const subtotalMsiFormatted = "{{ number_format($subtotalMsi, 2, '.', ',') }}";
+        const descuentoContadoFormatted = "{{ number_format($descuento ?? 0, 2, '.', ',') }}";
+        const descuentoMsiFormatted = "{{ number_format($descuentoMsi ?? $descuento ?? 0, 2, '.', ',') }}";
+        const envioContadoVal = {{ (float) ($envio ?? 0) }};
+        const envioMsiVal = {{ (float) ($envioMsi ?? $envio ?? 0) }};
+        const envioContadoFormatted = "{{ number_format($envio ?? 0, 2, '.', ',') }}";
+        const envioMsiFormatted = "{{ number_format($envioMsi ?? $envio ?? 0, 2, '.', ',') }}";
 
         const cuotaMsi3Formatted = "{{ number_format($cuotaMsi3, 2, '.', ',') }}";
         const cuotaMsi6Formatted = "{{ number_format($cuotaMsi6, 2, '.', ',') }}";
@@ -417,6 +459,10 @@
         let tipoPagoActual = '{{ $tipoPagoInicial ?? "contado" }}';
         let mesesMsiActual = {{ $mesesMsiInicial ?? 12 }};
         let cpValidadoEnBD = false;
+
+        function formatMXNCheckout(num) {
+            return Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
 
         function getCuotaMsiFormatted(meses) {
             if (meses === 3) return cuotaMsi3Formatted;
@@ -445,6 +491,16 @@
                         if (spans[0]) spans[0].className = 'block text-[9px] uppercase font-bold text-zinc-500 text-center';
                         if (spans[1]) spans[1].className = 'text-xs font-black block font-sans text-center mt-1 text-zinc-900';
                     }
+                }
+            });
+
+            // Actualizar la cuota mensual individual de cada mueble en el Resumen del Pedido
+            document.querySelectorAll('.checkout-item-price-msi').forEach(box => {
+                const itemTotalMsi = parseFloat(box.getAttribute('data-item-total-msi') || '0');
+                const cuotaElem = box.querySelector('.checkout-item-msi-cuota');
+                if (cuotaElem && itemTotalMsi > 0) {
+                    const cuotaItem = formatMXNCheckout(itemTotalMsi / meses);
+                    cuotaElem.textContent = `${meses} MSI de $ ${cuotaItem}/m`;
                 }
             });
 
@@ -481,9 +537,25 @@
             const cardMsi = document.getElementById('card-opt-msi');
             const boxDesglose = document.getElementById('box-desglose-msi');
             const summarySubtotal = document.getElementById('summary-subtotal-display');
+            const summaryDescuento = document.getElementById('summary-descuento-display');
+            const summaryEnvio = document.getElementById('summary-envio-display');
             const summaryTotal = document.getElementById('summary-total-display');
             const summaryMsiPreview = document.getElementById('summary-msi-preview');
             const btnTexto = document.getElementById('btn-stripe-texto');
+
+            // Alternar precios y etiquetas individuales por mueble en el Resumen del Pedido
+            document.querySelectorAll('.checkout-item-price-contado').forEach(el => {
+                el.classList.toggle('hidden', tipo === 'msi');
+            });
+            document.querySelectorAll('.checkout-item-price-msi').forEach(el => {
+                el.classList.toggle('hidden', tipo !== 'msi');
+            });
+            document.querySelectorAll('.checkout-item-badge-contado').forEach(el => {
+                el.classList.toggle('hidden', tipo === 'msi');
+            });
+            document.querySelectorAll('.checkout-item-badge-msi').forEach(el => {
+                el.classList.toggle('hidden', tipo !== 'msi');
+            });
 
             if (tipo === 'msi') {
                 if (radioMsi) radioMsi.checked = true;
@@ -495,6 +567,12 @@
                 }
                 if (boxDesglose) boxDesglose.classList.remove('hidden');
                 if (summarySubtotal) summarySubtotal.textContent = `$ ${subtotalMsiFormatted}`;
+                if (summaryDescuento) summaryDescuento.textContent = `-$ ${descuentoMsiFormatted}`;
+                if (summaryEnvio) {
+                    summaryEnvio.innerHTML = envioMsiVal <= 0
+                        ? '<span class="font-bold text-emerald-700 uppercase">Gratis</span>'
+                        : `<span class="font-semibold text-zinc-900 font-sans">$ ${envioMsiFormatted}</span>`;
+                }
                 if (summaryTotal) {
                     summaryTotal.textContent = `$ ${totalMsiFormatted}`;
                     summaryTotal.className = 'text-xl font-bold font-sans text-emerald-900';
@@ -512,6 +590,12 @@
                 }
                 if (boxDesglose) boxDesglose.classList.add('hidden');
                 if (summarySubtotal) summarySubtotal.textContent = `$ ${subtotalContadoFormatted}`;
+                if (summaryDescuento) summaryDescuento.textContent = `-$ ${descuentoContadoFormatted}`;
+                if (summaryEnvio) {
+                    summaryEnvio.innerHTML = envioContadoVal <= 0
+                        ? '<span class="font-bold text-emerald-700 uppercase">Gratis</span>'
+                        : `<span class="font-semibold text-zinc-900 font-sans">$ ${envioContadoFormatted}</span>`;
+                }
                 if (summaryTotal) {
                     summaryTotal.textContent = `$ ${totalContadoFormatted}`;
                     summaryTotal.className = 'text-xl font-bold font-sans text-emerald-900';

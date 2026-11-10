@@ -664,7 +664,7 @@ class PrincipalController extends Controller
 
         $subtotalContado = 0;
         $subtotalMsi = 0;
-        foreach ($carrito as $id => $item) {
+        foreach ($carrito as $id => &$item) {
             $base = (float)($item['precio_original'] ?? $item['precio']);
             $isEspecial = !empty($item['es_promo_especial']);
             $prodModel = Producto::find($item['producto_id'] ?? $id);
@@ -680,9 +680,15 @@ class PrincipalController extends Controller
                 $pMsi = $pContado;
             }
 
+            $item['precio_base_original'] = $base;
+            $item['precio_contado'] = $pContado;
+            $item['precio_msi'] = $pMsi;
+            $item['es_promo_especial'] = $isEspecial;
+
             $subtotalContado += $pContado * $item['cantidad'];
             $subtotalMsi += $pMsi * $item['cantidad'];
         }
+        unset($item);
 
         $subtotal = $subtotalContado;
 
@@ -712,7 +718,7 @@ class PrincipalController extends Controller
         $cuotaMsi3 = round($totalMsi / 3, 2);
 
         return view('Principal.checkout', compact(
-            'carrito', 'subtotal', 'envio', 'descuento', 'total', 'cuponAplicado',
+            'carrito', 'subtotal', 'envio', 'descuento', 'descuentoMsi', 'envioMsi', 'total', 'cuponAplicado',
             'subtotalContado', 'subtotalMsi', 'totalMsi', 'cuotaMsi12', 'cuotaMsi9', 'cuotaMsi6', 'cuotaMsi3',
             'tipoPagoInicial', 'mesesMsiInicial', 'promoActiva'
         ));
@@ -1012,7 +1018,10 @@ class PrincipalController extends Controller
                 'meses_msi'  => $tipoPago === 'msi' ? (string) $mesesMsi : '',
             ];
 
+            $habilitarMsiStripe = ($promoActiva && $tipoPago === 'msi');
+
             $stripeParams = [
+                'payment_method_types'   => ['card'],
                 'line_items'             => $lineItems,
                 'mode'                   => 'payment',
                 'client_reference_id'    => (string) $pedido->id,
@@ -1023,19 +1032,23 @@ class PrincipalController extends Controller
                     'description' => "Pedido #{$folioFormat} - Sector Mueble ({$pedido->nombre_cliente})",
                     'metadata'    => $metadataComun,
                 ],
+                'payment_method_options' => [
+                    'card' => [
+                        'installments' => [
+                            'enabled' => $habilitarMsiStripe,
+                        ],
+                    ],
+                ],
+                'custom_text'            => [
+                    'submit' => [
+                        'message' => $habilitarMsiStripe
+                            ? "Modalidad elegida: Meses Sin Intereses ({$mesesMsi} MSI). Activa la casilla 'Pagar en cuotas (meses sin intereses)' y selecciona tu plazo."
+                            : 'Modalidad elegida: Pago de Contado (1 sola exhibición). Si deseas pagar a Meses Sin Intereses, regresa al checkout para cambiar de modalidad.',
+                    ],
+                ],
                 'success_url'            => route('checkout.stripe.exito') . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url'             => route('checkout.stripe.cancelado') . '?pedido_id=' . $pedido->id,
             ];
-
-            if ($promoActiva && $tipoPago === 'msi') {
-                $stripeParams['payment_method_options'] = [
-                    'card' => [
-                        'installments' => [
-                            'enabled' => true,
-                        ],
-                    ],
-                ];
-            }
 
             $stripe = new \Stripe\StripeClient($stripeSecret);
 
