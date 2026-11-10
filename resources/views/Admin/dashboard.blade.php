@@ -12,16 +12,13 @@
         <!-- Ventas Totales -->
         <div class="bg-white p-6 rounded border border-zinc-200 shadow-sm flex flex-col justify-between">
             <div>
-                <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider block">Ventas Netas</span>
+                <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider block">Ventas Netas (Cobradas)</span>
                 <span class="text-2xl font-bold text-zinc-900 block mt-2 font-sans">$ {{ number_format($ventasTotales, 2, '.', ',') }}</span>
             </div>
             <div class="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
-                <span>Pedidos aprobados</span>
-                <span class="text-emerald-700 font-semibold flex items-center">
-                    <svg class="h-3 w-3 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Activo
+                <span>{{ $pedidosPagadosCount ?? 0 }} {{ ($pedidosPagadosCount ?? 0) === 1 ? 'pedido pagado' : 'pedidos pagados' }}</span>
+                <span class="text-rose-700 font-semibold">
+                    {{ $pedidosCanceladosCount ?? 0 }} cancelados ($0)
                 </span>
             </div>
         </div>
@@ -29,11 +26,11 @@
         <!-- Pedidos Totales -->
         <div class="bg-white p-6 rounded border border-zinc-200 shadow-sm flex flex-col justify-between">
             <div>
-                <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider block">Pedidos Recibidos</span>
+                <span class="text-xs font-bold text-zinc-400 uppercase tracking-wider block">Intentos / Pedidos</span>
                 <span class="text-2xl font-bold text-zinc-900 block mt-2 font-sans">{{ $pedidosTotales }}</span>
             </div>
             <div class="mt-4 pt-4 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
-                <span>Pendientes por enviar</span>
+                <span>Pendientes de pago</span>
                 <span class="text-amber-700 font-semibold font-sans">{{ $pedidosPendientes }}</span>
             </div>
         </div>
@@ -97,22 +94,34 @@
                                     <td class="py-3 font-mono font-bold text-zinc-900">#{{ str_pad($pedido->id, 5, '0', STR_PAD_LEFT) }}</td>
                                     <td class="py-3 font-medium text-zinc-900">{{ $pedido->nombre_cliente }}</td>
                                     <td class="py-3 text-zinc-500 text-xs">{{ $pedido->created_at->format('d/m/Y') }}</td>
-                                    <td class="py-3 font-semibold text-zinc-900 font-sans">$ {{ number_format($pedido->total, 2, '.', ',') }}</td>
-                                    <td class="py-3">
-                                        @if($pedido->estado === 'pendiente')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">Pendiente</span>
-                                        @elseif($pedido->estado === 'procesado')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-200">Procesado</span>
-                                        @elseif($pedido->estado === 'enviado')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200">Enviado</span>
-                                        @elseif($pedido->estado === 'entregado')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">Entregado</span>
+                                    <td class="py-3 font-semibold text-zinc-900 font-sans">
+                                        @if($pedido->estado === 'cancelado')
+                                            <span class="text-rose-700 font-bold block">$ 0.00 MXN</span>
+                                            <span class="text-[11px] text-zinc-400 line-through block">$ {{ number_format($pedido->total, 2, '.', ',') }}</span>
+                                        @elseif($pedido->estado === 'pendiente' || $pedido->estado === 'contacto_agente')
+                                            <span class="text-amber-800 font-bold block">$ 0.00 cobrado</span>
+                                            <span class="text-[11px] text-zinc-500 block">Carrito: $ {{ number_format($pedido->total, 2, '.', ',') }}</span>
                                         @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200">Cancelado</span>
+                                            <span class="text-emerald-800 font-bold block">$ {{ number_format($pedido->total, 2, '.', ',') }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-3">
+                                        @if(in_array($pedido->estado, ['pagado', 'procesando', 'completado', 'procesado']))
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">✓ Pagado / Procesando</span>
+                                        @elseif($pedido->estado === 'pendiente')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">⏳ Pendiente</span>
+                                        @elseif($pedido->estado === 'contacto_agente')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-800 border border-purple-200">💬 Contacto Agente</span>
+                                        @elseif($pedido->estado === 'enviado')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-800 border border-indigo-200">📦 Enviado</span>
+                                        @elseif($pedido->estado === 'entregado' || $pedido->estado === 'recibido')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-900 border border-emerald-300">🎉 Entregado</span>
+                                        @else
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-800 border border-rose-200">✕ Cancelado ($0.00)</span>
                                         @endif
                                     </td>
                                     <td class="py-3 text-right">
-                                        <a href="{{ route('admin.pedidos.detalle', $pedido->id) }}" class="text-xs font-semibold text-amber-850 hover:underline">Gestionar</a>
+                                        <a href="{{ route('admin.pedidos.detalle', $pedido->id) }}" class="text-xs font-semibold text-amber-850 hover:underline">Ver motivo / Gestionar</a>
                                     </td>
                                 </tr>
                             @endforeach

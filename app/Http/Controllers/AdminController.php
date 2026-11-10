@@ -44,10 +44,16 @@ class AdminController extends Controller
     {
         if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
 
-        // Métricas básicas (solo contabilizar en ventas totales los pedidos efectivamente pagados/confirmados)
-        $ventasTotales = Pedido::whereIn('estado', ['procesando', 'procesado', 'pagado', 'completado', 'enviado', 'entregado', 'recibido'])->sum('total');
+        // Sincronizar primero con Stripe para descartar pedidos no cobrados ($0.00 en Stripe)
+        Pedido::sincronizarPedidosConStripe();
+
+        // Métricas básicas (solo contabilizar en ventas netas los pedidos efectivamente pagados/confirmados)
+        $estadosPagados = ['procesando', 'procesado', 'pagado', 'completado', 'enviado', 'entregado', 'recibido'];
+        $ventasTotales = (float) Pedido::whereIn('estado', $estadosPagados)->sum('total');
+        $pedidosPagadosCount = Pedido::whereIn('estado', $estadosPagados)->count();
         $pedidosTotales = Pedido::count();
         $pedidosPendientes = Pedido::where('estado', 'pendiente')->count();
+        $pedidosCanceladosCount = Pedido::where('estado', 'cancelado')->count();
         $mueblesTotales = Producto::count();
         $clientesTotales = User::where('is_admin', false)->count();
         $mueblesStockBajo = Producto::with('detalles')->get()->filter(function ($p) {
@@ -59,8 +65,10 @@ class AdminController extends Controller
 
         return view('Admin.dashboard', compact(
             'ventasTotales',
+            'pedidosPagadosCount',
             'pedidosTotales',
             'pedidosPendientes',
+            'pedidosCanceladosCount',
             'mueblesTotales',
             'clientesTotales',
             'mueblesStockBajo',
@@ -797,14 +805,32 @@ class AdminController extends Controller
     public function pedidosIndex()
     {
         if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
-        $pedidos = Pedido::orderBy('created_at', 'desc')->paginate(10);
-        return view('Admin.pedidos.index', compact('pedidos'));
+
+        // Sincronizar con Stripe para reflejar el estado real de cobro
+        Pedido::sincronizarPedidosConStripe();
+
+        $estadosPagados = ['procesando', 'procesado', 'pagado', 'completado', 'enviado', 'entregado', 'recibido'];
+        $ventasNetasPagadas = (float) Pedido::whereIn('estado', $estadosPagados)->sum('total');
+        $totalPagados = Pedido::whereIn('estado', $estadosPagados)->count();
+        $totalPendientes = Pedido::where('estado', 'pendiente')->count();
+        $totalCancelados = Pedido::where('estado', 'cancelado')->count();
+
+        $pedidos = Pedido::with('detalles')->orderBy('created_at', 'desc')->paginate(10);
+        return view('Admin.pedidos.index', compact(
+            'pedidos',
+            'ventasNetasPagadas',
+            'totalPagados',
+            'totalPendientes',
+            'totalCancelados'
+        ));
     }
 
     public function pedidosDetalle($id)
     {
-        $pedido = Pedido::with('detalles')->findOrFail($id);
-        return view('Admin.pedidos.detalle', compact('pedido'));
+        $pedido = Pedido::with(['detalles.producto.detalles', 'usuario'])->findOrFail($id);
+        $diagnosticoStripe = $pedido->obtenerDiagnosticoStripe(true);
+
+        return view('Admin.pedidos.detalle', compact('pedido', 'diagnosticoStripe'));
     }
 
     public function pedidosActualizarEstado(Request $request, $id)
@@ -817,6 +843,12 @@ class AdminController extends Controller
 
         $estadoAnterior = $pedido->estado;
         $nuevoEstado = $request->estado;
+
+        // Si el administrador aprueba manualmente el pedido como Pagado/Procesando desde el panel,
+        // guardar como 'pagado' para distinguir la aprobación manual de una sesión de Stripe sin cobrar
+        if ($nuevoEstado === 'procesando') {
+            $nuevoEstado = 'pagado';
+        }
 
         $pedido->update([
             'estado' => $nuevoEstado,

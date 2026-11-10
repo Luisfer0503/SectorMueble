@@ -2,9 +2,33 @@
 
 @section('contenido')
     <!-- Header -->
-    <div class="pb-6 border-b border-zinc-200 mb-8">
+    <div class="pb-6 border-b border-zinc-200 mb-6">
         <h1 class="serif-title text-3xl font-bold text-zinc-950">Gestión de Pedidos</h1>
-        <p class="text-zinc-500 text-sm mt-1">Supervisa y actualiza el estado de los pedidos realizados por los clientes.</p>
+        <p class="text-zinc-500 text-sm mt-1">Supervisa el estado real de cobro en Stripe, motivos de cancelación y detalles de cada pedido.</p>
+    </div>
+
+    <!-- Resumen de Cobranza -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white border border-zinc-200 rounded p-4 shadow-2xs">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">Ventas Netas Cobradas</span>
+            <span class="text-xl font-extrabold font-sans text-emerald-700 block mt-1">$ {{ number_format($ventasNetasPagadas ?? 0, 2, '.', ',') }} MXN</span>
+            <span class="text-[11px] text-zinc-500 block mt-0.5">Solo pedidos con pago aprobado</span>
+        </div>
+        <div class="bg-white border border-zinc-200 rounded p-4 shadow-2xs">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">Pedidos Pagados</span>
+            <span class="text-xl font-extrabold font-sans text-zinc-900 block mt-1">{{ $totalPagados ?? 0 }}</span>
+            <span class="text-[11px] text-emerald-700 font-semibold block mt-0.5">✓ Cobro confirmado</span>
+        </div>
+        <div class="bg-white border border-zinc-200 rounded p-4 shadow-2xs">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">Pendientes de Pago</span>
+            <span class="text-xl font-extrabold font-sans text-amber-700 block mt-1">{{ $totalPendientes ?? 0 }}</span>
+            <span class="text-[11px] text-zinc-500 block mt-0.5">$0.00 cobrados hasta ahora</span>
+        </div>
+        <div class="bg-white border border-zinc-200 rounded p-4 shadow-2xs">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">Pedidos Cancelados</span>
+            <span class="text-xl font-extrabold font-sans text-rose-700 block mt-1">{{ $totalCancelados ?? 0 }}</span>
+            <span class="text-[11px] text-rose-700 font-semibold block mt-0.5">✕ $0.00 cobrados en Stripe</span>
+        </div>
     </div>
 
     <!-- Orders Table -->
@@ -60,7 +84,15 @@
                                 
                                 <!-- Total -->
                                 <td class="p-4 font-bold text-zinc-900 font-sans">
-                                    <span class="{{ $pedido->estado === 'cancelado' ? 'text-zinc-400 line-through' : '' }}">$ {{ number_format($pedido->total, 2, '.', ',') }}</span>
+                                    @if($pedido->estado === 'cancelado')
+                                        <span class="text-rose-700 font-extrabold block">$ 0.00 MXN cobrado</span>
+                                        <span class="text-[11px] text-zinc-400 line-through block">Carrito: $ {{ number_format($pedido->total, 2, '.', ',') }}</span>
+                                    @elseif($pedido->estado === 'pendiente' || $pedido->estado === 'contacto_agente')
+                                        <span class="text-amber-800 font-extrabold block">$ 0.00 MXN cobrado</span>
+                                        <span class="text-[11px] text-zinc-500 block">Por pagar: $ {{ number_format($pedido->total, 2, '.', ',') }}</span>
+                                    @else
+                                        <span class="text-emerald-800 font-extrabold block">$ {{ number_format($pedido->total, 2, '.', ',') }} MXN</span>
+                                    @endif
                                     @php
                                         $tpAdmin = (string) ($pedido->tipo_pago ?? 'contado');
                                         $esMsiAdmin = str_starts_with($tpAdmin, 'msi_');

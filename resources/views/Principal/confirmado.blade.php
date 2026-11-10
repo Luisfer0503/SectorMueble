@@ -1,21 +1,26 @@
 @extends('layouts.app')
 
-@section('titulo', '¡Pedido Confirmado! | Sector Mueble')
+@section('titulo', ($pedido->estado ?? '') === 'cancelado' ? 'Pedido Cancelado | Sector Mueble' : (($pedido->estado ?? '') === 'pendiente' ? 'Pedido Pendiente de Pago | Sector Mueble' : '¡Pedido Confirmado! | Sector Mueble'))
 
 @section('contenido')
+    @php
+        $diagConfirmado = $diagnosticoStripe ?? null;
+    @endphp
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        @if($pedido->estado === 'cancelado')
+        @if(($pedido->estado ?? '') === 'cancelado')
             <!-- Cancelled Banner -->
             <div class="text-center mb-12">
-                <div class="inline-flex p-4 bg-rose-50 rounded-full text-rose-600 mb-4 border border-rose-150">
+                <div class="inline-flex p-4 bg-rose-50 rounded-full text-rose-600 mb-4 border border-rose-200">
                     <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </div>
-                <h1 class="serif-title text-3xl sm:text-4xl font-bold text-zinc-950">Pedido Cancelado</h1>
-                <p class="mt-2 text-zinc-600 text-sm max-w-lg mx-auto">El proceso de pago en Stripe no fue completado o fue cancelado. No se ha realizado ningún cobro a tu tarjeta.</p>
+                <h1 class="serif-title text-3xl sm:text-4xl font-bold text-rose-900">Pedido Cancelado / Pago No Completado</h1>
+                <p class="mt-2 text-zinc-600 text-sm max-w-xl mx-auto">
+                    {{ $diagConfirmado['motivo_explicacion'] ?? 'El proceso de pago en Stripe no fue completado o fue cancelado. No se ha realizado ningún cobro ($0.00 MXN) a tu tarjeta.' }}
+                </p>
             </div>
-        @elseif($pedido->estado === 'pendiente')
+        @elseif(($pedido->estado ?? '') === 'pendiente' || ($pedido->estado ?? '') === 'contacto_agente')
             <!-- Pending Banner -->
             <div class="text-center mb-12">
                 <div class="inline-flex p-4 bg-amber-50 rounded-full text-amber-600 mb-4 border border-amber-200">
@@ -24,7 +29,7 @@
                     </svg>
                 </div>
                 <h1 class="serif-title text-3xl sm:text-4xl font-bold text-zinc-950">Pedido Pendiente de Pago</h1>
-                <p class="mt-2 text-zinc-600 text-sm max-w-lg mx-auto">Tu orden está registrada en espera de confirmación de pago por la pasarela.</p>
+                <p class="mt-2 text-zinc-600 text-sm max-w-lg mx-auto">Tu orden está registrada en espera de confirmación de pago ($0.00 MXN cobrados hasta el momento).</p>
             </div>
         @else
             <!-- Success Banner -->
@@ -42,13 +47,19 @@
         <!-- Ticket / Recibo de Compra -->
         <div class="bg-white border border-zinc-200 rounded-lg shadow-md overflow-hidden">
             <!-- Header Ticket -->
-            <div class="bg-zinc-950 text-white p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between">
+            <div class="{{ ($pedido->estado ?? '') === 'cancelado' ? 'bg-rose-950' : 'bg-zinc-950' }} text-white p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between">
                 <div>
-                    <span class="text-xs font-semibold tracking-wider text-amber-500 uppercase">Recibo de Pedido</span>
-                    <h2 class="text-lg font-mono tracking-widest mt-1">Nº #{{ str_pad($pedido->id ?? 1, 6, '0', STR_PAD_LEFT) }}</h2>
+                    @if(($pedido->estado ?? '') === 'cancelado')
+                        <span class="text-xs font-bold tracking-wider text-rose-300 uppercase">✕ Pedido Cancelado · Sin Cobro ($0.00 MXN)</span>
+                    @elseif(($pedido->estado ?? '') === 'pendiente' || ($pedido->estado ?? '') === 'contacto_agente')
+                        <span class="text-xs font-bold tracking-wider text-amber-400 uppercase">⏳ Orden Pendiente de Pago</span>
+                    @else
+                        <span class="text-xs font-semibold tracking-wider text-amber-500 uppercase">Recibo de Pedido</span>
+                    @endif
+                    <h2 class="text-lg font-mono tracking-widest mt-1">Nº #{{ str_pad($pedido->id ?? 1, 5, '0', STR_PAD_LEFT) }}</h2>
                 </div>
                 <div class="mt-4 sm:mt-0 text-left sm:text-right">
-                    <span class="block text-xs text-zinc-400">Fecha de compra</span>
+                    <span class="block text-xs text-zinc-400">Fecha de registro</span>
                     <span class="block text-sm font-semibold mt-0.5">{{ \Carbon\Carbon::parse($pedido->created_at ?? now())->format('d/m/Y H:i') }}</span>
                 </div>
             </div>
@@ -146,9 +157,15 @@
                         @endif
                     </div>
                     <div class="flex justify-between items-center text-sm text-zinc-950 pt-2 border-t border-zinc-200">
-                        <span class="font-semibold">{{ ($pedido->estado ?? '') === 'cancelado' ? 'Total (No Cobrado)' : (($pedido->estado ?? '') === 'pendiente' ? 'Total por Pagar' : 'Total Pagado') }}</span>
-                        <span class="text-base font-bold font-sans {{ ($pedido->estado ?? '') === 'cancelado' ? 'text-zinc-500 line-through' : 'text-emerald-900' }}">$ {{ number_format($pedido->total ?? 0, 2, '.', ',') }} MXN</span>
+                        <span class="font-semibold">{{ ($pedido->estado ?? '') === 'cancelado' ? 'Valor del Carrito (Cancelado)' : (($pedido->estado ?? '') === 'pendiente' ? 'Total por Pagar' : 'Total Pagado') }}</span>
+                        <span class="text-base font-bold font-sans {{ ($pedido->estado ?? '') === 'cancelado' ? 'text-zinc-400 line-through' : 'text-emerald-900' }}">$ {{ number_format($pedido->total ?? 0, 2, '.', ',') }} MXN</span>
                     </div>
+                    @if(($pedido->estado ?? '') === 'cancelado' || ($pedido->estado ?? '') === 'pendiente')
+                        <div class="flex justify-between items-center text-sm pt-2 border-t border-zinc-200">
+                            <span class="font-extrabold text-rose-800">Total Cobrado en Tarjeta (Stripe)</span>
+                            <span class="text-base font-extrabold font-sans text-rose-700">$ 0.00 MXN</span>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Bloque de Facturación Electrónica SAT (Oculto temporalmente) -->

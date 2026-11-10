@@ -1282,9 +1282,12 @@ class PrincipalController extends Controller
         $pedidoId = $request->query('pedido_id', session()->get('ultimo_pedido_id'));
         if ($pedidoId) {
             $pedido = Pedido::find($pedidoId);
-            // Solo marcar como cancelado si sigue pendiente (nunca si ya fue pagado)
-            if ($pedido && $pedido->estado === 'pendiente') {
-                $pedido->update(['estado' => 'cancelado']);
+            if ($pedido) {
+                // Sincronizar con Stripe; si no fue pagado, marcar como cancelado
+                $diag = $pedido->obtenerDiagnosticoStripe(false);
+                if (empty($diag['pagado_real']) && in_array($pedido->estado, ['pendiente', 'procesando'])) {
+                    $pedido->update(['estado' => 'cancelado']);
+                }
             }
         }
 
@@ -1329,7 +1332,10 @@ class PrincipalController extends Controller
             }
         }
 
-        return view('Principal.confirmado', compact('pedido'));
+        // Verificar en tiempo real contra Stripe para que un pedido sin pago ($0.00 en Stripe) jamás aparezca como "Gracias por tu compra / Procesando"
+        $diagnosticoStripe = $pedido->obtenerDiagnosticoStripe(true);
+
+        return view('Principal.confirmado', compact('pedido', 'diagnosticoStripe'));
     }
 
     // --- APLICAR / QUITAR CUPONES EN CARRITO ---
