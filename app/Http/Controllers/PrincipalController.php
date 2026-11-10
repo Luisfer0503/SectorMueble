@@ -1034,7 +1034,7 @@ class PrincipalController extends Controller
 
             $requiereFactura = (bool) $request->has('requiere_factura');
 
-            // 1. Crear el Pedido en estado 'procesando' (Pagado/En preparación)
+            // 1. Crear el Pedido en estado 'pendiente' (se confirmará a 'procesando' al verificar el pago con Stripe)
             $pedido = Pedido::create([
                 'usuario_id'           => auth()->id(),
                 'nombre_cliente'       => $request->nombre_cliente,
@@ -1047,7 +1047,7 @@ class PrincipalController extends Controller
                 'tipo_pago'            => $tipoPagoGuardar,
                 'cupon_codigo'         => $cuponCodigo,
                 'descuento'            => $descuento,
-                'estado'               => 'procesando',
+                'estado'               => 'pendiente',
                 'requiere_factura'     => $requiereFactura,
                 'rfc_receptor'         => $requiereFactura ? strtoupper(trim($request->rfc_receptor)) : null,
                 'razon_social'        => $requiereFactura ? mb_strtoupper(trim($request->razon_social)) : null,
@@ -1128,6 +1128,23 @@ class PrincipalController extends Controller
             }
 
             $stripe = new \Stripe\StripeClient($stripeSecret);
+
+            if ($descuento > 0) {
+                try {
+                    $coupon = $stripe->coupons->create([
+                        'amount_off' => (int) round($descuento * 100),
+                        'currency'   => config('services.stripe.currency', 'mxn'),
+                        'duration'   => 'once',
+                        'name'       => 'Descuento ' . ($cuponCodigo ? ('(' . $cuponCodigo . ')') : ''),
+                    ]);
+                    $stripeParams['discounts'] = [
+                        ['coupon' => $coupon->id],
+                    ];
+                } catch (\Exception $ce) {
+                    \Illuminate\Support\Facades\Log::warning("No se pudo crear cupón en Stripe: " . $ce->getMessage());
+                }
+            }
+
             $session = $stripe->checkout->sessions->create($stripeParams);
 
             return response()->json([
@@ -1145,48 +1162,19 @@ class PrincipalController extends Controller
     }
 
     /**
-     * Procesa la confirmación exitosa de pago en Stripe.
+     * Marca un pedido como pagado y realiza las tareas post-pago (idempotente).
      */
-    public function confirmarPagoStripe(Request $request)
+    protected function marcarPedidoComoPagado(Pedido $pedido, $stripePaymentId = null)
     {
-        $sessionId = $request->query('session_id');
-        $pedidoId = session()->get('ultimo_pedido_id');
-
-        $stripeSecret = config('services.stripe.secret');
-        if (!empty($sessionId) && !empty($stripeSecret)) {
-            try {
-                $stripe = new \Stripe\StripeClient($stripeSecret);
-                $checkoutSession = $stripe->checkout->sessions->retrieve($sessionId);
-
-                if ($checkoutSession->payment_status !== 'paid') {
-                    return redirect()->route('checkout')->with('error', 'El pago no ha sido completado en Stripe. Por favor intenta nuevamente.');
-                }
-
-                if (empty($pedidoId) && isset($checkoutSession->metadata->pedido_id)) {
-                    $pedidoId = $checkoutSession->metadata->pedido_id;
-                }
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error("Error al consultar la sesión de Stripe {$sessionId}: " . $e->getMessage());
-            }
+        // Evitar procesar dos veces el mismo pedido (por ejemplo, Webhook + Redirect)
+        if (in_array($pedido->estado, ['procesando', 'pagado', 'enviado', 'entregado', 'completado'])) {
+            return $pedido;
         }
 
-        $pedido = null;
-        if (!empty($pedidoId)) {
-            $pedido = Pedido::with('detalles')->find($pedidoId);
-        }
-
-        if (!$pedido && auth()->check()) {
-            $pedido = Pedido::where('usuario_id', auth()->id())->latest()->first();
-        }
-
-        if (!$pedido) {
-            return redirect()->route('inicio')->with('info', 'Tu pedido ya ha sido registrado.');
-        }
-
-        // Marcar el estado como procesando (Pagado)
+        // 1. Marcar el estado como procesando (Pagado / En preparación)
         $pedido->update(['estado' => 'procesando']);
 
-        // Descontar inventario
+        // 2. Descontar inventario de cada producto
         foreach ($pedido->detalles as $detItem) {
             $producto = Producto::find($detItem->producto_id);
             if ($producto) {
@@ -1197,7 +1185,7 @@ class PrincipalController extends Controller
             }
         }
 
-        // Enviar correo electrónico de compra exitosa
+        // 3. Enviar correo electrónico de confirmación de compra
         try {
             $correoDestino = !empty($pedido->correo_cliente) ? $pedido->correo_cliente : optional($pedido->usuario)->email;
             if ($correoDestino) {
@@ -1208,10 +1196,59 @@ class PrincipalController extends Controller
             \Illuminate\Support\Facades\Log::error("Error al enviar correo de confirmación del pedido #{$pedido->id}: " . $e->getMessage());
         }
 
-        // Emitir Factura vía FastAPI si fue solicitada y no se ha timbrado
+        // 4. Emitir Factura vía FastAPI si fue solicitada y no se ha timbrado
         if ($pedido->requiere_factura && $pedido->factura_estado !== 'facturado') {
-            app(\App\Services\FacturacionFastApiService::class)->generarFactura($pedido);
+            try {
+                app(\App\Services\FacturacionFastApiService::class)->generarFactura($pedido);
+            } catch (\Exception $fe) {
+                \Illuminate\Support\Facades\Log::error("Error timbrando factura automática pedido #{$pedido->id}: " . $fe->getMessage());
+            }
         }
+
+        return $pedido;
+    }
+
+    /**
+     * Procesa la confirmación exitosa de pago en Stripe.
+     */
+    public function confirmarPagoStripe(Request $request)
+    {
+        $sessionId = $request->query('session_id');
+        $pedidoId = session()->get('ultimo_pedido_id');
+
+        $stripeSecret = config('services.stripe.secret');
+        if (empty($sessionId) || empty($stripeSecret)) {
+            return redirect()->route('checkout')->with('error', 'Sesión de pago no válida o no encontrada.');
+        }
+
+        try {
+            $stripe = new \Stripe\StripeClient($stripeSecret);
+            $checkoutSession = $stripe->checkout->sessions->retrieve($sessionId);
+
+            if ($checkoutSession->payment_status !== 'paid') {
+                return redirect()->route('checkout')->with('error', 'El pago no ha sido completado en Stripe. Por favor intenta nuevamente.');
+            }
+
+            if (empty($pedidoId) && isset($checkoutSession->metadata->pedido_id)) {
+                $pedidoId = $checkoutSession->metadata->pedido_id;
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Error al consultar la sesión de Stripe {$sessionId}: " . $e->getMessage());
+            return redirect()->route('checkout')->with('error', 'No fue posible validar el pago con Stripe. Si tu banco realizó el cargo, contáctanos indicando tu correo.');
+        }
+
+        if (empty($pedidoId)) {
+            return redirect()->route('checkout')->with('error', 'No se localizó la orden correspondiente.');
+        }
+
+        $pedido = Pedido::with('detalles')->find($pedidoId);
+
+        if (!$pedido) {
+            return redirect()->route('inicio')->with('info', 'Tu pedido ya ha sido registrado.');
+        }
+
+        // Marcar como pagado de forma segura e idempotente
+        $this->marcarPedidoComoPagado($pedido, $checkoutSession->payment_intent ?? null);
 
         // Vaciar carrito en sesión y base de datos
         session()->forget('carrito');
@@ -1226,6 +1263,41 @@ class PrincipalController extends Controller
     }
 
     /**
+     * Webhook de Stripe para confirmación asíncrona de pagos en segundo plano.
+     */
+    public function webhookStripe(Request $request)
+    {
+        $stripeSecret = config('services.stripe.secret');
+        $webhookSecret = env('STRIPE_WEBHOOK_SECRET');
+
+        $payload = $request->getContent();
+        $sigHeader = $request->header('Stripe-Signature');
+
+        try {
+            if (!empty($webhookSecret) && !empty($sigHeader)) {
+                $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $webhookSecret);
+            } else {
+                $event = json_decode($payload);
+            }
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error("Error verificando Webhook de Stripe: " . $e->getMessage());
+            return response()->json(['error' => 'Webhook error: ' . $e->getMessage()], 400);
+        }
+
+        if ($event && isset($event->type) && $event->type === 'checkout.session.completed') {
+            $session = $event->data->object;
+            if ($session->payment_status === 'paid' && !empty($session->metadata->pedido_id)) {
+                $pedido = Pedido::with('detalles')->find($session->metadata->pedido_id);
+                if ($pedido) {
+                    $this->marcarPedidoComoPagado($pedido, $session->payment_intent ?? null);
+                }
+            }
+        }
+
+        return response()->json(['status' => 'success']);
+    }
+
+    /**
      * Maneja el retorno cuando el pago en Stripe es cancelado.
      */
     public function cancelarPagoStripe()
@@ -1233,7 +1305,7 @@ class PrincipalController extends Controller
         $pedidoId = session()->get('ultimo_pedido_id');
         if ($pedidoId) {
             $pedido = Pedido::find($pedidoId);
-            if ($pedido && $pedido->estado === 'procesando') {
+            if ($pedido && in_array($pedido->estado, ['pendiente', 'procesando'])) {
                 $pedido->update(['estado' => 'cancelado']);
             }
             session()->forget('ultimo_pedido_id');
@@ -1252,31 +1324,30 @@ class PrincipalController extends Controller
             $pedido = Pedido::with('detalles')->find($id);
         }
 
-        // Si el ID específico no existe, buscar el último pedido del usuario en la base de datos
+        // Si no se proporcionó ID, buscar el último pedido del usuario autenticado
         if (!$pedido && auth()->check()) {
-            $pedido = Pedido::with('detalles')->where('usuario_id', auth()->id())->latest()->first();
+            $pedido = Pedido::with('detalles')
+                ->where('usuario_id', auth()->id())
+                ->latest()
+                ->first();
         }
 
-        // Si aún no se encuentra, obtener el último pedido registrado en la tienda
+        // Si aún así no existe ningún pedido, redirigir al catálogo
         if (!$pedido) {
-            $pedido = Pedido::with('detalles')->latest()->first();
+            return redirect()->route('catalogo')->with('info', 'No se localizó ningún pedido reciente para mostrar.');
         }
 
-        // Si la base de datos estuviera vacía, construir objeto de respaldo para renderizar la vista de éxito
-        if (!$pedido) {
-            $pedido = new Pedido([
-                'id' => 1,
-                'nombre_cliente' => auth()->user()->name ?? 'Cliente Sector Mueble',
-                'correo_cliente' => auth()->user()->email ?? 'cliente@sectormueble.com',
-                'telefono_cliente' => '2220000000',
-                'direccion_envio' => 'Dirección registrada',
-                'ciudad' => 'Puebla',
-                'codigo_postal' => '72000',
-                'total' => 0,
-                'estado' => 'completado',
-                'created_at' => now(),
-            ]);
-            $pedido->setRelation('detalles', collect([]));
+        // Control de Privacidad y Acceso:
+        // Solo el propietario del pedido o los administradores pueden ver el recibo
+        $esAdmin = auth()->check() && (bool) auth()->user()->is_admin;
+        if (!$esAdmin) {
+            if (!auth()->check()) {
+                return redirect()->route('login')->with('info', 'Por favor inicia sesión para consultar los detalles de tu compra.');
+            }
+
+            if ($pedido->usuario_id && $pedido->usuario_id !== auth()->id()) {
+                abort(403, 'No tienes autorización para consultar este recibo de compra.');
+            }
         }
 
         return view('Principal.confirmado', compact('pedido'));

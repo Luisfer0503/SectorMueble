@@ -17,6 +17,7 @@ class Pedido extends Model
         'ciudad',
         'codigo_postal',
         'total',
+        'tipo_pago',
         'cupon_codigo',
         'descuento',
         'estado',

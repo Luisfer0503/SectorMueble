@@ -4,16 +4,40 @@
 
 @section('contenido')
     <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <!-- Success Banner -->
-        <div class="text-center mb-12">
-            <div class="inline-flex p-4 bg-emerald-50 rounded-full text-emerald-600 mb-4 border border-emerald-100">
-                <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
+        @if($pedido->estado === 'cancelado')
+            <!-- Cancelled Banner -->
+            <div class="text-center mb-12">
+                <div class="inline-flex p-4 bg-rose-50 rounded-full text-rose-600 mb-4 border border-rose-150">
+                    <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </div>
+                <h1 class="serif-title text-3xl sm:text-4xl font-bold text-zinc-950">Pedido Cancelado</h1>
+                <p class="mt-2 text-zinc-600 text-sm max-w-lg mx-auto">El proceso de pago en Stripe no fue completado o fue cancelado. No se ha realizado ningún cobro a tu tarjeta.</p>
             </div>
-            <h1 class="serif-title text-3xl sm:text-4xl font-bold text-zinc-950">¡Gracias por tu compra!</h1>
-            <p class="mt-2 text-zinc-500 text-sm">Tu pedido ha sido procesado correctamente. Recibirás un correo electrónico de confirmación con los detalles del envío.</p>
-        </div>
+        @elseif($pedido->estado === 'pendiente')
+            <!-- Pending Banner -->
+            <div class="text-center mb-12">
+                <div class="inline-flex p-4 bg-amber-50 rounded-full text-amber-600 mb-4 border border-amber-200">
+                    <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h1 class="serif-title text-3xl sm:text-4xl font-bold text-zinc-950">Pedido Pendiente de Pago</h1>
+                <p class="mt-2 text-zinc-600 text-sm max-w-lg mx-auto">Tu orden está registrada en espera de confirmación de pago por la pasarela.</p>
+            </div>
+        @else
+            <!-- Success Banner -->
+            <div class="text-center mb-12">
+                <div class="inline-flex p-4 bg-emerald-50 rounded-full text-emerald-600 mb-4 border border-emerald-100">
+                    <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h1 class="serif-title text-3xl sm:text-4xl font-bold text-zinc-950">¡Gracias por tu compra!</h1>
+                <p class="mt-2 text-zinc-500 text-sm">Tu pedido ha sido procesado correctamente. Recibirás un correo electrónico de confirmación con los detalles del envío.</p>
+            </div>
+        @endif
 
         <!-- Ticket / Recibo de Compra -->
         <div class="bg-white border border-zinc-200 rounded-lg shadow-md overflow-hidden">
@@ -42,7 +66,16 @@
                         <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2">Dirección de Entrega</h3>
                         <p class="font-semibold text-zinc-900">{{ $pedido->direccion_envio ?? 'Dirección no registrada' }}</p>
                         <p class="text-zinc-500 text-xs mt-1">{{ $pedido->codigo_postal ?? '' }}, {{ $pedido->ciudad ?? '' }}</p>
-                        <p class="text-zinc-500 text-xs">Estado de entrega: <span class="font-bold text-amber-800 uppercase">{{ $pedido->estado ?? 'completado' }}</span></p>
+                        <p class="text-zinc-500 text-xs mt-0.5">
+                            Estado del pedido: 
+                            @if(($pedido->estado ?? '') === 'cancelado')
+                                <span class="font-bold text-rose-700 uppercase">Cancelado (Sin cobro)</span>
+                            @elseif(($pedido->estado ?? '') === 'pendiente')
+                                <span class="font-bold text-amber-700 uppercase">Pendiente de Pago</span>
+                            @else
+                                <span class="font-bold text-emerald-800 uppercase">{{ $pedido->estado ?? 'procesando' }}</span>
+                            @endif
+                        </p>
                     </div>
                 </div>
 
@@ -93,8 +126,8 @@
                         @endif
                     </div>
                     <div class="flex justify-between items-center text-sm text-zinc-950 pt-2 border-t border-zinc-200">
-                        <span class="font-semibold">Total Pagado</span>
-                        <span class="text-base font-bold font-sans">$ {{ number_format($pedido->total ?? 0, 2, '.', ',') }}</span>
+                        <span class="font-semibold">{{ ($pedido->estado ?? '') === 'cancelado' ? 'Total (No Cobrado)' : 'Total Pagado' }}</span>
+                        <span class="text-base font-bold font-sans {{ ($pedido->estado ?? '') === 'cancelado' ? 'text-zinc-500 line-through' : 'text-emerald-900' }}">$ {{ number_format($pedido->total ?? 0, 2, '.', ',') }}</span>
                     </div>
                 </div>
 
@@ -129,7 +162,14 @@
 
         <!-- Acciones Fin -->
         <div class="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
-            @if(isset($pedido->id))
+            @if(($pedido->estado ?? '') === 'cancelado')
+                <a href="{{ route('carrito') }}" class="w-full sm:w-auto text-center bg-[#88674B] hover:bg-[#6f533b] text-white text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-xl transition-all shadow-md flex items-center justify-center space-x-2">
+                    <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                    </svg>
+                    <span>Reintentar Compra / Ir al Carrito</span>
+                </a>
+            @elseif(isset($pedido->id))
                 <a href="{{ route('pedido.contactar_agente', $pedido->id) }}" target="_blank" class="w-full sm:w-auto text-center bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold uppercase tracking-wider px-8 py-4 rounded-xl transition-all shadow-md flex items-center justify-center space-x-2">
                     <svg class="w-4 h-4 text-purple-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
