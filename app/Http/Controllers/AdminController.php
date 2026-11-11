@@ -44,8 +44,7 @@ class AdminController extends Controller
     {
         if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
 
-        // Sincronizar primero con Stripe para descartar pedidos no cobrados ($0.00 en Stripe)
-        Pedido::sincronizarPedidosConStripe();
+        Pedido::liberarReservasVencidas();
 
         // Métricas básicas (solo contabilizar en ventas netas los pedidos efectivamente pagados/confirmados)
         $estadosPagados = ['procesando', 'procesado', 'pagado', 'completado', 'enviado', 'entregado', 'recibido'];
@@ -806,8 +805,7 @@ class AdminController extends Controller
     {
         if ($res = $this->verificarAccesoGeneralAdmin()) return $res;
 
-        // Sincronizar con Stripe para reflejar el estado real de cobro
-        Pedido::sincronizarPedidosConStripe();
+        Pedido::liberarReservasVencidas();
 
         $estadosPagados = ['procesando', 'procesado', 'pagado', 'completado', 'enviado', 'entregado', 'recibido'];
         $ventasNetasPagadas = (float) Pedido::whereIn('estado', $estadosPagados)->sum('total');
@@ -828,7 +826,7 @@ class AdminController extends Controller
     public function pedidosDetalle($id)
     {
         $pedido = Pedido::with(['detalles.producto.detalles', 'usuario'])->findOrFail($id);
-        $diagnosticoStripe = $pedido->obtenerDiagnosticoStripe(true);
+        $diagnosticoStripe = $pedido->obtenerDiagnosticoStripe();
 
         return view('Admin.pedidos.detalle', compact('pedido', 'diagnosticoStripe'));
     }
@@ -850,9 +848,18 @@ class AdminController extends Controller
             $nuevoEstado = 'pagado';
         }
 
-        $pedido->update([
-            'estado' => $nuevoEstado,
-        ]);
+        if ($nuevoEstado === 'cancelado' && $pedido->stock_reservado && !$pedido->stripe_paid_at) {
+            $pedido->liberarReservaStock('cancelado');
+        } elseif (in_array($nuevoEstado, ['pagado', 'procesado', 'completado', 'enviado', 'entregado']) && $pedido->stock_reservado) {
+            $pedido->forceFill([
+                'estado'          => $nuevoEstado,
+                'stock_reservado' => false,
+            ])->save();
+        } else {
+            $pedido->update([
+                'estado' => $nuevoEstado,
+            ]);
+        }
 
         // Enviar correo de notificación al cliente cuando cambia el estatus a enviado, entregado, contacto_agente o confirmado/pagado
         $correoEnviadoMsg = '';

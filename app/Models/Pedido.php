@@ -33,10 +33,17 @@ class Pedido extends Model
         'factura_pdf_url',
         'factura_xml_url',
         'factura_error',
+        'stripe_session_id',
+        'checkout_fingerprint',
+        'stripe_currency',
+        'stripe_paid_at',
+        'stock_reservado',
     ];
 
     protected $casts = [
         'requiere_factura' => 'boolean',
+        'stock_reservado'  => 'boolean',
+        'stripe_paid_at'   => 'datetime',
     ];
 
     public function detalles()
@@ -47,6 +54,99 @@ class Pedido extends Model
     public function usuario()
     {
         return $this->belongsTo(User::class, 'usuario_id');
+    }
+
+    /**
+     * Libera el stock reservado de este pedido de forma atómica e idempotente,
+     * restaurando las existencias y actualizando el flag 'agotado' de cada variante.
+     */
+    public function liberarReservaStock(string $nuevoEstado = 'cancelado'): void
+    {
+        \Illuminate\Support\Facades\DB::transaction(function () use ($nuevoEstado) {
+            $locked = self::with('detalles')->whereKey($this->id)->lockForUpdate()->first();
+            if (!$locked || !$locked->stock_reservado || $locked->stripe_paid_at) {
+                return;
+            }
+
+            foreach ($locked->detalles as $linea) {
+                $detalle = null;
+                if (!empty($linea->producto_detalle_id)) {
+                    $detalle = ProductoDetalle::whereKey($linea->producto_detalle_id)->lockForUpdate()->first();
+                }
+                if (!$detalle && !empty($linea->producto_id)) {
+                    $detalle = ProductoDetalle::where('producto_id', $linea->producto_id)
+                        ->where('activo', true)
+                        ->orderBy('id')
+                        ->lockForUpdate()
+                        ->first();
+                }
+
+                if ($detalle) {
+                    $nuevoStock = (int) $detalle->stock + (int) $linea->cantidad;
+                    $detalle->update([
+                        'stock'   => $nuevoStock,
+                        'agotado' => $nuevoStock <= 0,
+                    ]);
+                }
+            }
+
+            $locked->forceFill([
+                'stock_reservado' => false,
+                'estado'          => $nuevoEstado,
+            ])->save();
+
+            $this->stock_reservado = false;
+            $this->estado = $nuevoEstado;
+        });
+    }
+
+    /**
+     * Libera automáticamente las reservas de stock de pedidos pendientes cuya sesión
+     * de checkout ya superó el tiempo límite (respaldo si el webhook no llegó).
+     */
+    public static function liberarReservasVencidas(int $minutosMaximos = 36): void
+    {
+        $vencidos = self::with('detalles')
+            ->where('stock_reservado', true)
+            ->whereNull('stripe_paid_at')
+            ->where('estado', 'pendiente')
+            ->where('created_at', '<=', now()->subMinutes($minutosMaximos))
+            ->get();
+
+        if ($vencidos->isEmpty()) {
+            return;
+        }
+
+        $stripeSecret = config('services.stripe.secret');
+        $stripe = !empty($stripeSecret) ? new \Stripe\StripeClient($stripeSecret) : null;
+
+        foreach ($vencidos as $pedido) {
+            try {
+                if ($stripe && !empty($pedido->stripe_session_id)) {
+                    $session = $stripe->checkout->sessions->retrieve($pedido->stripe_session_id);
+                    if (($session->payment_status ?? '') === 'paid') {
+                        $pedido->forceFill([
+                            'estado'          => 'procesando',
+                            'stripe_paid_at'  => now(),
+                            'stock_reservado' => false,
+                        ])->save();
+                        continue;
+                    }
+                    if (($session->status ?? '') === 'open') {
+                        try {
+                            $stripe->checkout->sessions->expire($pedido->stripe_session_id);
+                        } catch (\Exception $e) {
+                            // Ignorar si ya expiró
+                        }
+                    }
+                }
+                $pedido->liberarReservaStock('cancelado');
+            } catch (\Exception $e) {
+                if ($pedido->created_at && $pedido->created_at->lte(now()->subMinutes(45))) {
+                    $pedido->liberarReservaStock('cancelado');
+                }
+            }
+        }
     }
 
     /**
@@ -148,115 +248,7 @@ class Pedido extends Model
         return 'El cargo no pudo ser autorizado por el banco emisor.';
     }
 
-    /**
-     * Sincroniza todos los pedidos en estado 'procesando' o 'pendiente' contra Stripe
-     * para asegurar que ningún pedido sin cobro ($0.00 en Stripe) aparezca como pagado o sume en Ventas Netas.
-     */
-    public static function sincronizarPedidosConStripe(): void
-    {
-        $todosPedidos = self::all();
-        if ($todosPedidos->isEmpty()) {
-            return;
-        }
-
-        $stripeSecret = config('services.stripe.secret') ?: env('STRIPE_SECRET');
-        if (empty($stripeSecret)) {
-            return;
-        }
-
-        try {
-            $stripe = new \Stripe\StripeClient($stripeSecret);
-            $sessionsList = $stripe->checkout->sessions->all(['limit' => 100]);
-            $sesionesPorPedido = [];
-
-            foreach ($sessionsList->data as $sess) {
-                $pid = self::extraerPedidoIdDeSesionStripe($sess);
-                if ($pid) {
-                    $sesionesPorPedido[$pid][] = $sess;
-                }
-            }
-
-            $ahoraMx = now('America/Mexico_City');
-
-            foreach ($todosPedidos as $pedido) {
-                $sesiones = $sesionesPorPedido[$pedido->id] ?? [];
-                $sesionPagada = null;
-                $ultimaSesion = $sesiones[0] ?? null;
-                $primeraSesion = !empty($sesiones) ? $sesiones[count($sesiones) - 1] : null;
-
-                // Corregir horario en BD si el pedido fue guardado en UTC (+6 horas respecto a CDMX)
-                if ($primeraSesion && isset($primeraSesion->created) && $pedido->created_at) {
-                    $fechaStripeMx = \Carbon\Carbon::createFromTimestamp($primeraSesion->created, 'UTC')->setTimezone('America/Mexico_City');
-                    $diffHoras = $fechaStripeMx->diffInHours($pedido->created_at, false);
-                    if ($diffHoras >= 4 && $diffHoras <= 8) {
-                        \Illuminate\Support\Facades\DB::table('pedidos')
-                            ->where('id', $pedido->id)
-                            ->update([
-                                'created_at' => $fechaStripeMx->format('Y-m-d H:i:s'),
-                                'updated_at' => isset($ultimaSesion->created)
-                                    ? \Carbon\Carbon::createFromTimestamp($ultimaSesion->created, 'UTC')->setTimezone('America/Mexico_City')->format('Y-m-d H:i:s')
-                                    : $fechaStripeMx->format('Y-m-d H:i:s'),
-                            ]);
-                        $pedido->created_at = $fechaStripeMx;
-                    }
-                } elseif ($pedido->created_at && $pedido->created_at->gt($ahoraMx->copy()->addMinutes(5))) {
-                    $fechaCorregida = $pedido->created_at->copy()->subHours(6);
-                    \Illuminate\Support\Facades\DB::table('pedidos')
-                        ->where('id', $pedido->id)
-                        ->update([
-                            'created_at' => $fechaCorregida->format('Y-m-d H:i:s'),
-                            'updated_at' => $pedido->updated_at ? $pedido->updated_at->copy()->subHours(6)->format('Y-m-d H:i:s') : $fechaCorregida->format('Y-m-d H:i:s'),
-                        ]);
-                    $pedido->created_at = $fechaCorregida;
-                }
-
-                if (!in_array($pedido->estado, ['procesando', 'pendiente'])) {
-                    continue;
-                }
-
-                foreach ($sesiones as $s) {
-                    if (($s->payment_status ?? '') === 'paid') {
-                        $sesionPagada = $s;
-                        break;
-                    }
-                }
-
-                if ($sesionPagada) {
-                    // Sí fue pagado realmente en Stripe
-                    if ($pedido->estado === 'pendiente' || $pedido->estado === 'cancelado') {
-                        $pedido->update(['estado' => 'procesando']);
-                    }
-                } else {
-                    // En Stripe tiene $0.00 cobrados (payment_status !== 'paid')
-                    $minutosAntiguedad = $pedido->created_at ? $pedido->created_at->diffInMinutes($ahoraMx) : 999;
-                    $sesionAbiertaReciente = $ultimaSesion
-                        && ($ultimaSesion->status ?? '') === 'open'
-                        && $minutosAntiguedad < 20;
-
-                    if ($pedido->estado === 'procesando') {
-                        // Fue marcado como 'procesando' por el código anterior al abrir Stripe, pero en Stripe hay $0.00 cobrados
-                        $pedido->update([
-                            'estado' => $sesionAbiertaReciente ? 'pendiente' : 'cancelado',
-                        ]);
-                    } elseif ($pedido->estado === 'pendiente') {
-                        if ($ultimaSesion && ($ultimaSesion->status ?? '') === 'expired') {
-                            $pedido->update(['estado' => 'cancelado']);
-                        } elseif (!$sesionAbiertaReciente && $minutosAntiguedad >= 60) {
-                            $pedido->update(['estado' => 'cancelado']);
-                        }
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::warning('No se pudo sincronizar lote de pedidos con Stripe: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Sincroniza este pedido individual con Stripe y devuelve un diagnóstico detallado
-     * de cobranza, tarjeta, intento de pago y motivo exacto de cancelación o rechazo.
-     */
-    public function obtenerDiagnosticoStripe(bool $autoCorregirEstado = true): array
+    public function obtenerDiagnosticoStripe(): array
     {
         $tp = (string) ($this->tipo_pago ?? 'contado');
         $esMsi = str_starts_with($tp, 'msi_');
@@ -296,15 +288,20 @@ class Pedido extends Model
 
         try {
             $stripe = new \Stripe\StripeClient($stripeSecret);
-            $sessionsList = $stripe->checkout->sessions->all([
-                'limit'  => 100,
-                'expand' => ['data.payment_intent'],
-            ]);
-
-            $sesionesPedido = [];
-            foreach ($sessionsList->data as $sess) {
-                if (self::extraerPedidoIdDeSesionStripe($sess) === (int) $this->id) {
-                    $sesionesPedido[] = $sess;
+            if ($this->stripe_session_id) {
+                $sesionesPedido = [$stripe->checkout->sessions->retrieve($this->stripe_session_id, [
+                    'expand' => ['payment_intent'],
+                ])];
+            } else {
+                $sesionesPedido = [];
+                $sessions = $stripe->checkout->sessions->all(['limit' => 100, 'expand' => ['data.payment_intent']]);
+                foreach ($sessions->autoPagingIterator() as $session) {
+                    if (self::extraerPedidoIdDeSesionStripe($session) === (int) $this->id) {
+                        $sesionesPedido[] = $session;
+                    }
+                    if ($this->created_at && $session->created < $this->created_at->copy()->subDay()->timestamp) {
+                        break;
+                    }
                 }
             }
 
@@ -320,25 +317,6 @@ class Pedido extends Model
                     if (($s->payment_status ?? '') === 'paid') {
                         $sesionPrincipal = $s;
                         break;
-                    }
-                }
-
-                // Si la fecha del pedido en BD estaba en UTC (+6h respecto a la sesión real en hora de México), corregirla en BD
-                if (isset($primeraSesion->created) && $this->created_at) {
-                    $fechaPrimeraMx = \Carbon\Carbon::createFromTimestamp($primeraSesion->created, 'UTC')->setTimezone('America/Mexico_City');
-                    $diffH = $fechaPrimeraMx->diffInHours($this->created_at, false);
-                    if ($diffH >= 4 && $diffH <= 8) {
-                        $fechaUltimaMx = isset($sesionPrincipal->created)
-                            ? \Carbon\Carbon::createFromTimestamp($sesionPrincipal->created, 'UTC')->setTimezone('America/Mexico_City')
-                            : $fechaPrimeraMx;
-                        \Illuminate\Support\Facades\DB::table('pedidos')
-                            ->where('id', $this->id)
-                            ->update([
-                                'created_at' => $fechaPrimeraMx->format('Y-m-d H:i:s'),
-                                'updated_at' => $fechaUltimaMx->format('Y-m-d H:i:s'),
-                            ]);
-                        $this->created_at = $fechaPrimeraMx;
-                        $this->updated_at = $fechaUltimaMx;
                     }
                 }
 
@@ -462,23 +440,7 @@ class Pedido extends Model
                     }
                 }
 
-                // Auto-corregir en base de datos si el pedido tenía estado 'procesando' falso pero en Stripe es $0.00
-                if ($autoCorregirEstado) {
-                    if ($esPagado && in_array($this->estado, ['pendiente', 'cancelado'])) {
-                        $this->update(['estado' => 'procesando']);
-                        $this->estado = 'procesando';
-                    } elseif (!$esPagado && $this->estado === 'procesando') {
-                        $this->update(['estado' => 'cancelado']);
-                        $this->estado = 'cancelado';
-                    }
-                }
             } else {
-                // No se encontró sesión de Stripe para este ID
-                if ($autoCorregirEstado && $this->estado === 'procesando' && $this->factura_estado !== 'facturado') {
-                    $this->update(['estado' => 'cancelado']);
-                    $this->estado = 'cancelado';
-                }
-
                 if ($this->estado === 'contacto_agente') {
                     $diagnostico['motivo_categoria']   = 'contacto_agente';
                     $diagnostico['motivo_titulo']      = 'Solicitud de Contacto con Agente de Ventas (Sin Cobro en Stripe)';

@@ -38,12 +38,15 @@ DB_PASSWORD=password_seguro_db
 STRIPE_KEY=pk_live_...
 STRIPE_SECRET=sk_live_...
 STRIPE_CURRENCY=mxn
+STRIPE_WEBHOOK_SECRET=whsec_...
 
 # Configuración del Microservicio de Facturación FastAPI
 FASTAPI_FACTURACION_URL=http://127.0.0.1:8000
 FASTAPI_FACTURACION_API_KEY=clave_secreta_fastapi_prod
 FASTAPI_FACTURACION_TIMEOUT=30
 ```
+
+Configura el destino HTTPS `/stripe/webhook` en Stripe con eventos de tipo snapshot para `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` y `checkout.session.expired`. Usa el secreto de firma de ese destino y del mismo modo que la clave API. Ejecuta las migraciones antes de reabrir el checkout. Si ya existen sesiones de la versión anterior, expira las abiertas y concilia los cobros pendientes de confirmación antes del cambio. Esos pedidos carecen de una reserva por variante.
 
 ### Paso 1.2. Ejecutar Migraciones y Optimizar Cachés de Laravel
 Ejecuta la siguiente secuencia de comandos en la terminal de tu servidor:

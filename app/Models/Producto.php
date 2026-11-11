@@ -69,7 +69,7 @@ class Producto extends Model
         if ($detalles->isNotEmpty()) {
             $activos = $detalles->where('activo', true);
             if ($activos->isNotEmpty()) {
-                return $activos->every(fn($d) => (bool) $d->agotado);
+                return $activos->every(fn($d) => (bool) $d->agotado || (int) $d->stock <= 0);
             }
         }
 

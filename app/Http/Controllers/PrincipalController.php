@@ -334,13 +334,13 @@ class PrincipalController extends Controller
                 return (int)$det->id === $subIdInt;
             });
         }
-        if (!$detalle && !empty($colorNombre)) {
+        if (!$detalle && empty($subarticuloId) && !empty($colorNombre)) {
             $cName = trim(mb_strtolower($colorNombre));
             $detalle = $producto->detalles->first(function ($det) use ($cName) {
                 return trim(mb_strtolower($det->nombre)) === $cName;
             });
         }
-        if (!$detalle) {
+        if (!$detalle && empty($subarticuloId) && empty($colorNombre)) {
             $detalle = $producto->detalles->first();
         }
 
@@ -362,8 +362,7 @@ class PrincipalController extends Controller
         $precioUnitario = $detalle && $detalle->precio !== null ? (float)$detalle->precio : (float)$producto->precio;
         $imagenUrl = $detalle && !empty($detalle->imagen) ? $detalle->imagen_url : $producto->imagen_url;
         
-        // Stock disponible: preferencia al stock del subartículo, fallback al stock del producto si es cero
-        $stockDisponible = ($detalle && (int)$detalle->stock > 0) ? (int)$detalle->stock : (int)max($producto->stock, 1);
+        $stockDisponible = ($detalle && $detalle->activo && !$detalle->agotado) ? (int) $detalle->stock : 0;
 
         // Validar stock disponible
         if ($stockDisponible < $cantidad) {
@@ -812,12 +811,63 @@ class PrincipalController extends Controller
         if (empty($stripeSecret)) {
             return response()->json([
                 'success' => false,
-                'message' => 'La clave STRIPE_SECRET no está configurada en el servidor.'
+                'message' => 'El pago en línea está temporalmente fuera de servicio.'
             ], 422);
         }
 
+        $pedidoCreado = null;
+
         try {
-            DB::beginTransaction();
+            // Liberar automáticamente cualquier reserva de stock vencida (>36 min) de sesiones abandonadas
+            Pedido::liberarReservasVencidas();
+
+            $stripe = new \Stripe\StripeClient($stripeSecret);
+            $fingerprint = hash('sha256', serialize([
+                $carrito, session('cupon'), session('datos_envio_checkout'),
+                $request->input('tipo_pago'), $request->input('meses_msi'),
+            ]));
+
+            // 1. Verificar pedido previo o reserva activa del usuario fuera del bloqueo de inventario
+            $ultimo = Pedido::where('usuario_id', auth()->id())->find(session('ultimo_pedido_id'));
+            if ($ultimo?->stripe_paid_at && $ultimo->checkout_fingerprint === $fingerprint) {
+                return response()->json([
+                    'success' => true,
+                    'checkout_url' => route('checkout.stripe.exito', ['session_id' => $ultimo->stripe_session_id]),
+                ]);
+            }
+
+            $anterior = Pedido::with('detalles')
+                ->where('usuario_id', auth()->id())
+                ->where('stock_reservado', true)
+                ->first();
+
+            if ($anterior && !empty($anterior->stripe_session_id)) {
+                $sesionAnterior = $stripe->checkout->sessions->retrieve($anterior->stripe_session_id);
+                if (($sesionAnterior->status ?? '') === 'complete' || ($sesionAnterior->payment_status ?? '') === 'paid') {
+                    return response()->json([
+                        'success' => true,
+                        'checkout_url' => route('checkout.stripe.exito', ['session_id' => $sesionAnterior->id]),
+                    ]);
+                }
+                if (($sesionAnterior->status ?? '') === 'open' && $anterior->checkout_fingerprint === $fingerprint) {
+                    session()->put('ultimo_pedido_id', $anterior->id);
+                    session()->put('carrito_checkout_hash', hash('sha256', serialize($carrito)));
+                    return response()->json([
+                        'success' => true,
+                        'checkout_url' => $sesionAnterior->url,
+                    ]);
+                }
+                if (($sesionAnterior->status ?? '') !== 'expired') {
+                    try {
+                        $stripe->checkout->sessions->expire($anterior->stripe_session_id);
+                    } catch (\Exception $expErr) {
+                        // Ignorar si ya había expirado en Stripe
+                    }
+                }
+                $this->liberarReserva($anterior);
+            } elseif ($anterior) {
+                $this->liberarReserva($anterior);
+            }
 
             $promoActiva = Producto::isCampanaPromocionalActiva();
 
@@ -830,6 +880,13 @@ class PrincipalController extends Controller
                 $mesesMsi = 12;
             }
             $tipoPagoGuardar = ($promoActiva && $tipoPago === 'msi') ? "msi_{$mesesMsi}" : 'contado';
+            $currency = strtolower(config('services.stripe.currency', 'mxn'));
+            $requiereFactura = (bool) $request->has('requiere_factura');
+
+            // 2. Transacción corta en base de datos para bloquear stock, reservar inventario y crear el pedido
+            DB::beginTransaction();
+
+            User::whereKey(auth()->id())->lockForUpdate()->firstOrFail();
 
             $subtotal = 0;
             $itemsCalculados = [];
@@ -845,15 +902,12 @@ class PrincipalController extends Controller
 
                 // Validar subartículo y stock disponible en tiempo real
                 $subId = $item['subarticulo_id'] ?? null;
-                $detalleSub = null;
-                if (!empty($subId)) {
-                    $detalleSub = $producto->detalles->where('id', $subId)->first();
+                $variantes = $producto->detalles()->where('activo', true)->where('agotado', false);
+                if ($subId) {
+                    $variantes->whereKey($subId);
                 }
-                if (!$detalleSub) {
-                    $detalleSub = $producto->detalles->where('activo', true)->first() ?? $producto->detalles->first();
-                }
-
-                $stockReal = ($detalleSub && (int) $detalleSub->stock > 0) ? (int) $detalleSub->stock : (int) max($producto->stock, 1);
+                $detalleSub = $variantes->orderBy('id')->lockForUpdate()->first();
+                $stockReal = (int) ($detalleSub?->stock ?? 0);
                 $cantidadItem = max(1, (int) ($item['cantidad'] ?? 1));
                 if ($stockReal < $cantidadItem) {
                     DB::rollBack();
@@ -862,6 +916,12 @@ class PrincipalController extends Controller
                         'message' => 'No hay stock suficiente para "' . $producto->nombre . '" (Disponible: ' . $stockReal . '). Ajusta la cantidad en tu carrito.',
                     ], 422);
                 }
+
+                $nuevoStock = max(0, $stockReal - $cantidadItem);
+                $detalleSub->update([
+                    'stock'   => $nuevoStock,
+                    'agotado' => $nuevoStock <= 0,
+                ]);
 
                 $base = ($detalleSub && $detalleSub->precio !== null)
                     ? (float) $detalleSub->precio
@@ -895,6 +955,7 @@ class PrincipalController extends Controller
                 $notaTag = $notaEspecial !== '' ? " (Nota: {$notaEspecial})" : '';
 
                 $itemsCalculados[] = [
+                    'producto_detalle_id' => $detalleSub->id,
                     'producto_id'     => $producto->id,
                     'nombre'          => $producto->nombre . $acabadoTag . $descLabel . $notaTag,
                     'precio'          => $itemPrecio,
@@ -923,8 +984,6 @@ class PrincipalController extends Controller
                 ], 422);
             }
 
-            $requiereFactura = (bool) $request->has('requiere_factura');
-
             $datosPedido = [
                 'usuario_id'           => auth()->id(),
                 'nombre_cliente'       => trim($request->nombre_cliente),
@@ -946,43 +1005,30 @@ class PrincipalController extends Controller
                 'codigo_postal_fiscal' => $requiereFactura ? trim($request->codigo_postal_fiscal) : null,
                 'correo_facturacion'  => $requiereFactura ? trim($request->correo_facturacion) : null,
                 'factura_estado'       => $requiereFactura ? 'pendiente' : 'no_solicitada',
+                'stripe_currency'      => $currency,
+                'checkout_fingerprint' => $fingerprint,
+                'stock_reservado'      => true,
             ];
 
-            // 1. Reutilizar pedido pendiente/cancelado de la misma sesión de checkout para evitar duplicados, o crear uno nuevo
-            $pedidoExistenteId = session()->get('ultimo_pedido_id');
-            $pedido = null;
-            if ($pedidoExistenteId) {
-                $candidato = Pedido::find($pedidoExistenteId);
-                if ($candidato && $candidato->usuario_id === auth()->id() && in_array($candidato->estado, ['pendiente', 'cancelado'])) {
-                    $candidato->update($datosPedido);
-                    $candidato->detalles()->delete();
-                    $pedido = $candidato;
-                }
-            }
+            $pedido = Pedido::create($datosPedido);
 
-            if (!$pedido) {
-                $pedido = Pedido::create($datosPedido);
-            }
-
-            // 2. Crear detalles del pedido
             foreach ($itemsCalculados as $calc) {
                 if ($calc['producto_id']) {
                     DetallePedido::create([
-                        'pedido_id'       => $pedido->id,
-                        'producto_id'     => $calc['producto_id'],
-                        'nombre_producto' => $calc['nombre'],
-                        'precio'          => $calc['precio'],
-                        'cantidad'        => $calc['cantidad'],
+                        'pedido_id'           => $pedido->id,
+                        'producto_id'         => $calc['producto_id'],
+                        'producto_detalle_id' => $calc['producto_detalle_id'],
+                        'nombre_producto'     => $calc['nombre'],
+                        'precio'              => $calc['precio'],
+                        'cantidad'            => $calc['cantidad'],
                     ]);
                 }
             }
 
             DB::commit();
+            $pedidoCreado = $pedido;
 
-            session()->put('ultimo_pedido_id', $pedido->id);
-
-            // 3. Crear sesión en Stripe con los ítems calculados
-            $currency = strtolower(config('services.stripe.currency', 'mxn'));
+            // 3. Crear sesión en Stripe fuera del bloqueo de base de datos
             $lineItems = [];
             foreach ($itemsCalculados as $calc) {
                 $lineItems[] = [
@@ -1021,8 +1067,9 @@ class PrincipalController extends Controller
             $habilitarMsiStripe = ($promoActiva && $tipoPago === 'msi');
 
             $stripeParams = [
-                'payment_method_types'   => ['card'],
                 'line_items'             => $lineItems,
+                'adaptive_pricing'       => ['enabled' => false],
+                'expires_at'             => now()->addMinutes(35)->timestamp,
                 'mode'                   => 'payment',
                 'client_reference_id'    => (string) $pedido->id,
                 'customer_email'         => trim($request->correo_cliente),
@@ -1049,8 +1096,6 @@ class PrincipalController extends Controller
                 'success_url'            => route('checkout.stripe.exito') . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url'             => route('checkout.stripe.cancelado') . '?pedido_id=' . $pedido->id,
             ];
-
-            $stripe = new \Stripe\StripeClient($stripeSecret);
 
             if ($descuento > 0) {
                 try {
@@ -1083,7 +1128,15 @@ class PrincipalController extends Controller
                 }
             }
 
-            $session = $stripe->checkout->sessions->create($stripeParams);
+            $session = $stripe->checkout->sessions->create($stripeParams, [
+                'idempotency_key' => 'checkout-' . $pedido->id . '-' . $fingerprint,
+            ]);
+            $pedido->forceFill([
+                'stripe_session_id' => $session->id,
+            ])->save();
+
+            session()->put('ultimo_pedido_id', $pedido->id);
+            session()->put('carrito_checkout_hash', hash('sha256', serialize($carrito)));
 
             return response()->json([
                 'success' => true,
@@ -1094,10 +1147,17 @@ class PrincipalController extends Controller
             if (DB::transactionLevel() > 0) {
                 DB::rollBack();
             }
+            if ($pedidoCreado) {
+                try {
+                    $this->liberarReserva($pedidoCreado);
+                } catch (\Exception $releaseErr) {
+                    \Illuminate\Support\Facades\Log::error("Error liberando reserva tras fallo de Stripe: " . $releaseErr->getMessage());
+                }
+            }
             \Illuminate\Support\Facades\Log::error("Error al crear sesión de pago en Stripe: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error al conectar con Stripe: ' . $e->getMessage(),
+                'message' => 'No se pudo iniciar el pago. Puedes volver a intentarlo.',
             ], 500);
         }
     }
@@ -1105,48 +1165,54 @@ class PrincipalController extends Controller
     /**
      * Marca un pedido como pagado y realiza las tareas post-pago (100% idempotente y protegido contra condiciones de carrera).
      */
-    protected function marcarPedidoComoPagado(Pedido $pedidoInput, $stripeReference = null)
+    protected function marcarPedidoComoPagado(Pedido $pedidoInput, $session)
     {
         $recienPagado = false;
         $pedido = $pedidoInput;
 
-        DB::transaction(function () use ($pedidoInput, &$pedido, &$recienPagado) {
+        DB::transaction(function () use ($pedidoInput, $session, &$pedido, &$recienPagado) {
             $locked = Pedido::with('detalles')->where('id', $pedidoInput->id)->lockForUpdate()->first();
             if (!$locked) {
                 return;
             }
 
-            // Si ya fue procesado/pagado previamente (ej. por el Webhook milisegundos antes), no duplicar acciones
-            if (in_array($locked->estado, ['procesando', 'procesado', 'pagado', 'enviado', 'entregado', 'recibido', 'completado'])) {
+            $this->validarSesionPedido($locked, $session);
+            if ($locked->stripe_paid_at || in_array($locked->estado, ['procesando', 'procesado', 'pagado', 'enviado', 'entregado', 'recibido', 'completado'])) {
                 $pedido = $locked;
                 return;
             }
 
-            // 1. Actualizar estado a procesando (Pagado / En preparación)
-            $locked->update(['estado' => 'procesando']);
-
-            // 2. Descontar inventario del subartículo correspondiente
-            foreach ($locked->detalles as $detItem) {
-                $producto = Producto::with('detalles')->find($detItem->producto_id);
-                if ($producto) {
-                    $det = $producto->detalles->where('activo', true)->first(function ($d) use ($detItem) {
-                        return !empty($d->nombre) && str_contains($detItem->nombre_producto, $d->nombre);
-                    }) ?? $producto->detalles->where('activo', true)->first() ?? $producto->detalles->first();
-
+            // Si el pedido no tenía reserva previa (ej. pedido en curso antes de la migración o liberado por expiración tardía), descontar inventario ahora
+            if (!$locked->stock_reservado) {
+                foreach ($locked->detalles as $detItem) {
+                    $det = null;
+                    if (!empty($detItem->producto_detalle_id)) {
+                        $det = \App\Models\ProductoDetalle::whereKey($detItem->producto_detalle_id)->lockForUpdate()->first();
+                    }
+                    if (!$det && !empty($detItem->producto_id)) {
+                        $producto = Producto::with('detalles')->find($detItem->producto_id);
+                        if ($producto) {
+                            $det = $producto->detalles->where('activo', true)->first(function ($d) use ($detItem) {
+                                return !empty($d->nombre) && str_contains($detItem->nombre_producto, $d->nombre);
+                            }) ?? $producto->detalles->where('activo', true)->first() ?? $producto->detalles->first();
+                        }
+                    }
                     if ($det) {
                         $nuevoStock = max(0, (int) $det->stock - (int) $detItem->cantidad);
                         $det->update([
                             'stock'   => $nuevoStock,
-                            'agotado' => $nuevoStock <= 0 ? true : $det->agotado,
+                            'agotado' => $nuevoStock <= 0,
                         ]);
                     }
                 }
             }
 
-            // 3. Limpiar carrito guardado en la base de datos del usuario
-            if ($locked->usuario_id) {
-                User::where('id', $locked->usuario_id)->update(['carrito_guardado' => null]);
-            }
+            $locked->forceFill([
+                'estado'            => 'procesando',
+                'stripe_session_id' => $locked->stripe_session_id ?: ($session->id ?? null),
+                'stripe_paid_at'    => now(),
+                'stock_reservado'   => false,
+            ])->save();
 
             $pedido = $locked;
             $recienPagado = true;
@@ -1178,16 +1244,34 @@ class PrincipalController extends Controller
         return $pedido;
     }
 
+    private function validarSesionPedido(Pedido $pedido, $session): void
+    {
+        if (($session->payment_status ?? null) !== 'paid'
+            || ($session->mode ?? null) !== 'payment'
+            || (string) $session->client_reference_id !== (string) $pedido->id
+            || (string) $session->metadata->pedido_id !== (string) $pedido->id
+            || ($pedido->stripe_session_id && $pedido->stripe_session_id !== $session->id)
+            || $session->amount_total !== (int) round($pedido->total * 100)
+            || $session->currency !== ($pedido->stripe_currency ?? 'mxn')) {
+            throw new \RuntimeException("La sesión de Stripe no coincide con el pedido {$pedido->id}.");
+        }
+    }
+
+    private function liberarReserva(Pedido $pedido): void
+    {
+        $pedido->liberarReservaStock('cancelado');
+    }
+
     /**
      * Procesa la confirmación exitosa de pago al retornar de Stripe Checkout.
      */
     public function confirmarPagoStripe(Request $request)
     {
         $sessionId = $request->query('session_id');
-        $pedidoId = session()->get('ultimo_pedido_id');
+        $pedidoId = null;
 
         $stripeSecret = config('services.stripe.secret');
-        if (empty($sessionId) || empty($stripeSecret)) {
+        if (!is_string($sessionId) || empty($sessionId) || empty($stripeSecret)) {
             return redirect()->route('checkout')->with('error', 'Sesión de pago no válida o no encontrada.');
         }
 
@@ -1219,14 +1303,21 @@ class PrincipalController extends Controller
             return redirect()->route('inicio')->with('info', 'Tu pedido ya ha sido registrado.');
         }
 
+        // Si hay una sesión de usuario activa, verificar que no pertenezca a una cuenta distinta (permite retorno sin cookie tras 3D Secure)
+        if (auth()->check() && $pedido->usuario_id && (int) auth()->id() !== (int) $pedido->usuario_id) {
+            abort(403, 'No tienes autorización para confirmar este pedido.');
+        }
+
         // Marcar como pagado de forma segura e idempotente
-        $pedido = $this->marcarPedidoComoPagado($pedido, $checkoutSession->payment_intent ?? $sessionId);
+        $pedido = $this->marcarPedidoComoPagado($pedido, $checkoutSession);
 
         // Vaciar carrito en sesión y autorizar vista del recibo incluso si el navegador reinició cookies tras 3D Secure
-        session()->forget('carrito');
-        session()->forget('cupon');
-        session()->forget('datos_envio_checkout');
-        session()->forget('ultimo_pedido_id');
+        if ((int) session('ultimo_pedido_id') === (int) $pedido->id
+            && session('carrito_checkout_hash') === hash('sha256', serialize(session('carrito')))) {
+            $carritoGuardado = json_encode(session('carrito'));
+            session()->forget(['carrito', 'cupon', 'datos_envio_checkout', 'ultimo_pedido_id', 'carrito_checkout_hash']);
+            User::whereKey($pedido->usuario_id)->where('carrito_guardado', $carritoGuardado)->update(['carrito_guardado' => null]);
+        }
         session()->put('pedido_confirmado_acceso_' . $pedido->id, true);
 
         return redirect()->route('pedido.confirmado', $pedido->id)->with('success', '¡Pago procesado con éxito en Stripe! Tu pedido ha sido confirmado.');
@@ -1239,29 +1330,38 @@ class PrincipalController extends Controller
      */
     public function webhookStripe(Request $request)
     {
+        $secret = config('services.stripe.webhook_secret');
         $stripeSecret = config('services.stripe.secret');
-        $webhookSecret = config('services.stripe.webhook_secret');
-
         $payload = $request->getContent();
-        $sigHeader = $request->header('Stripe-Signature');
+        $sigHeader = (string) $request->header('Stripe-Signature', '');
+
+        if ($sigHeader === '') {
+            return response()->json(['error' => 'Firma ausente'], 400);
+        }
 
         try {
-            if (!empty($webhookSecret) && !empty($sigHeader)) {
-                $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $webhookSecret);
+            if (!empty($secret)) {
+                $event = \Stripe\Webhook::constructEvent($payload, $sigHeader, $secret);
             } else {
-                $rawEvent = json_decode($payload);
-                if (!$rawEvent || !isset($rawEvent->type, $rawEvent->data->object->id) || empty($stripeSecret)) {
-                    return response()->json(['error' => 'Invalid webhook payload'], 400);
+                if (empty($stripeSecret)) {
+                    return response()->json(['error' => 'Webhook sin configurar'], 503);
                 }
-                // Si no hay STRIPE_WEBHOOK_SECRET configurado aún, verificar autenticidad consultando la sesión directo en Stripe API
+                $rawEvent = json_decode($payload);
+                if (!$rawEvent || !isset($rawEvent->type, $rawEvent->data->object->id)) {
+                    return response()->json(['error' => 'Evento inválido'], 400);
+                }
+                // Respaldo seguro: cuando STRIPE_WEBHOOK_SECRET no está definido aún en .env,
+                // verificar la sesión directamente contra la API de Stripe con STRIPE_SECRET
                 $stripe = new \Stripe\StripeClient($stripeSecret);
                 $verifiedSession = $stripe->checkout->sessions->retrieve($rawEvent->data->object->id);
                 $rawEvent->data->object = $verifiedSession;
                 $event = $rawEvent;
             }
+        } catch (\UnexpectedValueException | \Stripe\Exception\SignatureVerificationException $e) {
+            return response()->json(['error' => 'Evento inválido'], 400);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error("Error verificando Webhook de Stripe: " . $e->getMessage());
-            return response()->json(['error' => 'Webhook error: ' . $e->getMessage()], 400);
+            return response()->json(['error' => 'Error verificando evento'], 400);
         }
 
         if ($event && isset($event->type)) {
@@ -1273,12 +1373,15 @@ class PrincipalController extends Controller
                 if ($pedido) {
                     if (in_array($event->type, ['checkout.session.completed', 'checkout.session.async_payment_succeeded'])) {
                         if (($session->payment_status ?? '') === 'paid') {
-                            $this->marcarPedidoComoPagado($pedido, $session->payment_intent ?? $session->id ?? null);
+                            $this->marcarPedidoComoPagado($pedido, $session);
                         }
                     } elseif (in_array($event->type, ['checkout.session.async_payment_failed', 'checkout.session.expired'])) {
-                        if ($pedido->estado === 'pendiente') {
-                            $pedido->update(['estado' => 'cancelado']);
-                        }
+                        DB::transaction(function () use ($pedido, $session) {
+                            $locked = Pedido::with('detalles')->lockForUpdate()->findOrFail($pedido->id);
+                            if ($locked->stripe_session_id === $session->id && $locked->stock_reservado && !$locked->stripe_paid_at) {
+                                $this->liberarReserva($locked);
+                            }
+                        });
                     }
                 }
             }
@@ -1292,18 +1395,6 @@ class PrincipalController extends Controller
      */
     public function cancelarPagoStripe(Request $request)
     {
-        $pedidoId = $request->query('pedido_id', session()->get('ultimo_pedido_id'));
-        if ($pedidoId) {
-            $pedido = Pedido::find($pedidoId);
-            if ($pedido) {
-                // Sincronizar con Stripe; si no fue pagado, marcar como cancelado
-                $diag = $pedido->obtenerDiagnosticoStripe(false);
-                if (empty($diag['pagado_real']) && in_array($pedido->estado, ['pendiente', 'procesando'])) {
-                    $pedido->update(['estado' => 'cancelado']);
-                }
-            }
-        }
-
         return redirect()->route('checkout')->with('info', 'El proceso de pago en Stripe fue cancelado. Tus productos siguen guardados en tu carrito por si deseas reintentar.');
     }
 
@@ -1346,7 +1437,7 @@ class PrincipalController extends Controller
         }
 
         // Verificar en tiempo real contra Stripe para que un pedido sin pago ($0.00 en Stripe) jamás aparezca como "Gracias por tu compra / Procesando"
-        $diagnosticoStripe = $pedido->obtenerDiagnosticoStripe(true);
+        $diagnosticoStripe = $pedido->obtenerDiagnosticoStripe();
 
         return view('Principal.confirmado', compact('pedido', 'diagnosticoStripe'));
     }

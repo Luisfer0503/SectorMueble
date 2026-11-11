@@ -11,6 +11,7 @@ class DetallePedido extends Model
     protected $fillable = [
         'pedido_id',
         'producto_id',
+        'producto_detalle_id',
         'nombre_producto',
         'precio',
         'cantidad',
