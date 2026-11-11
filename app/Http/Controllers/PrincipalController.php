@@ -326,7 +326,7 @@ class PrincipalController extends Controller
         $subarticuloId = $request->input('subarticulo_id');
         $colorNombre = $request->input('color');
 
-        // Buscar el detalle/subartículo específico (soporta IDs numéricos y en cadena)
+        // Buscar el detalle/subartículo específico (soporta IDs numéricos, nombre o fallback al primer subartículo disponible)
         $detalle = null;
         if (!empty($subarticuloId)) {
             $subIdInt = (int)$subarticuloId;
@@ -334,14 +334,15 @@ class PrincipalController extends Controller
                 return (int)$det->id === $subIdInt;
             });
         }
-        if (!$detalle && empty($subarticuloId) && !empty($colorNombre)) {
+        if (!$detalle && !empty($colorNombre)) {
             $cName = trim(mb_strtolower($colorNombre));
             $detalle = $producto->detalles->first(function ($det) use ($cName) {
                 return trim(mb_strtolower($det->nombre)) === $cName;
             });
         }
-        if (!$detalle && empty($subarticuloId) && empty($colorNombre)) {
-            $detalle = $producto->detalles->first();
+        if (!$detalle) {
+            $detalle = $producto->detalles->where('activo', true)->where('agotado', false)->first()
+                ?? $producto->detalles->first();
         }
 
         if (!$detalle || !$detalle->activo) {
@@ -900,13 +901,44 @@ class PrincipalController extends Controller
                     ], 422);
                 }
 
-                // Validar subartículo y stock disponible en tiempo real
+                // Validar subartículo y stock disponible en tiempo real (con respaldo por SKU, nombre o primera variante activa si el ID cambió al editar el mueble)
                 $subId = $item['subarticulo_id'] ?? null;
-                $variantes = $producto->detalles()->where('activo', true)->where('agotado', false);
-                if ($subId) {
-                    $variantes->whereKey($subId);
+                $detalleSub = null;
+                if (!empty($subId)) {
+                    $detalleSub = $producto->detalles()
+                        ->where('activo', true)
+                        ->where('agotado', false)
+                        ->whereKey($subId)
+                        ->lockForUpdate()
+                        ->first();
                 }
-                $detalleSub = $variantes->orderBy('id')->lockForUpdate()->first();
+
+                if (!$detalleSub) {
+                    $skuItem = trim((string) ($item['sku'] ?? ''));
+                    $nombreSubItem = trim(mb_strtolower((string) ($item['subarticulo_nombre'] ?? $item['color'] ?? '')));
+                    $candidatos = $producto->detalles()
+                        ->where('activo', true)
+                        ->where('agotado', false)
+                        ->orderBy('id')
+                        ->lockForUpdate()
+                        ->get();
+
+                    if ($skuItem !== '') {
+                        $detalleSub = $candidatos->first(fn ($d) => trim((string) $d->sku) === $skuItem);
+                    }
+                    if (!$detalleSub && $nombreSubItem !== '') {
+                        $detalleSub = $candidatos->first(fn ($d) => trim(mb_strtolower((string) $d->nombre)) === $nombreSubItem);
+                    }
+                    if (!$detalleSub) {
+                        $detalleSub = $candidatos->first(fn ($d) => (int) $d->stock > 0) ?? $candidatos->first();
+                    }
+
+                    if ($detalleSub && isset($carrito[$id])) {
+                        $carrito[$id]['subarticulo_id'] = $detalleSub->id;
+                        session()->put('carrito', $carrito);
+                    }
+                }
+
                 $stockReal = (int) ($detalleSub?->stock ?? 0);
                 $cantidadItem = max(1, (int) ($item['cantidad'] ?? 1));
                 if ($stockReal < $cantidadItem) {

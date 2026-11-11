@@ -351,14 +351,16 @@ class AdminController extends Controller
     }
 
     /**
-     * Sincroniza la tabla producto_detalles a partir de los datos de acabados, precio, stock y SKU.
+     * Sincroniza la tabla producto_detalles a partir de los datos de acabados, precio, stock y SKU,
+     * preservando los IDs existentes para no invalidar carritos activos ni historial de pedidos.
      */
     private function syncProductoDetalles(Producto $producto, array $acabadosData): void
     {
-        ProductoDetalle::where('producto_id', $producto->id)->delete();
+        $existentes = ProductoDetalle::where('producto_id', $producto->id)->orderBy('id')->get()->values();
+        $idsConservados = [];
 
         if (!empty($acabadosData)) {
-            foreach ($acabadosData as $idx => $acabado) {
+            foreach (array_values($acabadosData) as $idx => $acabado) {
                 $nombre = !empty($acabado['nombre']) ? trim($acabado['nombre']) : 'Acabado';
                 $imagen = $acabado['mueble_imagen'] ?? $acabado['material_imagen'] ?? null;
                 $matImg = $acabado['material_imagen'] ?? null;
@@ -374,7 +376,7 @@ class AdminController extends Controller
                 $rawSku = !empty($acabado['sku']) ? trim($acabado['sku']) : '';
                 $sku = (!empty($rawSku) && !str_contains($rawSku, 'AUTO') && !str_starts_with($rawSku, 'SKU-0')) ? $rawSku : $defaultSku;
 
-                ProductoDetalle::create([
+                $atributos = [
                     'producto_id'          => $producto->id,
                     'sku'                  => $sku,
                     'nombre'               => $nombre,
@@ -387,14 +389,32 @@ class AdminController extends Controller
                     'agotado'              => $agotadoSub,
                     'porcentaje_descuento' => $pctDesc > 0 ? $pctDesc : null,
                     'precio_descuento'     => $precioDesc,
-                ]);
+                ];
+
+                // Buscar coincidencia existente por nombre, SKU o posición para preservar su ID
+                $match = $existentes->first(function ($d) use ($nombre, $sku, $idsConservados) {
+                    if (in_array($d->id, $idsConservados, true)) return false;
+                    return mb_strtolower(trim((string) $d->nombre)) === mb_strtolower($nombre)
+                        || (!empty($sku) && trim((string) $d->sku) === $sku);
+                });
+                if (!$match && isset($existentes[$idx]) && !in_array($existentes[$idx]->id, $idsConservados, true)) {
+                    $match = $existentes[$idx];
+                }
+
+                if ($match) {
+                    $match->update($atributos);
+                    $idsConservados[] = $match->id;
+                } else {
+                    $nuevo = ProductoDetalle::create($atributos);
+                    $idsConservados[] = $nuevo->id;
+                }
             }
         } else {
             $pctDescPadre = (int) ($producto->porcentaje_descuento ?? 0);
             $pPrecio = (float) $producto->precio;
             $pPrecioDesc = ($pctDescPadre > 0 && $pPrecio > 0) ? round($pPrecio * (1 - ($pctDescPadre / 100)), 2) : null;
 
-            ProductoDetalle::create([
+            $atributos = [
                 'producto_id'          => $producto->id,
                 'sku'                  => Producto::generarSkuFormateado($producto, 'Original'),
                 'nombre'               => $producto->nombre . ' (Original / Natural)',
@@ -406,7 +426,22 @@ class AdminController extends Controller
                 'agotado'              => (bool)$producto->agotado,
                 'porcentaje_descuento' => $pctDescPadre > 0 ? $pctDescPadre : null,
                 'precio_descuento'     => $pPrecioDesc,
-            ]);
+            ];
+
+            $primero = $existentes->first();
+            if ($primero) {
+                $primero->update($atributos);
+                $idsConservados[] = $primero->id;
+            } else {
+                $nuevo = ProductoDetalle::create($atributos);
+                $idsConservados[] = $nuevo->id;
+            }
+        }
+
+        if (!empty($idsConservados)) {
+            ProductoDetalle::where('producto_id', $producto->id)
+                ->whereNotIn('id', $idsConservados)
+                ->delete();
         }
 
         // Sincronizar el descuento del producto padre con el del primer subartículo activo

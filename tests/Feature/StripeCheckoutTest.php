@@ -176,4 +176,16 @@ class StripeCheckoutTest extends TestCase
             $this->assertDatabaseHas('pedidos', ['estado' => 'pendiente', 'stock_reservado' => 1]);
         }
     }
+
+    public function test_checkout_with_stale_subarticulo_id_falls_back_to_active_variant_with_stock(): void
+    {
+        $this->cart[0]['subarticulo_id'] = 999999;
+        $this->cart[0]['subarticulo_nombre'] = 'Roble';
+
+        $this->checkout()->assertOk()->assertJsonPath('success', true);
+        $this->assertDatabaseHas('detalles_pedido', [
+            'producto_detalle_id' => $this->variant,
+            'cantidad' => 1,
+        ]);
+    }
 }
