@@ -50,6 +50,38 @@ class Pedido extends Model
     }
 
     /**
+     * Devuelve la fecha de creación ajustada a la zona horaria de México (America/Mexico_City).
+     * Si el registro fue guardado previamente en UTC (+6h), lo convierte automáticamente.
+     */
+    public function getCreatedAtMexicoAttribute(): \Carbon\Carbon
+    {
+        $dt = $this->created_at ? $this->created_at->copy() : now('America/Mexico_City');
+        $ahoraMx = now('America/Mexico_City');
+
+        // Si la fecha guardada en BD está adelantada respecto a la hora actual de México (guardada en UTC), restar 6 horas
+        if ($dt->gt($ahoraMx->copy()->addMinutes(5))) {
+            return $dt->subHours(6);
+        }
+
+        return $dt->setTimezone('America/Mexico_City');
+    }
+
+    /**
+     * Devuelve la fecha de actualización ajustada a la zona horaria de México (America/Mexico_City).
+     */
+    public function getUpdatedAtMexicoAttribute(): \Carbon\Carbon
+    {
+        $dt = $this->updated_at ? $this->updated_at->copy() : $this->created_at_mexico;
+        $ahoraMx = now('America/Mexico_City');
+
+        if ($dt->gt($ahoraMx->copy()->addMinutes(5))) {
+            return $dt->subHours(6);
+        }
+
+        return $dt->setTimezone('America/Mexico_City');
+    }
+
+    /**
      * Extrae el ID de pedido asociado a una sesión de Stripe Checkout.
      */
     public static function extraerPedidoIdDeSesionStripe($session): ?int
@@ -122,8 +154,8 @@ class Pedido extends Model
      */
     public static function sincronizarPedidosConStripe(): void
     {
-        $candidatos = self::whereIn('estado', ['procesando', 'pendiente'])->get();
-        if ($candidatos->isEmpty()) {
+        $todosPedidos = self::all();
+        if ($todosPedidos->isEmpty()) {
             return;
         }
 
@@ -144,10 +176,43 @@ class Pedido extends Model
                 }
             }
 
-            foreach ($candidatos as $pedido) {
+            $ahoraMx = now('America/Mexico_City');
+
+            foreach ($todosPedidos as $pedido) {
                 $sesiones = $sesionesPorPedido[$pedido->id] ?? [];
                 $sesionPagada = null;
                 $ultimaSesion = $sesiones[0] ?? null;
+                $primeraSesion = !empty($sesiones) ? $sesiones[count($sesiones) - 1] : null;
+
+                // Corregir horario en BD si el pedido fue guardado en UTC (+6 horas respecto a CDMX)
+                if ($primeraSesion && isset($primeraSesion->created) && $pedido->created_at) {
+                    $fechaStripeMx = \Carbon\Carbon::createFromTimestamp($primeraSesion->created, 'UTC')->setTimezone('America/Mexico_City');
+                    $diffHoras = $fechaStripeMx->diffInHours($pedido->created_at, false);
+                    if ($diffHoras >= 4 && $diffHoras <= 8) {
+                        \Illuminate\Support\Facades\DB::table('pedidos')
+                            ->where('id', $pedido->id)
+                            ->update([
+                                'created_at' => $fechaStripeMx->format('Y-m-d H:i:s'),
+                                'updated_at' => isset($ultimaSesion->created)
+                                    ? \Carbon\Carbon::createFromTimestamp($ultimaSesion->created, 'UTC')->setTimezone('America/Mexico_City')->format('Y-m-d H:i:s')
+                                    : $fechaStripeMx->format('Y-m-d H:i:s'),
+                            ]);
+                        $pedido->created_at = $fechaStripeMx;
+                    }
+                } elseif ($pedido->created_at && $pedido->created_at->gt($ahoraMx->copy()->addMinutes(5))) {
+                    $fechaCorregida = $pedido->created_at->copy()->subHours(6);
+                    \Illuminate\Support\Facades\DB::table('pedidos')
+                        ->where('id', $pedido->id)
+                        ->update([
+                            'created_at' => $fechaCorregida->format('Y-m-d H:i:s'),
+                            'updated_at' => $pedido->updated_at ? $pedido->updated_at->copy()->subHours(6)->format('Y-m-d H:i:s') : $fechaCorregida->format('Y-m-d H:i:s'),
+                        ]);
+                    $pedido->created_at = $fechaCorregida;
+                }
+
+                if (!in_array($pedido->estado, ['procesando', 'pendiente'])) {
+                    continue;
+                }
 
                 foreach ($sesiones as $s) {
                     if (($s->payment_status ?? '') === 'paid') {
@@ -163,7 +228,7 @@ class Pedido extends Model
                     }
                 } else {
                     // En Stripe tiene $0.00 cobrados (payment_status !== 'paid')
-                    $minutosAntiguedad = $pedido->created_at ? $pedido->created_at->diffInMinutes(now()) : 999;
+                    $minutosAntiguedad = $pedido->created_at ? $pedido->created_at->diffInMinutes($ahoraMx) : 999;
                     $sesionAbiertaReciente = $ultimaSesion
                         && ($ultimaSesion->status ?? '') === 'open'
                         && $minutosAntiguedad < 20;
@@ -220,7 +285,7 @@ class Pedido extends Model
             'motivo_categoria'     => 'sin_cobro',
             'motivo_titulo'        => 'Pedido Cancelado / Sin Cobro en Stripe ($0.00 MXN)',
             'motivo_explicacion'   => 'No se completó ningún pago en Stripe para este pedido. El monto cobrado en Stripe es de $0.00 MXN.',
-            'fecha_sesion'         => $this->created_at ? $this->created_at->format('d/m/Y H:i:s') : null,
+            'fecha_sesion'         => $this->created_at_mexico->format('d/m/Y h:i:s A'),
             'historial_intentos'   => [],
         ];
 
@@ -250,6 +315,7 @@ class Pedido extends Model
 
                 // Priorizar una sesión pagada si existe; de lo contrario usar la más reciente
                 $sesionPrincipal = $sesionesPedido[0];
+                $primeraSesion = $sesionesPedido[count($sesionesPedido) - 1];
                 foreach ($sesionesPedido as $s) {
                     if (($s->payment_status ?? '') === 'paid') {
                         $sesionPrincipal = $s;
@@ -257,7 +323,26 @@ class Pedido extends Model
                     }
                 }
 
-                // Construir historial de intentos
+                // Si la fecha del pedido en BD estaba en UTC (+6h respecto a la sesión real en hora de México), corregirla en BD
+                if (isset($primeraSesion->created) && $this->created_at) {
+                    $fechaPrimeraMx = \Carbon\Carbon::createFromTimestamp($primeraSesion->created, 'UTC')->setTimezone('America/Mexico_City');
+                    $diffH = $fechaPrimeraMx->diffInHours($this->created_at, false);
+                    if ($diffH >= 4 && $diffH <= 8) {
+                        $fechaUltimaMx = isset($sesionPrincipal->created)
+                            ? \Carbon\Carbon::createFromTimestamp($sesionPrincipal->created, 'UTC')->setTimezone('America/Mexico_City')
+                            : $fechaPrimeraMx;
+                        \Illuminate\Support\Facades\DB::table('pedidos')
+                            ->where('id', $this->id)
+                            ->update([
+                                'created_at' => $fechaPrimeraMx->format('Y-m-d H:i:s'),
+                                'updated_at' => $fechaUltimaMx->format('Y-m-d H:i:s'),
+                            ]);
+                        $this->created_at = $fechaPrimeraMx;
+                        $this->updated_at = $fechaUltimaMx;
+                    }
+                }
+
+                // Construir historial de intentos con Hora de México (America/Mexico_City)
                 foreach ($sesionesPedido as $idx => $sHist) {
                     $piHist = is_object($sHist->payment_intent ?? null) ? $sHist->payment_intent : null;
                     $errHist = $piHist->last_payment_error ?? null;
@@ -266,16 +351,22 @@ class Pedido extends Model
                         $estadoHist = 'Pagado ($' . number_format(($sHist->amount_total ?? 0) / 100, 2) . ' MXN)';
                     } elseif ($errHist) {
                         $estadoHist = 'Tarjeta rechazada: ' . self::traducirCodigoRechazoStripe($errHist->decline_code ?? null, $errHist->code ?? null, $errHist->message ?? null);
+                    } elseif ($this->estado === 'cancelado') {
+                        $estadoHist = 'Cancelado por el cliente sin pagar ($0.00)';
                     } elseif (($sHist->status ?? '') === 'open') {
                         $estadoHist = 'Ventana de pago abierta ($0.00)';
                     } elseif (($sHist->status ?? '') === 'expired') {
                         $estadoHist = 'Sesión expirada / cancelada sin pago ($0.00)';
                     }
 
+                    $fechaIntentoMx = isset($sHist->created)
+                        ? \Carbon\Carbon::createFromTimestamp($sHist->created, 'UTC')->setTimezone('America/Mexico_City')->format('d/m/Y h:i:s A')
+                        : '-';
+
                     $diagnostico['historial_intentos'][] = [
                         'numero'     => count($sesionesPedido) - $idx,
                         'session_id' => $sHist->id,
-                        'fecha'      => isset($sHist->created) ? \Carbon\Carbon::createFromTimestamp($sHist->created)->format('d/m/Y H:i:s') : '-',
+                        'fecha'      => $fechaIntentoMx,
                         'monto'      => ($sHist->amount_total ?? 0) / 100,
                         'pagado'     => ($sHist->payment_status ?? '') === 'paid',
                         'resumen'    => $estadoHist,
@@ -293,7 +384,7 @@ class Pedido extends Model
                 $diagnostico['session_status_raw'] = $sesionPrincipal->status ?? null;
                 $diagnostico['payment_status_raw'] = $sesionPrincipal->payment_status ?? 'unpaid';
                 $diagnostico['fecha_sesion']       = isset($sesionPrincipal->created)
-                    ? \Carbon\Carbon::createFromTimestamp($sesionPrincipal->created)->format('d/m/Y H:i:s')
+                    ? \Carbon\Carbon::createFromTimestamp($sesionPrincipal->created, 'UTC')->setTimezone('America/Mexico_City')->format('d/m/Y h:i:s A')
                     : $diagnostico['fecha_sesion'];
 
                 if (($sesionPrincipal->status ?? '') === 'complete' && $esPagado) {

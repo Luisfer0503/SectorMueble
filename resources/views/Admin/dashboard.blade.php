@@ -93,7 +93,7 @@
                                 <tr>
                                     <td class="py-3 font-mono font-bold text-zinc-900">#{{ str_pad($pedido->id, 5, '0', STR_PAD_LEFT) }}</td>
                                     <td class="py-3 font-medium text-zinc-900">{{ $pedido->nombre_cliente }}</td>
-                                    <td class="py-3 text-zinc-500 text-xs">{{ $pedido->created_at->format('d/m/Y') }}</td>
+                                    <td class="py-3 text-zinc-500 text-xs">{{ $pedido->created_at_mexico->format('d/m/Y h:i A') }}</td>
                                     <td class="py-3 font-semibold text-zinc-900 font-sans">
                                         @if($pedido->estado === 'cancelado')
                                             <span class="text-rose-700 font-bold block">$ 0.00 MXN</span>
@@ -128,6 +128,12 @@
                         </tbody>
                     </table>
                 </div>
+
+                @if($pedidosRecientes->hasPages())
+                    <div class="mt-4 pt-4 border-t border-zinc-150">
+                        {{ $pedidosRecientes->links() }}
+                    </div>
+                @endif
             @endif
         </div>
 

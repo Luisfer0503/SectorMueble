@@ -60,8 +60,8 @@ class AdminController extends Controller
             return $p->stock <= 5;
         });
 
-        // Pedidos recientes
-        $pedidosRecientes = Pedido::orderBy('created_at', 'desc')->take(5)->get();
+        // Pedidos recientes paginados de 10 en 10
+        $pedidosRecientes = Pedido::orderBy('created_at', 'desc')->paginate(10);
 
         return view('Admin.dashboard', compact(
             'ventasTotales',

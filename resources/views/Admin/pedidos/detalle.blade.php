@@ -56,10 +56,10 @@
                 @endif
             </div>
             <p class="text-zinc-500 text-xs mt-1.5">
-                Registrado el <strong>{{ $pedido->created_at->format('d/m/Y \a \l\a\s H:i:s \h\s') }}</strong>
-                ({{ $pedido->created_at->diffForHumans() }})
+                Registrado el <strong>{{ $pedido->created_at_mexico->format('d/m/Y \a \l\a\s h:i:s A') }} (Hora de México)</strong>
+                ({{ $pedido->created_at_mexico->diffForHumans() }})
                 @if($pedido->updated_at && $pedido->updated_at->ne($pedido->created_at))
-                    · Última actualización: {{ $pedido->updated_at->format('d/m/Y H:i:s') }}
+                    · Última actualización: {{ $pedido->updated_at_mexico->format('d/m/Y h:i:s A') }}
                 @endif
             </p>
         </div>
@@ -167,8 +167,8 @@
             </div>
 
             <div class="bg-white/80 rounded p-3 border border-zinc-200/80">
-                <span class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400">Fecha del Intento</span>
-                <span class="font-bold text-zinc-900 block mt-0.5">{{ $diag['fecha_sesion'] ?? $pedido->created_at->format('d/m/Y H:i:s') }}</span>
+                <span class="block text-[10px] font-bold uppercase tracking-wider text-zinc-400">Fecha del Intento (Hora México)</span>
+                <span class="font-bold text-zinc-900 block mt-0.5">{{ $diag['fecha_sesion'] ?? $pedido->created_at_mexico->format('d/m/Y h:i:s A') }}</span>
                 <span class="text-[10px] text-zinc-500 block mt-0.5">
                     Suma en Ventas Netas: <strong>{{ $esPagadoConfirmado ? 'SÍ' : 'NO ($0.00)' }}</strong>
                 </span>

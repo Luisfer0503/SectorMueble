@@ -59,8 +59,8 @@
                     <h2 class="text-lg font-mono tracking-widest mt-1">Nº #{{ str_pad($pedido->id ?? 1, 5, '0', STR_PAD_LEFT) }}</h2>
                 </div>
                 <div class="mt-4 sm:mt-0 text-left sm:text-right">
-                    <span class="block text-xs text-zinc-400">Fecha de registro</span>
-                    <span class="block text-sm font-semibold mt-0.5">{{ \Carbon\Carbon::parse($pedido->created_at ?? now())->format('d/m/Y H:i') }}</span>
+                    <span class="block text-xs text-zinc-400">Fecha de registro (Hora de México)</span>
+                    <span class="block text-sm font-semibold mt-0.5">{{ isset($pedido) ? $pedido->created_at_mexico->format('d/m/Y h:i A') : now('America/Mexico_City')->format('d/m/Y h:i A') }}</span>
                 </div>
             </div>
 

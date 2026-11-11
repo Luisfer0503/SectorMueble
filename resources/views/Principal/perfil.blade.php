@@ -99,7 +99,7 @@
                             <div class="bg-zinc-100/70 px-5 py-3.5 border-b border-zinc-200/70 flex flex-wrap items-center justify-between gap-3">
                                 <div class="flex items-center space-x-3">
                                     <span class="font-extrabold text-sm text-zinc-900">Pedido #{{ $numPedido }}</span>
-                                    <span class="text-xs text-zinc-500 font-medium">| {{ $pedido->created_at->format('d/m/Y H:i') }}</span>
+                                    <span class="text-xs text-zinc-500 font-medium">| {{ $pedido->created_at_mexico->format('d/m/Y h:i A') }}</span>
                                 </div>
                                 <div>
                                     @if(in_array($estadoNorm, ['procesando', 'pagado']))

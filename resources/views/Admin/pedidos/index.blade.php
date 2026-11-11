@@ -67,7 +67,7 @@
                                 
                                 <!-- Fecha -->
                                 <td class="p-4 text-zinc-500 text-xs">
-                                    {{ $pedido->created_at->format('d/m/Y H:i') }}
+                                    {{ $pedido->created_at_mexico->format('d/m/Y h:i A') }}
                                 </td>
                                 
                                 <!-- Descuento -->
