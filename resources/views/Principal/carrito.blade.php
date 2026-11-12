@@ -9,15 +9,15 @@
 
         <!-- Banner Informativo de Carrito Recuperado -->
         @if(auth()->check() && !empty(auth()->user()->carrito_guardado) && !empty($carrito))
-            <div class="mb-6 p-4 bg-amber-50 border border-amber-200/80 rounded-2xl shadow-xs flex items-start space-x-3 text-amber-950">
-                <div class="p-2 bg-amber-800 text-white rounded-xl shrink-0 mt-0.5 shadow-xs">
+            <div class="mb-6 p-4 bg-[#1E2440]/10 backdrop-blur-xs border border-[#1E2440]/20 rounded-2xl shadow-xs flex items-start space-x-3.5 text-[#1E2440]">
+                <div class="p-2.5 bg-[#1E2440] text-white rounded-xl shrink-0 mt-0.5 shadow-xs">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                     </svg>
                 </div>
                 <div>
-                    <h3 class="text-sm font-extrabold">¡Tus muebles te están esperando!</h3>
-                    <p class="text-xs text-amber-900 mt-0.5">
+                    <h3 class="text-sm font-extrabold text-[#1E2440]">¡Tus muebles te están esperando!</h3>
+                    <p class="text-xs text-zinc-600 mt-0.5">
                         Guardamos automáticamente en tu cuenta la selección de muebles que agregaste previamente.
                     </p>
                 </div>
