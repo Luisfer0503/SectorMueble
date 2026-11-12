@@ -15,28 +15,28 @@
                     <!-- Paso 1: Datos de Contacto -->
                     <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                         <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-                            <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">1</span>
+                            <span class="bg-[#1E2440] text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs shadow-xs">1</span>
                             <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Datos de Contacto</h2>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label for="nombre_cliente" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Nombre Completo</label>
-                                <input type="text" name="nombre_cliente" id="nombre_cliente" required value="{{ old('nombre_cliente', auth()->user()->name ?? '') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="nombre_cliente" id="nombre_cliente" required value="{{ old('nombre_cliente', auth()->user()->name ?? '') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[#1E2440]">
                                 @error('nombre_cliente')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div>
                                 <label for="correo_cliente" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Correo Electrónico</label>
-                                <input type="email" name="correo_cliente" id="correo_cliente" required value="{{ old('correo_cliente', auth()->user()->email ?? '') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="email" name="correo_cliente" id="correo_cliente" required value="{{ old('correo_cliente', auth()->user()->email ?? '') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[#1E2440]">
                                 @error('correo_cliente')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="telefono_cliente" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Teléfono móvil</label>
-                                <input type="tel" name="telefono_cliente" id="telefono_cliente" required value="{{ old('telefono_cliente', auth()->user()->telefono ?? '') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="tel" name="telefono_cliente" id="telefono_cliente" required value="{{ old('telefono_cliente', auth()->user()->telefono ?? '') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[#1E2440]">
                                 @error('telefono_cliente')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
@@ -47,28 +47,28 @@
                     <!-- Paso 2: Dirección de Envío -->
                     <div class="bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                         <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-                            <span class="bg-amber-800 text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">2</span>
+                            <span class="bg-[#1E2440] text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs shadow-xs">2</span>
                             <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Dirección de Envío</h2>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div class="sm:col-span-3">
                                 <label for="direccion_envio" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Calle, número, piso y puerta</label>
-                                <input type="text" name="direccion_envio" id="direccion_envio" required value="{{ old('direccion_envio') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="direccion_envio" id="direccion_envio" required value="{{ old('direccion_envio') }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[#1E2440]">
                                 @error('direccion_envio')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="sm:col-span-2">
                                 <label for="ciudad" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Ciudad / Localidad</label>
-                                <input type="text" name="ciudad" id="ciudad" required value="{{ old('ciudad', session('cobertura_info.municipio', '')) }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="ciudad" id="ciudad" required value="{{ old('ciudad', session('cobertura_info.municipio', '')) }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[#1E2440]">
                                 @error('ciudad')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
                                 @enderror
                             </div>
                             <div>
                                 <label for="codigo_postal" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Código Postal</label>
-                                <input type="text" name="codigo_postal" id="codigo_postal" required maxlength="5" value="{{ old('codigo_postal', session('codigo_postal', '')) }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700 font-mono font-bold">
+                                <input type="text" name="codigo_postal" id="codigo_postal" required maxlength="5" value="{{ old('codigo_postal', session('codigo_postal', '')) }}" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[#1E2440] font-mono font-bold">
                                 <span id="cp-cobertura-status" class="text-xs font-semibold mt-1.5 hidden"></span>
                                 @error('codigo_postal')
                                     <span class="text-xs text-rose-600 font-medium mt-1 block">{{ $message }}</span>
@@ -76,7 +76,7 @@
                             </div>
                             <div class="sm:col-span-3">
                                 <label for="referencias" class="block text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-1">Referencias de entrega <span class="text-zinc-400 font-normal">(Opcional)</span></label>
-                                <input type="text" name="referencias" id="referencias" value="{{ old('referencias') }}" placeholder="Ej. Entre calle Olivos y Sauces, fachada blanca con portón de madera" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-amber-700">
+                                <input type="text" name="referencias" id="referencias" value="{{ old('referencias') }}" placeholder="Ej. Entre calle Olivos y Sauces, fachada blanca con portón de madera" class="w-full bg-zinc-50 border border-zinc-200 rounded-xl text-base sm:text-sm px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-[#1E2440]">
                             </div>
 
                     <!-- Mensaje Informativo de Envío a ancho completo debajo de todo el bloque de dirección -->
@@ -86,7 +86,7 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                 </div>
-                                <span class="leading-relaxed font-medium">¡Queremos ayudarte a coordinar tu envío de la mejor manera! Para poder dar seguimiento a tu solicitud, haz clic en "Contactar agente de ventas" y nos comunicaremos contigo muy pronto.</span>
+                                <span class="leading-relaxed font-medium">¡Queremos ayudarte a coordinar tu envío de la mejor manera! Nos comunicaremos contigo para dar seguimiento y afinar los detalles de entrega de tu pedido.</span>
                             </div>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                     <!-- Paso 3: Facturación Electrónica SAT (Oculto temporalmente) -->
                     <div class="hidden bg-white border border-zinc-200 rounded-2xl p-4 sm:p-6 shadow-sm">
                         <div class="flex items-center space-x-3 mb-2">
-                            <span class="bg-[#4c6f4f] text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
+                            <span class="bg-[#1E2440] text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs shadow-xs">3</span>
                             <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Facturación Electrónica (SAT CFDI 4.0)</h2>
                         </div>
 
@@ -162,7 +162,7 @@
 
                         @if($promoActiva ?? \App\Models\Producto::isCampanaPromocionalActiva())
                         <div class="flex items-center space-x-3 mb-4 sm:mb-6">
-                            <span class="bg-[#4c6f4f] text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs">3</span>
+                            <span class="bg-[#1E2440] text-white font-bold h-6 w-6 rounded-full flex items-center justify-center text-xs shadow-xs">3</span>
                             <h2 class="text-sm sm:text-base font-bold text-zinc-950 uppercase tracking-wider">Elige tu Modalidad de Pago</h2>
                         </div>
 
@@ -260,23 +260,23 @@
                         @endif
 
                         {{-- Pasarela Stripe Info --}}
-                        <div class="bg-gradient-to-r from-amber-500/10 via-amber-100/40 to-amber-50/20 p-4 sm:p-5 rounded-2xl border border-amber-200">
+                        <div class="bg-[#1E2440]/10 backdrop-blur-xs p-4 sm:p-5 rounded-2xl border border-[#1E2440]/20 shadow-xs">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center space-x-3">
-                                    <div class="p-2 bg-amber-800 text-white rounded-xl shadow-sm">
+                                    <div class="p-2.5 bg-[#1E2440] text-white rounded-xl shadow-xs">
                                         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                                         </svg>
                                     </div>
                                     <div>
-                                        <h3 class="text-sm font-extrabold text-amber-950">Tarjeta de Crédito / Débito (Stripe)</h3>
+                                        <h3 class="text-sm font-extrabold text-[#1E2440]">Tarjeta de Crédito / Débito (Stripe)</h3>
                                         <p class="text-xs text-zinc-600 mt-0.5">Procesamiento seguro directo en Stripe (Cifrado 256 bits)</p>
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-1.5 opacity-80">
-                                    <span class="text-[10px] font-bold bg-zinc-100 text-zinc-700 px-2 py-1 rounded">VISA</span>
-                                    <span class="text-[10px] font-bold bg-zinc-100 text-zinc-700 px-2 py-1 rounded">MC</span>
-                                    <span class="text-[10px] font-bold bg-zinc-100 text-zinc-700 px-2 py-1 rounded">AMEX</span>
+                                <div class="flex items-center space-x-1.5 opacity-90">
+                                    <span class="text-[10px] font-bold bg-white text-[#1E2440] px-2 py-1 rounded shadow-2xs border border-[#1E2440]/15">VISA</span>
+                                    <span class="text-[10px] font-bold bg-white text-[#1E2440] px-2 py-1 rounded shadow-2xs border border-[#1E2440]/15">MC</span>
+                                    <span class="text-[10px] font-bold bg-white text-[#1E2440] px-2 py-1 rounded shadow-2xs border border-[#1E2440]/15">AMEX</span>
                                 </div>
                             </div>
                         </div>
@@ -314,7 +314,7 @@
                                                     <span class="checkout-item-badge-contado text-[9px] font-extrabold bg-emerald-100 text-emerald-800 px-1.5 py-0.2 rounded uppercase {{ ($tipoPagoInicial ?? 'contado') === 'msi' ? 'hidden' : '' }}">
                                                         -{{ $esEspItem ? '50' : '40' }}% Contado
                                                     </span>
-                                                    <span class="checkout-item-badge-msi text-[9px] font-extrabold bg-amber-100 text-amber-900 px-1.5 py-0.2 rounded uppercase {{ ($tipoPagoInicial ?? 'contado') === 'msi' ? '' : 'hidden' }}">
+                                                    <span class="checkout-item-badge-msi text-[9px] font-extrabold bg-[#1E2440] text-white border border-white/20 px-1.5 py-0.5 rounded shadow-2xs uppercase tracking-wider {{ ($tipoPagoInicial ?? 'contado') === 'msi' ? '' : 'hidden' }}">
                                                         -{{ $esEspItem ? '35' : '30' }}% MSI
                                                     </span>
                                                 @endif
@@ -332,7 +332,7 @@
                                         <!-- Precio del mueble en modo MSI -->
                                         <div class="checkout-item-price-msi {{ ($tipoPagoInicial ?? 'contado') === 'msi' ? '' : 'hidden' }}" data-item-total-msi="{{ $totalItemMsi }}">
                                             <span class="text-xs font-bold text-zinc-900 font-sans block">$ {{ number_format($totalItemMsi, 2, '.', ',') }}</span>
-                                            <span class="checkout-item-msi-cuota text-[10px] font-bold text-amber-900 font-sans block">
+                                            <span class="checkout-item-msi-cuota text-[10px] font-bold text-[#1E2440] font-sans block">
                                                 {{ $mesesSelInit }} MSI de $ {{ number_format($totalItemMsi / $mesesSelInit, 2, '.', ',') }}/m
                                             </span>
                                         </div>
@@ -363,9 +363,8 @@
                                     @endif
                                 </span>
                             </div>
-                            <div id="summary-msi-preview" class="hidden flex justify-between items-center text-amber-950 font-extrabold bg-amber-50 p-2.5 rounded-xl border border-amber-300">
-                                <span>12 Mensualidades de:</span>
-                                <span class="font-sans text-sm">$ {{ number_format($cuotaMsi12, 2, '.', ',') }} MXN</span>
+                            <div id="summary-msi-preview" class="hidden flex justify-center text-center items-center text-white font-extrabold bg-[#1E2440] p-2.5 rounded-xl border border-white/20 shadow-xs text-xs font-sans">
+                                <span>({{ $mesesSelInit }} MSI de $ {{ number_format($totalMsi / $mesesSelInit, 2, '.', ',') }}/m)</span>
                             </div>
                             <p class="text-[10px] text-zinc-500 mt-1 italic font-normal">* Aplican términos y condiciones, no acumulable con otras promociones.</p>
                         </div>
@@ -380,7 +379,7 @@
                             <label class="flex items-start space-x-3 cursor-pointer select-none">
                                 <input type="checkbox" id="aceptar_terminos" name="aceptar_terminos" required class="mt-1 h-4 w-4 text-[#88674B] border-zinc-300 rounded focus:ring-[#88674B]">
                                 <span class="text-xs text-zinc-700 font-medium leading-tight">
-                                    He leído y acepto los <button type="button" onclick="abrirModalTerminos(event)" class="text-[#88674B] font-bold underline hover:text-amber-950 focus:outline-none">Términos y Condiciones</button> de Sector Mueble para efectuar mi compra. *
+                                    He leído y acepto los <button type="button" onclick="abrirModalTerminos(event)" class="text-[#88674B] font-bold underline hover:text-[#1E2440] focus:outline-none">Términos y Condiciones</button> de Sector Mueble para efectuar mi compra. *
                                 </span>
                             </label>
                             <p id="error-terminos" class="hidden text-xs text-rose-600 font-semibold mt-1.5 flex items-center gap-1">
@@ -392,8 +391,7 @@
                         <button type="button" 
                                 id="btn-procesar-stripe"
                                 onclick="iniciarPagoStripe(event)"
-                                style="background-color: #88674B; color: #ffffff;"
-                                class="w-full text-xs sm:text-sm font-bold uppercase tracking-wider py-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer border border-white/20">
+                                class="w-full bg-[#6B4F37] hover:bg-[#5A412D] active:scale-[0.99] text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer border border-white/20">
                             <svg id="btn-stripe-icon" class="w-4 h-4 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                             </svg>
@@ -402,7 +400,7 @@
 
 
                         <!-- Alerta Informativa / Bloqueo por CP -->
-                        <div id="cp-bloqueo-alerta" class="mt-4 p-4 bg-[#1E2440] border-2 border-white/20 rounded-2xl text-xs text-white leading-relaxed shadow-sm">
+                        <div id="cp-bloqueo-alerta" class="hidden mt-4 p-4 bg-[#1E2440] border-2 border-white/20 rounded-2xl text-xs text-white leading-relaxed shadow-sm">
                             <div class="flex items-start space-x-3">
                                 <div class="p-1.5 bg-white/20 text-white rounded-full shrink-0 mt-0.5 shadow-sm">
                                     <svg class="w-5 h-5 text-white shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -411,16 +409,17 @@
                                 </div>
                                 <div>
                                     <strong class="font-extrabold text-sm block text-white mb-1">¡Queremos ayudarte a coordinar tu envío de la mejor manera!</strong>
-                                    <span id="cp-bloqueo-mensaje" class="text-xs text-white/95 leading-relaxed block font-medium">Para poder dar seguimiento a tu solicitud, haz clic en "Contactar agente de ventas" y nos comunicaremos contigo muy pronto.</span>
+                                    <span id="cp-bloqueo-mensaje" class="text-xs text-white/95 leading-relaxed block font-medium">Para poder dar seguimiento a tu solicitud, nuestro equipo de soporte se comunicará contigo muy pronto.</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Botón Contactar Agente de Ventas (Verde oficial WhatsApp) -->
+                        <!-- Botón Contactar Agente de Ventas (Oculto) -->
                         <button type="button" 
                                 id="btn-contactar-agente"
                                 onclick="contactarAgenteVentas()"
-                                class="w-full bg-[#25D366] hover:bg-[#20bd5a] active:scale-[0.99] text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-4 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2.5 mt-3 cursor-pointer border border-white/20">
+                                class="hidden w-full bg-[#25D366] hover:bg-[#20bd5a] active:scale-[0.99] text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-4 px-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2.5 mt-3 cursor-pointer border border-white/20"
+                                style="display: none !important;">
                             <svg class="w-5 h-5 fill-current text-white" viewBox="0 0 24 24">
                                 <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
                             </svg>
@@ -702,7 +701,7 @@
             }
 
             if (mensajeElem) {
-                mensajeElem.innerText = 'Para poder dar seguimiento a tu solicitud, haz clic en "Contactar agente de ventas" y nos comunicaremos contigo muy pronto.';
+                mensajeElem.innerText = 'Para poder dar seguimiento a tu solicitud, nuestro equipo de soporte se comunicará contigo muy pronto.';
             }
         }
 
@@ -713,12 +712,13 @@
 
             if (btnPagar) {
                 btnPagar.disabled = false;
-                btnPagar.style.backgroundColor = '#78350f';
-                btnPagar.style.color = '#ffffff';
-                btnPagar.style.border = 'none';
+                btnPagar.style.backgroundColor = '';
+                btnPagar.style.color = '';
+                btnPagar.style.border = '';
                 btnPagar.style.cursor = 'pointer';
                 btnPagar.style.opacity = '1';
-                btnPagar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                btnPagar.style.boxShadow = '';
+                btnPagar.className = "w-full bg-[#6B4F37] hover:bg-[#5A412D] active:scale-[0.99] text-white text-xs sm:text-sm font-bold uppercase tracking-wider py-4 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center space-x-2 cursor-pointer border border-white/20";
             }
 
             if (btnTexto) {

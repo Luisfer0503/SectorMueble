@@ -820,6 +820,71 @@
         </svg>
     </a>
 
+    <!-- ── Banner de Consentimiento de Cookies (Estilo Estándar Institucional en Azul Traslúcido) ── -->
+    <div id="sm-cookie-banner" 
+         class="hidden fixed bottom-0 inset-x-0 z-[130] bg-[#1E2440]/90 backdrop-blur-md text-white border-t border-white/20 px-4 py-3.5 sm:py-4 shadow-2xl transition-all duration-300 transform translate-y-full opacity-0">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 md:gap-8 text-xs">
+            <div class="text-zinc-200 leading-relaxed text-center md:text-left flex-1">
+                <span>
+                    Este sitio web utiliza cookies propias y de terceros para optimizar la experiencia de navegación, personalizar contenido y analizar el tráfico web. Al continuar navegando o hacer clic en <strong>«Aceptar»</strong>, aceptas el uso de cookies y confirmas que has leído y aceptas nuestros 
+                    <a href="{{ route('terminos') }}" target="_blank" class="text-white font-bold underline hover:text-zinc-100 transition-colors">Términos y Condiciones</a>
+                    y nuestras 
+                    <a href="{{ route('politicas-envio') }}" target="_blank" class="text-white font-bold underline hover:text-zinc-100 transition-colors">Políticas de Envío</a>.
+                </span>
+            </div>
+            <div class="flex items-center gap-2.5 shrink-0 w-full sm:w-auto justify-center md:justify-end">
+                <button type="button" 
+                        onclick="smAceptarCookies()" 
+                        class="bg-white/10 hover:bg-white/20 text-white font-medium text-xs px-4 py-2.5 rounded-xl border border-white/20 transition-all cursor-pointer active:scale-95">
+                    Solo necesarias
+                </button>
+                <button type="button" 
+                        onclick="smAceptarCookies()" 
+                        class="bg-white text-[#1E2440] hover:bg-zinc-100 active:scale-95 font-bold text-xs uppercase tracking-wider px-6 py-2.5 rounded-xl transition-all shadow-md cursor-pointer text-center">
+                    Aceptar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function smCheckCookiesConsent() {
+            try {
+                const acceptedLS = localStorage.getItem('sm_cookies_accepted');
+                const acceptedCookie = document.cookie.split('; ').some(c => c.trim().startsWith('sm_cookies_accepted=true'));
+                if (!acceptedLS && !acceptedCookie) {
+                    const banner = document.getElementById('sm-cookie-banner');
+                    if (banner) {
+                        banner.classList.remove('hidden');
+                        setTimeout(() => {
+                            banner.classList.remove('translate-y-full', 'opacity-0');
+                        }, 400);
+                    }
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function smAceptarCookies() {
+            try {
+                localStorage.setItem('sm_cookies_accepted', 'true');
+                document.cookie = "sm_cookies_accepted=true; max-age=31536000; path=/; SameSite=Lax";
+            } catch (e) {}
+            smCerrarCookieBanner();
+        }
+
+        function smCerrarCookieBanner() {
+            const banner = document.getElementById('sm-cookie-banner');
+            if (banner) {
+                banner.classList.add('translate-y-full', 'opacity-0');
+                setTimeout(() => banner.classList.add('hidden'), 300);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', smCheckCookiesConsent);
+    </script>
+
 </body>
 
 {{-- ═══════════════════════════════════════════════════════
