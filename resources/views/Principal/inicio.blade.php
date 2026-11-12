@@ -7,12 +7,12 @@
     @php
         $bannerSlides = [
             [
-                'imagen' => asset('promonov1.webp'),
+                'imagen' => asset('buenfin1.jpg'),
                 'alt' => 'Hasta 50% de descuento en productos seleccionados y 12 MSI',
                 'link' => route('catalogo'),
             ],
             [
-                'imagen' => asset('promonov2.webp'),
+                'imagen' => asset('buenfin2.jpg'),
                 'alt' => 'Hasta 40% de descuento en todos los productos y 12 MSI',
                 'link' => route('catalogo'),
             ],
