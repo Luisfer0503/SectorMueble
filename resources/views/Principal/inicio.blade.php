@@ -3,6 +3,111 @@
 @section('titulo', 'Sector Mueble | Muebles de Diseño para tu Hogar')
 
 @section('contenido')
+    <!-- ── MODAL PROMOCIONAL EXCLUSIVO PARA CELULAR (sectorcel.jpeg) ── -->
+    <style>
+        @media (min-width: 769px) {
+            #modal-sectorcel {
+                display: none !important;
+            }
+        }
+        @keyframes zoomInSectorCel {
+            from {
+                opacity: 0;
+                transform: scale(0.92);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        .animate-zoom-in-cel {
+            animation: zoomInSectorCel 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+
+    <div id="modal-sectorcel" 
+         class="fixed inset-0 z-[99999] items-center justify-center p-4 bg-black/80 backdrop-blur-xs md:hidden"
+         style="display: none;"
+         role="dialog" 
+         aria-modal="true" 
+         aria-label="Promoción Móvil">
+        
+        <!-- Contenedor con la imagen y el botón de cerrar 'X' -->
+        <div class="relative max-w-[92vw] max-h-[88vh] flex items-center justify-center animate-zoom-in-cel">
+            <!-- Botón X para cerrar -->
+            <button type="button" 
+                    id="btn-cerrar-sectorcel"
+                    aria-label="Cerrar modal"
+                    class="absolute -top-3 -right-3 z-30 bg-zinc-900/90 text-white hover:bg-black rounded-full p-2.5 shadow-2xl border border-white/20 active:scale-90 transition-transform cursor-pointer focus:outline-none">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <!-- Imagen del modal -->
+            <img src="{{ asset('sectorcel.jpeg') }}" 
+                 alt="Promoción Sector Mueble" 
+                 class="w-auto h-auto max-w-[90vw] max-h-[82vh] object-contain rounded-2xl shadow-2xl border border-white/10 select-none block">
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            function iniciarModalSectorCel() {
+                const modal = document.getElementById('modal-sectorcel');
+                const btnCerrar = document.getElementById('btn-cerrar-sectorcel');
+                if (!modal) return;
+
+                // Solo se ejecuta y muestra en celular (ancho <= 768px)
+                const esCelular = window.innerWidth <= 768;
+                if (!esCelular) {
+                    modal.style.display = 'none';
+                    return;
+                }
+
+                // Mostrar primero en pantalla al cargar
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+
+                function cerrarModal() {
+                    modal.style.transition = 'opacity 0.25s ease-out';
+                    modal.style.opacity = '0';
+                    setTimeout(function() {
+                        modal.style.display = 'none';
+                        document.body.style.overflow = '';
+                    }, 250);
+                }
+
+                if (btnCerrar) {
+                    btnCerrar.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        cerrarModal();
+                    });
+                }
+
+                // Cerrar al tocar fuera de la imagen (backdrop)
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        cerrarModal();
+                    }
+                });
+
+                // Cerrar al presionar la tecla Escape
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && modal.style.display === 'flex') {
+                        cerrarModal();
+                    }
+                });
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', iniciarModalSectorCel);
+            } else {
+                iniciarModalSectorCel();
+            }
+        })();
+    </script>
+
     <!-- ── 1. HERO BANNER PRINCIPAL EN CARRUSEL DESLIZANTE (BUEN FIN / NOVIEMBRE) ── -->
     @php
         $bannerSlides = [
