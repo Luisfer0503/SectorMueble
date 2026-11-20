@@ -35,12 +35,20 @@
                     <span>📷 Tomar Foto / Escanear Ropa</span>
                 </button>
 
-                <!-- Botón Descargar Excel (SICAR .xls) -->
-                <a href="{{ route('admin.ropa.excel', ['categoria' => $categoriaActiva, 'formato' => 'xls']) }}" class="inline-flex items-center justify-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm hover:shadow transition-all space-x-1.5 active:scale-95" title="Descargar plantilla Excel (.xls) para SICAR">
+                <!-- Botón Descargar Excel Oficial para SICAR (100% compatible para importar) -->
+                <a href="{{ route('admin.ropa.excel', ['categoria' => $categoriaActiva, 'formato' => 'xls']) }}" class="inline-flex items-center justify-center px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm hover:shadow transition-all space-x-1.5 active:scale-95" title="Descargar plantilla Excel (.xls) 100% compatible para importar directamente a SICAR (hoja Sheet0, sin banners)">
                     <svg class="w-4 h-4 text-emerald-100 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    <span>📥 Excel SICAR (.xls)</span>
+                    <span>📥 Subir a SICAR (.xls)</span>
+                </a>
+
+                <!-- Botón Historial de Stock por Fecha (para revisar diferencias entre descargas) -->
+                <a href="{{ route('admin.ropa.excel', ['categoria' => $categoriaActiva, 'formato' => 'historial']) }}" class="inline-flex items-center justify-center px-3.5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm hover:shadow transition-all space-x-1.5 active:scale-95" title="Descargar reporte con banners por fecha para comparar cantidades anteriores y nuevas">
+                    <svg class="w-4 h-4 text-indigo-100 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                    <span>📊 Historial Fechas</span>
                 </a>
 
                 <!-- Botón Descargar CSV (SICAR .csv) -->

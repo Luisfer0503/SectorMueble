@@ -1621,28 +1621,28 @@ class AdminController extends Controller
             // 4. Servicio
             $servicio = 'N';
 
-            // 5-7. Inv min, max, precio compra (en blanco)
-            $invMin = '';
-            $invMax = '';
-            $precioCompra = '';
+            // 5-7. Inv min, max, precio compra (valores estándar SICAR para evitar rechazos por campos numéricos vacíos)
+            $invMin = 1;
+            $invMax = 500;
+            $precioCompra = (float)$item->precio; // Costo base igual al precio de venta
 
-            // 8. Precio 1 únicamente
-            $precio1 = number_format((float)$item->precio, 2, '.', '');
+            // 8. Precio 1
+            $precio1 = (float)$item->precio;
 
-            // 9-14. Precios 2..4 y mayoreos (en blanco)
-            $precio2 = '';
-            $mayoreo2 = '';
-            $precio3 = '';
-            $mayoreo3 = '';
-            $precio4 = '';
-            $mayoreo4 = '';
+            // 9-14. Precios 2..4 y mayoreos (en blanco según formato requerido)
+            $precio2 = null;
+            $mayoreo2 = null;
+            $precio3 = null;
+            $mayoreo3 = null;
+            $precio4 = null;
+            $mayoreo4 = null;
 
-            // 15. Existencias
-            $exist = number_format((float)$item->cantidad, 1, '.', '');
+            // 15. Existencias (numérico)
+            $exist = (float)$item->cantidad;
 
-            // 16-17. Peso y características (en blanco)
-            $peso = '';
-            $caracteristicas = '';
+            // 16-17. Peso y características (incluye fecha de alta/captura de forma compatible)
+            $peso = 1;
+            $caracteristicas = 'ALTA: ' . date('d/m/Y');
 
             // 18. Departamento
             $departamento = strtoupper(trim($deptoNombre));
@@ -1741,6 +1741,9 @@ class AdminController extends Controller
         ];
 
         $slugCat = Str::slug($categoriaNombre ?: $deptoNombre, '_');
+        $isHistorial = ($formato === 'historial');
+        $isXlsx = ($formato === 'xlsx');
+        $ext = $isXlsx ? 'xlsx' : 'xls';
 
         if ($formato === 'csv') {
             $fileName = 'SICAR_' . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.csv';
@@ -1752,20 +1755,14 @@ class AdminController extends Controller
                 "Expires"             => "0"
             ];
 
-            return response()->stream(function() use ($headersSicar, $bloques) {
+            return response()->stream(function() use ($headersSicar, $rowsActuales) {
                 $file = fopen('php://output', 'w');
                 // BOM UTF-8 para compatibilidad directa con Excel y SICAR
                 fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
                 fputcsv($file, $headersSicar);
 
-                foreach ($bloques as $bloque) {
-                    $banner = array_fill(0, 22, '');
-                    $banner[0] = '# --- ' . $bloque['titulo'] . ' ---';
-                    fputcsv($file, $banner);
-
-                    foreach ($bloque['filas'] as $r) {
-                        fputcsv($file, $r);
-                    }
+                foreach ($rowsActuales as $r) {
+                    fputcsv($file, $r);
                 }
                 fclose($file);
             }, 200, $headers);
@@ -1781,7 +1778,7 @@ class AdminController extends Controller
 
         // Si PhpSpreadsheet no está disponible en el entorno del servidor web, usar generador nativo .xls
         if (!class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class)) {
-            $fileName = 'SICAR_' . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.xls';
+            $fileName = ($isHistorial ? 'HISTORIAL_STOCK_' : 'SICAR_') . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.xls';
             $headers = [
                 "Content-Type"        => "application/vnd.ms-excel; charset=UTF-8",
                 "Content-Disposition" => "attachment; filename=\"$fileName\"",
@@ -1790,31 +1787,37 @@ class AdminController extends Controller
                 "Expires"             => "0"
             ];
 
-            return response()->stream(function() use ($headersSicar, $bloques) {
+            return response()->stream(function() use ($headersSicar, $bloques, $rowsActuales, $isHistorial) {
                 $file = fopen('php://output', 'w');
                 fwrite($file, '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' . "\n");
                 fwrite($file, '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . "\n");
-                fwrite($file, '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>SICAR</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' . "\n");
+                $sheetTitle = $isHistorial ? 'HISTORIAL_STOCK' : 'Sheet0';
+                fwrite($file, '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>' . $sheetTitle . '</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' . "\n");
                 fwrite($file, '<style>td.text{mso-number-format:"\@";} tr.banner{background-color:#1e293b;color:#ffffff;font-weight:bold;height:30px;} tr.banner-actual{background-color:#065f46;color:#ffffff;font-weight:bold;height:30px;}</style>' . "\n");
-                fwrite($file, '</head><body>' . "\n");
-                fwrite($file, '<table border="1">' . "\n");
-                
-                // Encabezados
-                fwrite($file, '<thead><tr style="background-color: #f2f2f2; font-weight: bold;">' . "\n");
+                fwrite($file, '</head><body><table border="1"><thead><tr style="background-color: #f2f2f2; font-weight: bold;">' . "\n");
                 foreach ($headersSicar as $h) {
-                    fwrite($file, '<th>' . htmlspecialchars($h, ENT_QUOTES, 'UTF-8') . '</th>' . "\n");
+                    fwrite($file, '<th>' . htmlspecialchars((string)$h, ENT_QUOTES, 'UTF-8') . '</th>' . "\n");
                 }
                 fwrite($file, '</tr></thead><tbody>' . "\n");
 
-                foreach ($bloques as $bloque) {
-                    $bannerClass = ($bloque['tipo'] === 'actual') ? 'banner-actual' : 'banner';
-                    fwrite($file, "<tr class=\"{$bannerClass}\"><td colspan=\"22\" style=\"padding:6px;font-size:13px;\">📅 " . htmlspecialchars($bloque['titulo'], ENT_QUOTES, 'UTF-8') . "</td></tr>\n");
-
-                    foreach ($bloque['filas'] as $r) {
+                if ($isHistorial) {
+                    foreach ($bloques as $bloque) {
+                        $bannerClass = ($bloque['tipo'] === 'actual') ? 'banner-actual' : 'banner';
+                        fwrite($file, "<tr class=\"{$bannerClass}\"><td colspan=\"22\" style=\"padding:6px;font-size:13px;\">📅 " . htmlspecialchars($bloque['titulo'], ENT_QUOTES, 'UTF-8') . "</td></tr>\n");
+                        foreach ($bloque['filas'] as $r) {
+                            fwrite($file, '<tr>' . "\n");
+                            foreach ($r as $i => $val) {
+                                $class = ($i === 0 || $i === 1) ? ' class="text"' : '';
+                                fwrite($file, '<td' . $class . '>' . htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8') . '</td>' . "\n");
+                            }
+                            fwrite($file, '</tr>' . "\n");
+                        }
+                    }
+                } else {
+                    foreach ($rowsActuales as $r) {
                         fwrite($file, '<tr>' . "\n");
                         foreach ($r as $i => $val) {
-                            $isText = ($i === 0 || $i === 1); // Forzar CLAVE y CLAVE ALTERNA como texto
-                            $class = $isText ? ' class="text"' : '';
+                            $class = ($i === 0 || $i === 1) ? ' class="text"' : '';
                             fwrite($file, '<td' . $class . '>' . htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8') . '</td>' . "\n");
                         }
                         fwrite($file, '</tr>' . "\n");
@@ -1826,73 +1829,83 @@ class AdminController extends Controller
             }, 200, $headers);
         }
 
-        // Formato Excel vía PhpSpreadsheet (por defecto .xls para compatibilidad nativa con SICAR, o .xlsx si se solicita)
-        $isXlsx = ($formato === 'xlsx');
-        $ext = $isXlsx ? 'xlsx' : 'xls';
-        $fileName = 'SICAR_' . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.' . $ext;
+        // Formato Excel vía PhpSpreadsheet
+        $fileName = ($isHistorial ? 'HISTORIAL_STOCK_' : 'SICAR_') . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.' . $ext;
         $mimeType = $isXlsx
             ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             : 'application/vnd.ms-excel';
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-
-        // HOJA 1: SICAR (Vista completa con separadores por fecha e historial arriba y nuevo stock abajo)
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('SICAR');
 
-        $sheet->fromArray([$headersSicar], NULL, 'A1');
-        $headerRange = 'A1:V1';
-        $sheet->getStyle($headerRange)->getFont()->setBold(true);
-        $sheet->getStyle($headerRange)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
+        if ($isHistorial) {
+            // VISTA HISTORIAL: Para revisión humana y comparativa de stock por fecha
+            $sheet->setTitle('HISTORIAL_STOCK');
+            $sheet->fromArray([$headersSicar], NULL, 'A1');
+            $headerRange = 'A1:V1';
+            $sheet->getStyle($headerRange)->getFont()->setBold(true);
+            $sheet->getStyle($headerRange)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
 
-        $currentRow = 2;
-        foreach ($bloques as $bloque) {
-            // Fila banner separadora con la fecha
-            $sheet->mergeCells("A{$currentRow}:V{$currentRow}");
-            $sheet->setCellValue("A{$currentRow}", '📅 ' . $bloque['titulo']);
-            $sheet->getRowDimension($currentRow)->setRowHeight(26);
+            $currentRow = 2;
+            foreach ($bloques as $bloque) {
+                $sheet->mergeCells("A{$currentRow}:V{$currentRow}");
+                $sheet->setCellValue("A{$currentRow}", '📅 ' . $bloque['titulo']);
+                $sheet->getRowDimension($currentRow)->setRowHeight(26);
 
-            $bgColor = ($bloque['tipo'] === 'actual') ? 'FF065F46' : 'FF1E293B'; // Verde oscuro para nuevo stock, gris pizarra para historial
-            $sheet->getStyle("A{$currentRow}:V{$currentRow}")->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
-            $sheet->getStyle("A{$currentRow}:V{$currentRow}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($bgColor);
-            $sheet->getStyle("A{$currentRow}")->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-            $currentRow++;
+                $bgColor = ($bloque['tipo'] === 'actual') ? 'FF065F46' : 'FF1E293B';
+                $sheet->getStyle("A{$currentRow}:V{$currentRow}")->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
+                $sheet->getStyle("A{$currentRow}:V{$currentRow}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($bgColor);
+                $sheet->getStyle("A{$currentRow}")->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+                $currentRow++;
 
-            // Filas de artículos de esa fecha
-            if (!empty($bloque['filas'])) {
-                $sheet->fromArray($bloque['filas'], NULL, "A{$currentRow}");
-                $currentRow += count($bloque['filas']);
+                if (!empty($bloque['filas'])) {
+                    $sheet->fromArray($bloque['filas'], NULL, "A{$currentRow}");
+                    $currentRow += count($bloque['filas']);
+                }
+            }
+
+            $maxRow = max($currentRow, 2);
+            $sheet->getStyle("A1:A{$maxRow}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+            $sheet->getStyle("B1:B{$maxRow}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+        } else {
+            // FORMATO OFICIAL SICAR: 100% idéntico a la plantilla estándar de SICAR
+            // Requisitos de SICAR: Hoja llamada 'Sheet0', sin filas intermedias de texto, productos arrancan en fila 2
+            $sheet->setTitle('Sheet0');
+
+            // Encabezados exactos en fila 1
+            for ($i = 0; $i < count($headersSicar); $i++) {
+                $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i + 1);
+                if ($headersSicar[$i] !== null && $headersSicar[$i] !== '') {
+                    $sheet->setCellValueExplicit($colLetter . '1', $headersSicar[$i], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                }
+            }
+            $sheet->getStyle('A1:V1')->getFont()->setBold(true);
+            $sheet->getStyle('A1:V1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
+
+            // Artículos desde la fila 2 en adelante
+            $rNum = 2;
+            foreach ($rowsActuales as $rowItem) {
+                for ($cIdx = 0; $cIdx < count($rowItem); $cIdx++) {
+                    $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($cIdx + 1);
+                    $val = $rowItem[$cIdx];
+
+                    if ($cIdx === 0 || $cIdx === 1) { // CLAVE y CLAVE ALTERNA como Texto
+                        $sheet->setCellValueExplicit($colLetter . $rNum, (string)$val, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    } elseif (is_numeric($val) && $val !== '' && $val !== null) { // Numéricos (INV_MIN, MAX, PRECIOS, EXIST, PESO)
+                        $sheet->setCellValueExplicit($colLetter . $rNum, (float)$val, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NUMERIC);
+                    } elseif ($val !== null && $val !== '') { // Textos
+                        $sheet->setCellValueExplicit($colLetter . $rNum, (string)$val, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+                    } else { // Vacíos
+                        $sheet->setCellValueExplicit($colLetter . $rNum, null, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_NULL);
+                    }
+                }
+                $rNum++;
             }
         }
-
-        // Forzar CLAVE y CLAVE ALTERNA como TEXTO para no alterar ceros a la izquierda
-        $maxRow = max($currentRow, 2);
-        $sheet->getStyle("A1:A{$maxRow}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
-        $sheet->getStyle("B1:B{$maxRow}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
 
         foreach (range('A', 'V') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
-
-        // HOJA 2: SICAR_SOLO_ACTUAL (Hoja limpia con sólo los datos actuales para importación directa en SICAR si se prefiere)
-        $sheetActual = $spreadsheet->createSheet();
-        $sheetActual->setTitle('SICAR_SOLO_ACTUAL');
-        $sheetActual->fromArray([$headersSicar], NULL, 'A1');
-        $sheetActual->getStyle('A1:V1')->getFont()->setBold(true);
-        $sheetActual->getStyle('A1:V1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
-
-        if (!empty($rowsActuales)) {
-            $sheetActual->fromArray($rowsActuales, NULL, 'A2');
-        }
-        $maxRowActual = max(count($rowsActuales) + 1, 2);
-        $sheetActual->getStyle("A1:A{$maxRowActual}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
-        $sheetActual->getStyle("B1:B{$maxRowActual}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
-        foreach (range('A', 'V') as $col) {
-            $sheetActual->getColumnDimension($col)->setAutoSize(true);
-        }
-
-        // Mantener la primera hoja activa al abrir el archivo
-        $spreadsheet->setActiveSheetIndex(0);
 
         $writer = $isXlsx
             ? new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet)
