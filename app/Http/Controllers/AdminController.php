@@ -1771,8 +1771,14 @@ class AdminController extends Controller
             }, 200, $headers);
         }
 
-        // Formato XLSX nativo (Excel para SICAR)
-        $fileName = 'SICAR_' . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.xlsx';
+        // Formato Excel (por defecto .xls para compatibilidad nativa con SICAR, o .xlsx si se solicita)
+        $isXlsx = ($formato === 'xlsx');
+        $ext = $isXlsx ? 'xlsx' : 'xls';
+        $fileName = 'SICAR_' . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.' . $ext;
+        $mimeType = $isXlsx
+            ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            : 'application/vnd.ms-excel';
+
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
 
         // HOJA 1: SICAR (Vista completa con separadores por fecha e historial arriba y nuevo stock abajo)
@@ -1833,23 +1839,25 @@ class AdminController extends Controller
         // Mantener la primera hoja activa al abrir el archivo
         $spreadsheet->setActiveSheetIndex(0);
 
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer = $isXlsx
+            ? new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet)
+            : new \PhpOffice\PhpSpreadsheet\Writer\Xls($spreadsheet);
 
         return response()->streamDownload(function() use ($writer) {
             $writer->save('php://output');
         }, $fileName, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Type' => $mimeType,
         ]);
     }
 
     /**
-     * Exporta el catálogo de zapatos al formato de importación de SICAR (.xlsx o .csv).
+     * Exporta el catálogo de zapatos al formato de importación de SICAR (.xls, .xlsx o .csv).
      */
     public function zapatosExportarExcel(Request $request)
     {
         if ($res = $this->verificarAccesoZapatos()) return $res;
         $categoriaActiva = strtoupper(trim((string)$request->input('categoria', '')));
-        $formato = strtolower(trim((string)$request->input('formato', $request->input('format', 'xlsx'))));
+        $formato = strtolower(trim((string)$request->input('formato', $request->input('format', 'xls'))));
 
         $query = Zapato::query();
         if (!empty($categoriaActiva) && $categoriaActiva !== 'TODAS') {
@@ -2544,13 +2552,13 @@ class AdminController extends Controller
     }
 
     /**
-     * Exporta el catálogo de ropa al formato de importación de SICAR (.xlsx o .csv).
+     * Exporta el catálogo de ropa al formato de importación de SICAR (.xls, .xlsx o .csv).
      */
     public function ropaExportarExcel(Request $request)
     {
         if ($res = $this->verificarAccesoRopa()) return $res;
         $categoriaActiva = strtoupper(trim((string)$request->input('categoria', '')));
-        $formato = strtolower(trim((string)$request->input('formato', $request->input('format', 'xlsx'))));
+        $formato = strtolower(trim((string)$request->input('formato', $request->input('format', 'xls'))));
 
         $query = Ropa::query();
         if (!empty($categoriaActiva) && $categoriaActiva !== 'TODAS') {
