@@ -1768,68 +1768,7 @@ class AdminController extends Controller
             }, 200, $headers);
         }
 
-        // Intentar asegurar que el autoloader de Composer esté cargado si el servidor web no lo inicializó
-        if (!class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class)) {
-            $autoloadPath = base_path('vendor/autoload.php');
-            if (file_exists($autoloadPath)) {
-                require_once $autoloadPath;
-            }
-        }
-
-        // Si PhpSpreadsheet no está disponible en el entorno del servidor web, usar generador nativo .xls
-        if (!class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class)) {
-            $fileName = ($isHistorial ? 'HISTORIAL_STOCK_' : 'SICAR_') . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.xls';
-            $headers = [
-                "Content-Type"        => "application/vnd.ms-excel; charset=UTF-8",
-                "Content-Disposition" => "attachment; filename=\"$fileName\"",
-                "Pragma"              => "no-cache",
-                "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-                "Expires"             => "0"
-            ];
-
-            return response()->stream(function() use ($headersSicar, $bloques, $rowsActuales, $isHistorial) {
-                $file = fopen('php://output', 'w');
-                fwrite($file, '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' . "\n");
-                fwrite($file, '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . "\n");
-                $sheetTitle = $isHistorial ? 'HISTORIAL_STOCK' : 'Sheet0';
-                fwrite($file, '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>' . $sheetTitle . '</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' . "\n");
-                fwrite($file, '<style>td.text{mso-number-format:"\@";} tr.banner{background-color:#1e293b;color:#ffffff;font-weight:bold;height:30px;} tr.banner-actual{background-color:#065f46;color:#ffffff;font-weight:bold;height:30px;}</style>' . "\n");
-                fwrite($file, '</head><body><table border="1"><thead><tr style="background-color: #f2f2f2; font-weight: bold;">' . "\n");
-                foreach ($headersSicar as $h) {
-                    fwrite($file, '<th>' . htmlspecialchars((string)$h, ENT_QUOTES, 'UTF-8') . '</th>' . "\n");
-                }
-                fwrite($file, '</tr></thead><tbody>' . "\n");
-
-                if ($isHistorial) {
-                    foreach ($bloques as $bloque) {
-                        $bannerClass = ($bloque['tipo'] === 'actual') ? 'banner-actual' : 'banner';
-                        fwrite($file, "<tr class=\"{$bannerClass}\"><td colspan=\"22\" style=\"padding:6px;font-size:13px;\">📅 " . htmlspecialchars($bloque['titulo'], ENT_QUOTES, 'UTF-8') . "</td></tr>\n");
-                        foreach ($bloque['filas'] as $r) {
-                            fwrite($file, '<tr>' . "\n");
-                            foreach ($r as $i => $val) {
-                                $class = ($i === 0 || $i === 1) ? ' class="text"' : '';
-                                fwrite($file, '<td' . $class . '>' . htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8') . '</td>' . "\n");
-                            }
-                            fwrite($file, '</tr>' . "\n");
-                        }
-                    }
-                } else {
-                    foreach ($rowsActuales as $r) {
-                        fwrite($file, '<tr>' . "\n");
-                        foreach ($r as $i => $val) {
-                            $class = ($i === 0 || $i === 1) ? ' class="text"' : '';
-                            fwrite($file, '<td' . $class . '>' . htmlspecialchars((string)$val, ENT_QUOTES, 'UTF-8') . '</td>' . "\n");
-                        }
-                        fwrite($file, '</tr>' . "\n");
-                    }
-                }
-
-                fwrite($file, '</tbody></table></body></html>' . "\n");
-                fclose($file);
-            }, 200, $headers);
-        }
-
-        // Formato Excel vía PhpSpreadsheet
+        // Formato Excel binario real (.xls / .xlsx) vía PhpSpreadsheet (100% compatible con SICAR, sin carpetas adicionales)
         $fileName = ($isHistorial ? 'HISTORIAL_STOCK_' : 'SICAR_') . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.' . $ext;
         $mimeType = $isXlsx
             ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
