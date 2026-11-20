@@ -11,20 +11,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Autocarga garantizada y directa de PhpSpreadsheet sin depender de la caché de Composer
-        spl_autoload_register(function ($class) {
-            $prefix = 'PhpOffice\\PhpSpreadsheet\\';
-            $baseDir = base_path('vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/');
-            $len = strlen($prefix);
-            if (strncmp($prefix, $class, $len) !== 0) {
-                return;
-            }
-            $relativeClass = substr($class, $len);
-            $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
-            if (file_exists($file)) {
-                require_once $file;
-            }
-        });
+        //
     }
 
     /**
