@@ -150,6 +150,8 @@ Route::prefix('admin')->middleware('es_admin')->group(function () {
     Route::get('/ropa/eliminar/{id}', [AdminController::class, 'ropaEliminar'])->name('admin.ropa.eliminar');
     Route::post('/ropa/categorias/guardar', [AdminController::class, 'ropaCategoriaGuardar'])->name('admin.ropa.categorias.guardar');
     Route::post('/ropa/mover-categoria', [AdminController::class, 'ropaMoverCategoria'])->name('admin.ropa.mover_categoria');
+    Route::get('/ropa/buscar-coincidencias', [AdminController::class, 'ropaBuscarCoincidencias'])->name('admin.ropa.buscar_coincidencias');
+    Route::post('/ropa/actualizar-precios-masivo', [AdminController::class, 'ropaActualizarPreciosMasivo'])->name('admin.ropa.actualizar_precios_masivo');
 
 
     // Gestión y Seguimiento de Pedidos y Facturación FastAPI

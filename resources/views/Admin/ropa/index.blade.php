@@ -51,6 +51,14 @@
                     <span>✍️ Captura Manual</span>
                 </button>
 
+                <!-- Botón Cambiar Precios Masivo -->
+                <button onclick="abrirModalCambioPrecioPorPalabra('{{ request('search') }}')" class="inline-flex items-center justify-center px-4 py-3 bg-amber-100 hover:bg-amber-200 text-amber-950 font-black text-xs md:text-sm rounded-xl border border-amber-300 shadow-sm transition-all space-x-1.5 active:scale-95 cursor-pointer" title="Buscar ropa por palabra y cambiar precios masivamente">
+                    <svg class="w-4 h-4 text-amber-800 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    <span>🏷️ Cambiar Precios</span>
+                </button>
+
                 <!-- Botón Clave API IA -->
                 <button onclick="abrirModalApiKey()" class="col-span-2 sm:col-span-1 inline-flex items-center justify-center px-3.5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs md:text-sm rounded-xl border border-slate-300 transition-all space-x-1.5 active:scale-95" title="Configurar Clave API de Gemini Vision">
                     <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -207,10 +215,10 @@
                     </div>
                 </div>
 
-                <div class="flex items-center space-x-3 w-full md:w-auto">
-                    <div class="relative flex-1 md:w-64">
+                <div class="flex items-center space-x-2.5 w-full md:w-auto">
+                    <div class="relative flex-1 md:w-56">
                         <select id="selectCategoriaDestinoMasivo" class="w-full bg-slate-800 border border-slate-700 text-amber-200 text-xs font-bold rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none">
-                            <option value="">-- Seleccionar Categoría Destino --</option>
+                            <option value="">-- Mover a Categoría... --</option>
                             @foreach($categorias as $catOption)
                                 @if(strtoupper(trim($catOption)) !== strtoupper(trim($categoriaActiva)))
                                     <option value="{{ $catOption }}">{{ $catOption }}</option>
@@ -219,11 +227,18 @@
                         </select>
                     </div>
 
-                    <button type="button" onclick="ejecutarMoverRopaMasivo()" class="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-1.5 cursor-pointer">
+                    <button type="button" onclick="ejecutarMoverRopaMasivo()" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-1.5 cursor-pointer whitespace-nowrap">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                         </svg>
-                        <span>📦 Mover Ropa</span>
+                        <span>📦 Mover</span>
+                    </button>
+
+                    <button type="button" onclick="abrirModalCambioPrecioDesdeSeleccionados()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-1.5 cursor-pointer whitespace-nowrap" title="Cambiar precio a las prendas seleccionadas">
+                        <svg class="w-4 h-4 text-emerald-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span>🏷️ Cambiar Precio</span>
                     </button>
 
                     <button type="button" onclick="deseleccionarTodosRopa()" class="px-3 py-2.5 text-slate-400 hover:text-white text-xs font-bold transition-colors">
@@ -240,18 +255,27 @@
                         <p class="text-slate-500 text-xs mt-0.5">Prendas registradas en la categoría seleccionada.</p>
                     </div>
 
-                    <form action="{{ route('admin.ropa') }}" method="GET" class="w-full sm:w-80 flex items-center space-x-2">
-                        <input type="hidden" name="categoria" value="{{ $categoriaActiva }}">
-                        <div class="relative w-full">
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Buscar Marca, Talla, Estilo, Color, Barcode..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    <div class="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+                        <form action="{{ route('admin.ropa') }}" method="GET" class="w-full sm:w-80 flex items-center space-x-2">
+                            <input type="hidden" name="categoria" value="{{ $categoriaActiva }}">
+                            <div class="relative w-full">
+                                <input type="text" id="inputSearchRopaTable" name="search" value="{{ request('search') }}" placeholder="Buscar Marca, Talla, Estilo, Color, Barcode..." class="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                            @if(request('search'))
+                                <a href="{{ route('admin.ropa', ['categoria' => $categoriaActiva]) }}" class="text-xs text-slate-500 hover:text-slate-800 font-bold underline">Limpiar</a>
+                            @endif
+                        </form>
+
+                        <button type="button" onclick="abrirModalCambioPrecioPorPalabra(document.getElementById('inputSearchRopaTable')?.value || '{{ request('search') }}')" class="w-full sm:w-auto inline-flex items-center justify-center px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs rounded-xl shadow-sm transition-all space-x-1.5 whitespace-nowrap cursor-pointer active:scale-95 shrink-0" title="Buscar y cambiar el precio a las prendas coincidentes con la palabra">
+                            <svg class="w-4 h-4 text-slate-950" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
                             </svg>
-                        </div>
-                        @if(request('search'))
-                            <a href="{{ route('admin.ropa', ['categoria' => $categoriaActiva]) }}" class="text-xs text-slate-500 hover:text-slate-800 font-bold underline">Limpiar</a>
-                        @endif
-                    </form>
+                            <span>🏷️ Cambiar Precios</span>
+                        </button>
+                    </div>
                 </div>
 
                 @if($ropas->isEmpty())
@@ -933,6 +957,136 @@
     </div>
 
 
+    <!-- MODAL 7: CAMBIO MASIVO DE PRECIOS POR PALABRA / COINCIDENCIA -->
+    <div id="modalCambioPreciosMasivoRopa" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-3 sm:p-4">
+        <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
+            <!-- Header del Modal -->
+            <div class="p-5 sm:p-6 bg-slate-900 text-white flex items-center justify-between shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-amber-400 text-amber-950 rounded-2xl flex items-center justify-center font-black text-xl shadow-inner shrink-0">
+                        🏷️
+                    </div>
+                    <div>
+                        <h3 class="serif-title text-lg sm:text-xl font-extrabold text-amber-300">Cambio Masivo de Precios de Ropa</h3>
+                        <p class="text-xs text-slate-400">Busca por palabra o coincidencia, selecciona las prendas y define el nuevo precio para todas.</p>
+                    </div>
+                </div>
+                <button type="button" onclick="cerrarModalCambioPreciosMasivo()" class="text-slate-400 hover:text-white text-2xl font-bold cursor-pointer p-1">&times;</button>
+            </div>
+
+            <!-- Barra de Búsqueda y Filtros -->
+            <div class="p-4 sm:p-5 bg-slate-50 border-b border-slate-200 shrink-0 space-y-3">
+                <div class="flex flex-col sm:flex-row items-center gap-3">
+                    <div class="relative flex-1 w-full">
+                        <input type="text" id="inputPalabraBusquedaMasiva" onkeydown="if(event.key === 'Enter') { event.preventDefault(); buscarCoincidenciasRopa(); }" placeholder="Escribe palabra (Ej. Pantalón, Levis, Negra, Mezclilla, CH, 32, Barcode)..." class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-300 rounded-xl text-xs sm:text-sm font-medium text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-sm">
+                        <svg class="w-5 h-5 text-slate-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
+                    <div class="w-full sm:w-64">
+                        <select id="selectCategoriaFiltroMasivo" onchange="buscarCoincidenciasRopa()" class="w-full bg-white border border-slate-300 text-slate-800 text-xs font-bold rounded-xl px-3 py-2.5 focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-sm">
+                            <option value="TODAS">📂 En Todas las Categorías</option>
+                            @if($categoriaActiva)
+                                <option value="{{ $categoriaActiva }}" selected>⭐ Solo Categoría: {{ $categoriaActiva }}</option>
+                            @endif
+                            @foreach($categorias as $catFiltro)
+                                @if(strtoupper(trim($catFiltro)) !== strtoupper(trim($categoriaActiva)))
+                                    <option value="{{ $catFiltro }}">Categoría: {{ $catFiltro }}</option>
+                                @endif
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <button type="button" onclick="buscarCoincidenciasRopa()" class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-black text-amber-300 font-extrabold text-xs sm:text-sm rounded-xl shadow transition-all flex items-center justify-center space-x-1.5 cursor-pointer shrink-0">
+                        <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <span>Buscar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Barra de Aplicación de Precio -->
+            <div class="px-5 py-3.5 bg-amber-50/90 border-b border-amber-200 flex flex-col md:flex-row items-center justify-between gap-3 shrink-0">
+                <div class="flex items-center space-x-3 w-full md:w-auto">
+                    <label class="flex items-center space-x-2 text-xs font-bold text-slate-800 cursor-pointer select-none">
+                        <input type="checkbox" id="chkSeleccionarTodosCoincidencias" onchange="toggleSelectAllCoincidencias(this)" checked class="w-4 h-4 rounded text-amber-600 focus:ring-amber-500 cursor-pointer">
+                        <span>Seleccionar Todo</span>
+                    </label>
+                    <span class="text-slate-300">|</span>
+                    <span id="lblResumenSeleccionados" class="text-xs font-black text-amber-950 bg-amber-200/80 px-2.5 py-1 rounded-lg">
+                        0 seleccionados de 0 encontrados
+                    </span>
+                </div>
+
+                <div class="flex items-center space-x-2.5 w-full md:w-auto justify-end">
+                    <div class="relative w-44">
+                        <span class="absolute left-3 top-2 text-xs font-black text-slate-400">$</span>
+                        <input type="number" id="inputNuevoPrecioMasivo" step="0.01" min="0.01" placeholder="Nuevo Precio" class="w-full pl-7 pr-3 py-1.5 bg-white border border-slate-300 rounded-xl text-xs font-mono font-black text-slate-900 focus:ring-2 focus:ring-amber-500 focus:outline-none shadow-sm">
+                    </div>
+
+                    <button type="button" id="btnAplicarPrecioMasivo" onclick="ejecutarCambioPrecioMasivoRopa()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center space-x-1.5 cursor-pointer whitespace-nowrap active:scale-95 disabled:opacity-50">
+                        <svg class="w-4 h-4 text-emerald-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span>Cambiar Precio</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contenedor de Resultados (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-4 sm:p-5 relative min-h-[220px]">
+                <!-- Spinner de Carga -->
+                <div id="loadingCoincidenciasRopa" class="hidden absolute inset-0 bg-white/80 backdrop-blur-xs flex flex-col items-center justify-center space-y-2 z-10">
+                    <div class="inline-block animate-spin w-8 h-8 border-4 border-amber-600 border-t-transparent rounded-full"></div>
+                    <span class="text-xs font-extrabold text-slate-700">Buscando coincidencias de ropa...</span>
+                </div>
+
+                <!-- Estado Inicial / Vacío -->
+                <div id="emptyStateCoincidenciasRopa" class="text-center py-12">
+                    <div class="w-14 h-14 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+                    <h4 class="font-bold text-slate-800 text-sm">Ingresa una palabra para buscar</h4>
+                    <p class="text-slate-500 text-xs mt-1 max-w-sm mx-auto">Busca por marca, estilo, color, talla, categoría o código de barras para seleccionar los artículos y modificar su precio.</p>
+                </div>
+
+                <!-- Tabla de Resultados -->
+                <div id="contenedorTablaCoincidenciasRopa" class="hidden overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-600 border-separate border-spacing-y-1.5">
+                        <thead class="text-slate-400 font-extrabold uppercase text-[10px] tracking-wider">
+                            <tr>
+                                <th class="py-2 px-3 w-8 text-center">Sel.</th>
+                                <th class="py-2 px-3">Prenda / Clave</th>
+                                <th class="py-2 px-3">Categoría</th>
+                                <th class="py-2 px-3">Descripción</th>
+                                <th class="py-2 px-3 text-center">Stock</th>
+                                <th class="py-2 px-3 text-right">Precio Actual</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyCoincidenciasRopa" class="divide-y divide-transparent font-medium">
+                            <!-- Filas generadas dinámicamente con JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer del Modal -->
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+                <span class="text-[11px] text-slate-400 font-medium">
+                    💡 Las Claves Alternas se recalcularán automáticamente si difieren del modelo base.
+                </span>
+                <button type="button" onclick="cerrarModalCambioPreciosMasivo()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-extrabold rounded-xl transition-all cursor-pointer">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- JAVASCRIPT DE LÓGICA DE CÁMARA, ESCÁNER E INTERACCIÓN -->
     <script>
         let streamRopa = null;
@@ -1404,6 +1558,263 @@
                 }
             })
             .catch(err => {
+                console.error(err);
+                alert('Ocurrió un error al procesar la solicitud.');
+            });
+        }
+
+        // ==================== CAMBIO MASIVO DE PRECIOS POR PALABRA ====================
+        let prendasCoincidenciasActuales = [];
+
+        function abrirModalCambioPrecioPorPalabra(palabraInicial = '') {
+            const input = document.getElementById('inputPalabraBusquedaMasiva');
+            const modal = document.getElementById('modalCambioPreciosMasivoRopa');
+            if (input) {
+                input.value = palabraInicial ? palabraInicial.trim() : '';
+            }
+            modal.classList.remove('hidden');
+
+            // Ejecutar la búsqueda de inmediato
+            buscarCoincidenciasRopa(input ? input.value : '');
+
+            setTimeout(() => {
+                if (input && !input.value) input.focus();
+            }, 100);
+        }
+
+        function abrirModalCambioPrecioDesdeSeleccionados() {
+            const checkboxes = document.querySelectorAll('.ropa-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Por favor selecciona al menos una prenda en la tabla para cambiar su precio.');
+                return;
+            }
+            const ids = Array.from(checkboxes).map(cb => cb.value);
+            const modal = document.getElementById('modalCambioPreciosMasivoRopa');
+            const input = document.getElementById('inputPalabraBusquedaMasiva');
+            if (input) input.value = '';
+            modal.classList.remove('hidden');
+            buscarCoincidenciasRopa('', ids);
+        }
+
+        function cerrarModalCambioPreciosMasivo() {
+            document.getElementById('modalCambioPreciosMasivoRopa').classList.add('hidden');
+        }
+
+        function buscarCoincidenciasRopa(palabraManual = null, idsManual = null) {
+            const query = (palabraManual !== null) ? palabraManual : (document.getElementById('inputPalabraBusquedaMasiva')?.value || '');
+            const categoria = document.getElementById('selectCategoriaFiltroMasivo')?.value || '';
+            const loading = document.getElementById('loadingCoincidenciasRopa');
+            const emptyState = document.getElementById('emptyStateCoincidenciasRopa');
+            const contenedorTabla = document.getElementById('contenedorTablaCoincidenciasRopa');
+            const tbody = document.getElementById('tbodyCoincidenciasRopa');
+            const lblResumen = document.getElementById('lblResumenSeleccionados');
+
+            loading.classList.remove('hidden');
+
+            const params = new URLSearchParams();
+            if (query && query.trim() !== '') params.append('q', query.trim());
+            if (categoria && categoria.trim() !== '') params.append('categoria', categoria.trim());
+            if (idsManual && idsManual.length > 0) {
+                idsManual.forEach(id => params.append('ids[]', id));
+            }
+
+            const url = "{{ route('admin.ropa.buscar_coincidencias') }}?" + params.toString();
+
+            fetch(url, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                loading.classList.add('hidden');
+                if (data.success && data.items && data.items.length > 0) {
+                    prendasCoincidenciasActuales = data.items;
+                    emptyState.classList.add('hidden');
+                    contenedorTabla.classList.remove('hidden');
+
+                    tbody.innerHTML = data.items.map(item => `
+                        <tr class="bg-white hover:bg-amber-50/50 rounded-xl transition-colors border border-slate-200 shadow-xs fila-coincidencia-ropa" id="fila-ropa-${item.id}">
+                            <td class="py-3 px-3 text-center align-middle">
+                                <input type="checkbox" class="coincidencia-checkbox w-4 h-4 rounded text-amber-600 focus:ring-amber-500 cursor-pointer" value="${item.id}" checked onchange="actualizarContadorCoincidencias()">
+                            </td>
+                            <td class="py-3 px-3 align-middle">
+                                <div class="flex items-center space-x-2.5">
+                                    <img src="${item.imagen_url}" alt="${item.marca}" class="w-10 h-10 object-cover rounded-lg border border-slate-200 bg-slate-50 shrink-0">
+                                    <div>
+                                        <span class="font-mono font-black text-amber-950 bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 text-[10px] block w-max">
+                                            ${item.clave_alterna}
+                                        </span>
+                                        <span class="text-[10px] text-slate-400 block mt-0.5">ID: #${item.id}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 px-3 align-middle">
+                                <span class="inline-flex px-2 py-0.5 bg-slate-100 text-slate-700 font-bold text-[10px] rounded-md border border-slate-200">
+                                    ${item.categoria}
+                                </span>
+                            </td>
+                            <td class="py-3 px-3 align-middle">
+                                <span class="font-extrabold text-slate-900 uppercase block text-xs tracking-tight">${item.descripcion_completa}</span>
+                                <div class="flex flex-wrap items-center gap-1 text-[10px] text-slate-500 mt-0.5">
+                                    <span class="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">Marca: <strong>${item.marca}</strong></span>
+                                    <span class="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded border border-amber-300 font-bold">Talla: <strong>${item.talla}</strong></span>
+                                    ${item.color ? `<span class="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">Color: <strong>${item.color}</strong></span>` : ''}
+                                    ${item.estilo ? `<span class="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">Estilo: <strong>${item.estilo}</strong></span>` : ''}
+                                    ${item.art ? `<span class="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">Art: <strong>${item.art}</strong></span>` : ''}
+                                    ${item.codigo_barras ? `<span class="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 font-mono">Barcode: <strong>${item.codigo_barras}</strong></span>` : ''}
+                                </div>
+                            </td>
+                            <td class="py-3 px-3 text-center align-middle">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-black ${item.cantidad > 0 ? 'bg-emerald-100 text-emerald-900' : 'bg-rose-100 text-rose-900'}">
+                                    ${item.cantidad}
+                                </span>
+                            </td>
+                            <td class="py-3 px-3 text-right align-middle">
+                                <span class="font-mono font-black text-slate-900 text-xs block" id="precio-actual-ropa-${item.id}">
+                                    $ ${item.precio_formateado}
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('');
+
+                    document.getElementById('chkSeleccionarTodosCoincidencias').checked = true;
+                    actualizarContadorCoincidencias();
+                } else {
+                    prendasCoincidenciasActuales = [];
+                    tbody.innerHTML = '';
+                    contenedorTabla.classList.add('hidden');
+                    emptyState.classList.remove('hidden');
+                    emptyState.innerHTML = `
+                        <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-amber-200">
+                            <svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h4 class="font-bold text-slate-800 text-sm">No se encontraron artículos</h4>
+                        <p class="text-slate-500 text-xs mt-1 max-w-sm mx-auto">No hay prendas que coincidan con "${query || 'la búsqueda'}". Intenta con otra palabra o selecciona "En Todas las Categorías".</p>
+                    `;
+                    lblResumen.innerText = '0 seleccionados de 0 encontrados';
+                    actualizarContadorCoincidencias();
+                }
+            })
+            .catch(err => {
+                loading.classList.add('hidden');
+                console.error(err);
+                alert('Ocurrió un error al buscar las coincidencias.');
+            });
+        }
+
+        function toggleSelectAllCoincidencias(master) {
+            const checkboxes = document.querySelectorAll('.coincidencia-checkbox');
+            checkboxes.forEach(cb => cb.checked = master.checked);
+            actualizarContadorCoincidencias();
+        }
+
+        function actualizarContadorCoincidencias() {
+            const total = document.querySelectorAll('.coincidencia-checkbox').length;
+            const seleccionados = document.querySelectorAll('.coincidencia-checkbox:checked').length;
+            const lblResumen = document.getElementById('lblResumenSeleccionados');
+            const masterCb = document.getElementById('chkSeleccionarTodosCoincidencias');
+            const btn = document.getElementById('btnAplicarPrecioMasivo');
+
+            if (lblResumen) {
+                lblResumen.innerText = `${seleccionados} seleccionados de ${total} encontrados`;
+            }
+            if (masterCb) {
+                masterCb.checked = (total > 0 && seleccionados === total);
+            }
+            if (btn) {
+                if (seleccionados > 0) {
+                    btn.disabled = false;
+                    btn.innerHTML = `
+                        <svg class="w-4 h-4 text-emerald-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span>Cambiar Precio (${seleccionados})</span>
+                    `;
+                } else {
+                    btn.disabled = true;
+                    btn.innerHTML = `
+                        <svg class="w-4 h-4 text-emerald-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        <span>Cambiar Precio</span>
+                    `;
+                }
+            }
+        }
+
+        function ejecutarCambioPrecioMasivoRopa() {
+            const checkboxes = document.querySelectorAll('.coincidencia-checkbox:checked');
+            const inputPrecio = document.getElementById('inputNuevoPrecioMasivo');
+            const nuevoPrecio = parseFloat(inputPrecio?.value);
+
+            if (checkboxes.length === 0) {
+                alert('Por favor selecciona al menos una prenda para cambiar el precio.');
+                return;
+            }
+
+            if (isNaN(nuevoPrecio) || nuevoPrecio <= 0) {
+                alert('Por favor ingresa un precio válido mayor a 0 (ejemplo: 250.00).');
+                inputPrecio?.focus();
+                return;
+            }
+
+            const ids = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            if (!confirm(`¿Confirmas cambiar el precio a $${nuevoPrecio.toFixed(2)} para las ${ids.length} prendas seleccionadas?`)) {
+                return;
+            }
+
+            const btn = document.getElementById('btnAplicarPrecioMasivo');
+            const btnOriginalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<span class="inline-block animate-spin mr-1">⌛</span> Guardando...`;
+
+            fetch("{{ route('admin.ropa.actualizar_precios_masivo') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    ropa_ids: ids,
+                    nuevo_precio: nuevoPrecio
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = btnOriginalHtml;
+
+                if (data.success) {
+                    alert(data.mensaje);
+                    // Actualizar visualmente en la tabla del modal
+                    ids.forEach(id => {
+                        const elPrecio = document.getElementById(`precio-actual-ropa-${id}`);
+                        if (elPrecio) {
+                            elPrecio.innerText = `$ ${nuevoPrecio.toFixed(2)}`;
+                            elPrecio.classList.add('text-emerald-700', 'font-black');
+                        }
+                    });
+
+                    // Recargar la página actual para refrescar métricas y catálogo general
+                    const catActual = "{{ $categoriaActiva }}";
+                    const searchActual = "{{ request('search') }}";
+                    let urlDestino = "{{ route('admin.ropa') }}?";
+                    if (catActual) urlDestino += 'categoria=' + encodeURIComponent(catActual);
+                    if (searchActual) urlDestino += '&search=' + encodeURIComponent(searchActual);
+                    window.location.href = urlDestino;
+                } else {
+                    alert(data.error || 'Ocurrió un error al actualizar los precios.');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = btnOriginalHtml;
                 console.error(err);
                 alert('Ocurrió un error al procesar la solicitud.');
             });

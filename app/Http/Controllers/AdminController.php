@@ -2054,6 +2054,116 @@ class AdminController extends Controller
     }
 
     /**
+     * Busca prendas que coincidan con una palabra o frase clave (o lista de IDs)
+     * para el cambio masivo de precios.
+     */
+    public function ropaBuscarCoincidencias(Request $request)
+    {
+        if ($res = $this->verificarAccesoRopa()) return $res;
+
+        $queryStr = trim((string) $request->input('q', ''));
+        $categoria = trim((string) $request->input('categoria', ''));
+        $ids = $request->input('ids');
+
+        $ropasQuery = Ropa::query();
+
+        if (is_array($ids) && count($ids) > 0) {
+            $ropasQuery->whereIn('id', $ids);
+        } else {
+            if ($categoria !== '' && strtoupper($categoria) !== 'TODAS') {
+                $ropasQuery->where('categoria', $categoria);
+            }
+
+            if ($queryStr !== '') {
+                $terms = array_filter(preg_split('/\s+/', $queryStr));
+                $ropasQuery->where(function ($q) use ($terms, $queryStr) {
+                    $q->where(function ($sub) use ($queryStr) {
+                        $sub->where('marca', 'like', "%{$queryStr}%")
+                            ->orWhere('talla', 'like', "%{$queryStr}%")
+                            ->orWhere('estilo', 'like', "%{$queryStr}%")
+                            ->orWhere('color', 'like', "%{$queryStr}%")
+                            ->orWhere('art', 'like', "%{$queryStr}%")
+                            ->orWhere('codigo_barras', 'like', "%{$queryStr}%")
+                            ->orWhere('categoria', 'like', "%{$queryStr}%");
+                    });
+
+                    foreach ($terms as $term) {
+                        $q->orWhere(function ($sub) use ($term) {
+                            $sub->where('marca', 'like', "%{$term}%")
+                                ->orWhere('talla', 'like', "%{$term}%")
+                                ->orWhere('estilo', 'like', "%{$term}%")
+                                ->orWhere('color', 'like', "%{$term}%")
+                                ->orWhere('art', 'like', "%{$term}%")
+                                ->orWhere('codigo_barras', 'like', "%{$term}%")
+                                ->orWhere('categoria', 'like', "%{$term}%");
+                        });
+                    }
+                });
+            }
+        }
+
+        $ropas = $ropasQuery->orderBy('categoria', 'asc')
+                            ->orderBy('marca', 'asc')
+                            ->orderBy('talla', 'asc')
+                            ->limit(500)
+                            ->get();
+
+        $items = $ropas->map(function ($r) {
+            return [
+                'id'                   => $r->id,
+                'categoria'            => $r->categoria,
+                'marca'                => $r->marca,
+                'talla'                => $r->talla,
+                'estilo'               => $r->estilo ?? '',
+                'color'                => $r->color ?? '',
+                'art'                  => $r->art ?? '',
+                'codigo_barras'        => $r->codigo_barras ?? '',
+                'cantidad'             => $r->cantidad,
+                'precio'               => (float) $r->precio,
+                'precio_formateado'    => number_format((float)$r->precio, 2, '.', ','),
+                'imagen_url'           => $r->imagen_url,
+                'clave_alterna'        => $r->clave_alterna,
+                'descripcion_completa' => $r->descripcion_completa,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'total'   => $items->count(),
+            'items'   => $items,
+        ]);
+    }
+
+    /**
+     * Actualiza el precio de múltiples prendas de ropa seleccionadas simultáneamente.
+     */
+    public function ropaActualizarPreciosMasivo(Request $request)
+    {
+        if ($res = $this->verificarAccesoRopa()) return $res;
+
+        $request->validate([
+            'ropa_ids'     => 'required|array|min:1',
+            'ropa_ids.*'   => 'integer|exists:ropas,id',
+            'nuevo_precio' => 'required|numeric|min:0.01',
+        ]);
+
+        $nuevoPrecio = (float) $request->input('nuevo_precio');
+        $ids = $request->input('ropa_ids');
+
+        $actualizados = Ropa::whereIn('id', $ids)->update([
+            'precio'     => $nuevoPrecio,
+            'updated_at' => now(),
+        ]);
+
+        return response()->json([
+            'success'      => true,
+            'mensaje'      => "¡Éxito! Se actualizó el precio a $" . number_format($nuevoPrecio, 2, '.', ',') . " en {$actualizados} prenda(s) correctamente.",
+            'actualizados' => $actualizados,
+            'nuevo_precio' => $nuevoPrecio,
+        ]);
+    }
+
+    /**
      * Endpoint AJAX para recibir la foto de la prenda (WebCam o archivo)
      * y extraer automáticamente: Marca, Talla, Estilo, Color, Código de Barras, Art usando IA de Visión.
      */
