@@ -12,6 +12,7 @@ class Zapato extends Model
     protected $table = 'zapatos';
 
     protected $fillable = [
+        'clave',
         'categoria',
         'estilo',
         'numero',
@@ -281,6 +282,135 @@ class Zapato extends Model
         }
         $desc .= " TALLA {$this->numero}";
         return strtoupper(str_replace(['Á','É','Í','Ó','Ú','á','é','í','ó','ú'], ['A','E','I','O','U','A','E','I','O','U'], $desc));
+    }
+
+    /**
+     * Retorna la Descripción formateada para SICAR con toda la información disponible.
+     */
+    public function getDescripcionSicarAttribute(): string
+    {
+        $tipo = self::obtenerPrimeraPalabraSingular($this->categoria, 'CALZADO');
+        $parts = [$tipo];
+
+        if (!empty($this->estilo)) {
+            $parts[] = "ESTILO {$this->estilo}";
+        }
+        if (!empty($this->material)) {
+            $parts[] = "MATERIAL {$this->material}";
+        }
+        if (!empty($this->color)) {
+            $parts[] = "COLOR {$this->color}";
+        }
+        if (!empty($this->bordado)) {
+            $parts[] = "BORDADO {$this->bordado}";
+        }
+        if (!empty($this->numero)) {
+            $parts[] = "NUMERO {$this->numero}";
+        }
+        if (!empty($this->codigo_barras)) {
+            $parts[] = "BARCODE {$this->codigo_barras}";
+        }
+
+        $desc = implode(' ', $parts);
+        return strtoupper(str_replace(
+            ['Á','É','Í','Ó','Ú','á','é','í','ó','ú'],
+            ['A','E','I','O','U','A','E','I','O','U'],
+            preg_replace('/\s+/', ' ', trim($desc))
+        ));
+    }
+
+    /**
+     * Genera el prefijo de la Clave SICAR basado en el nombre de la categoría de calzado.
+     * Ejemplo: "Zapato Escolar" => "ZAPATOESC", "TENIS DE NIÑA" => "TENISNIN"
+     */
+    public static function generarPrefijoCategoria(?string $categoria, string $fallback = 'CALZADO'): string
+    {
+        $clean = strtoupper(str_replace(
+            ['Á','É','Í','Ó','Ú','á','é','í','ó','ú','Ñ','ñ'],
+            ['A','E','I','O','U','A','E','I','O','U','N','N'],
+            $categoria ?? ''
+        ));
+        $clean = preg_replace('/[^A-Z0-9\s]/', '', $clean);
+        $allWords = array_values(array_filter(explode(' ', trim($clean))));
+
+        $stopWords = ['DE', 'DEL', 'PARA', 'Y', 'EL', 'LA', 'LOS', 'LAS', 'EN', 'CON', 'POR', 'O'];
+        $words = (count($allWords) > 1) 
+            ? array_values(array_filter($allWords, fn($w) => !in_array($w, $stopWords)))
+            : $allWords;
+
+        if (empty($words)) {
+            $words = !empty($allWords) ? $allWords : [$fallback];
+        }
+
+        if (count($words) === 1) {
+            return substr($words[0], 0, 15);
+        }
+
+        $prefix = substr($words[0], 0, 10);
+        for ($i = 1; $i < count($words); $i++) {
+            $w = $words[$i];
+            if (in_array($w, ['NINA', 'NINAS'])) {
+                $prefix .= 'NINA';
+            } elseif (in_array($w, ['NINO', 'NINOS'])) {
+                $prefix .= 'NINO';
+            } else {
+                $prefix .= substr($w, 0, 3);
+            }
+        }
+
+        return substr($prefix, 0, 20);
+    }
+
+    /**
+     * Genera la siguiente Clave SICAR única y secuencial para la categoría.
+     * Formato: PREFIJO + 8 dígitos (ej. ZAPATOESC00000001)
+     */
+    public static function generarSiguienteClave(?string $categoria, ?int $ignoreId = null): string
+    {
+        $prefix = self::generarPrefijoCategoria($categoria, 'CALZADO');
+        
+        $query = self::where('clave', 'like', "{$prefix}%");
+        if ($ignoreId) {
+            $query->where('id', '!=', $ignoreId);
+        }
+        $clavesExistentes = $query->pluck('clave')->toArray();
+
+        $maxNum = 0;
+        foreach ($clavesExistentes as $c) {
+            if (preg_match('/^' . preg_quote($prefix, '/') . '(\d+)$/', $c, $m)) {
+                $num = (int)$m[1];
+                if ($num > $maxNum) {
+                    $maxNum = $num;
+                }
+            }
+        }
+
+        $siguienteNum = $maxNum + 1;
+        $siguienteClave = $prefix . sprintf('%08d', $siguienteNum);
+
+        while (self::where('clave', $siguienteClave)->when($ignoreId, fn($q) => $q->where('id', '!=', $ignoreId))->exists()) {
+            $siguienteNum++;
+            $siguienteClave = $prefix . sprintf('%08d', $siguienteNum);
+        }
+
+        return $siguienteClave;
+    }
+
+    /**
+     * Obtiene la clave persistente del calzado o la genera y guarda si no la tiene aún.
+     * Una vez asignada, NUNCA cambia para evitar inconsistencias en SICAR.
+     */
+    public function obtenerOAsignarClave(): string
+    {
+        if (!empty($this->clave)) {
+            return $this->clave;
+        }
+
+        $nuevaClave = self::generarSiguienteClave($this->categoria ?? 'CALZADO', $this->id);
+        $this->clave = $nuevaClave;
+        $this->save();
+
+        return $nuevaClave;
     }
 
     /**

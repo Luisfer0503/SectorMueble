@@ -36,12 +36,20 @@
                     <span>📷 Tomar Foto / Escanear Zapato</span>
                 </button>
 
-                <!-- Botón Descargar Excel -->
-                <a href="{{ route('admin.zapatos.excel', ['categoria' => $categoriaActiva]) }}" class="inline-flex items-center justify-center px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm hover:shadow transition-all space-x-2">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Botón Descargar Excel (SICAR .xlsx) -->
+                <a href="{{ route('admin.zapatos.excel', ['categoria' => $categoriaActiva, 'formato' => 'xlsx']) }}" class="inline-flex items-center justify-center px-4 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm hover:shadow transition-all space-x-1.5 active:scale-95" title="Descargar plantilla Excel (.xlsx) para SICAR">
+                    <svg class="w-4 h-4 text-emerald-100 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    <span>📥 Descargar Excel</span>
+                    <span>📥 Excel SICAR (.xlsx)</span>
+                </a>
+
+                <!-- Botón Descargar CSV (SICAR .csv) -->
+                <a href="{{ route('admin.zapatos.excel', ['categoria' => $categoriaActiva, 'formato' => 'csv']) }}" class="inline-flex items-center justify-center px-3.5 py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs md:text-sm rounded-xl shadow-sm hover:shadow transition-all space-x-1.5 active:scale-95" title="Descargar archivo separado por comas (.csv) para SICAR">
+                    <svg class="w-4 h-4 text-teal-100 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>📄 CSV SICAR</span>
                 </a>
 
                 <!-- Botón Captura Manual -->
@@ -302,9 +310,12 @@
                                         <td class="py-4 px-5">
                                             <div class="flex items-center space-x-3">
                                                 <img src="{{ $zapato->imagen_url }}" alt="{{ $zapato->estilo }}" class="w-12 h-12 object-cover rounded-xl border border-slate-200 shadow-sm bg-slate-100 flex-shrink-0">
-                                                <span class="font-mono font-bold text-amber-950 bg-amber-100/90 px-3 py-1.5 rounded-lg border border-amber-300 inline-block shadow-sm text-xs">
-                                                    {{ $zapato->clave_alterna }}
-                                                </span>
+                                                <div>
+                                                    <span class="font-mono font-bold text-amber-950 bg-amber-100/90 px-3 py-1.5 rounded-lg border border-amber-300 inline-block shadow-sm text-xs" title="Clave Alterna">
+                                                        {{ $zapato->clave_alterna }}
+                                                    </span>
+                                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">SICAR: <strong class="text-slate-800">{{ $zapato->clave ?: $zapato->obtenerOAsignarClave() }}</strong></span>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="py-4 px-5">

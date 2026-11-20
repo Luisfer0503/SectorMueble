@@ -1558,60 +1558,306 @@ class AdminController extends Controller
     /**
      * Exporta los zapatos de la categoría activa a un archivo .xls nativo sin librerías externas.
      */
+    /**
+     * Exporta una colección de artículos (Ropa o Calzado) al formato oficial de importación de SICAR.
+     * Guarda la fecha de cada descarga en BD para conservar el historial de cantidades y evitar retroceder stock.
+     * En el archivo Excel/CSV resultante, los registros anteriores aparecen arriba con sus cantidades históricas
+     * y la nueva descarga aparece abajo separada por su respectiva fecha con el nuevo stock actualizado.
+     * También incluye una hoja secundaria 'SICAR_SOLO_ACTUAL' para importación directa sin banners.
+     */
+    private function exportarArticulosSicar($items, string $deptoNombre, string $categoriaNombre, string $formato)
+    {
+        $headersSicar = [
+            'CLAVE',
+            'CLAVE ALTERNA',
+            'DESCRIPCION',
+            'SERVICIO (S/N)',
+            'INV_MIN',
+            'INV_MAX',
+            'PRECIO COMPRA',
+            'PRECIO 1',
+            'PRECIO 2',
+            'MAYOREO 2',
+            'PRECIO 3',
+            'MAYOREO 3',
+            'PRECIO 4',
+            'MAYOREO 4',
+            'EXIST.',
+            'PESO',
+            'CARACTERISTICAS',
+            'DEPARTAMENTO',
+            'CATEGORIA',
+            'RECETA (S/N)',
+            'GRANEL (S/N)',
+            '',
+        ];
+
+        $rowsActuales = [];
+        $clavesAlternasUsadas = [];
+
+        foreach ($items as $item) {
+            // 1. Clave única acorde a la categoría (ej. ABRIGOCAB00000001), persistente en BD
+            $clave = $item->obtenerOAsignarClave();
+
+            // 2. Clave alterna: máx. 35 caracteres y sin repetirse
+            $claveAltRaw = trim($item->clave_alterna ?? '');
+            $claveAlt35 = substr($claveAltRaw, 0, 35);
+            if (empty($claveAlt35)) {
+                $claveAlt35 = $clave;
+            }
+
+            $claveAltFinal = $claveAlt35;
+            $idx = 2;
+            while (isset($clavesAlternasUsadas[$claveAltFinal])) {
+                $suffix = '-' . $idx;
+                $claveAltFinal = substr($claveAlt35, 0, 35 - strlen($suffix)) . $suffix;
+                $idx++;
+            }
+            $clavesAlternasUsadas[$claveAltFinal] = true;
+
+            // 3. Descripción: toda la información y código de barras si existe
+            $descripcion = $item->descripcion_sicar;
+
+            // 4. Servicio
+            $servicio = 'N';
+
+            // 5-7. Inv min, max, precio compra (en blanco)
+            $invMin = '';
+            $invMax = '';
+            $precioCompra = '';
+
+            // 8. Precio 1 únicamente
+            $precio1 = number_format((float)$item->precio, 2, '.', '');
+
+            // 9-14. Precios 2..4 y mayoreos (en blanco)
+            $precio2 = '';
+            $mayoreo2 = '';
+            $precio3 = '';
+            $mayoreo3 = '';
+            $precio4 = '';
+            $mayoreo4 = '';
+
+            // 15. Existencias
+            $exist = number_format((float)$item->cantidad, 1, '.', '');
+
+            // 16-17. Peso y características (en blanco)
+            $peso = '';
+            $caracteristicas = '';
+
+            // 18. Departamento
+            $departamento = strtoupper(trim($deptoNombre));
+
+            // 19. Categoría
+            $categoria = strtoupper(trim($item->categoria ?? $deptoNombre));
+
+            // 20-22. Receta, Granel, Serie
+            $receta = 'N';
+            $granel = 'N';
+            $col22  = 'N';
+
+            $rowsActuales[] = [
+                $clave,
+                $claveAltFinal,
+                $descripcion,
+                $servicio,
+                $invMin,
+                $invMax,
+                $precioCompra,
+                $precio1,
+                $precio2,
+                $mayoreo2,
+                $precio3,
+                $mayoreo3,
+                $precio4,
+                $mayoreo4,
+                $exist,
+                $peso,
+                $caracteristicas,
+                $departamento,
+                $categoria,
+                $receta,
+                $granel,
+                $col22,
+            ];
+        }
+
+        // Registrar y guardar la descarga en base de datos para preservar el historial de cantidades
+        $catKey = (!empty($categoriaNombre) && !in_array($categoriaNombre, ['Todos_Zapatos', 'Toda_Ropa', 'TODAS']))
+            ? strtoupper(trim($categoriaNombre))
+            : 'TODAS';
+        $deptoKey = strtoupper(trim($deptoNombre));
+        $hoy = now()->toDateString();
+        $ahora = now();
+
+        try {
+            \App\Models\SicarDescarga::updateOrCreate(
+                [
+                    'tipo'      => $deptoKey,
+                    'categoria' => $catKey,
+                    'fecha'     => $hoy,
+                ],
+                [
+                    'fecha_hora'      => $ahora,
+                    'total_articulos' => count($rowsActuales),
+                    'filas'           => $rowsActuales,
+                ]
+            );
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("No se pudo registrar snapshot de descarga SICAR: " . $e->getMessage());
+        }
+
+        // Recuperar descargas de fechas previas para mostrarlas arriba en el archivo
+        $descargasPrevias = [];
+        try {
+            $descargasPrevias = \App\Models\SicarDescarga::where('tipo', $deptoKey)
+                ->where('categoria', $catKey)
+                ->where('fecha', '<', $hoy)
+                ->orderBy('fecha', 'asc')
+                ->get();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Error leyendo descargas previas SICAR: " . $e->getMessage());
+        }
+
+        // Construir bloques cronológicos: descargas anteriores arriba, nueva descarga abajo
+        $bloques = [];
+        foreach ($descargasPrevias as $dp) {
+            $fechaTexto = $dp->fecha ? $dp->fecha->format('d/m/Y') : 'Fecha anterior';
+            $bloques[] = [
+                'tipo'   => 'historial',
+                'titulo' => "DESCARGA ANTERIOR: {$fechaTexto} ({$dp->total_articulos} artículos guardados)",
+                'filas'  => $dp->filas ?? [],
+            ];
+        }
+
+        $fechaHoyTexto = $ahora->format('d/m/Y H:i');
+        $tituloHoy = !empty($descargasPrevias) && count($descargasPrevias) > 0
+            ? "NUEVA DESCARGA: {$fechaHoyTexto} (" . count($rowsActuales) . " artículos) - NUEVO STOCK"
+            : "DESCARGA: {$fechaHoyTexto} (" . count($rowsActuales) . " artículos) - STOCK ACTUAL";
+
+        $bloques[] = [
+            'tipo'   => 'actual',
+            'titulo' => $tituloHoy,
+            'filas'  => $rowsActuales,
+        ];
+
+        $slugCat = Str::slug($categoriaNombre ?: $deptoNombre, '_');
+
+        if ($formato === 'csv') {
+            $fileName = 'SICAR_' . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.csv';
+            $headers = [
+                "Content-Type"        => "text/csv; charset=UTF-8",
+                "Content-Disposition" => "attachment; filename=\"$fileName\"",
+                "Pragma"              => "no-cache",
+                "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+                "Expires"             => "0"
+            ];
+
+            return response()->stream(function() use ($headersSicar, $bloques) {
+                $file = fopen('php://output', 'w');
+                // BOM UTF-8 para compatibilidad directa con Excel y SICAR
+                fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+                fputcsv($file, $headersSicar);
+
+                foreach ($bloques as $bloque) {
+                    $banner = array_fill(0, 22, '');
+                    $banner[0] = '# --- ' . $bloque['titulo'] . ' ---';
+                    fputcsv($file, $banner);
+
+                    foreach ($bloque['filas'] as $r) {
+                        fputcsv($file, $r);
+                    }
+                }
+                fclose($file);
+            }, 200, $headers);
+        }
+
+        // Formato XLSX nativo (Excel para SICAR)
+        $fileName = 'SICAR_' . $deptoNombre . '_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.xlsx';
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+
+        // HOJA 1: SICAR (Vista completa con separadores por fecha e historial arriba y nuevo stock abajo)
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('SICAR');
+
+        $sheet->fromArray([$headersSicar], NULL, 'A1');
+        $headerRange = 'A1:V1';
+        $sheet->getStyle($headerRange)->getFont()->setBold(true);
+        $sheet->getStyle($headerRange)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
+
+        $currentRow = 2;
+        foreach ($bloques as $bloque) {
+            // Fila banner separadora con la fecha
+            $sheet->mergeCells("A{$currentRow}:V{$currentRow}");
+            $sheet->setCellValue("A{$currentRow}", '📅 ' . $bloque['titulo']);
+            $sheet->getRowDimension($currentRow)->setRowHeight(26);
+
+            $bgColor = ($bloque['tipo'] === 'actual') ? 'FF065F46' : 'FF1E293B'; // Verde oscuro para nuevo stock, gris pizarra para historial
+            $sheet->getStyle("A{$currentRow}:V{$currentRow}")->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
+            $sheet->getStyle("A{$currentRow}:V{$currentRow}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($bgColor);
+            $sheet->getStyle("A{$currentRow}")->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+            $currentRow++;
+
+            // Filas de artículos de esa fecha
+            if (!empty($bloque['filas'])) {
+                $sheet->fromArray($bloque['filas'], NULL, "A{$currentRow}");
+                $currentRow += count($bloque['filas']);
+            }
+        }
+
+        // Forzar CLAVE y CLAVE ALTERNA como TEXTO para no alterar ceros a la izquierda
+        $maxRow = max($currentRow, 2);
+        $sheet->getStyle("A1:A{$maxRow}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+        $sheet->getStyle("B1:B{$maxRow}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+
+        foreach (range('A', 'V') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // HOJA 2: SICAR_SOLO_ACTUAL (Hoja limpia con sólo los datos actuales para importación directa en SICAR si se prefiere)
+        $sheetActual = $spreadsheet->createSheet();
+        $sheetActual->setTitle('SICAR_SOLO_ACTUAL');
+        $sheetActual->fromArray([$headersSicar], NULL, 'A1');
+        $sheetActual->getStyle('A1:V1')->getFont()->setBold(true);
+        $sheetActual->getStyle('A1:V1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
+
+        if (!empty($rowsActuales)) {
+            $sheetActual->fromArray($rowsActuales, NULL, 'A2');
+        }
+        $maxRowActual = max(count($rowsActuales) + 1, 2);
+        $sheetActual->getStyle("A1:A{$maxRowActual}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+        $sheetActual->getStyle("B1:B{$maxRowActual}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
+        foreach (range('A', 'V') as $col) {
+            $sheetActual->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Mantener la primera hoja activa al abrir el archivo
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        return response()->streamDownload(function() use ($writer) {
+            $writer->save('php://output');
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    /**
+     * Exporta el catálogo de zapatos al formato de importación de SICAR (.xlsx o .csv).
+     */
     public function zapatosExportarExcel(Request $request)
     {
         if ($res = $this->verificarAccesoZapatos()) return $res;
-        $categoriaActiva = strtoupper(trim((string)$request->input('categoria', 'ZAPATO ESCOLAR')));
-        if (empty($categoriaActiva)) $categoriaActiva = 'ZAPATO ESCOLAR';
+        $categoriaActiva = strtoupper(trim((string)$request->input('categoria', '')));
+        $formato = strtolower(trim((string)$request->input('formato', $request->input('format', 'xlsx'))));
 
-        $zapatos = Zapato::where('categoria', $categoriaActiva)->orderBy('id', 'asc')->get();
-        $slugCat = Str::slug($categoriaActiva, '_');
-        $fileName = 'Inventario_' . ($slugCat ?: 'Zapatos') . '_' . date('Y-m-d_H-i') . '.xls';
+        $query = Zapato::query();
+        if (!empty($categoriaActiva) && $categoriaActiva !== 'TODAS') {
+            $query->where('categoria', $categoriaActiva);
+        }
+        $zapatos = $query->orderBy('id', 'asc')->get();
 
-        $headers = [
-            "Content-Type"        => "application/vnd.ms-excel; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=\"$fileName\"",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        ];
-
-        $callback = function() use ($zapatos, $categoriaActiva) {
-            $file = fopen('php://output', 'w');
-
-            // Encabezado XML/HTML nativo reconocido por Excel y SICAR como .xls
-            fwrite($file, '<html xmlns:o="urn:schemas-microsoft-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' . "\n");
-            fwrite($file, '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . "\n");
-            fwrite($file, '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>' . htmlspecialchars($categoriaActiva, ENT_QUOTES, 'UTF-8') . '</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' . "\n");
-            fwrite($file, '</head><body>' . "\n");
-            fwrite($file, '<table border="1">' . "\n");
-            fwrite($file, '<thead><tr style="background-color: #f2f2f2; font-weight: bold;">' . "\n");
-            fwrite($file, '<th>CLAVE ALTERNA</th>' . "\n");
-            fwrite($file, '<th>DESCRIPCION</th>' . "\n");
-            fwrite($file, '<th>PRECIO 1</th>' . "\n");
-            fwrite($file, '<th>EXIST.</th>' . "\n");
-            fwrite($file, '</tr></thead><tbody>' . "\n");
-
-            foreach ($zapatos as $z) {
-                $clave  = htmlspecialchars($z->clave_alterna, ENT_QUOTES, 'UTF-8');
-                $desc   = htmlspecialchars($z->descripcion_completa, ENT_QUOTES, 'UTF-8');
-                $precio = number_format((float)$z->precio, 2, '.', '');
-                $cant   = (int)$z->cantidad;
-
-                fwrite($file, '<tr>' . "\n");
-                // mso-number-format:\@ exige que Excel trate la clave como texto
-                fwrite($file, '<td style="mso-number-format:\@;">' . $clave . '</td>' . "\n");
-                fwrite($file, '<td>' . $desc . '</td>' . "\n");
-                fwrite($file, '<td style="mso-number-format:\'0.00\';">' . $precio . '</td>' . "\n");
-                fwrite($file, '<td>' . $cant . '</td>' . "\n");
-                fwrite($file, '</tr>' . "\n");
-            }
-
-            fwrite($file, '</tbody></table></body></html>' . "\n");
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return $this->exportarArticulosSicar($zapatos, 'CALZADO', $categoriaActiva ?: 'Todos_Zapatos', $formato);
     }
 
     /**
@@ -1707,7 +1953,8 @@ class AdminController extends Controller
                         'imagen_url'  => $imagenPath,
                         'detalles_ia' => $request->input('detalles_ia', null),
                     ]);
-                    $registrosProcesados[] = "✅ Talla {$numero} (Clave Nueva: {$zapatoNuevo->clave_alterna}): Registro nuevo creado en categoría '{$categoria}' con {$cantidad} pares.";
+                    $zapatoNuevo->obtenerOAsignarClave();
+                    $registrosProcesados[] = "✅ Talla {$numero} (Clave Nueva: {$zapatoNuevo->clave_alterna} / SICAR: {$zapatoNuevo->clave}): Registro nuevo creado en categoría '{$categoria}' con {$cantidad} pares.";
                 }
                 $totalGuardados++;
             }
@@ -2111,6 +2358,7 @@ class AdminController extends Controller
         $items = $ropas->map(function ($r) {
             return [
                 'id'                   => $r->id,
+                'clave'                => $r->clave ?: $r->obtenerOAsignarClave(),
                 'categoria'            => $r->categoria,
                 'marca'                => $r->marca,
                 'talla'                => $r->talla,
@@ -2296,69 +2544,21 @@ class AdminController extends Controller
     }
 
     /**
-     * Exporta la ropa de la categoría activa a un archivo .xls nativo.
+     * Exporta el catálogo de ropa al formato de importación de SICAR (.xlsx o .csv).
      */
     public function ropaExportarExcel(Request $request)
     {
         if ($res = $this->verificarAccesoRopa()) return $res;
-        $categoriaActiva = strtoupper(trim((string)$request->input('categoria', 'ROPA DIVERSA')));
-        if (empty($categoriaActiva)) $categoriaActiva = 'ROPA DIVERSA';
+        $categoriaActiva = strtoupper(trim((string)$request->input('categoria', '')));
+        $formato = strtolower(trim((string)$request->input('formato', $request->input('format', 'xlsx'))));
 
-        $ropas = Ropa::where('categoria', $categoriaActiva)->orderBy('id', 'asc')->get();
-        $slugCat = Str::slug($categoriaActiva, '_');
-        $fileName = 'Inventario_Ropa_' . ($slugCat ?: 'General') . '_' . date('Y-m-d_H-i') . '.xls';
+        $query = Ropa::query();
+        if (!empty($categoriaActiva) && $categoriaActiva !== 'TODAS') {
+            $query->where('categoria', $categoriaActiva);
+        }
+        $ropas = $query->orderBy('id', 'asc')->get();
 
-        $headers = [
-            "Content-Type"        => "application/vnd.ms-excel; charset=UTF-8",
-            "Content-Disposition" => "attachment; filename=\"$fileName\"",
-            "Pragma"              => "no-cache",
-            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
-            "Expires"             => "0"
-        ];
-
-        $callback = function() use ($ropas, $categoriaActiva) {
-            $file = fopen('php://output', 'w');
-
-            fwrite($file, '<html xmlns:o="urn:schemas-microsoft-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">' . "\n");
-            fwrite($file, '<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">' . "\n");
-            fwrite($file, '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>' . htmlspecialchars($categoriaActiva, ENT_QUOTES, 'UTF-8') . '</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->' . "\n");
-            fwrite($file, '</head><body>' . "\n");
-            fwrite($file, '<table border="1">' . "\n");
-            fwrite($file, '<thead><tr style="background-color: #f2f2f2; font-weight: bold;">' . "\n");
-            fwrite($file, '<th>CLAVE ALTERNA</th>' . "\n");
-            fwrite($file, '<th>CODIGO DE BARRAS</th>' . "\n");
-            fwrite($file, '<th>DESCRIPCION</th>' . "\n");
-            fwrite($file, '<th>MARCA</th>' . "\n");
-            fwrite($file, '<th>TALLA</th>' . "\n");
-            fwrite($file, '<th>PRECIO 1</th>' . "\n");
-            fwrite($file, '<th>EXIST.</th>' . "\n");
-            fwrite($file, '</tr></thead><tbody>' . "\n");
-
-            foreach ($ropas as $r) {
-                $clave   = htmlspecialchars($r->clave_alterna, ENT_QUOTES, 'UTF-8');
-                $barcode = htmlspecialchars($r->codigo_barras ?? '', ENT_QUOTES, 'UTF-8');
-                $desc    = htmlspecialchars($r->descripcion_completa, ENT_QUOTES, 'UTF-8');
-                $marca   = htmlspecialchars($r->marca, ENT_QUOTES, 'UTF-8');
-                $talla   = htmlspecialchars($r->talla, ENT_QUOTES, 'UTF-8');
-                $precio  = number_format((float)$r->precio, 2, '.', '');
-                $cant    = (int)$r->cantidad;
-
-                fwrite($file, '<tr>' . "\n");
-                fwrite($file, '<td style="mso-number-format:\@;">' . $clave . '</td>' . "\n");
-                fwrite($file, '<td style="mso-number-format:\@;">' . $barcode . '</td>' . "\n");
-                fwrite($file, '<td>' . $desc . '</td>' . "\n");
-                fwrite($file, '<td>' . $marca . '</td>' . "\n");
-                fwrite($file, '<td>' . $talla . '</td>' . "\n");
-                fwrite($file, '<td style="mso-number-format:\'0.00\';">' . $precio . '</td>' . "\n");
-                fwrite($file, '<td>' . $cant . '</td>' . "\n");
-                fwrite($file, '</tr>' . "\n");
-            }
-
-            fwrite($file, '</tbody></table></body></html>' . "\n");
-            fclose($file);
-        };
-
-        return response()->stream($callback, 200, $headers);
+        return $this->exportarArticulosSicar($ropas, 'ROPA', $categoriaActiva ?: 'Toda_Ropa', $formato);
     }
 
     /**
@@ -2475,7 +2675,8 @@ class AdminController extends Controller
                         'imagen_url'    => $imagenPath,
                         'detalles_ia'   => $request->input('detalles_ia', null),
                     ]);
-                    $registrosProcesados[] = "✅ Talla {$talla} (Clave Nueva: {$ropaNueva->clave_alterna}): Registro nuevo creado en categoría '{$categoria}' con {$cantidad} prenda(s).";
+                    $ropaNueva->obtenerOAsignarClave();
+                    $registrosProcesados[] = "✅ Talla {$talla} (Clave Nueva: {$ropaNueva->clave_alterna} / SICAR: {$ropaNueva->clave}): Registro nuevo creado en categoría '{$categoria}' con {$cantidad} prenda(s).";
                 }
                 $totalGuardados++;
             }
