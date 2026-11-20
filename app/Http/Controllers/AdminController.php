@@ -1589,7 +1589,6 @@ class AdminController extends Controller
             'CATEGORIA',
             'RECETA (S/N)',
             'GRANEL (S/N)',
-            '',
         ];
 
         $rowsActuales = [];
@@ -1650,10 +1649,9 @@ class AdminController extends Controller
             // 19. Categoría
             $categoria = strtoupper(trim($item->categoria ?? $deptoNombre));
 
-            // 20-22. Receta, Granel, Serie
+            // 20-21. Receta y Granel
             $receta = 'N';
             $granel = 'N';
-            $col22  = 'N';
 
             $rowsActuales[] = [
                 $clave,
@@ -1677,9 +1675,13 @@ class AdminController extends Controller
                 $categoria,
                 $receta,
                 $granel,
-                $col22,
             ];
         }
+
+        // Ordenar siempre las filas ascendentemente por CLAVE (del 00000001 hacia abajo)
+        usort($rowsActuales, function ($a, $b) {
+            return strnatcasecmp((string)$a[0], (string)$b[0]);
+        });
 
         // Registrar y guardar la descarga en base de datos para preservar el historial de cantidades
         $catKey = (!empty($categoriaNombre) && !in_array($categoriaNombre, ['Todos_Zapatos', 'Toda_Ropa', 'TODAS']))
@@ -1805,19 +1807,19 @@ class AdminController extends Controller
             // VISTA HISTORIAL: Para revisión humana y comparativa de stock por fecha
             $sheet->setTitle('HISTORIAL_STOCK');
             $sheet->fromArray([$headersSicar], NULL, 'A1');
-            $headerRange = 'A1:V1';
+            $headerRange = 'A1:U1';
             $sheet->getStyle($headerRange)->getFont()->setBold(true);
             $sheet->getStyle($headerRange)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
 
             $currentRow = 2;
             foreach ($bloques as $bloque) {
-                $sheet->mergeCells("A{$currentRow}:V{$currentRow}");
+                $sheet->mergeCells("A{$currentRow}:U{$currentRow}");
                 $sheet->setCellValue("A{$currentRow}", '📅 ' . $bloque['titulo']);
                 $sheet->getRowDimension($currentRow)->setRowHeight(26);
 
                 $bgColor = ($bloque['tipo'] === 'actual') ? 'FF065F46' : 'FF1E293B';
-                $sheet->getStyle("A{$currentRow}:V{$currentRow}")->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
-                $sheet->getStyle("A{$currentRow}:V{$currentRow}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($bgColor);
+                $sheet->getStyle("A{$currentRow}:U{$currentRow}")->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
+                $sheet->getStyle("A{$currentRow}:U{$currentRow}")->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB($bgColor);
                 $sheet->getStyle("A{$currentRow}")->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
                 $currentRow++;
 
@@ -1831,19 +1833,19 @@ class AdminController extends Controller
             $sheet->getStyle("A1:A{$maxRow}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
             $sheet->getStyle("B1:B{$maxRow}")->getNumberFormat()->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_TEXT);
         } else {
-            // FORMATO OFICIAL SICAR: 100% idéntico a la plantilla estándar de SICAR
-            // Requisitos de SICAR: Hoja llamada 'Sheet0', sin filas intermedias de texto, productos arrancan en fila 2
+            // FORMATO OFICIAL SICAR: 100% idéntico a la plantilla estándar de SICAR (Columnas A a U)
+            // Requisitos de SICAR: Hoja llamada 'Sheet0', sin columnas extras, sin filas intermedias de texto, productos arrancan en fila 2
             $sheet->setTitle('Sheet0');
 
-            // Encabezados exactos en fila 1
+            // Encabezados exactos en fila 1 (21 columnas: A a U)
             for ($i = 0; $i < count($headersSicar); $i++) {
                 $colLetter = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i + 1);
                 if ($headersSicar[$i] !== null && $headersSicar[$i] !== '') {
                     $sheet->setCellValueExplicit($colLetter . '1', $headersSicar[$i], \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
                 }
             }
-            $sheet->getStyle('A1:V1')->getFont()->setBold(true);
-            $sheet->getStyle('A1:V1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
+            $sheet->getStyle('A1:U1')->getFont()->setBold(true);
+            $sheet->getStyle('A1:U1')->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)->getStartColor()->setARGB('FFF2F2F2');
 
             // Artículos desde la fila 2 en adelante
             $rNum = 2;
@@ -1866,7 +1868,7 @@ class AdminController extends Controller
             }
         }
 
-        foreach (range('A', 'V') as $col) {
+        foreach (range('A', 'U') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
